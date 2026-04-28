@@ -1,0 +1,38 @@
+{
+  "name": "@chute-lang/chute",
+  "version": "0.1.0",
+  "description": "A strongly-typed programming language that compiles to Siri Shortcuts",
+  "license": "Apache-2.0",
+  "bin": {
+    "chute": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "schema"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "format": "oxfmt --write src",
+    "format:check": "oxfmt --check src",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "oxfmt": "^0.65.0",
+    "oxlint": "^1.80.0",
+    "tsdown": "^0.12.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@11.2.2"
+}

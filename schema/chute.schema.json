@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chute-lang.dev/schema/chute.schema.json",
+  "title": "chute.json",
+  "description": "Configuration file for a Chute project.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The project name."
+    },
+    "version": {
+      "type": "string",
+      "description": "The project version.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "sourceDir": {
+      "type": "string",
+      "description": "Directory containing .chute source files.",
+      "default": "./src"
+    },
+    "outDir": {
+      "type": "string",
+      "description": "Directory for compiled .shortcut output files.",
+      "default": "./build"
+    },
+    "sign": {
+      "type": "boolean",
+      "description": "Sign output files with the macOS shortcuts CLI. Set to false or pass --no-sign to skip.",
+      "default": true
+    },
+    "check": {
+      "type": "object",
+      "description": "Options for chute check (type checking and lint rules).",
+      "properties": {
+        "actionCountWarningThreshold": {
+          "type": "integer",
+          "description": "Warn when a shortcut exceeds this number of compiled actions.",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "format": {
+      "type": "object",
+      "description": "Options for chute fmt.",
+      "properties": {
+        "maxLineWidth": {
+          "type": "integer",
+          "description": "Soft maximum line width.",
+          "default": 120,
+          "minimum": 40
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["name"],
+  "additionalProperties": false
+}
