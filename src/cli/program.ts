@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
 
 const VERSION = "0.1.0";
@@ -22,7 +23,9 @@ export function createProgram(): Command {
     .description("Compile .chute files to .shortcut")
     .argument("[files...]", "files to compile (defaults to all in sourceDir)")
     .option("--no-sign", "skip signing the output")
-    .action(stub("build"));
+    .action((files: string[]) => {
+      build(files);
+    });
 
   program
     .command("check")

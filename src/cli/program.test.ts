@@ -28,7 +28,7 @@ describe("chute CLI", () => {
     await expect(run("bogus")).rejects.toThrow();
   });
 
-  it("should stub build as not yet implemented", async () => {
+  it("should error when build has no input files", async () => {
     await run("build");
     expect(process.exitCode).toBe(1);
   });
