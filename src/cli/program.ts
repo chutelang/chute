@@ -1,6 +1,7 @@
 import { Command } from "commander";
-import { build } from "./commands/build.ts";
+import { build, type BuildOptions } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
+import { run } from "./commands/run.ts";
 
 const VERSION = "0.1.0";
 
@@ -23,8 +24,8 @@ export function createProgram(): Command {
     .description("Compile .chute files to .shortcut")
     .argument("[files...]", "files to compile (defaults to all in sourceDir)")
     .option("--no-sign", "skip signing the output")
-    .action((files: string[]) => {
-      build(files);
+    .action((files: string[], options: BuildOptions) => {
+      build(files, options);
     });
 
   program
@@ -46,7 +47,9 @@ export function createProgram(): Command {
     .command("run")
     .description("Build and open a shortcut")
     .argument("<file>", "the .chute file to run")
-    .action(stub("run"));
+    .action((file: string) => {
+      run(file);
+    });
 
   return program;
 }
