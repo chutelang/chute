@@ -171,6 +171,117 @@ describe("Parser", () => {
     });
   });
 
+  describe("let declarations", () => {
+    it("should parse a let declaration with string initializer", () => {
+      const ast = parse('let x = "hello";');
+      expect(ast.body).toHaveLength(1);
+      const decl = ast.body.at(0);
+      expect(decl).toMatchObject({
+        kind: "LetDeclaration",
+        name: "x",
+        typeAnnotation: undefined,
+      });
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "StringLiteral",
+          value: "hello",
+        });
+      }
+    });
+
+    it("should parse a let declaration with type annotation", () => {
+      const ast = parse('let x: Text = "hello";');
+      const decl = ast.body.at(0);
+      expect(decl).toMatchObject({
+        kind: "LetDeclaration",
+        name: "x",
+      });
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.typeAnnotation).toMatchObject({
+          kind: "TypeAnnotation",
+          optional: false,
+          base: {
+            kind: "NamedType",
+            name: "Text",
+            qualifier: undefined,
+          },
+        });
+      }
+    });
+
+    it("should parse a let with optional type annotation", () => {
+      const ast = parse("let x: Number? = nil;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.typeAnnotation?.optional).toBe(true);
+        expect(decl.typeAnnotation?.base).toMatchObject({
+          kind: "NamedType",
+          name: "Number",
+        });
+      }
+    });
+
+    it("should parse a let with List type", () => {
+      const ast = parse("let xs: List<Number> = nil;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.typeAnnotation?.base).toMatchObject({
+          kind: "ListType",
+        });
+        if (decl.typeAnnotation?.base.kind === "ListType") {
+          expect(decl.typeAnnotation.base.elementType).toMatchObject({
+            kind: "TypeAnnotation",
+            base: { kind: "NamedType", name: "Number" },
+          });
+        }
+      }
+    });
+
+    it("should parse a let with Quantity type", () => {
+      const ast = parse("let d: Quantity<km> = nil;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.typeAnnotation?.base).toMatchObject({
+          kind: "QuantityType",
+          unit: "km",
+        });
+      }
+    });
+
+    it("should parse a let with qualified type", () => {
+      const ast = parse("let r: helpers.Receipt = nil;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.typeAnnotation?.base).toMatchObject({
+          kind: "NamedType",
+          qualifier: "helpers",
+          name: "Receipt",
+        });
+      }
+    });
+  });
+
+  describe("var declarations", () => {
+    it("should parse a var declaration", () => {
+      const ast = parse("var count = 0;");
+      expect(ast.body.at(0)).toMatchObject({
+        kind: "VarDeclaration",
+        name: "count",
+      });
+    });
+
+    it("should parse a var declaration with type annotation", () => {
+      const ast = parse("var count: Number = 0;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "VarDeclaration") {
+        expect(decl.typeAnnotation).toMatchObject({
+          kind: "TypeAnnotation",
+          base: { kind: "NamedType", name: "Number" },
+        });
+      }
+    });
+  });
+
   describe("full programs", () => {
     it("should parse hello world shortcut", () => {
       const source = `shortcut {
