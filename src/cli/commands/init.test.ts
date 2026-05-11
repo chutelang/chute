@@ -7,11 +7,17 @@ const TEST_DIR = path.join(import.meta.dirname, "__test_init__");
 
 describe("chute init", () => {
   beforeEach(() => {
-    fs.rmSync(TEST_DIR, { recursive: true, force: true });
+    fs.rmSync(TEST_DIR, {
+      recursive: true,
+      force: true,
+    });
   });
 
   afterEach(() => {
-    fs.rmSync(TEST_DIR, { recursive: true, force: true });
+    fs.rmSync(TEST_DIR, {
+      recursive: true,
+      force: true,
+    });
   });
 
   it("should create chute.json, src/main.chute, and .gitignore", () => {
