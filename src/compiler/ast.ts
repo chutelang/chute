@@ -65,12 +65,56 @@ export interface MetadataDotName {
   args: MetadataValue[] | undefined;
 }
 
-export type Statement = ExpressionStatement;
+export type Statement = ExpressionStatement | LetDeclaration | VarDeclaration;
 
 export interface ExpressionStatement {
   kind: "ExpressionStatement";
   span: Span;
   expression: Expression;
+}
+
+export interface LetDeclaration {
+  kind: "LetDeclaration";
+  span: Span;
+  name: string;
+  typeAnnotation: TypeAnnotation | undefined;
+  initializer: Expression;
+}
+
+export interface VarDeclaration {
+  kind: "VarDeclaration";
+  span: Span;
+  name: string;
+  typeAnnotation: TypeAnnotation | undefined;
+  initializer: Expression;
+}
+
+export interface TypeAnnotation {
+  kind: "TypeAnnotation";
+  span: Span;
+  base: BaseType;
+  optional: boolean;
+}
+
+export type BaseType = NamedType | ListType | QuantityType;
+
+export interface NamedType {
+  kind: "NamedType";
+  span: Span;
+  qualifier: string | undefined;
+  name: string;
+}
+
+export interface ListType {
+  kind: "ListType";
+  span: Span;
+  elementType: TypeAnnotation;
+}
+
+export interface QuantityType {
+  kind: "QuantityType";
+  span: Span;
+  unit: string;
 }
 
 export type Expression =
