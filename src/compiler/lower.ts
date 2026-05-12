@@ -44,6 +44,10 @@ export function lower(program: Program): ShortcutIR {
   const actions: ActionIR[] = [];
 
   for (const stmt of program.body) {
+    if (stmt.kind !== "ExpressionStatement") {
+      throw new LowerError(`unsupported statement: ${stmt.kind}`);
+    }
+
     if (stmt.expression.kind !== "CallExpression") {
       throw new LowerError(
         `expression statements must be action calls, got ${stmt.expression.kind}`,
