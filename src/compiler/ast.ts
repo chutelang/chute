@@ -148,7 +148,11 @@ export interface QuantityType {
 export type Expression =
   | CallExpression
   | MemberExpression
+  | OptionalMemberExpression
   | SubscriptExpression
+  | BinaryExpression
+  | UnaryExpression
+  | CoalesceExpression
   | Identifier
   | StringLiteral
   | NumberLiteral
@@ -169,11 +173,42 @@ export interface MemberExpression {
   property: string;
 }
 
+export interface OptionalMemberExpression {
+  kind: "OptionalMemberExpression";
+  span: Span;
+  object: Expression;
+  property: string;
+}
+
 export interface SubscriptExpression {
   kind: "SubscriptExpression";
   span: Span;
   object: Expression;
   index: Expression;
+}
+
+export type BinaryOperator = "+" | "-" | "*" | "/" | "%";
+
+export interface BinaryExpression {
+  kind: "BinaryExpression";
+  span: Span;
+  operator: BinaryOperator;
+  left: Expression;
+  right: Expression;
+}
+
+export interface UnaryExpression {
+  kind: "UnaryExpression";
+  span: Span;
+  operator: "-";
+  operand: Expression;
+}
+
+export interface CoalesceExpression {
+  kind: "CoalesceExpression";
+  span: Span;
+  left: Expression;
+  right: Expression;
 }
 
 export interface Argument {
