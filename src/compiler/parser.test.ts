@@ -112,7 +112,7 @@ describe("Parser", () => {
       expect(ast.body).toHaveLength(1);
       const stmt = ast.body.at(0);
       expect(stmt?.kind).toBe("ExpressionStatement");
-      const call = stmt?.expression;
+      const call = stmt?.kind === "ExpressionStatement" ? stmt.expression : undefined;
       expect(call?.kind).toBe("CallExpression");
       if (call?.kind === "CallExpression") {
         expect(call.callee).toMatchObject({ kind: "Identifier", name: "showAlert" });
@@ -124,7 +124,8 @@ describe("Parser", () => {
 
     it("should parse a call with multiple arguments", () => {
       const ast = parse('notify(title: "Hi", body: "There");');
-      const call = ast.body.at(0)?.expression;
+      const stmt = ast.body.at(0);
+      const call = stmt?.kind === "ExpressionStatement" ? stmt.expression : undefined;
       if (call?.kind === "CallExpression") {
         expect(call.args).toHaveLength(2);
         expect(call.args.at(0)?.label).toBe("title");
@@ -134,7 +135,8 @@ describe("Parser", () => {
 
     it("should parse a call with unlabeled arguments", () => {
       const ast = parse('show("hello");');
-      const call = ast.body.at(0)?.expression;
+      const stmt = ast.body.at(0);
+      const call = stmt?.kind === "ExpressionStatement" ? stmt.expression : undefined;
       if (call?.kind === "CallExpression") {
         expect(call.args.at(0)?.label).toBeUndefined();
       }
@@ -142,7 +144,8 @@ describe("Parser", () => {
 
     it("should parse a call with keyword argument labels", () => {
       const ast = parse('doThing(in: "folder", for: "user");');
-      const call = ast.body.at(0)?.expression;
+      const stmt = ast.body.at(0);
+      const call = stmt?.kind === "ExpressionStatement" ? stmt.expression : undefined;
       if (call?.kind === "CallExpression") {
         expect(call.args.at(0)?.label).toBe("in");
         expect(call.args.at(1)?.label).toBe("for");
@@ -151,7 +154,8 @@ describe("Parser", () => {
 
     it("should parse member call expressions", () => {
       const ast = parse('Scan.parse("data");');
-      const call = ast.body.at(0)?.expression;
+      const stmt = ast.body.at(0);
+      const call = stmt?.kind === "ExpressionStatement" ? stmt.expression : undefined;
       if (call?.kind === "CallExpression") {
         expect(call.callee).toMatchObject({
           kind: "MemberExpression",
@@ -294,7 +298,10 @@ showAlert(text: "Hello from Chute!");`;
       const ast = parse(source);
       expect(ast.metadata?.fields).toHaveLength(2);
       expect(ast.body).toHaveLength(1);
-      expect(ast.body.at(0)?.expression.kind).toBe("CallExpression");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind === "ExpressionStatement" ? stmt.expression.kind : undefined).toBe(
+        "CallExpression",
+      );
     });
   });
 });
