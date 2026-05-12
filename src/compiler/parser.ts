@@ -2,15 +2,17 @@ import { TokenKind } from "./token.ts";
 import type { Token, Span } from "./token.ts";
 import type {
   Argument,
+  Assignment,
   BaseType,
   CallExpression,
   Expression,
-  ExpressionStatement,
   LetDeclaration,
   ListType,
   MemberExpression,
   MetadataField,
   MetadataValue,
+  Place,
+  PlaceAccessor,
   Program,
   QuantityType,
   ShortcutMetadata,
@@ -189,16 +191,30 @@ export class Parser {
     if (this.check(TokenKind.Var)) {
       return this.parseVarDeclaration();
     }
-    return this.parseExpressionStatement();
-  }
 
-  private parseExpressionStatement(): ExpressionStatement {
     const expr = this.parseExpression();
+
+    if (this.check(TokenKind.Equal)) {
+      return this.parseAssignment(expr);
+    }
+
     const end = this.expect(TokenKind.Semicolon).span.end;
     return {
       kind: "ExpressionStatement",
       span: { start: expr.span.start, end },
       expression: expr,
+    };
+  }
+
+  private parseAssignment(target: Expression): Assignment {
+    this.expect(TokenKind.Equal);
+    const value = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "Assignment",
+      span: { start: target.span.start, end },
+      place: exprToPlace(target),
+      value,
     };
   }
 
@@ -469,6 +485,41 @@ export class Parser {
   private error(message: string, span: Span): ParseError {
     return new ParseError(message, span);
   }
+}
+
+function exprToPlace(expr: Expression): Place {
+  const accessors: PlaceAccessor[] = [];
+  let current = expr;
+
+  while (current.kind === "MemberExpression" || current.kind === "SubscriptExpression") {
+    if (current.kind === "MemberExpression") {
+      accessors.push({
+        kind: "FieldAccessor",
+        span: current.span,
+        name: current.property,
+      });
+      current = current.object;
+    } else {
+      accessors.push({
+        kind: "SubscriptAccessor",
+        span: current.span,
+        index: current.index,
+      });
+      current = current.object;
+    }
+  }
+
+  if (current.kind !== "Identifier") {
+    throw new ParseError("assignment target must be a variable, field, or subscript", expr.span);
+  }
+
+  accessors.reverse();
+  return {
+    kind: "Place",
+    span: expr.span,
+    root: current.name,
+    accessors,
+  };
 }
 
 function tokenValue(tok: Token): string {
