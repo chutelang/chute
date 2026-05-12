@@ -2,15 +2,21 @@ import { TokenKind } from "./token.ts";
 import type { Token, Span } from "./token.ts";
 import type {
   Argument,
+  BaseType,
   CallExpression,
   Expression,
   ExpressionStatement,
+  LetDeclaration,
+  ListType,
   MemberExpression,
   MetadataField,
   MetadataValue,
   Program,
+  QuantityType,
   ShortcutMetadata,
   Statement,
+  TypeAnnotation,
+  VarDeclaration,
 } from "./ast.ts";
 
 export class ParseError extends Error {
@@ -177,6 +183,12 @@ export class Parser {
   }
 
   private parseStatement(): Statement {
+    if (this.check(TokenKind.Let)) {
+      return this.parseLetDeclaration();
+    }
+    if (this.check(TokenKind.Var)) {
+      return this.parseVarDeclaration();
+    }
     return this.parseExpressionStatement();
   }
 
@@ -187,6 +199,126 @@ export class Parser {
       kind: "ExpressionStatement",
       span: { start: expr.span.start, end },
       expression: expr,
+    };
+  }
+
+  private parseLetDeclaration(): LetDeclaration {
+    const start = this.expect(TokenKind.Let).span.start;
+    const name = this.expect(TokenKind.Identifier);
+    const typeAnnotation = this.check(TokenKind.Colon)
+      ? this.parseTypeAnnotationWithColon()
+      : undefined;
+    this.expect(TokenKind.Equal);
+    const initializer = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "LetDeclaration",
+      span: { start, end },
+      name: tokenValue(name),
+      typeAnnotation,
+      initializer,
+    };
+  }
+
+  private parseVarDeclaration(): VarDeclaration {
+    const start = this.expect(TokenKind.Var).span.start;
+    const name = this.expect(TokenKind.Identifier);
+    const typeAnnotation = this.check(TokenKind.Colon)
+      ? this.parseTypeAnnotationWithColon()
+      : undefined;
+    this.expect(TokenKind.Equal);
+    const initializer = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "VarDeclaration",
+      span: { start, end },
+      name: tokenValue(name),
+      typeAnnotation,
+      initializer,
+    };
+  }
+
+  private parseTypeAnnotationWithColon(): TypeAnnotation {
+    this.expect(TokenKind.Colon);
+    return this.parseTypeAnnotation();
+  }
+
+  private parseTypeAnnotation(): TypeAnnotation {
+    const base = this.parseBaseType();
+    let optional = false;
+    let end = base.span.end;
+
+    if (this.check(TokenKind.Question)) {
+      optional = true;
+      end = this.advance().span.end;
+    }
+
+    return {
+      kind: "TypeAnnotation",
+      span: { start: base.span.start, end },
+      base,
+      optional,
+    };
+  }
+
+  private parseBaseType(): BaseType {
+    const tok = this.peek();
+
+    if (tok.kind === TokenKind.Identifier) {
+      const name = tokenValue(tok);
+
+      if (name === "List") {
+        return this.parseListType();
+      }
+
+      if (name === "Quantity") {
+        return this.parseQuantityType();
+      }
+
+      this.advance();
+      if (this.check(TokenKind.Dot)) {
+        this.advance();
+        const nameTok = this.expect(TokenKind.Identifier);
+        return {
+          kind: "NamedType",
+          span: { start: tok.span.start, end: nameTok.span.end },
+          qualifier: name,
+          name: tokenValue(nameTok),
+        };
+      }
+
+      return {
+        kind: "NamedType",
+        span: tok.span,
+        qualifier: undefined,
+        name,
+      };
+    }
+
+    throw this.error(`expected type, got ${tokenKindName(tok.kind)}`, tok.span);
+  }
+
+  private parseListType(): ListType {
+    const start = this.advance().span.start;
+    this.expect(TokenKind.Less);
+    const elementType = this.parseTypeAnnotation();
+    const end = this.expect(TokenKind.Greater).span.end;
+    return {
+      kind: "ListType",
+      span: { start, end },
+      elementType,
+    };
+  }
+
+  private parseQuantityType(): QuantityType {
+    const start = this.advance().span.start;
+    this.expect(TokenKind.Less);
+    const unit = this.expect(TokenKind.Identifier);
+    const end = this.expect(TokenKind.Greater).span.end;
+    return {
+      kind: "QuantityType",
+      span: { start, end },
+      unit: tokenValue(unit),
     };
   }
 
