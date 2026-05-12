@@ -65,7 +65,35 @@ export interface MetadataDotName {
   args: MetadataValue[] | undefined;
 }
 
-export type Statement = ExpressionStatement | LetDeclaration | VarDeclaration;
+export type Statement = ExpressionStatement | LetDeclaration | VarDeclaration | Assignment;
+
+export interface Assignment {
+  kind: "Assignment";
+  span: Span;
+  place: Place;
+  value: Expression;
+}
+
+export interface Place {
+  kind: "Place";
+  span: Span;
+  root: string;
+  accessors: PlaceAccessor[];
+}
+
+export type PlaceAccessor = FieldAccessor | SubscriptAccessor;
+
+export interface FieldAccessor {
+  kind: "FieldAccessor";
+  span: Span;
+  name: string;
+}
+
+export interface SubscriptAccessor {
+  kind: "SubscriptAccessor";
+  span: Span;
+  index: Expression;
+}
 
 export interface ExpressionStatement {
   kind: "ExpressionStatement";
@@ -120,6 +148,7 @@ export interface QuantityType {
 export type Expression =
   | CallExpression
   | MemberExpression
+  | SubscriptExpression
   | Identifier
   | StringLiteral
   | NumberLiteral
@@ -138,6 +167,13 @@ export interface MemberExpression {
   span: Span;
   object: Expression;
   property: string;
+}
+
+export interface SubscriptExpression {
+  kind: "SubscriptExpression";
+  span: Span;
+  object: Expression;
+  index: Expression;
 }
 
 export interface Argument {

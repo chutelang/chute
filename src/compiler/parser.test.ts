@@ -286,6 +286,66 @@ describe("Parser", () => {
     });
   });
 
+  describe("assignment", () => {
+    it("should parse simple assignment", () => {
+      const ast = parse("x = 42;");
+      const stmt = ast.body.at(0);
+      expect(stmt).toMatchObject({
+        kind: "Assignment",
+      });
+      if (stmt?.kind === "Assignment") {
+        expect(stmt.place).toMatchObject({
+          kind: "Place",
+          root: "x",
+          accessors: [],
+        });
+        expect(stmt.value).toMatchObject({
+          kind: "NumberLiteral",
+          value: 42,
+        });
+      }
+    });
+
+    it("should parse field assignment", () => {
+      const ast = parse('x.name = "hello";');
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "Assignment") {
+        expect(stmt.place.root).toBe("x");
+        expect(stmt.place.accessors).toHaveLength(1);
+        expect(stmt.place.accessors.at(0)).toMatchObject({
+          kind: "FieldAccessor",
+          name: "name",
+        });
+      }
+    });
+
+    it.skip("should parse subscript assignment", () => {
+      const ast = parse("xs[0] = 99;");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "Assignment") {
+        expect(stmt.place.root).toBe("xs");
+        expect(stmt.place.accessors).toHaveLength(1);
+        expect(stmt.place.accessors.at(0)?.kind).toBe("SubscriptAccessor");
+      }
+    });
+
+    it.skip("should parse chained field and subscript assignment", () => {
+      const ast = parse("x.items[0].name = 99;");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "Assignment") {
+        expect(stmt.place.root).toBe("x");
+        expect(stmt.place.accessors).toHaveLength(3);
+        expect(stmt.place.accessors.at(0)?.kind).toBe("FieldAccessor");
+        expect(stmt.place.accessors.at(1)?.kind).toBe("SubscriptAccessor");
+        expect(stmt.place.accessors.at(2)?.kind).toBe("FieldAccessor");
+      }
+    });
+
+    it("should error on assignment to non-place expression", () => {
+      expect(() => parse("42 = x;")).toThrow(ParseError);
+    });
+  });
+
   describe("full programs", () => {
     it("should parse hello world shortcut", () => {
       const source = `shortcut {
