@@ -13,12 +13,14 @@ import type {
   MemberExpression,
   MetadataField,
   MetadataValue,
+  OptionalMemberExpression,
   Place,
   PlaceAccessor,
   Program,
   QuantityType,
   ShortcutMetadata,
   Statement,
+  SubscriptExpression,
   TypeAnnotation,
   VarDeclaration,
 } from "./ast.ts";
@@ -345,7 +347,18 @@ export class Parser {
   }
 
   private parseCoalesce(): Expression {
-    return this.parseAdditive();
+    let left = this.parseAdditive();
+    while (this.check(TokenKind.QuestionQuestion)) {
+      this.advance();
+      const right = this.parseAdditive();
+      left = {
+        kind: "CoalesceExpression",
+        span: { start: left.span.start, end: right.span.end },
+        left,
+        right,
+      };
+    }
+    return left;
   }
 
   private parseAdditive(): Expression {
@@ -409,12 +422,39 @@ export class Parser {
         expr = this.parseCallArguments(expr);
       } else if (this.check(TokenKind.Dot)) {
         expr = this.parseMemberAccess(expr);
+      } else if (this.check(TokenKind.QuestionDot)) {
+        expr = this.parseOptionalMemberAccess(expr);
+      } else if (this.check(TokenKind.LeftBracket)) {
+        expr = this.parseSubscript(expr);
       } else {
         break;
       }
     }
 
     return expr;
+  }
+
+  private parseOptionalMemberAccess(object: Expression): OptionalMemberExpression {
+    this.advance();
+    const prop = this.expect(TokenKind.Identifier);
+    return {
+      kind: "OptionalMemberExpression",
+      span: { start: object.span.start, end: prop.span.end },
+      object,
+      property: tokenValue(prop),
+    };
+  }
+
+  private parseSubscript(object: Expression): SubscriptExpression {
+    this.advance(); // consume [
+    const index = this.parseExpression();
+    const end = this.expect(TokenKind.RightBracket).span.end;
+    return {
+      kind: "SubscriptExpression",
+      span: { start: object.span.start, end },
+      object,
+      index,
+    };
   }
 
   private parseCallArguments(callee: Expression): CallExpression {

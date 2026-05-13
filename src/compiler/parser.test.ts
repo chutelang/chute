@@ -319,7 +319,7 @@ describe("Parser", () => {
       }
     });
 
-    it.skip("should parse subscript assignment", () => {
+    it("should parse subscript assignment", () => {
       const ast = parse("xs[0] = 99;");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "Assignment") {
@@ -329,7 +329,7 @@ describe("Parser", () => {
       }
     });
 
-    it.skip("should parse chained field and subscript assignment", () => {
+    it("should parse chained field and subscript assignment", () => {
       const ast = parse("x.items[0].name = 99;");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "Assignment") {
@@ -343,6 +343,25 @@ describe("Parser", () => {
 
     it("should error on assignment to non-place expression", () => {
       expect(() => parse("42 = x;")).toThrow(ParseError);
+    });
+  });
+
+  describe("full programs", () => {
+    it("should parse hello world shortcut", () => {
+      const source = `shortcut {
+  name: "Hello World",
+  description: "A shortcut created with Chute",
+}
+
+showAlert(text: "Hello from Chute!");`;
+
+      const ast = parse(source);
+      expect(ast.metadata?.fields).toHaveLength(2);
+      expect(ast.body).toHaveLength(1);
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind === "ExpressionStatement" ? stmt.expression.kind : undefined).toBe(
+        "CallExpression",
+      );
     });
   });
 
@@ -450,22 +469,77 @@ describe("Parser", () => {
     });
   });
 
-  describe("full programs", () => {
-    it("should parse hello world shortcut", () => {
-      const source = `shortcut {
-  name: "Hello World",
-  description: "A shortcut created with Chute",
-}
+  describe("nil coalescing", () => {
+    it("should parse nil coalescing", () => {
+      const ast = parse("let x = a ?? b;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "CoalesceExpression",
+        });
+        if (decl.initializer.kind === "CoalesceExpression") {
+          expect(decl.initializer.left).toMatchObject({
+            kind: "Identifier",
+            name: "a",
+          });
+          expect(decl.initializer.right).toMatchObject({
+            kind: "Identifier",
+            name: "b",
+          });
+        }
+      }
+    });
 
-showAlert(text: "Hello from Chute!");`;
+    it("should give ?? lower precedence than +", () => {
+      const ast = parse("let x = a + b ?? c;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer.kind).toBe("CoalesceExpression");
+        if (decl.initializer.kind === "CoalesceExpression") {
+          expect(decl.initializer.left.kind).toBe("BinaryExpression");
+        }
+      }
+    });
+  });
 
-      const ast = parse(source);
-      expect(ast.metadata?.fields).toHaveLength(2);
-      expect(ast.body).toHaveLength(1);
-      const stmt = ast.body.at(0);
-      expect(stmt?.kind === "ExpressionStatement" ? stmt.expression.kind : undefined).toBe(
-        "CallExpression",
-      );
+  describe("optional chaining", () => {
+    it("should parse optional member access", () => {
+      const ast = parse("let x = a?.name;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "OptionalMemberExpression",
+          property: "name",
+        });
+        if (decl.initializer.kind === "OptionalMemberExpression") {
+          expect(decl.initializer.object).toMatchObject({
+            kind: "Identifier",
+            name: "a",
+          });
+        }
+      }
+    });
+  });
+
+  describe("subscript expressions", () => {
+    it("should parse subscript access", () => {
+      const ast = parse("let x = xs[0];");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "SubscriptExpression",
+        });
+        if (decl.initializer.kind === "SubscriptExpression") {
+          expect(decl.initializer.object).toMatchObject({
+            kind: "Identifier",
+            name: "xs",
+          });
+          expect(decl.initializer.index).toMatchObject({
+            kind: "NumberLiteral",
+            value: 0,
+          });
+        }
+      }
     });
   });
 });
