@@ -346,6 +346,110 @@ describe("Parser", () => {
     });
   });
 
+  describe("arithmetic expressions", () => {
+    it("should parse addition", () => {
+      const ast = parse("let x = a + b;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "BinaryExpression",
+          operator: "+",
+        });
+      }
+    });
+
+    it("should parse multiplication with higher precedence than addition", () => {
+      const ast = parse("let x = a + b * c;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        const expr = decl.initializer;
+        expect(expr.kind).toBe("BinaryExpression");
+        if (expr.kind === "BinaryExpression") {
+          expect(expr.operator).toBe("+");
+          expect(expr.left).toMatchObject({ kind: "Identifier", name: "a" });
+          expect(expr.right).toMatchObject({
+            kind: "BinaryExpression",
+            operator: "*",
+          });
+        }
+      }
+    });
+
+    it("should parse left-associative addition", () => {
+      const ast = parse("let x = a + b + c;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        const expr = decl.initializer;
+        if (expr.kind === "BinaryExpression") {
+          expect(expr.operator).toBe("+");
+          expect(expr.left).toMatchObject({
+            kind: "BinaryExpression",
+            operator: "+",
+          });
+          expect(expr.right).toMatchObject({ kind: "Identifier", name: "c" });
+        }
+      }
+    });
+
+    it("should parse all arithmetic operators", () => {
+      for (const op of ["+", "-", "*", "/", "%"]) {
+        const ast = parse(`let x = a ${op} b;`);
+        const decl = ast.body.at(0);
+        if (decl?.kind === "LetDeclaration") {
+          expect(decl.initializer).toMatchObject({
+            kind: "BinaryExpression",
+            operator: op,
+          });
+        }
+      }
+    });
+
+    it("should parse unary negation", () => {
+      const ast = parse("let x = -a;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "UnaryExpression",
+          operator: "-",
+        });
+        if (decl.initializer.kind === "UnaryExpression") {
+          expect(decl.initializer.operand).toMatchObject({
+            kind: "Identifier",
+            name: "a",
+          });
+        }
+      }
+    });
+
+    it("should parse unary negation of parenthesized expression", () => {
+      const ast = parse("let x = -(a + b);");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer.kind).toBe("UnaryExpression");
+        if (decl.initializer.kind === "UnaryExpression") {
+          expect(decl.initializer.operand.kind).toBe("BinaryExpression");
+        }
+      }
+    });
+
+    it("should give unary higher precedence than multiplication", () => {
+      const ast = parse("let x = -a * b;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "BinaryExpression",
+          operator: "*",
+        });
+        if (decl.initializer.kind === "BinaryExpression") {
+          expect(decl.initializer.left).toMatchObject({
+            kind: "UnaryExpression",
+            operator: "-",
+          });
+        }
+      }
+    });
+  });
+
   describe("full programs", () => {
     it("should parse hello world shortcut", () => {
       const source = `shortcut {

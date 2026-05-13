@@ -4,6 +4,8 @@ import type {
   Argument,
   Assignment,
   BaseType,
+  BinaryExpression,
+  BinaryOperator,
   CallExpression,
   Expression,
   LetDeclaration,
@@ -339,6 +341,63 @@ export class Parser {
   }
 
   private parseExpression(): Expression {
+    return this.parseCoalesce();
+  }
+
+  private parseCoalesce(): Expression {
+    return this.parseAdditive();
+  }
+
+  private parseAdditive(): Expression {
+    let left = this.parseMultiplicative();
+    while (this.check(TokenKind.Plus) || this.check(TokenKind.Minus)) {
+      const op = this.advance();
+      const operator: BinaryOperator = op.kind === TokenKind.Plus ? "+" : "-";
+      const right = this.parseMultiplicative();
+      left = {
+        kind: "BinaryExpression",
+        span: { start: left.span.start, end: right.span.end },
+        operator,
+        left,
+        right,
+      } satisfies BinaryExpression;
+    }
+    return left;
+  }
+
+  private parseMultiplicative(): Expression {
+    let left = this.parseUnary();
+    while (
+      this.check(TokenKind.Star) ||
+      this.check(TokenKind.Slash) ||
+      this.check(TokenKind.Percent)
+    ) {
+      const op = this.advance();
+      const operator: BinaryOperator =
+        op.kind === TokenKind.Star ? "*" : op.kind === TokenKind.Slash ? "/" : "%";
+      const right = this.parseUnary();
+      left = {
+        kind: "BinaryExpression",
+        span: { start: left.span.start, end: right.span.end },
+        operator,
+        left,
+        right,
+      } satisfies BinaryExpression;
+    }
+    return left;
+  }
+
+  private parseUnary(): Expression {
+    if (this.check(TokenKind.Minus)) {
+      const op = this.advance();
+      const operand = this.parsePostfix();
+      return {
+        kind: "UnaryExpression",
+        span: { start: op.span.start, end: operand.span.end },
+        operator: "-",
+        operand,
+      };
+    }
     return this.parsePostfix();
   }
 
