@@ -597,4 +597,70 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
   });
+
+  describe("list literals", () => {
+    it("should parse empty list", () => {
+      const ast = parse("let x = [];");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "ListLiteral",
+          elements: [],
+        });
+      }
+    });
+
+    it("should parse list with elements", () => {
+      const ast = parse("let x = [1, 2, 3];");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "ListLiteral") {
+        expect(decl.initializer.elements).toHaveLength(3);
+      }
+    });
+
+    it("should parse list with trailing comma", () => {
+      const ast = parse("let x = [1, 2,];");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "ListLiteral") {
+        expect(decl.initializer.elements).toHaveLength(2);
+      }
+    });
+  });
+
+  describe("dictionary literals", () => {
+    it("should parse empty dictionary", () => {
+      const ast = parse("let x = {:};");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "DictionaryLiteral",
+          entries: [],
+        });
+      }
+    });
+
+    it("should parse dictionary with entries", () => {
+      const ast = parse('let x = {"name": "Alice", "age": 30};');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "DictionaryLiteral") {
+        expect(decl.initializer.entries).toHaveLength(2);
+        expect(decl.initializer.entries.at(0)?.key).toMatchObject({
+          kind: "StringLiteral",
+          value: "name",
+        });
+        expect(decl.initializer.entries.at(0)?.value).toMatchObject({
+          kind: "StringLiteral",
+          value: "Alice",
+        });
+      }
+    });
+
+    it("should parse dictionary with trailing comma", () => {
+      const ast = parse('let x = {"a": 1,};');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "DictionaryLiteral") {
+        expect(decl.initializer.entries).toHaveLength(1);
+      }
+    });
+  });
 });
