@@ -7,10 +7,13 @@ import type {
   BinaryExpression,
   BinaryOperator,
   CallExpression,
+  DictionaryEntry,
+  DictionaryLiteral,
   Expression,
   InterpolatedPart,
   InterpolatedString,
   LetDeclaration,
+  ListLiteral,
   ListType,
   MemberExpression,
   MetadataField,
@@ -536,6 +539,14 @@ export class Parser {
       return { kind: "StringLiteral", span: tok.span, value: tokenValue(tok) };
     }
 
+    if (tok.kind === TokenKind.LeftBracket) {
+      return this.parseListLiteral();
+    }
+
+    if (tok.kind === TokenKind.LeftBrace) {
+      return this.parseDictionaryLiteral();
+    }
+
     if (tok.kind === TokenKind.Number) {
       this.advance();
       return { kind: "NumberLiteral", span: tok.span, value: Number(tokenValue(tok)) };
@@ -611,6 +622,62 @@ export class Parser {
 
       throw this.error(`expected string continuation, got ${tokenKindName(next.kind)}`, next.span);
     }
+  }
+
+  private parseListLiteral(): ListLiteral {
+    const start = this.expect(TokenKind.LeftBracket).span.start;
+    const elements: Expression[] = [];
+
+    while (!this.check(TokenKind.RightBracket)) {
+      elements.push(this.parseExpression());
+      if (!this.check(TokenKind.RightBracket)) {
+        this.expect(TokenKind.Comma);
+      }
+    }
+
+    const end = this.expect(TokenKind.RightBracket).span.end;
+    return {
+      kind: "ListLiteral",
+      span: { start, end },
+      elements,
+    };
+  }
+
+  private parseDictionaryLiteral(): DictionaryLiteral {
+    const start = this.expect(TokenKind.LeftBrace).span.start;
+
+    if (this.check(TokenKind.Colon)) {
+      this.advance();
+      const end = this.expect(TokenKind.RightBrace).span.end;
+      return {
+        kind: "DictionaryLiteral",
+        span: { start, end },
+        entries: [],
+      };
+    }
+
+    const entries: DictionaryEntry[] = [];
+    while (!this.check(TokenKind.RightBrace)) {
+      const key = this.parseCoalesce();
+      this.expect(TokenKind.Colon);
+      const value = this.parseExpression();
+      entries.push({
+        kind: "DictionaryEntry",
+        span: { start: key.span.start, end: value.span.end },
+        key,
+        value,
+      });
+      if (!this.check(TokenKind.RightBrace)) {
+        this.expect(TokenKind.Comma);
+      }
+    }
+
+    const end = this.expect(TokenKind.RightBrace).span.end;
+    return {
+      kind: "DictionaryLiteral",
+      span: { start, end },
+      entries,
+    };
   }
 
   private peek(): Token {
