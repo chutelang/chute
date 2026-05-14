@@ -157,7 +157,10 @@ export type Expression =
   | StringLiteral
   | NumberLiteral
   | BooleanLiteral
-  | NilLiteral;
+  | NilLiteral
+  | InterpolatedString
+  | ListLiteral
+  | DictionaryLiteral;
 
 export interface CallExpression {
   kind: "CallExpression";
@@ -245,4 +248,43 @@ export interface BooleanLiteral {
 export interface NilLiteral {
   kind: "NilLiteral";
   span: Span;
+}
+
+export interface InterpolatedString {
+  kind: "InterpolatedString";
+  span: Span;
+  parts: InterpolatedPart[];
+}
+
+export type InterpolatedPart = TextPart | ExpressionPart;
+
+export interface TextPart {
+  kind: "TextPart";
+  span: Span;
+  value: string;
+}
+
+export interface ExpressionPart {
+  kind: "ExpressionPart";
+  span: Span;
+  expression: Expression;
+}
+
+export interface ListLiteral {
+  kind: "ListLiteral";
+  span: Span;
+  elements: Expression[];
+}
+
+export interface DictionaryLiteral {
+  kind: "DictionaryLiteral";
+  span: Span;
+  entries: DictionaryEntry[];
+}
+
+export interface DictionaryEntry {
+  kind: "DictionaryEntry";
+  span: Span;
+  key: Expression;
+  value: Expression;
 }
