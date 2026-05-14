@@ -542,4 +542,59 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
   });
+
+  describe("string interpolation", () => {
+    it("should parse interpolated string with one expression", () => {
+      const ast = parse('let x = "hello ${name}";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer.kind).toBe("InterpolatedString");
+        if (decl.initializer.kind === "InterpolatedString") {
+          expect(decl.initializer.parts).toHaveLength(2);
+          expect(decl.initializer.parts.at(0)).toMatchObject({
+            kind: "TextPart",
+            value: "hello ",
+          });
+          expect(decl.initializer.parts.at(1)).toMatchObject({
+            kind: "ExpressionPart",
+          });
+        }
+      }
+    });
+
+    it("should parse interpolated string with trailing text", () => {
+      const ast = parse('let x = "hello ${name} world";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "InterpolatedString") {
+        expect(decl.initializer.parts).toHaveLength(3);
+        expect(decl.initializer.parts.at(2)).toMatchObject({
+          kind: "TextPart",
+          value: " world",
+        });
+      }
+    });
+
+    it("should parse interpolated string with multiple expressions", () => {
+      const ast = parse('let x = "${a} and ${b}";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "InterpolatedString") {
+        expect(decl.initializer.parts).toHaveLength(4);
+        expect(decl.initializer.parts.at(0)?.kind).toBe("TextPart");
+        expect(decl.initializer.parts.at(1)?.kind).toBe("ExpressionPart");
+        expect(decl.initializer.parts.at(2)?.kind).toBe("TextPart");
+        expect(decl.initializer.parts.at(3)?.kind).toBe("ExpressionPart");
+      }
+    });
+
+    it("should parse complex expression inside interpolation", () => {
+      const ast = parse('let x = "result: ${a + b}";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "InterpolatedString") {
+        const exprPart = decl.initializer.parts.at(1);
+        if (exprPart?.kind === "ExpressionPart") {
+          expect(exprPart.expression.kind).toBe("BinaryExpression");
+        }
+      }
+    });
+  });
 });

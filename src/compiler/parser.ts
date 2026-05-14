@@ -8,6 +8,8 @@ import type {
   BinaryOperator,
   CallExpression,
   Expression,
+  InterpolatedPart,
+  InterpolatedString,
   LetDeclaration,
   ListType,
   MemberExpression,
@@ -525,6 +527,10 @@ export class Parser {
       return { kind: "Identifier", span: tok.span, name: tokenValue(tok) };
     }
 
+    if (tok.kind === TokenKind.StringStart) {
+      return this.parseInterpolatedString();
+    }
+
     if (tok.kind === TokenKind.String || tok.kind === TokenKind.RawString) {
       this.advance();
       return { kind: "StringLiteral", span: tok.span, value: tokenValue(tok) };
@@ -553,6 +559,58 @@ export class Parser {
     }
 
     throw this.error(`expected expression, got ${tokenKindName(tok.kind)}`, tok.span);
+  }
+
+  private parseInterpolatedString(): InterpolatedString {
+    const startTok = this.expect(TokenKind.StringStart);
+    const parts: InterpolatedPart[] = [];
+    const start = startTok.span.start;
+
+    parts.push({
+      kind: "TextPart",
+      span: startTok.span,
+      value: tokenValue(startTok),
+    });
+
+    for (;;) {
+      const expr = this.parseExpression();
+      parts.push({
+        kind: "ExpressionPart",
+        span: expr.span,
+        expression: expr,
+      });
+
+      const next = this.peek();
+      if (next.kind === TokenKind.StringEnd) {
+        this.advance();
+        if (tokenValue(next).length > 0) {
+          parts.push({
+            kind: "TextPart",
+            span: next.span,
+            value: tokenValue(next),
+          });
+        }
+        return {
+          kind: "InterpolatedString",
+          span: { start, end: next.span.end },
+          parts,
+        };
+      }
+
+      if (next.kind === TokenKind.StringMiddle) {
+        this.advance();
+        if (tokenValue(next).length > 0) {
+          parts.push({
+            kind: "TextPart",
+            span: next.span,
+            value: tokenValue(next),
+          });
+        }
+        continue;
+      }
+
+      throw this.error(`expected string continuation, got ${tokenKindName(next.kind)}`, next.span);
+    }
   }
 
   private peek(): Token {
