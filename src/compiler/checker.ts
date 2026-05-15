@@ -19,3 +19,8 @@ export class CheckError extends Error {
     super(message);
   }
 }
+
+interface Binding {
+  type: ChuteType;
+  mutable: boolean;
+}
