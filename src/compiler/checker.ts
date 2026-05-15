@@ -20,6 +20,15 @@ export class CheckError extends Error {
   }
 }
 
+export class Scope {
+  private bindings = new Map<string, Binding>();
+  private parent: Scope | undefined;
+
+  constructor(parent: Scope | undefined) {
+    this.parent = parent;
+  }
+}
+
 interface Binding {
   type: ChuteType;
   mutable: boolean;
