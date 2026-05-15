@@ -45,6 +45,31 @@ export class Scope {
   }
 }
 
+function describeType(type: ChuteType): string {
+  switch (type.kind) {
+    case "text":
+      return "Text";
+    case "number":
+      return "Number";
+    case "boolean":
+      return "Boolean";
+    case "nil":
+      return "nil";
+    case "optional":
+      return `${describeType(type.inner)}?`;
+    case "list":
+      return `List<${describeType(type.element)}>`;
+    case "dictionary":
+      return "Dictionary";
+    case "quantity":
+      return `Quantity<${type.unit}>`;
+    case "any":
+      return "any";
+    default:
+      return assertNever(type);
+  }
+}
+
 function assertNever(value: never): never {
   throw new Error(`unhandled case: ${JSON.stringify(value)}`);
 }
