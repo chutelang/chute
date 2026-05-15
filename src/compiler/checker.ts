@@ -31,6 +31,10 @@ export class Scope {
   hasOwn(name: string): boolean {
     return this.bindings.has(name);
   }
+
+  define(name: string, type: ChuteType, mutable: boolean): void {
+    this.bindings.set(name, { type, mutable });
+  }
 }
 
 interface Binding {
