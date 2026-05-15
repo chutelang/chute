@@ -27,6 +27,10 @@ export class Scope {
   constructor(parent: Scope | undefined) {
     this.parent = parent;
   }
+
+  hasOwn(name: string): boolean {
+    return this.bindings.has(name);
+  }
 }
 
 interface Binding {
