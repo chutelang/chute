@@ -35,6 +35,14 @@ export class Scope {
   define(name: string, type: ChuteType, mutable: boolean): void {
     this.bindings.set(name, { type, mutable });
   }
+
+  lookup(name: string): Binding | undefined {
+    const own = this.bindings.get(name);
+    if (own) {
+      return own;
+    }
+    return this.parent?.lookup(name);
+  }
 }
 
 interface Binding {
