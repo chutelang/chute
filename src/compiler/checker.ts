@@ -45,6 +45,10 @@ export class Scope {
   }
 }
 
+function assertNever(value: never): never {
+  throw new Error(`unhandled case: ${JSON.stringify(value)}`);
+}
+
 interface Binding {
   type: ChuteType;
   mutable: boolean;
