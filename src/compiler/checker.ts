@@ -1,5 +1,5 @@
 import type { Span } from "./token.ts";
-import type { Program } from "./ast.ts";
+import type { Program, Statement } from "./ast.ts";
 
 export type ChuteType =
   | { kind: "text" }
@@ -49,8 +49,19 @@ export class Scope {
 export function check(program: Program): void {
   const scope = new Scope(undefined);
   for (const stmt of program.body) {
-    void stmt;
-    void scope;
+    checkStatement(stmt, scope);
+  }
+}
+
+function checkStatement(stmt: Statement, scope: Scope): void {
+  switch (stmt.kind) {
+    case "ExpressionStatement":
+    case "LetDeclaration":
+    case "VarDeclaration":
+    case "Assignment":
+      return;
+    default:
+      assertNever(stmt);
   }
 }
 
