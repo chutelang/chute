@@ -1,5 +1,5 @@
 import type { Span } from "./token.ts";
-import type { Program, Statement } from "./ast.ts";
+import type { Expression, Program, Statement } from "./ast.ts";
 
 export type ChuteType =
   | { kind: "text" }
@@ -62,6 +62,29 @@ function checkStatement(stmt: Statement, scope: Scope): void {
       return;
     default:
       assertNever(stmt);
+  }
+}
+
+function inferType(expr: Expression, scope: Scope): ChuteType {
+  switch (expr.kind) {
+    case "StringLiteral":
+    case "NumberLiteral":
+    case "BooleanLiteral":
+    case "NilLiteral":
+    case "Identifier":
+    case "BinaryExpression":
+    case "UnaryExpression":
+    case "CoalesceExpression":
+    case "MemberExpression":
+    case "OptionalMemberExpression":
+    case "SubscriptExpression":
+    case "InterpolatedString":
+    case "ListLiteral":
+    case "DictionaryLiteral":
+    case "CallExpression":
+      return { kind: "any" };
+    default:
+      return assertNever(expr);
   }
 }
 
