@@ -68,6 +68,7 @@ function checkStatement(stmt: Statement, scope: Scope): void {
 function inferType(expr: Expression, scope: Scope): ChuteType {
   switch (expr.kind) {
     case "StringLiteral":
+      return { kind: "text" };
     case "NumberLiteral":
     case "BooleanLiteral":
     case "NilLiteral":
