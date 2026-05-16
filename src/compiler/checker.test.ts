@@ -12,4 +12,10 @@ function checkSource(source: string): void {
   check(parse(source));
 }
 
-describe("checker", () => {});
+describe("checker", () => {
+  describe("let declarations", () => {
+    it("should accept let without type annotation", () => {
+      expect(() => checkSource("let x = 42;")).not.toThrow();
+    });
+  });
+});
