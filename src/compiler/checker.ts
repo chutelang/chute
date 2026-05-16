@@ -72,6 +72,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "NumberLiteral":
       return { kind: "number" };
     case "BooleanLiteral":
+      return { kind: "boolean" };
     case "NilLiteral":
     case "Identifier":
     case "BinaryExpression":
