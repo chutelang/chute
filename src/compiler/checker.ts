@@ -1,4 +1,5 @@
 import type { Span } from "./token.ts";
+import type { Program } from "./ast.ts";
 
 export type ChuteType =
   | { kind: "text" }
@@ -42,6 +43,14 @@ export class Scope {
       return own;
     }
     return this.parent?.lookup(name);
+  }
+}
+
+export function check(program: Program): void {
+  const scope = new Scope(undefined);
+  for (const stmt of program.body) {
+    void stmt;
+    void scope;
   }
 }
 
