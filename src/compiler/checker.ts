@@ -1,5 +1,12 @@
 import type { Span } from "./token.ts";
-import type { Expression, Identifier, LetDeclaration, Program, Statement } from "./ast.ts";
+import type {
+  Expression,
+  Identifier,
+  LetDeclaration,
+  NamedType,
+  Program,
+  Statement,
+} from "./ast.ts";
 
 export type ChuteType =
   | { kind: "text" }
@@ -107,6 +114,21 @@ function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
     throw new CheckError(`undefined variable '${expr.name}'`, expr.span);
   }
   return binding.type;
+}
+
+function namedTypeFromAnnotation(named: NamedType): ChuteType {
+  switch (named.name) {
+    case "Text":
+      return { kind: "text" };
+    case "Number":
+      return { kind: "number" };
+    case "Boolean":
+      return { kind: "boolean" };
+    case "Dictionary":
+      return { kind: "dictionary" };
+    default:
+      return { kind: "any" };
+  }
 }
 
 function describeType(type: ChuteType): string {
