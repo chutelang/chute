@@ -1,5 +1,5 @@
 import type { Span } from "./token.ts";
-import type { Expression, Identifier, Program, Statement } from "./ast.ts";
+import type { Expression, Identifier, LetDeclaration, Program, Statement } from "./ast.ts";
 
 export type ChuteType =
   | { kind: "text" }
@@ -56,13 +56,21 @@ export function check(program: Program): void {
 function checkStatement(stmt: Statement, scope: Scope): void {
   switch (stmt.kind) {
     case "ExpressionStatement":
+      return;
     case "LetDeclaration":
+      checkLetDeclaration(stmt, scope);
+      return;
     case "VarDeclaration":
     case "Assignment":
       return;
     default:
       assertNever(stmt);
   }
+}
+
+function checkLetDeclaration(decl: LetDeclaration, scope: Scope): void {
+  const initializerType = inferType(decl.initializer, scope);
+  scope.define(decl.name, initializerType, false);
 }
 
 function inferType(expr: Expression, scope: Scope): ChuteType {
