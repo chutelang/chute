@@ -1,5 +1,5 @@
 import type { Span } from "./token.ts";
-import type { Expression, Program, Statement } from "./ast.ts";
+import type { Expression, Identifier, Program, Statement } from "./ast.ts";
 
 export type ChuteType =
   | { kind: "text" }
@@ -76,6 +76,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "NilLiteral":
       return { kind: "nil" };
     case "Identifier":
+      return inferIdentifier(expr, scope);
     case "BinaryExpression":
     case "UnaryExpression":
     case "CoalesceExpression":
@@ -90,6 +91,14 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     default:
       return assertNever(expr);
   }
+}
+
+function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
+  const binding = scope.lookup(expr.name);
+  if (!binding) {
+    throw new CheckError(`undefined variable '${expr.name}'`, expr.span);
+  }
+  return binding.type;
 }
 
 function describeType(type: ChuteType): string {
