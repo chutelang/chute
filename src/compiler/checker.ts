@@ -1,11 +1,13 @@
 import type { Span } from "./token.ts";
 import type {
+  BaseType,
   Expression,
   Identifier,
   LetDeclaration,
   NamedType,
   Program,
   Statement,
+  TypeAnnotation,
 } from "./ast.ts";
 
 export type ChuteType =
@@ -114,6 +116,35 @@ function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
     throw new CheckError(`undefined variable '${expr.name}'`, expr.span);
   }
   return binding.type;
+}
+
+function typeFromAnnotation(annotation: TypeAnnotation): ChuteType {
+  const base = baseTypeFromAnnotation(annotation.base);
+  return annotation.optional
+    ? {
+        kind: "optional",
+        inner: base,
+      }
+    : base;
+}
+
+function baseTypeFromAnnotation(base: BaseType): ChuteType {
+  switch (base.kind) {
+    case "NamedType":
+      return namedTypeFromAnnotation(base);
+    case "ListType":
+      return {
+        kind: "list",
+        element: typeFromAnnotation(base.elementType),
+      };
+    case "QuantityType":
+      return {
+        kind: "quantity",
+        unit: base.unit,
+      };
+    default:
+      return assertNever(base);
+  }
 }
 
 function namedTypeFromAnnotation(named: NamedType): ChuteType {
