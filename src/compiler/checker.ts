@@ -162,6 +162,18 @@ function namedTypeFromAnnotation(named: NamedType): ChuteType {
   }
 }
 
+function isAssignable(source: ChuteType, target: ChuteType): boolean {
+  if (source.kind === "any" || target.kind === "any") {
+    return true;
+  }
+
+  if (source.kind !== target.kind) {
+    return false;
+  }
+
+  return true;
+}
+
 function describeType(type: ChuteType): string {
   switch (type.kind) {
     case "text":
