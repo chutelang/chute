@@ -81,6 +81,10 @@ function checkStatement(stmt: Statement, scope: Scope): void {
 }
 
 function checkLetDeclaration(decl: LetDeclaration, scope: Scope): void {
+  if (scope.hasOwn(decl.name)) {
+    throw new CheckError(`variable '${decl.name}' is already declared in this scope`, decl.span);
+  }
+
   const bindingType = checkDeclarationInitializer(decl, scope);
   scope.define(decl.name, bindingType, false);
 }
