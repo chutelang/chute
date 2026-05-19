@@ -25,5 +25,14 @@ describe("checker", () => {
     it("should reject let with mismatched type annotation", () => {
       expect(() => checkSource('let x: Number = "hello";')).toThrow(CheckError);
     });
+
+    it("should reject assignment to let binding", () => {
+      expect(() =>
+        checkSource(`
+          let x = 1;
+          x = 2;
+        `),
+      ).toThrow(CheckError);
+    });
   });
 });
