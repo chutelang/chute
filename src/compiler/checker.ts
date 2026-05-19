@@ -9,6 +9,7 @@ import type {
   Program,
   Statement,
   TypeAnnotation,
+  VarDeclaration,
 } from "./ast.ts";
 
 export type ChuteType =
@@ -71,6 +72,7 @@ function checkStatement(stmt: Statement, scope: Scope): void {
       checkLetDeclaration(stmt, scope);
       return;
     case "VarDeclaration":
+      checkVarDeclaration(stmt, scope);
       return;
     case "Assignment":
       checkAssignment(stmt, scope);
@@ -89,7 +91,19 @@ function checkLetDeclaration(decl: LetDeclaration, scope: Scope): void {
   scope.define(decl.name, bindingType, false);
 }
 
-function checkDeclarationInitializer(decl: LetDeclaration, scope: Scope): ChuteType {
+function checkVarDeclaration(decl: VarDeclaration, scope: Scope): void {
+  if (scope.hasOwn(decl.name)) {
+    throw new CheckError(`variable '${decl.name}' is already declared in this scope`, decl.span);
+  }
+
+  const bindingType = checkDeclarationInitializer(decl, scope);
+  scope.define(decl.name, bindingType, true);
+}
+
+function checkDeclarationInitializer(
+  decl: LetDeclaration | VarDeclaration,
+  scope: Scope,
+): ChuteType {
   const initializerType = inferType(decl.initializer, scope);
 
   if (!decl.typeAnnotation) {
