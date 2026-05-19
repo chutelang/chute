@@ -34,5 +34,14 @@ describe("checker", () => {
         `),
       ).toThrow(CheckError);
     });
+
+    it("should reject duplicate variable in same scope", () => {
+      expect(() =>
+        checkSource(`
+          let x = 1;
+          let x = 2;
+        `),
+      ).toThrow(CheckError);
+    });
   });
 });
