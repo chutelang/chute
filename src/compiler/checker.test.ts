@@ -44,4 +44,10 @@ describe("checker", () => {
       ).toThrow(CheckError);
     });
   });
+
+  describe("var declarations", () => {
+    it("should accept var declaration", () => {
+      expect(() => checkSource("var x = 42;")).not.toThrow();
+    });
+  });
 });
