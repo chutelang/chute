@@ -21,5 +21,9 @@ describe("checker", () => {
     it("should accept let without type annotation", () => {
       expect(() => checkSource("let x = 42;")).not.toThrow();
     });
+
+    it("should reject let with mismatched type annotation", () => {
+      expect(() => checkSource('let x: Number = "hello";')).toThrow(CheckError);
+    });
   });
 });
