@@ -14,6 +14,10 @@ function checkSource(source: string): void {
 
 describe("checker", () => {
   describe("let declarations", () => {
+    it("should accept let with matching type annotation", () => {
+      expect(() => checkSource('let x: Text = "hello";')).not.toThrow();
+    });
+
     it("should accept let without type annotation", () => {
       expect(() => checkSource("let x = 42;")).not.toThrow();
     });
