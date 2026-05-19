@@ -1,5 +1,6 @@
 import type { Span } from "./token.ts";
 import type {
+  Assignment,
   BaseType,
   Expression,
   Identifier,
@@ -70,7 +71,9 @@ function checkStatement(stmt: Statement, scope: Scope): void {
       checkLetDeclaration(stmt, scope);
       return;
     case "VarDeclaration":
+      return;
     case "Assignment":
+      checkAssignment(stmt, scope);
       return;
     default:
       assertNever(stmt);
@@ -98,6 +101,20 @@ function checkDeclarationInitializer(decl: LetDeclaration, scope: Scope): ChuteT
   }
 
   return annotationType;
+}
+
+function checkAssignment(assign: Assignment, scope: Scope): void {
+  const binding = scope.lookup(assign.place.root);
+  if (!binding) {
+    throw new CheckError(`undefined variable '${assign.place.root}'`, assign.place.span);
+  }
+
+  if (!binding.mutable) {
+    throw new CheckError(
+      `cannot assign to '${assign.place.root}' because it is a let binding`,
+      assign.span,
+    );
+  }
 }
 
 function inferType(expr: Expression, scope: Scope): ChuteType {
