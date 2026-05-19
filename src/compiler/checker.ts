@@ -78,8 +78,26 @@ function checkStatement(stmt: Statement, scope: Scope): void {
 }
 
 function checkLetDeclaration(decl: LetDeclaration, scope: Scope): void {
+  const bindingType = checkDeclarationInitializer(decl, scope);
+  scope.define(decl.name, bindingType, false);
+}
+
+function checkDeclarationInitializer(decl: LetDeclaration, scope: Scope): ChuteType {
   const initializerType = inferType(decl.initializer, scope);
-  scope.define(decl.name, initializerType, false);
+
+  if (!decl.typeAnnotation) {
+    return initializerType;
+  }
+
+  const annotationType = typeFromAnnotation(decl.typeAnnotation);
+  if (!isAssignable(initializerType, annotationType)) {
+    throw new CheckError(
+      `cannot assign ${describeType(initializerType)} to ${describeType(annotationType)}`,
+      decl.span,
+    );
+  }
+
+  return annotationType;
 }
 
 function inferType(expr: Expression, scope: Scope): ChuteType {
