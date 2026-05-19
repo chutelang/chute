@@ -49,5 +49,14 @@ describe("checker", () => {
     it("should accept var declaration", () => {
       expect(() => checkSource("var x = 42;")).not.toThrow();
     });
+
+    it("should accept assignment to var binding", () => {
+      expect(() =>
+        checkSource(`
+          var x = 1;
+          x = 2;
+        `),
+      ).not.toThrow();
+    });
   });
 });
