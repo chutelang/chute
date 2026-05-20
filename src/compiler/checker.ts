@@ -133,6 +133,21 @@ function checkAssignment(assign: Assignment, scope: Scope): void {
       assign.span,
     );
   }
+
+  const valueType = inferType(assign.value, scope);
+
+  for (const accessor of assign.place.accessors) {
+    if (accessor.kind === "SubscriptAccessor") {
+      inferType(accessor.index, scope);
+    }
+  }
+
+  if (assign.place.accessors.length === 0 && !isAssignable(valueType, binding.type)) {
+    throw new CheckError(
+      `cannot assign ${describeType(valueType)} to variable of type ${describeType(binding.type)}`,
+      assign.span,
+    );
+  }
 }
 
 function inferType(expr: Expression, scope: Scope): ChuteType {
