@@ -186,6 +186,12 @@ function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
   return binding.type;
 }
 
+function requireNumber(type: ChuteType, span: Span): void {
+  if (type.kind !== "number" && type.kind !== "any") {
+    throw new CheckError(`expected Number, got ${describeType(type)}`, span);
+  }
+}
+
 function typeFromAnnotation(annotation: TypeAnnotation): ChuteType {
   const base = baseTypeFromAnnotation(annotation.base);
   return annotation.optional
