@@ -94,5 +94,14 @@ describe("checker", () => {
         `),
       ).toThrow(CheckError);
     });
+
+    it("should accept unary negation on numbers", () => {
+      expect(() =>
+        checkSource(`
+          let a = 1;
+          let b = -a;
+        `),
+      ).not.toThrow();
+    });
   });
 });
