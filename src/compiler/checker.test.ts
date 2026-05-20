@@ -85,5 +85,14 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should reject arithmetic on strings", () => {
+      expect(() =>
+        checkSource(`
+          let a = "x";
+          let b = a + 1;
+        `),
+      ).toThrow(CheckError);
+    });
   });
 });
