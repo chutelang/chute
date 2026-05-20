@@ -74,4 +74,16 @@ describe("checker", () => {
       expect(() => checkSource("x = 1;")).toThrow(CheckError);
     });
   });
+
+  describe("arithmetic", () => {
+    it("should accept arithmetic on numbers", () => {
+      expect(() =>
+        checkSource(`
+          let a = 1;
+          let b = 2;
+          let c = a + b;
+        `),
+      ).not.toThrow();
+    });
+  });
 });
