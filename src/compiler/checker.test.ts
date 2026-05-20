@@ -68,4 +68,10 @@ describe("checker", () => {
       ).toThrow(CheckError);
     });
   });
+
+  describe("assignment", () => {
+    it("should reject assignment to undefined variable", () => {
+      expect(() => checkSource("x = 1;")).toThrow(CheckError);
+    });
+  });
 });
