@@ -58,5 +58,14 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should reject assignment with incompatible type", () => {
+      expect(() =>
+        checkSource(`
+          var x = 1;
+          x = "hello";
+        `),
+      ).toThrow(CheckError);
+    });
   });
 });
