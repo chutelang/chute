@@ -103,5 +103,14 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should reject unary negation on strings", () => {
+      expect(() =>
+        checkSource(`
+          let a = "x";
+          let b = -a;
+        `),
+      ).toThrow(CheckError);
+    });
   });
 });
