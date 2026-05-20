@@ -10,6 +10,7 @@ import type {
   Program,
   Statement,
   TypeAnnotation,
+  UnaryExpression,
   VarDeclaration,
 } from "./ast.ts";
 
@@ -166,6 +167,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "BinaryExpression":
       return inferBinaryExpression(expr, scope);
     case "UnaryExpression":
+      return inferUnaryExpression(expr, scope);
     case "CoalesceExpression":
     case "MemberExpression":
     case "OptionalMemberExpression":
@@ -195,6 +197,12 @@ function inferBinaryExpression(expr: BinaryExpression, scope: Scope): ChuteType 
   requireNumber(leftType, expr.left.span);
   requireNumber(rightType, expr.right.span);
 
+  return { kind: "number" };
+}
+
+function inferUnaryExpression(expr: UnaryExpression, scope: Scope): ChuteType {
+  const operandType = inferType(expr.operand, scope);
+  requireNumber(operandType, expr.operand.span);
   return { kind: "number" };
 }
 
