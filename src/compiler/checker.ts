@@ -2,6 +2,7 @@ import type { Span } from "./token.ts";
 import type {
   Assignment,
   BaseType,
+  BinaryExpression,
   Expression,
   Identifier,
   LetDeclaration,
@@ -163,6 +164,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "Identifier":
       return inferIdentifier(expr, scope);
     case "BinaryExpression":
+      return inferBinaryExpression(expr, scope);
     case "UnaryExpression":
     case "CoalesceExpression":
     case "MemberExpression":
@@ -184,6 +186,16 @@ function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
     throw new CheckError(`undefined variable '${expr.name}'`, expr.span);
   }
   return binding.type;
+}
+
+function inferBinaryExpression(expr: BinaryExpression, scope: Scope): ChuteType {
+  const leftType = inferType(expr.left, scope);
+  const rightType = inferType(expr.right, scope);
+
+  requireNumber(leftType, expr.left.span);
+  requireNumber(rightType, expr.right.span);
+
+  return { kind: "number" };
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
