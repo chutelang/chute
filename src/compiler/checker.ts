@@ -284,6 +284,10 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
     return isAssignable(source.element, target.element);
   }
 
+  if (source.kind === "quantity" && target.kind === "quantity") {
+    return source.unit === target.unit;
+  }
+
   return true;
 }
 
