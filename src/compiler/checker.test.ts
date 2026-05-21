@@ -142,6 +142,15 @@ describe("checker", () => {
         `),
       ).toThrow(CheckError);
     });
+
+    it("should reject ?? with incompatible right operand type", () => {
+      expect(() =>
+        checkSource(`
+          let a: Number? = nil;
+          let b = a ?? "hello";
+        `),
+      ).toThrow(CheckError);
+    });
   });
 
   describe("optional types", () => {
