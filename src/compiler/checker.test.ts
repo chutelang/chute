@@ -114,6 +114,17 @@ describe("checker", () => {
     });
   });
 
+  describe("nil coalescing", () => {
+    it("should accept ?? with optional left operand", () => {
+      expect(() =>
+        checkSource(`
+          let a: Number? = nil;
+          let b = a ?? 0;
+        `),
+      ).not.toThrow();
+    });
+  });
+
   describe("optional types", () => {
     it("should accept nil assigned to optional", () => {
       expect(() => checkSource("let x: Number? = nil;")).not.toThrow();
