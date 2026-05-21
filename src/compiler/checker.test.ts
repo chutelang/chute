@@ -113,4 +113,10 @@ describe("checker", () => {
       ).toThrow(CheckError);
     });
   });
+
+  describe("optional types", () => {
+    it("should accept nil assigned to optional", () => {
+      expect(() => checkSource("let x: Number? = nil;")).not.toThrow();
+    });
+  });
 });
