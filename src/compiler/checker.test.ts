@@ -133,6 +133,15 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should reject ?? with non-optional left operand", () => {
+      expect(() =>
+        checkSource(`
+          let a = 1;
+          let b = a ?? 0;
+        `),
+      ).toThrow(CheckError);
+    });
   });
 
   describe("optional types", () => {
