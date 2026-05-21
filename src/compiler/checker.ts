@@ -280,6 +280,10 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
     return false;
   }
 
+  if (source.kind === "list" && target.kind === "list") {
+    return isAssignable(source.element, target.element);
+  }
+
   return true;
 }
 
