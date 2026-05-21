@@ -118,5 +118,9 @@ describe("checker", () => {
     it("should accept nil assigned to optional", () => {
       expect(() => checkSource("let x: Number? = nil;")).not.toThrow();
     });
+
+    it("should reject nil assigned to non-optional", () => {
+      expect(() => checkSource("let x: Number = nil;")).toThrow(CheckError);
+    });
   });
 });
