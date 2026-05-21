@@ -3,6 +3,7 @@ import type {
   Assignment,
   BaseType,
   BinaryExpression,
+  CoalesceExpression,
   Expression,
   Identifier,
   LetDeclaration,
@@ -169,6 +170,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "UnaryExpression":
       return inferUnaryExpression(expr, scope);
     case "CoalesceExpression":
+      return inferCoalesceExpression(expr, scope);
     case "MemberExpression":
     case "OptionalMemberExpression":
     case "SubscriptExpression":
@@ -204,6 +206,31 @@ function inferUnaryExpression(expr: UnaryExpression, scope: Scope): ChuteType {
   const operandType = inferType(expr.operand, scope);
   requireNumber(operandType, expr.operand.span);
   return { kind: "number" };
+}
+
+function inferCoalesceExpression(expr: CoalesceExpression, scope: Scope): ChuteType {
+  const leftType = inferType(expr.left, scope);
+  const rightType = inferType(expr.right, scope);
+
+  if (leftType.kind === "any") {
+    return rightType;
+  }
+
+  if (leftType.kind !== "optional") {
+    throw new CheckError(
+      `'??' requires an optional left operand, got ${describeType(leftType)}`,
+      expr.left.span,
+    );
+  }
+
+  if (!isAssignable(rightType, leftType.inner)) {
+    throw new CheckError(
+      `right operand of ?? must be assignable to ${describeType(leftType.inner)}`,
+      expr.right.span,
+    );
+  }
+
+  return leftType.inner;
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
