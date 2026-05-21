@@ -123,6 +123,16 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should produce non-optional result from ??", () => {
+      expect(() =>
+        checkSource(`
+          let a: Number? = nil;
+          let b = a ?? 0;
+          let c = b + 1;
+        `),
+      ).not.toThrow();
+    });
   });
 
   describe("optional types", () => {
