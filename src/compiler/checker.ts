@@ -265,6 +265,13 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
     return true;
   }
 
+  if (target.kind === "optional") {
+    if (source.kind === "optional") {
+      return isAssignable(source.inner, target.inner);
+    }
+    return isAssignable(source, target.inner);
+  }
+
   if (source.kind !== target.kind) {
     return false;
   }
