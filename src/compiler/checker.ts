@@ -9,6 +9,7 @@ import type {
   Identifier,
   InterpolatedString,
   LetDeclaration,
+  ListLiteral,
   NamedType,
   OptionalMemberExpression,
   Program,
@@ -185,6 +186,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "InterpolatedString":
       return inferInterpolatedString(expr, scope);
     case "ListLiteral":
+      return inferListLiteral(expr, scope);
     case "DictionaryLiteral":
       return inferDictionaryLiteral(expr, scope);
     case "CallExpression":
@@ -283,6 +285,35 @@ function inferInterpolatedString(expr: InterpolatedString, scope: Scope): ChuteT
     }
   }
   return { kind: "text" };
+}
+
+function inferListLiteral(expr: ListLiteral, scope: Scope): ChuteType {
+  const first = expr.elements.at(0);
+  if (!first) {
+    return {
+      kind: "list",
+      element: {
+        kind: "any",
+      },
+    };
+  }
+
+  const elementType = inferType(first, scope);
+
+  for (const element of expr.elements.slice(1)) {
+    const type = inferType(element, scope);
+    if (!isAssignable(type, elementType)) {
+      throw new CheckError(
+        `list elements must have a consistent type: expected ${describeType(elementType)}, got ${describeType(type)}`,
+        element.span,
+      );
+    }
+  }
+
+  return {
+    kind: "list",
+    element: elementType,
+  };
 }
 
 function inferDictionaryLiteral(expr: DictionaryLiteral, scope: Scope): ChuteType {
