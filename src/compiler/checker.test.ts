@@ -153,6 +153,17 @@ describe("checker", () => {
     });
   });
 
+  describe("optional chaining", () => {
+    it("should reject ?. on non-optional", () => {
+      expect(() =>
+        checkSource(`
+          let d = {"name": "Alice"};
+          let n = d?.name;
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
   describe("optional types", () => {
     it("should accept nil assigned to optional", () => {
       expect(() => checkSource("let x: Number? = nil;")).not.toThrow();
