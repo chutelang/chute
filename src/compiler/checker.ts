@@ -4,6 +4,7 @@ import type {
   BaseType,
   BinaryExpression,
   CoalesceExpression,
+  DictionaryLiteral,
   Expression,
   Identifier,
   LetDeclaration,
@@ -183,6 +184,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "InterpolatedString":
     case "ListLiteral":
     case "DictionaryLiteral":
+      return inferDictionaryLiteral(expr, scope);
     case "CallExpression":
       return { kind: "any" };
     default:
@@ -270,6 +272,14 @@ function inferSubscriptExpression(expr: SubscriptExpression, scope: Scope): Chut
   }
 
   throw new CheckError(`cannot subscript ${describeType(objectType)}`, expr.object.span);
+}
+
+function inferDictionaryLiteral(expr: DictionaryLiteral, scope: Scope): ChuteType {
+  for (const entry of expr.entries) {
+    inferType(entry.key, scope);
+    inferType(entry.value, scope);
+  }
+  return { kind: "dictionary" };
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
