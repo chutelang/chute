@@ -194,4 +194,10 @@ describe("checker", () => {
       expect(() => checkSource("let xs = [];")).not.toThrow();
     });
   });
+
+  describe("dictionary literals", () => {
+    it("should accept dictionary literal", () => {
+      expect(() => checkSource('let d = {"name": "Alice", "age": 30};')).not.toThrow();
+    });
+  });
 });
