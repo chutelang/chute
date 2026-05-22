@@ -11,6 +11,7 @@ import type {
   OptionalMemberExpression,
   Program,
   Statement,
+  SubscriptExpression,
   TypeAnnotation,
   UnaryExpression,
   VarDeclaration,
@@ -178,6 +179,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "OptionalMemberExpression":
       return inferOptionalMemberExpression(expr, scope);
     case "SubscriptExpression":
+      return inferSubscriptExpression(expr, scope);
     case "InterpolatedString":
     case "ListLiteral":
     case "DictionaryLiteral":
@@ -253,6 +255,21 @@ function inferOptionalMemberExpression(expr: OptionalMemberExpression, scope: Sc
       kind: "any",
     },
   };
+}
+
+function inferSubscriptExpression(expr: SubscriptExpression, scope: Scope): ChuteType {
+  const objectType = inferType(expr.object, scope);
+  inferType(expr.index, scope);
+
+  if (objectType.kind === "list") {
+    return objectType.element;
+  }
+
+  if (objectType.kind === "dictionary" || objectType.kind === "any") {
+    return { kind: "any" };
+  }
+
+  throw new CheckError(`cannot subscript ${describeType(objectType)}`, expr.object.span);
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
