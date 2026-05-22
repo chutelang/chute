@@ -8,6 +8,7 @@ import type {
   Identifier,
   LetDeclaration,
   NamedType,
+  OptionalMemberExpression,
   Program,
   Statement,
   TypeAnnotation,
@@ -172,7 +173,10 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "CoalesceExpression":
       return inferCoalesceExpression(expr, scope);
     case "MemberExpression":
+      inferType(expr.object, scope);
+      return { kind: "any" };
     case "OptionalMemberExpression":
+      return inferOptionalMemberExpression(expr, scope);
     case "SubscriptExpression":
     case "InterpolatedString":
     case "ListLiteral":
@@ -231,6 +235,24 @@ function inferCoalesceExpression(expr: CoalesceExpression, scope: Scope): ChuteT
   }
 
   return leftType.inner;
+}
+
+function inferOptionalMemberExpression(expr: OptionalMemberExpression, scope: Scope): ChuteType {
+  const objectType = inferType(expr.object, scope);
+
+  if (objectType.kind !== "optional" && objectType.kind !== "any") {
+    throw new CheckError(
+      `'?.' requires an optional object, got ${describeType(objectType)}`,
+      expr.object.span,
+    );
+  }
+
+  return {
+    kind: "optional",
+    inner: {
+      kind: "any",
+    },
+  };
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
