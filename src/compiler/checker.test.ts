@@ -173,4 +173,15 @@ describe("checker", () => {
       expect(() => checkSource("let x: Number = nil;")).toThrow(CheckError);
     });
   });
+
+  describe("string interpolation", () => {
+    it("should type interpolated strings as Text", () => {
+      expect(() =>
+        checkSource(`
+          let name = "world";
+          let greeting: Text = "hello \${name}";
+        `),
+      ).not.toThrow();
+    });
+  });
 });
