@@ -184,4 +184,10 @@ describe("checker", () => {
       ).not.toThrow();
     });
   });
+
+  describe("list literals", () => {
+    it("should accept homogeneous list", () => {
+      expect(() => checkSource("let xs = [1, 2, 3];")).not.toThrow();
+    });
+  });
 });
