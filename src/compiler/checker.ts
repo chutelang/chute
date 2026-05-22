@@ -7,6 +7,7 @@ import type {
   DictionaryLiteral,
   Expression,
   Identifier,
+  InterpolatedString,
   LetDeclaration,
   NamedType,
   OptionalMemberExpression,
@@ -182,6 +183,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "SubscriptExpression":
       return inferSubscriptExpression(expr, scope);
     case "InterpolatedString":
+      return inferInterpolatedString(expr, scope);
     case "ListLiteral":
     case "DictionaryLiteral":
       return inferDictionaryLiteral(expr, scope);
@@ -272,6 +274,15 @@ function inferSubscriptExpression(expr: SubscriptExpression, scope: Scope): Chut
   }
 
   throw new CheckError(`cannot subscript ${describeType(objectType)}`, expr.object.span);
+}
+
+function inferInterpolatedString(expr: InterpolatedString, scope: Scope): ChuteType {
+  for (const part of expr.parts) {
+    if (part.kind === "ExpressionPart") {
+      inferType(part.expression, scope);
+    }
+  }
+  return { kind: "text" };
 }
 
 function inferDictionaryLiteral(expr: DictionaryLiteral, scope: Scope): ChuteType {
