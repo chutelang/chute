@@ -189,5 +189,9 @@ describe("checker", () => {
     it("should accept homogeneous list", () => {
       expect(() => checkSource("let xs = [1, 2, 3];")).not.toThrow();
     });
+
+    it("should accept empty list", () => {
+      expect(() => checkSource("let xs = [];")).not.toThrow();
+    });
   });
 });
