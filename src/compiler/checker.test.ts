@@ -204,4 +204,10 @@ describe("checker", () => {
       expect(() => checkSource("let d = {:};")).not.toThrow();
     });
   });
+
+  describe("expression statements", () => {
+    it("should accept action calls", () => {
+      expect(() => checkSource('showAlert(text: "hello");')).not.toThrow();
+    });
+  });
 });
