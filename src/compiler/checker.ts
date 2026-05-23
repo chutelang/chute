@@ -41,6 +41,11 @@ export class CheckError extends Error {
   }
 }
 
+interface Binding {
+  type: ChuteType;
+  mutable: boolean;
+}
+
 export class Scope {
   private bindings = new Map<string, Binding>();
   private parent: Scope | undefined;
@@ -445,9 +450,4 @@ function describeType(type: ChuteType): string {
 
 function assertNever(value: never): never {
   throw new Error(`unhandled case: ${JSON.stringify(value)}`);
-}
-
-interface Binding {
-  type: ChuteType;
-  mutable: boolean;
 }
