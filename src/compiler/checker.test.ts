@@ -199,5 +199,9 @@ describe("checker", () => {
     it("should accept dictionary literal", () => {
       expect(() => checkSource('let d = {"name": "Alice", "age": 30};')).not.toThrow();
     });
+
+    it("should accept empty dictionary", () => {
+      expect(() => checkSource("let d = {:};")).not.toThrow();
+    });
   });
 });
