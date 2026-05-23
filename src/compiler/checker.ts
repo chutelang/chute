@@ -3,6 +3,7 @@ import type {
   Assignment,
   BaseType,
   BinaryExpression,
+  CallExpression,
   CoalesceExpression,
   DictionaryLiteral,
   Expression,
@@ -190,7 +191,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "DictionaryLiteral":
       return inferDictionaryLiteral(expr, scope);
     case "CallExpression":
-      return { kind: "any" };
+      return inferCallExpression(expr, scope);
     default:
       return assertNever(expr);
   }
@@ -322,6 +323,13 @@ function inferDictionaryLiteral(expr: DictionaryLiteral, scope: Scope): ChuteTyp
     inferType(entry.value, scope);
   }
   return { kind: "dictionary" };
+}
+
+function inferCallExpression(expr: CallExpression, scope: Scope): ChuteType {
+  for (const arg of expr.args) {
+    inferType(arg.value, scope);
+  }
+  return { kind: "any" };
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
