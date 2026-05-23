@@ -76,6 +76,7 @@ export function check(program: Program): void {
 function checkStatement(stmt: Statement, scope: Scope): void {
   switch (stmt.kind) {
     case "ExpressionStatement":
+      inferType(stmt.expression, scope);
       return;
     case "LetDeclaration":
       checkLetDeclaration(stmt, scope);
