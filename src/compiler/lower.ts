@@ -3,6 +3,7 @@ import type {
   BinaryExpression,
   BinaryOperator,
   CallExpression,
+  CoalesceExpression,
   Expression,
   LetDeclaration,
   Program,
@@ -149,6 +150,9 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "UnaryExpression":
       lowerUnaryExpression(expr, actions, ctx);
       return;
+    case "CoalesceExpression":
+      lowerCoalesceExpression(expr, actions, ctx);
+      return;
     default:
       throw new LowerError(`unsupported expression: ${expr.kind}`);
   }
@@ -238,6 +242,47 @@ function lowerUnaryExpression(expr: UnaryExpression, actions: ActionIR[], ctx: L
     uuid: nextUuid(ctx),
     parameters,
   });
+}
+
+function lowerCoalesceExpression(
+  expr: CoalesceExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const groupId = nextUuid(ctx);
+
+  lowerExpression(expr.left, actions, ctx);
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
+
+  lowerExpression(expr.left, actions, ctx);
+  actions.push(makeConditionalAction(1, groupId, ctx));
+
+  lowerExpression(expr.right, actions, ctx);
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function makeConditionalAction(
+  mode: number,
+  groupId: string,
+  ctx: LowerContext,
+  extra?: Record<string, ParameterValue>,
+): ActionIR {
+  const parameters = new Map<string, ParameterValue>();
+
+  if (extra) {
+    for (const [key, value] of Object.entries(extra)) {
+      parameters.set(key, value);
+    }
+  }
+
+  parameters.set("WFControlFlowMode", mode);
+
+  return {
+    identifier: "is.workflow.actions.conditional",
+    uuid: nextUuid(ctx),
+    parameters,
+    groupingIdentifier: groupId,
+  };
 }
 
 function mathOperationSymbol(operator: BinaryOperator): string {
