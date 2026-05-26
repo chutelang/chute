@@ -1,10 +1,13 @@
 import type {
   Assignment,
+  BinaryExpression,
+  BinaryOperator,
   CallExpression,
   Expression,
   LetDeclaration,
   Program,
   Statement,
+  UnaryExpression,
   VarDeclaration,
 } from "./ast.ts";
 import type { ActionIR, ParameterValue, ShortcutIR } from "./ir.ts";
@@ -140,6 +143,12 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "Identifier":
       actions.push(makeGetVariableAction(expr.name, ctx));
       return;
+    case "BinaryExpression":
+      lowerBinaryExpression(expr, actions, ctx);
+      return;
+    case "UnaryExpression":
+      lowerUnaryExpression(expr, actions, ctx);
+      return;
     default:
       throw new LowerError(`unsupported expression: ${expr.kind}`);
   }
@@ -195,6 +204,56 @@ function lowerToParamValue(
       return { kind: "VariableRef", name: expr.name };
     default:
       throw new LowerError(`unsupported expression in action argument: ${expr.kind}`);
+  }
+}
+
+function lowerBinaryExpression(
+  expr: BinaryExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  lowerExpression(expr.left, actions, ctx);
+  const operand = lowerToParamValue(expr.right, actions, ctx);
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFMathOperation", mathOperationSymbol(expr.operator));
+  parameters.set("WFMathOperand", operand);
+
+  actions.push({
+    identifier: "is.workflow.actions.math",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function lowerUnaryExpression(expr: UnaryExpression, actions: ActionIR[], ctx: LowerContext): void {
+  lowerExpression(expr.operand, actions, ctx);
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFMathOperation", "×");
+  parameters.set("WFMathOperand", -1);
+
+  actions.push({
+    identifier: "is.workflow.actions.math",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function mathOperationSymbol(operator: BinaryOperator): string {
+  switch (operator) {
+    case "+":
+      return "+";
+    case "-":
+      return "-";
+    case "*":
+      return "×";
+    case "/":
+      return "÷";
+    case "%":
+      return "Mod";
+    default:
+      return assertNever(operator);
   }
 }
 
