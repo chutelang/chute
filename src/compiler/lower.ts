@@ -5,13 +5,20 @@ import type {
   CallExpression,
   CoalesceExpression,
   Expression,
+  InterpolatedString,
   LetDeclaration,
   Program,
   Statement,
   UnaryExpression,
   VarDeclaration,
 } from "./ast.ts";
-import type { ActionIR, ParameterValue, ShortcutIR } from "./ir.ts";
+import type {
+  ActionIR,
+  InterpolatedText,
+  InterpolatedTextPart,
+  ParameterValue,
+  ShortcutIR,
+} from "./ir.ts";
 
 interface BuiltinAction {
   identifier: string;
@@ -153,6 +160,9 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "CoalesceExpression":
       lowerCoalesceExpression(expr, actions, ctx);
       return;
+    case "InterpolatedString":
+      actions.push(makeInterpolatedTextAction(expr, actions, ctx));
+      return;
     default:
       throw new LowerError(`unsupported expression: ${expr.kind}`);
   }
@@ -206,9 +216,43 @@ function lowerToParamValue(
       return expr.value;
     case "Identifier":
       return { kind: "VariableRef", name: expr.name };
+    case "InterpolatedString":
+      return buildInterpolatedText(expr, actions, ctx);
     default:
       throw new LowerError(`unsupported expression in action argument: ${expr.kind}`);
   }
+}
+
+function buildInterpolatedText(
+  expr: InterpolatedString,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): InterpolatedText {
+  const parts: InterpolatedTextPart[] = [];
+
+  for (const part of expr.parts) {
+    if (part.kind === "TextPart") {
+      parts.push({ kind: "text", value: part.value });
+    } else {
+      parts.push({
+        kind: "variable",
+        name: resolveVariableName(part.expression, actions, ctx),
+      });
+    }
+  }
+
+  return { kind: "InterpolatedText", parts };
+}
+
+function resolveVariableName(expr: Expression, actions: ActionIR[], ctx: LowerContext): string {
+  if (expr.kind === "Identifier") {
+    return expr.name;
+  }
+
+  lowerExpression(expr, actions, ctx);
+  const tempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(tempName, ctx));
+  return tempName;
 }
 
 function lowerBinaryExpression(
@@ -305,6 +349,21 @@ function mathOperationSymbol(operator: BinaryOperator): string {
 function makeTextAction(value: string, ctx: LowerContext): ActionIR {
   const parameters = new Map<string, ParameterValue>();
   parameters.set("WFTextActionText", value);
+  return {
+    identifier: "is.workflow.actions.gettext",
+    uuid: nextUuid(ctx),
+    parameters,
+  };
+}
+
+function makeInterpolatedTextAction(
+  expr: InterpolatedString,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): ActionIR {
+  const text = buildInterpolatedText(expr, actions, ctx);
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFTextActionText", text);
   return {
     identifier: "is.workflow.actions.gettext",
     uuid: nextUuid(ctx),
