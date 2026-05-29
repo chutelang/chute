@@ -4,11 +4,14 @@ import type {
   BinaryOperator,
   CallExpression,
   CoalesceExpression,
+  DictionaryLiteral,
   Expression,
   InterpolatedString,
   LetDeclaration,
+  ListLiteral,
   Program,
   Statement,
+  SubscriptExpression,
   UnaryExpression,
   VarDeclaration,
 } from "./ast.ts";
@@ -113,7 +116,7 @@ function lowerExpressionStatement(expr: Expression, actions: ActionIR[], ctx: Lo
     throw new LowerError(`expression statements must be action calls, got ${expr.kind}`);
   }
 
-  actions.push(lowerCall(expr, actions, ctx));
+  lowerExpression(expr, actions, ctx);
 }
 
 function lowerDeclaration(
@@ -136,6 +139,9 @@ function lowerAssignment(assign: Assignment, actions: ActionIR[], ctx: LowerCont
 
 function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContext): void {
   switch (expr.kind) {
+    case "CallExpression":
+      actions.push(lowerCall(expr, actions, ctx));
+      return;
     case "StringLiteral":
       actions.push(makeTextAction(expr.value, ctx));
       return;
@@ -151,6 +157,9 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "Identifier":
       actions.push(makeGetVariableAction(expr.name, ctx));
       return;
+    case "InterpolatedString":
+      actions.push(makeInterpolatedTextAction(expr, actions, ctx));
+      return;
     case "BinaryExpression":
       lowerBinaryExpression(expr, actions, ctx);
       return;
@@ -160,11 +169,23 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "CoalesceExpression":
       lowerCoalesceExpression(expr, actions, ctx);
       return;
-    case "InterpolatedString":
-      actions.push(makeInterpolatedTextAction(expr, actions, ctx));
+    case "ListLiteral":
+      lowerListLiteral(expr, actions, ctx);
+      return;
+    case "DictionaryLiteral":
+      lowerDictionaryLiteral(expr, actions, ctx);
+      return;
+    case "MemberExpression":
+      lowerKeyedAccess(expr.object, expr.property, actions, ctx);
+      return;
+    case "OptionalMemberExpression":
+      lowerKeyedAccess(expr.object, expr.property, actions, ctx);
+      return;
+    case "SubscriptExpression":
+      lowerSubscriptExpression(expr, actions, ctx);
       return;
     default:
-      throw new LowerError(`unsupported expression: ${expr.kind}`);
+      assertNever(expr);
   }
 }
 
@@ -200,59 +221,6 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     uuid: nextUuid(ctx),
     parameters,
   };
-}
-
-function lowerToParamValue(
-  expr: Expression,
-  actions: ActionIR[],
-  ctx: LowerContext,
-): ParameterValue {
-  switch (expr.kind) {
-    case "StringLiteral":
-      return expr.value;
-    case "NumberLiteral":
-      return expr.value;
-    case "BooleanLiteral":
-      return expr.value;
-    case "Identifier":
-      return { kind: "VariableRef", name: expr.name };
-    case "InterpolatedString":
-      return buildInterpolatedText(expr, actions, ctx);
-    default:
-      throw new LowerError(`unsupported expression in action argument: ${expr.kind}`);
-  }
-}
-
-function buildInterpolatedText(
-  expr: InterpolatedString,
-  actions: ActionIR[],
-  ctx: LowerContext,
-): InterpolatedText {
-  const parts: InterpolatedTextPart[] = [];
-
-  for (const part of expr.parts) {
-    if (part.kind === "TextPart") {
-      parts.push({ kind: "text", value: part.value });
-    } else {
-      parts.push({
-        kind: "variable",
-        name: resolveVariableName(part.expression, actions, ctx),
-      });
-    }
-  }
-
-  return { kind: "InterpolatedText", parts };
-}
-
-function resolveVariableName(expr: Expression, actions: ActionIR[], ctx: LowerContext): string {
-  if (expr.kind === "Identifier") {
-    return expr.name;
-  }
-
-  lowerExpression(expr, actions, ctx);
-  const tempName = nextTempName(ctx);
-  actions.push(makeSetVariableAction(tempName, ctx));
-  return tempName;
 }
 
 function lowerBinaryExpression(
@@ -305,45 +273,136 @@ function lowerCoalesceExpression(
   actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
-function makeConditionalAction(
-  mode: number,
-  groupId: string,
-  ctx: LowerContext,
-  extra?: Record<string, ParameterValue>,
-): ActionIR {
-  const parameters = new Map<string, ParameterValue>();
+function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerContext): void {
+  for (const element of expr.elements) {
+    lowerExpression(element, actions, ctx);
+  }
 
-  if (extra) {
-    for (const [key, value] of Object.entries(extra)) {
-      parameters.set(key, value);
+  actions.push({
+    identifier: "is.workflow.actions.list",
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
+}
+
+function lowerDictionaryLiteral(
+  expr: DictionaryLiteral,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
+
+  for (const entry of expr.entries) {
+    const key = lowerToParamValue(entry.key, actions, ctx);
+    const value = lowerToParamValue(entry.value, actions, ctx);
+
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", key);
+    parameters.set("WFDictionaryValue", value);
+
+    actions.push({
+      identifier: "is.workflow.actions.setvalueforkey",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+  }
+}
+
+function lowerKeyedAccess(
+  object: Expression,
+  key: string,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  lowerExpression(object, actions, ctx);
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFDictionaryKey", key);
+
+  actions.push({
+    identifier: "is.workflow.actions.getvalueforkey",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function lowerSubscriptExpression(
+  expr: SubscriptExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  lowerExpression(expr.object, actions, ctx);
+  const key = lowerToParamValue(expr.index, actions, ctx);
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFDictionaryKey", key);
+
+  actions.push({
+    identifier: "is.workflow.actions.getvalueforkey",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function lowerToParamValue(
+  expr: Expression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): ParameterValue {
+  switch (expr.kind) {
+    case "StringLiteral":
+      return expr.value;
+    case "NumberLiteral":
+      return expr.value;
+    case "BooleanLiteral":
+      return expr.value;
+    case "Identifier":
+      return { kind: "VariableRef", name: expr.name };
+    case "InterpolatedString":
+      return buildInterpolatedText(expr, actions, ctx);
+    default: {
+      lowerExpression(expr, actions, ctx);
+      const tempName = nextTempName(ctx);
+      actions.push(makeSetVariableAction(tempName, ctx));
+      return { kind: "VariableRef", name: tempName };
+    }
+  }
+}
+
+function buildInterpolatedText(
+  expr: InterpolatedString,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): InterpolatedText {
+  const parts: InterpolatedTextPart[] = [];
+
+  for (const part of expr.parts) {
+    if (part.kind === "TextPart") {
+      parts.push({ kind: "text", value: part.value });
+    } else {
+      parts.push({
+        kind: "variable",
+        name: resolveVariableName(part.expression, actions, ctx),
+      });
     }
   }
 
-  parameters.set("WFControlFlowMode", mode);
-
-  return {
-    identifier: "is.workflow.actions.conditional",
-    uuid: nextUuid(ctx),
-    parameters,
-    groupingIdentifier: groupId,
-  };
+  return { kind: "InterpolatedText", parts };
 }
 
-function mathOperationSymbol(operator: BinaryOperator): string {
-  switch (operator) {
-    case "+":
-      return "+";
-    case "-":
-      return "-";
-    case "*":
-      return "×";
-    case "/":
-      return "÷";
-    case "%":
-      return "Mod";
-    default:
-      return assertNever(operator);
+function resolveVariableName(expr: Expression, actions: ActionIR[], ctx: LowerContext): string {
+  if (expr.kind === "Identifier") {
+    return expr.name;
   }
+
+  lowerExpression(expr, actions, ctx);
+  const tempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(tempName, ctx));
+  return tempName;
 }
 
 function makeTextAction(value: string, ctx: LowerContext): ActionIR {
@@ -407,6 +466,47 @@ function makeSetVariableAction(name: string, ctx: LowerContext): ActionIR {
     uuid: nextUuid(ctx),
     parameters,
   };
+}
+
+function makeConditionalAction(
+  mode: number,
+  groupId: string,
+  ctx: LowerContext,
+  extra?: Record<string, ParameterValue>,
+): ActionIR {
+  const parameters = new Map<string, ParameterValue>();
+
+  if (extra) {
+    for (const [key, value] of Object.entries(extra)) {
+      parameters.set(key, value);
+    }
+  }
+
+  parameters.set("WFControlFlowMode", mode);
+
+  return {
+    identifier: "is.workflow.actions.conditional",
+    uuid: nextUuid(ctx),
+    parameters,
+    groupingIdentifier: groupId,
+  };
+}
+
+function mathOperationSymbol(operator: BinaryOperator): string {
+  switch (operator) {
+    case "+":
+      return "+";
+    case "-":
+      return "-";
+    case "*":
+      return "×";
+    case "/":
+      return "÷";
+    case "%":
+      return "Mod";
+    default:
+      return assertNever(operator);
+  }
 }
 
 function nextUuid(ctx: LowerContext): string {
