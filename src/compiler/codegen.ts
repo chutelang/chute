@@ -1,4 +1,4 @@
-import type { ShortcutIR, ParameterValue } from "./ir.ts";
+import type { ActionIR, ParameterValue, ShortcutIR } from "./ir.ts";
 
 export function codegen(ir: ShortcutIR): string {
   const lines: string[] = [];
@@ -58,19 +58,19 @@ export function codegen(ir: ShortcutIR): string {
   return lines.join("\n");
 }
 
-function emitAction(
-  lines: string[],
-  depth: number,
-  action: { identifier: string; parameters: Map<string, ParameterValue> },
-): void {
+function emitAction(lines: string[], depth: number, action: ActionIR): void {
   emitIndent(lines, depth, "<dict>");
   emitKeyString(lines, depth + 1, "WFWorkflowActionIdentifier", action.identifier);
+  emitKeyString(lines, depth + 1, "UUID", action.uuid);
 
-  if (action.parameters.size > 0) {
+  if (action.parameters.size > 0 || action.groupingIdentifier !== undefined) {
     emitKey(lines, depth + 1, "WFWorkflowActionParameters");
     emitIndent(lines, depth + 1, "<dict>");
     for (const [key, value] of action.parameters) {
       emitKeyValue(lines, depth + 2, key, value);
+    }
+    if (action.groupingIdentifier !== undefined) {
+      emitKeyString(lines, depth + 2, "GroupingIdentifier", action.groupingIdentifier);
     }
     emitIndent(lines, depth + 1, "</dict>");
   }
