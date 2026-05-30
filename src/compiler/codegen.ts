@@ -1,4 +1,7 @@
-import type { ActionIR, ParameterValue, ShortcutIR } from "./ir.ts";
+import type { ActionIR, InterpolatedText, ParameterValue, ShortcutIR, VariableRef } from "./ir.ts";
+
+const OBJECT_REPLACEMENT_CHAR = "￼";
+const OBJECT_REPLACEMENT_ENTITY = "&#xFFFC;";
 
 export function codegen(ir: ShortcutIR): string {
   const lines: string[] = [];
@@ -81,17 +84,99 @@ function emitAction(lines: string[], depth: number, action: ActionIR): void {
 function emitKeyValue(lines: string[], depth: number, key: string, value: ParameterValue): void {
   if (typeof value === "string") {
     emitKeyString(lines, depth, key, value);
-  } else if (typeof value === "number") {
+    return;
+  }
+
+  if (typeof value === "number") {
     if (Number.isInteger(value)) {
       emitKeyInteger(lines, depth, key, value);
     } else {
       emitKey(lines, depth, key);
       emitIndent(lines, depth, `<real>${value}</real>`);
     }
-  } else {
+    return;
+  }
+
+  if (typeof value === "boolean") {
     emitKey(lines, depth, key);
     emitBool(lines, depth, value);
+    return;
   }
+
+  emitKey(lines, depth, key);
+  if (value.kind === "VariableRef") {
+    emitVariableRef(lines, depth, value);
+  } else {
+    emitInterpolatedText(lines, depth, value);
+  }
+}
+
+function emitVariableRef(lines: string[], depth: number, ref: VariableRef): void {
+  emitIndent(lines, depth, "<dict>");
+  emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");
+  emitKey(lines, depth + 1, "Value");
+  emitIndent(lines, depth + 1, "<dict>");
+  emitKeyRawString(lines, depth + 2, "string", OBJECT_REPLACEMENT_ENTITY);
+  emitKey(lines, depth + 2, "attachmentsByRange");
+  emitIndent(lines, depth + 2, "<dict>");
+  emitAttachmentEntry(lines, depth + 3, 0, ref.name);
+  emitIndent(lines, depth + 2, "</dict>");
+  emitIndent(lines, depth + 1, "</dict>");
+  emitIndent(lines, depth, "</dict>");
+}
+
+function emitInterpolatedText(lines: string[], depth: number, text: InterpolatedText): void {
+  const { combined, ranges } = buildCombinedText(text);
+
+  emitIndent(lines, depth, "<dict>");
+  emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenString");
+  emitKey(lines, depth + 1, "Value");
+  emitIndent(lines, depth + 1, "<dict>");
+  emitKeyRawString(lines, depth + 2, "string", xmlEscapeWithAttachments(combined));
+  emitKey(lines, depth + 2, "attachmentsByRange");
+  emitIndent(lines, depth + 2, "<dict>");
+  for (const range of ranges) {
+    emitAttachmentEntry(lines, depth + 3, range.offset, range.name);
+  }
+  emitIndent(lines, depth + 2, "</dict>");
+  emitIndent(lines, depth + 1, "</dict>");
+  emitIndent(lines, depth, "</dict>");
+}
+
+function emitAttachmentEntry(lines: string[], depth: number, offset: number, name: string): void {
+  emitKey(lines, depth, `{${offset}, 1}`);
+  emitIndent(lines, depth, "<dict>");
+  emitKeyString(lines, depth + 1, "Type", "Variable");
+  emitKeyString(lines, depth + 1, "VariableName", name);
+  emitIndent(lines, depth, "</dict>");
+}
+
+interface AttachmentRange {
+  offset: number;
+  name: string;
+}
+
+function buildCombinedText(text: InterpolatedText): {
+  combined: string;
+  ranges: AttachmentRange[];
+} {
+  let combined = "";
+  const ranges: AttachmentRange[] = [];
+
+  for (const part of text.parts) {
+    if (part.kind === "text") {
+      combined += part.value;
+    } else {
+      ranges.push({ offset: combined.length, name: part.name });
+      combined += OBJECT_REPLACEMENT_CHAR;
+    }
+  }
+
+  return { combined, ranges };
+}
+
+function xmlEscapeWithAttachments(text: string): string {
+  return escapeXml(text).replaceAll(OBJECT_REPLACEMENT_CHAR, OBJECT_REPLACEMENT_ENTITY);
 }
 
 function emitKey(lines: string[], depth: number, key: string): void {
@@ -101,6 +186,11 @@ function emitKey(lines: string[], depth: number, key: string): void {
 function emitKeyString(lines: string[], depth: number, key: string, value: string): void {
   emitKey(lines, depth, key);
   emitIndent(lines, depth, `<string>${escapeXml(value)}</string>`);
+}
+
+function emitKeyRawString(lines: string[], depth: number, key: string, raw: string): void {
+  emitKey(lines, depth, key);
+  emitIndent(lines, depth, `<string>${raw}</string>`);
 }
 
 function emitKeyInteger(lines: string[], depth: number, key: string, value: number): void {
