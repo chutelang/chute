@@ -69,7 +69,10 @@ interface LowerContext {
 export function lower(program: Program): ShortcutIR {
   const name = extractName(program);
   const actions: ActionIR[] = [];
-  const ctx: LowerContext = { uuidCounter: 0, tempCounter: 0 };
+  const ctx: LowerContext = {
+    uuidCounter: 0,
+    tempCounter: 0,
+  };
 
   for (const stmt of program.body) {
     lowerStatement(stmt, actions, ctx);
@@ -229,7 +232,7 @@ function lowerBinaryExpression(
   ctx: LowerContext,
 ): void {
   lowerExpression(expr.left, actions, ctx);
-  const operand = lowerToParamValue(expr.right, actions, ctx);
+  const operand = lowerOperandPreservingMagicVariable(expr.right, actions, ctx);
 
   const parameters = new Map<string, ParameterValue>();
   parameters.set("WFMathOperation", mathOperationSymbol(expr.operator));
@@ -336,7 +339,7 @@ function lowerSubscriptExpression(
   ctx: LowerContext,
 ): void {
   lowerExpression(expr.object, actions, ctx);
-  const key = lowerToParamValue(expr.index, actions, ctx);
+  const key = lowerOperandPreservingMagicVariable(expr.index, actions, ctx);
 
   const parameters = new Map<string, ParameterValue>();
   parameters.set("WFDictionaryKey", key);
@@ -346,6 +349,55 @@ function lowerSubscriptExpression(
     uuid: nextUuid(ctx),
     parameters,
   });
+}
+
+/**
+ * Lowers an operand expression to a ParameterValue while preserving the
+ * caller's current magic variable across the process.
+ *
+ * lowerToParamValue may emit actions for a complex operand (e.g. a nested
+ * binary expression), and those actions overwrite the magic variable. If the
+ * caller still needs the magic variable it was holding before this operand
+ * was lowered (e.g. the left side of `a + b * c`), that value must be saved
+ * to a temp variable first and restored afterward.
+ */
+function lowerOperandPreservingMagicVariable(
+  expr: Expression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): ParameterValue {
+  if (isSideEffectFreeValue(expr)) {
+    return lowerToParamValue(expr, actions, ctx);
+  }
+
+  const savedName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(savedName, ctx));
+
+  const value = lowerToParamValue(expr, actions, ctx);
+
+  actions.push(makeGetVariableAction(savedName, ctx));
+
+  return value;
+}
+
+/**
+ * True when lowering this expression via lowerToParamValue cannot emit any
+ * actions, and therefore cannot clobber the current magic variable.
+ */
+function isSideEffectFreeValue(expr: Expression): boolean {
+  switch (expr.kind) {
+    case "StringLiteral":
+    case "NumberLiteral":
+    case "BooleanLiteral":
+    case "Identifier":
+      return true;
+    case "InterpolatedString":
+      return expr.parts.every(
+        (part) => part.kind === "TextPart" || part.expression.kind === "Identifier",
+      );
+    default:
+      return false;
+  }
 }
 
 function lowerToParamValue(
@@ -361,14 +413,20 @@ function lowerToParamValue(
     case "BooleanLiteral":
       return expr.value;
     case "Identifier":
-      return { kind: "VariableRef", name: expr.name };
+      return {
+        kind: "VariableRef",
+        name: expr.name,
+      };
     case "InterpolatedString":
       return buildInterpolatedText(expr, actions, ctx);
     default: {
       lowerExpression(expr, actions, ctx);
       const tempName = nextTempName(ctx);
       actions.push(makeSetVariableAction(tempName, ctx));
-      return { kind: "VariableRef", name: tempName };
+      return {
+        kind: "VariableRef",
+        name: tempName,
+      };
     }
   }
 }
@@ -382,7 +440,10 @@ function buildInterpolatedText(
 
   for (const part of expr.parts) {
     if (part.kind === "TextPart") {
-      parts.push({ kind: "text", value: part.value });
+      parts.push({
+        kind: "text",
+        value: part.value,
+      });
     } else {
       parts.push({
         kind: "variable",
@@ -391,7 +452,10 @@ function buildInterpolatedText(
     }
   }
 
-  return { kind: "InterpolatedText", parts };
+  return {
+    kind: "InterpolatedText",
+    parts,
+  };
 }
 
 function resolveVariableName(expr: Expression, actions: ActionIR[], ctx: LowerContext): string {
@@ -450,7 +514,10 @@ function makeNothingAction(ctx: LowerContext): ActionIR {
 
 function makeGetVariableAction(name: string, ctx: LowerContext): ActionIR {
   const parameters = new Map<string, ParameterValue>();
-  parameters.set("WFVariable", { kind: "VariableRef", name });
+  parameters.set("WFVariable", {
+    kind: "VariableRef",
+    name,
+  });
   return {
     identifier: "is.workflow.actions.getvariable",
     uuid: nextUuid(ctx),
