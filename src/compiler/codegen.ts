@@ -167,12 +167,18 @@ function buildCombinedText(text: InterpolatedText): {
     if (part.kind === "text") {
       combined += part.value;
     } else {
-      ranges.push({ offset: combined.length, name: part.name });
+      ranges.push({
+        offset: combined.length,
+        name: part.name,
+      });
       combined += OBJECT_REPLACEMENT_CHAR;
     }
   }
 
-  return { combined, ranges };
+  return {
+    combined,
+    ranges,
+  };
 }
 
 function xmlEscapeWithAttachments(text: string): string {

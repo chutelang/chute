@@ -46,6 +46,57 @@ describe("lower", () => {
       expect(mathActions).toHaveLength(1);
       expect(mathActions.at(0)?.parameters.get("WFMathOperation")).toBe("+");
     });
+
+    it("should preserve the left operand across a compound right operand", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let a = 1; let b = 2; let c = 3; let d = a + b * c;',
+      );
+
+      const identifiers = actions.map((action) => action.identifier);
+      expect(identifiers).toEqual([
+        "is.workflow.actions.number",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.number",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.number",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.math",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.math",
+        "is.workflow.actions.setvariable",
+      ]);
+
+      // getvariable(a) [index 6] is immediately followed by a setvariable
+      // that saves "a" into a temp before the compound right operand
+      // (b * c) is lowered and overwrites the magic variable.
+      const savedName = actions.at(7)?.parameters.get("WFVariableName");
+      expect(savedName).toBeDefined();
+
+      // the inner multiplication uses c directly as its operand.
+      const multiply = actions.at(9);
+      expect(multiply?.parameters.get("WFMathOperation")).toBe("×");
+      expect(multiply?.parameters.get("WFMathOperand")).toMatchObject({
+        kind: "VariableRef",
+        name: "c",
+      });
+
+      // the saved "a" value is restored right before the outer addition,
+      // so the addition combines a with (b * c) instead of (b * c) with
+      // itself.
+      const restore = actions.at(11);
+      expect(restore?.identifier).toBe("is.workflow.actions.getvariable");
+      expect(restore?.parameters.get("WFVariable")).toMatchObject({
+        kind: "VariableRef",
+        name: savedName,
+      });
+
+      const add = actions.at(12);
+      expect(add?.parameters.get("WFMathOperation")).toBe("+");
+    });
   });
 
   describe("nil coalescing", () => {
