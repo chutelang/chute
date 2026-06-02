@@ -662,5 +662,9 @@ showAlert(text: "Hello from Chute!");`;
         expect(decl.initializer.entries).toHaveLength(1);
       }
     });
+
+    it("should reject bare {} as empty dictionary", () => {
+      expect(() => parse("let x = {};")).toThrow(ParseError);
+    });
   });
 });

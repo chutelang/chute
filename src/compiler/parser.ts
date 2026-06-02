@@ -656,6 +656,10 @@ export class Parser {
       };
     }
 
+    if (this.check(TokenKind.RightBrace)) {
+      throw new ParseError("empty dictionary must use {:} syntax", this.peek().span);
+    }
+
     const entries: DictionaryEntry[] = [];
     while (!this.check(TokenKind.RightBrace)) {
       const key = this.parseCoalesce();
