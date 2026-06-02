@@ -23,4 +23,51 @@ showResult(text: "second");`;
 
     expect(compile(source)).toMatchSnapshot();
   });
+
+  it("should compile let declaration with variable use", () => {
+    const source = `shortcut {
+  name: "Variables",
+}
+
+let greeting = "Hello";
+showAlert(text: greeting);`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile arithmetic expression", () => {
+    const source = `shortcut {
+  name: "Math",
+}
+
+let a = 10;
+let b = 20;
+let c = a + b;
+showResult(text: "done");`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile string interpolation", () => {
+    const source = `shortcut {
+  name: "Interpolation",
+}
+
+let name = "World";
+showAlert(text: "Hello \${name}!");`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile nil coalescing", () => {
+    const source = `shortcut {
+  name: "Coalesce",
+}
+
+let x: Number? = nil;
+let y = x ?? 42;
+showResult(text: "done");`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
 });
