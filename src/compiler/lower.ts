@@ -4,14 +4,20 @@ import type {
   BinaryOperator,
   CallExpression,
   CoalesceExpression,
+  Condition,
   DictionaryLiteral,
   Expression,
+  ForStatement,
+  IfStatement,
   InterpolatedString,
   LetDeclaration,
   ListLiteral,
+  MenuStatement,
   Program,
+  RepeatStatement,
   Statement,
   SubscriptExpression,
+  TernaryExpression,
   UnaryExpression,
   VarDeclaration,
 } from "./ast.ts";
@@ -109,6 +115,18 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
     case "Assignment":
       lowerAssignment(stmt, actions, ctx);
       return;
+    case "IfStatement":
+      lowerIfStatement(stmt, actions, ctx);
+      return;
+    case "ForStatement":
+      lowerForStatement(stmt, actions, ctx);
+      return;
+    case "RepeatStatement":
+      lowerRepeatStatement(stmt, actions, ctx);
+      return;
+    case "MenuStatement":
+      lowerMenuStatement(stmt, actions, ctx);
+      return;
     default:
       assertNever(stmt);
   }
@@ -186,6 +204,12 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       return;
     case "SubscriptExpression":
       lowerSubscriptExpression(expr, actions, ctx);
+      return;
+    case "TernaryExpression":
+      lowerTernaryExpression(expr, actions, ctx);
+      return;
+    case "HashIndexExpression":
+      lowerHashIndexExpression(actions, ctx);
       return;
     default:
       assertNever(expr);
@@ -586,6 +610,190 @@ function nextTempName(ctx: LowerContext): string {
   const id = ctx.tempCounter;
   ctx.tempCounter += 1;
   return `__chute_tmp_${id}`;
+}
+
+function lowerIfStatement(stmt: IfStatement, actions: ActionIR[], ctx: LowerContext): void {
+  const groupId = nextUuid(ctx);
+
+  lowerCondition(stmt.condition, actions, ctx);
+  actions.push(makeConditionalAction(0, groupId, ctx));
+
+  for (const s of stmt.body) {
+    lowerStatement(s, actions, ctx);
+  }
+
+  if (stmt.elseBody) {
+    actions.push(makeConditionalAction(1, groupId, ctx));
+    if (Array.isArray(stmt.elseBody)) {
+      for (const s of stmt.elseBody) {
+        lowerStatement(s, actions, ctx);
+      }
+    } else {
+      lowerIfStatement(stmt.elseBody, actions, ctx);
+    }
+  }
+
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function lowerForStatement(stmt: ForStatement, actions: ActionIR[], ctx: LowerContext): void {
+  const groupId = nextUuid(ctx);
+
+  lowerExpression(stmt.iterable, actions, ctx);
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFControlFlowMode", 0);
+  actions.push({
+    identifier: "is.workflow.actions.repeat.each",
+    uuid: nextUuid(ctx),
+    parameters,
+    groupingIdentifier: groupId,
+  });
+
+  actions.push(makeSetVariableAction(stmt.variable, ctx));
+
+  for (const s of stmt.body) {
+    lowerStatement(s, actions, ctx);
+  }
+
+  const endParams = new Map<string, ParameterValue>();
+  endParams.set("WFControlFlowMode", 2);
+  actions.push({
+    identifier: "is.workflow.actions.repeat.each",
+    uuid: nextUuid(ctx),
+    parameters: endParams,
+    groupingIdentifier: groupId,
+  });
+}
+
+function lowerRepeatStatement(stmt: RepeatStatement, actions: ActionIR[], ctx: LowerContext): void {
+  const groupId = nextUuid(ctx);
+  const count = lowerToParamValue(stmt.count, actions, ctx);
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFControlFlowMode", 0);
+  parameters.set("WFRepeatCount", count);
+  actions.push({
+    identifier: "is.workflow.actions.repeat.count",
+    uuid: nextUuid(ctx),
+    parameters,
+    groupingIdentifier: groupId,
+  });
+
+  for (const s of stmt.body) {
+    lowerStatement(s, actions, ctx);
+  }
+
+  const endParams = new Map<string, ParameterValue>();
+  endParams.set("WFControlFlowMode", 2);
+  actions.push({
+    identifier: "is.workflow.actions.repeat.count",
+    uuid: nextUuid(ctx),
+    parameters: endParams,
+    groupingIdentifier: groupId,
+  });
+}
+
+function lowerMenuStatement(stmt: MenuStatement, actions: ActionIR[], ctx: LowerContext): void {
+  const groupId = nextUuid(ctx);
+  const prompt = lowerToParamValue(stmt.prompt, actions, ctx);
+
+  const startParams = new Map<string, ParameterValue>();
+  startParams.set("WFControlFlowMode", 0);
+  startParams.set("WFMenuPrompt", prompt);
+  const items: string[] = stmt.cases.map((c) => c.label);
+  startParams.set("WFMenuItems", items.join("\n"));
+  actions.push({
+    identifier: "is.workflow.actions.choosefrommenu",
+    uuid: nextUuid(ctx),
+    parameters: startParams,
+    groupingIdentifier: groupId,
+  });
+
+  for (const c of stmt.cases) {
+    const caseParams = new Map<string, ParameterValue>();
+    caseParams.set("WFControlFlowMode", 1);
+    caseParams.set("WFMenuItemTitle", c.label);
+    actions.push({
+      identifier: "is.workflow.actions.choosefrommenu",
+      uuid: nextUuid(ctx),
+      parameters: caseParams,
+      groupingIdentifier: groupId,
+    });
+
+    for (const s of c.body) {
+      lowerStatement(s, actions, ctx);
+    }
+  }
+
+  const endParams = new Map<string, ParameterValue>();
+  endParams.set("WFControlFlowMode", 2);
+  actions.push({
+    identifier: "is.workflow.actions.choosefrommenu",
+    uuid: nextUuid(ctx),
+    parameters: endParams,
+    groupingIdentifier: groupId,
+  });
+}
+
+function lowerTernaryExpression(
+  expr: TernaryExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const groupId = nextUuid(ctx);
+
+  lowerCondition(expr.condition, actions, ctx);
+  actions.push(makeConditionalAction(0, groupId, ctx));
+
+  lowerExpression(expr.consequent, actions, ctx);
+
+  actions.push(makeConditionalAction(1, groupId, ctx));
+
+  lowerExpression(expr.alternate, actions, ctx);
+
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function lowerHashIndexExpression(actions: ActionIR[], ctx: LowerContext): void {
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFVariable", {
+    kind: "VariableRef",
+    name: "Repeat Index",
+  });
+  actions.push({
+    identifier: "is.workflow.actions.getvariable",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function lowerCondition(cond: Condition, actions: ActionIR[], ctx: LowerContext): void {
+  switch (cond.kind) {
+    case "Comparison":
+      lowerExpression(cond.left, actions, ctx);
+      return;
+    case "RangeTest":
+      lowerExpression(cond.subject, actions, ctx);
+      return;
+    case "TypeTest":
+      lowerExpression(cond.subject, actions, ctx);
+      return;
+    case "BooleanReference":
+      lowerExpression(cond.subject, actions, ctx);
+      return;
+    case "BooleanLiteralCondition":
+      return;
+    case "NotCondition":
+      lowerCondition(cond.operand, actions, ctx);
+      return;
+    case "OrCondition":
+      lowerCondition(cond.left, actions, ctx);
+      return;
+    case "AndCondition":
+      lowerCondition(cond.left, actions, ctx);
+      return;
+  }
 }
 
 function assertNever(value: never): never {

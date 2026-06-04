@@ -65,7 +65,15 @@ export interface MetadataDotName {
   args: MetadataValue[] | undefined;
 }
 
-export type Statement = ExpressionStatement | LetDeclaration | VarDeclaration | Assignment;
+export type Statement =
+  | ExpressionStatement
+  | LetDeclaration
+  | VarDeclaration
+  | Assignment
+  | IfStatement
+  | ForStatement
+  | RepeatStatement
+  | MenuStatement;
 
 export interface Assignment {
   kind: "Assignment";
@@ -153,6 +161,7 @@ export type Expression =
   | BinaryExpression
   | UnaryExpression
   | CoalesceExpression
+  | TernaryExpression
   | Identifier
   | StringLiteral
   | NumberLiteral
@@ -160,7 +169,8 @@ export type Expression =
   | NilLiteral
   | InterpolatedString
   | ListLiteral
-  | DictionaryLiteral;
+  | DictionaryLiteral
+  | HashIndexExpression;
 
 export interface CallExpression {
   kind: "CallExpression";
@@ -287,4 +297,137 @@ export interface DictionaryEntry {
   span: Span;
   key: Expression;
   value: Expression;
+}
+
+export interface TernaryExpression {
+  kind: "TernaryExpression";
+  span: Span;
+  condition: Condition;
+  consequent: Expression;
+  alternate: Expression;
+}
+
+export interface HashIndexExpression {
+  kind: "HashIndexExpression";
+  span: Span;
+}
+
+// Conditions (not value expressions — only appear in if, ternary, for guards)
+
+export type Condition =
+  | OrCondition
+  | AndCondition
+  | NotCondition
+  | Comparison
+  | RangeTest
+  | TypeTest
+  | BooleanReference
+  | BooleanLiteralCondition;
+
+export interface OrCondition {
+  kind: "OrCondition";
+  span: Span;
+  left: Condition;
+  right: Condition;
+}
+
+export interface AndCondition {
+  kind: "AndCondition";
+  span: Span;
+  left: Condition;
+  right: Condition;
+}
+
+export interface NotCondition {
+  kind: "NotCondition";
+  span: Span;
+  operand: Condition;
+}
+
+export type ComparisonOperator =
+  | "=="
+  | "!="
+  | ">"
+  | ">="
+  | "<"
+  | "<="
+  | "contains"
+  | "!contains"
+  | "hasPrefix"
+  | "hasSuffix";
+
+export interface Comparison {
+  kind: "Comparison";
+  span: Span;
+  left: Expression;
+  operator: ComparisonOperator;
+  right: Expression;
+}
+
+export interface RangeTest {
+  kind: "RangeTest";
+  span: Span;
+  subject: Expression;
+  low: Expression;
+  high: Expression;
+}
+
+export interface TypeTest {
+  kind: "TypeTest";
+  span: Span;
+  subject: Expression;
+  testType: BaseType;
+}
+
+export interface BooleanReference {
+  kind: "BooleanReference";
+  span: Span;
+  subject: Expression;
+}
+
+export interface BooleanLiteralCondition {
+  kind: "BooleanLiteralCondition";
+  span: Span;
+  value: boolean;
+}
+
+// Control flow statements
+
+export interface IfStatement {
+  kind: "IfStatement";
+  span: Span;
+  condition: Condition;
+  body: Statement[];
+  elseBody: Statement[] | IfStatement | undefined;
+}
+
+export interface ForStatement {
+  kind: "ForStatement";
+  span: Span;
+  variable: string;
+  iterable: Expression;
+  body: Statement[];
+}
+
+export interface RepeatStatement {
+  kind: "RepeatStatement";
+  span: Span;
+  count: Expression;
+  body: Statement[];
+}
+
+export interface MenuStatement {
+  kind: "MenuStatement";
+  span: Span;
+  prompt: Expression;
+  variable: string | undefined;
+  variableType: TypeAnnotation | undefined;
+  cases: MenuCase[];
+}
+
+export interface MenuCase {
+  kind: "MenuCase";
+  span: Span;
+  label: string;
+  body: Statement[];
 }

@@ -5,17 +5,23 @@ import type {
   BinaryExpression,
   CallExpression,
   CoalesceExpression,
+  Condition,
   DictionaryLiteral,
   Expression,
+  ForStatement,
   Identifier,
+  IfStatement,
   InterpolatedString,
   LetDeclaration,
   ListLiteral,
+  MenuStatement,
   NamedType,
   OptionalMemberExpression,
   Program,
+  RepeatStatement,
   Statement,
   SubscriptExpression,
+  TernaryExpression,
   TypeAnnotation,
   UnaryExpression,
   VarDeclaration,
@@ -91,6 +97,18 @@ function checkStatement(stmt: Statement, scope: Scope): void {
       return;
     case "Assignment":
       checkAssignment(stmt, scope);
+      return;
+    case "IfStatement":
+      checkIfStatement(stmt, scope);
+      return;
+    case "ForStatement":
+      checkForStatement(stmt, scope);
+      return;
+    case "RepeatStatement":
+      checkRepeatStatement(stmt, scope);
+      return;
+    case "MenuStatement":
+      checkMenuStatement(stmt, scope);
       return;
     default:
       assertNever(stmt);
@@ -198,6 +216,10 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
       return inferDictionaryLiteral(expr, scope);
     case "CallExpression":
       return inferCallExpression(expr, scope);
+    case "TernaryExpression":
+      return inferTernaryExpression(expr, scope);
+    case "HashIndexExpression":
+      return { kind: "number" };
     default:
       return assertNever(expr);
   }
@@ -446,6 +468,115 @@ function describeType(type: ChuteType): string {
     default:
       return assertNever(type);
   }
+}
+
+function checkIfStatement(stmt: IfStatement, scope: Scope): void {
+  checkCondition(stmt.condition, scope);
+  const bodyScope = new Scope(scope);
+  for (const s of stmt.body) {
+    checkStatement(s, bodyScope);
+  }
+  if (stmt.elseBody) {
+    if (Array.isArray(stmt.elseBody)) {
+      const elseScope = new Scope(scope);
+      for (const s of stmt.elseBody) {
+        checkStatement(s, elseScope);
+      }
+    } else {
+      checkIfStatement(stmt.elseBody, scope);
+    }
+  }
+}
+
+function checkForStatement(stmt: ForStatement, scope: Scope): void {
+  const iterableType = inferType(stmt.iterable, scope);
+  const bodyScope = new Scope(scope);
+
+  if (iterableType.kind === "list") {
+    bodyScope.define(stmt.variable, iterableType.element, false);
+  } else if (iterableType.kind === "any") {
+    bodyScope.define(stmt.variable, { kind: "any" }, false);
+  } else {
+    throw new CheckError(
+      `for...in requires a list, got ${describeType(iterableType)}`,
+      stmt.iterable.span,
+    );
+  }
+
+  for (const s of stmt.body) {
+    checkStatement(s, bodyScope);
+  }
+}
+
+function checkRepeatStatement(stmt: RepeatStatement, scope: Scope): void {
+  const countType = inferType(stmt.count, scope);
+  requireNumber(countType, stmt.count.span);
+  const bodyScope = new Scope(scope);
+  for (const s of stmt.body) {
+    checkStatement(s, bodyScope);
+  }
+}
+
+function checkMenuStatement(stmt: MenuStatement, scope: Scope): void {
+  inferType(stmt.prompt, scope);
+  for (const c of stmt.cases) {
+    const caseScope = new Scope(scope);
+    if (stmt.variable) {
+      caseScope.define(stmt.variable, { kind: "text" }, false);
+    }
+    for (const s of c.body) {
+      checkStatement(s, caseScope);
+    }
+  }
+}
+
+function checkCondition(cond: Condition, scope: Scope): void {
+  switch (cond.kind) {
+    case "OrCondition":
+      checkCondition(cond.left, scope);
+      checkCondition(cond.right, scope);
+      return;
+    case "AndCondition":
+      checkCondition(cond.left, scope);
+      checkCondition(cond.right, scope);
+      return;
+    case "NotCondition":
+      checkCondition(cond.operand, scope);
+      return;
+    case "Comparison":
+      inferType(cond.left, scope);
+      inferType(cond.right, scope);
+      return;
+    case "RangeTest":
+      inferType(cond.subject, scope);
+      inferType(cond.low, scope);
+      inferType(cond.high, scope);
+      return;
+    case "TypeTest":
+      inferType(cond.subject, scope);
+      return;
+    case "BooleanReference":
+      inferType(cond.subject, scope);
+      return;
+    case "BooleanLiteralCondition":
+      return;
+    default:
+      assertNever(cond);
+  }
+}
+
+function inferTernaryExpression(expr: TernaryExpression, scope: Scope): ChuteType {
+  checkCondition(expr.condition, scope);
+  const consequentType = inferType(expr.consequent, scope);
+  const alternateType = inferType(expr.alternate, scope);
+
+  if (isAssignable(alternateType, consequentType)) {
+    return consequentType;
+  }
+  if (isAssignable(consequentType, alternateType)) {
+    return alternateType;
+  }
+  return { kind: "any" };
 }
 
 function assertNever(value: never): never {
