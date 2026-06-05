@@ -7,15 +7,21 @@ import type {
   BinaryExpression,
   BinaryOperator,
   CallExpression,
+  ComparisonOperator,
+  Condition,
   DictionaryEntry,
   DictionaryLiteral,
   Expression,
+  ForStatement,
+  IfStatement,
   InterpolatedPart,
   InterpolatedString,
   LetDeclaration,
   ListLiteral,
   ListType,
   MemberExpression,
+  MenuCase,
+  MenuStatement,
   MetadataField,
   MetadataValue,
   OptionalMemberExpression,
@@ -23,9 +29,11 @@ import type {
   PlaceAccessor,
   Program,
   QuantityType,
+  RepeatStatement,
   ShortcutMetadata,
   Statement,
   SubscriptExpression,
+  TernaryExpression,
   TypeAnnotation,
   VarDeclaration,
 } from "./ast.ts";
@@ -200,6 +208,18 @@ export class Parser {
     if (this.check(TokenKind.Var)) {
       return this.parseVarDeclaration();
     }
+    if (this.check(TokenKind.If)) {
+      return this.parseIfStatement();
+    }
+    if (this.check(TokenKind.For)) {
+      return this.parseForStatement();
+    }
+    if (this.check(TokenKind.Repeat)) {
+      return this.parseRepeatStatement();
+    }
+    if (this.check(TokenKind.Menu)) {
+      return this.parseMenuStatement();
+    }
 
     const expr = this.parseExpression();
 
@@ -260,6 +280,267 @@ export class Parser {
       name: tokenValue(name),
       typeAnnotation,
       initializer,
+    };
+  }
+
+  private parseIfStatement(): IfStatement {
+    const start = this.expect(TokenKind.If).span.start;
+    const condition = this.parseCondition();
+    const body = this.parseBlock();
+
+    let elseBody: Statement[] | IfStatement | undefined;
+    if (this.check(TokenKind.Else)) {
+      this.advance();
+      if (this.check(TokenKind.If)) {
+        elseBody = this.parseIfStatement();
+      } else {
+        elseBody = this.parseBlock();
+      }
+    }
+
+    const end = elseBody
+      ? Array.isArray(elseBody)
+        ? (elseBody.at(elseBody.length - 1)?.span.end ?? start)
+        : elseBody.span.end
+      : (body.at(body.length - 1)?.span.end ?? start);
+
+    return {
+      kind: "IfStatement",
+      span: { start, end },
+      condition,
+      body,
+      elseBody,
+    };
+  }
+
+  private parseForStatement(): ForStatement {
+    const start = this.expect(TokenKind.For).span.start;
+    const variable = tokenValue(this.expect(TokenKind.Identifier));
+    this.expect(TokenKind.In);
+    const iterable = this.parseExpression();
+    const body = this.parseBlock();
+    const end = body.at(body.length - 1)?.span.end ?? start;
+    return {
+      kind: "ForStatement",
+      span: { start, end },
+      variable,
+      iterable,
+      body,
+    };
+  }
+
+  private parseRepeatStatement(): RepeatStatement {
+    const start = this.expect(TokenKind.Repeat).span.start;
+    const count = this.parsePostfix();
+    const body = this.parseBlock();
+    const end = body.at(body.length - 1)?.span.end ?? start;
+    return {
+      kind: "RepeatStatement",
+      span: { start, end },
+      count,
+      body,
+    };
+  }
+
+  private parseMenuStatement(): MenuStatement {
+    const start = this.expect(TokenKind.Menu).span.start;
+    const prompt = this.parseExpression();
+
+    let variable: string | undefined;
+    let variableType: TypeAnnotation | undefined;
+    if (this.check(TokenKind.Arrow)) {
+      this.advance();
+      variable = tokenValue(this.expect(TokenKind.Identifier));
+      if (this.check(TokenKind.Colon)) {
+        variableType = this.parseTypeAnnotationWithColon();
+      }
+    }
+
+    this.expect(TokenKind.LeftBrace);
+    const cases: MenuCase[] = [];
+    while (this.check(TokenKind.Case)) {
+      cases.push(this.parseMenuCase());
+    }
+    const end = this.expect(TokenKind.RightBrace).span.end;
+
+    return {
+      kind: "MenuStatement",
+      span: { start, end },
+      prompt,
+      variable,
+      variableType,
+      cases,
+    };
+  }
+
+  private parseMenuCase(): MenuCase {
+    const start = this.expect(TokenKind.Case).span.start;
+    const labelTok = this.peek();
+    let label: string;
+
+    if (labelTok.kind === TokenKind.String || labelTok.kind === TokenKind.RawString) {
+      this.advance();
+      label = tokenValue(labelTok);
+    } else if (labelTok.kind === TokenKind.Dot) {
+      this.advance();
+      const nameTok = this.expect(TokenKind.Identifier);
+      label = `.${tokenValue(nameTok)}`;
+    } else {
+      throw this.error(
+        `expected string or dot name in menu case, got ${tokenKindName(labelTok.kind)}`,
+        labelTok.span,
+      );
+    }
+
+    const body = this.parseBlock();
+    const end = body.at(body.length - 1)?.span.end ?? start;
+
+    return {
+      kind: "MenuCase",
+      span: { start, end },
+      label,
+      body,
+    };
+  }
+
+  private parseBlock(): Statement[] {
+    this.expect(TokenKind.LeftBrace);
+    const stmts: Statement[] = [];
+    while (!this.check(TokenKind.RightBrace)) {
+      stmts.push(this.parseStatement());
+    }
+    this.expect(TokenKind.RightBrace);
+    return stmts;
+  }
+
+  private parseCondition(): Condition {
+    let left = this.parseConjunction();
+    while (this.check(TokenKind.Or)) {
+      this.advance();
+      const right = this.parseConjunction();
+      left = {
+        kind: "OrCondition",
+        span: { start: left.span.start, end: right.span.end },
+        left,
+        right,
+      };
+    }
+    return left;
+  }
+
+  private parseConjunction(): Condition {
+    let left = this.parseConditionAtom();
+    while (this.check(TokenKind.And)) {
+      this.advance();
+      const right = this.parseConditionAtom();
+      left = {
+        kind: "AndCondition",
+        span: { start: left.span.start, end: right.span.end },
+        left,
+        right,
+      };
+    }
+    return left;
+  }
+
+  private parseConditionAtom(): Condition {
+    if (this.check(TokenKind.Not)) {
+      const start = this.advance().span.start;
+      const operand = this.parseConditionAtom();
+      return {
+        kind: "NotCondition",
+        span: { start, end: operand.span.end },
+        operand,
+      };
+    }
+
+    if (this.check(TokenKind.True)) {
+      const tok = this.advance();
+      return {
+        kind: "BooleanLiteralCondition",
+        span: tok.span,
+        value: true,
+      };
+    }
+
+    if (this.check(TokenKind.False)) {
+      const tok = this.advance();
+      return {
+        kind: "BooleanLiteralCondition",
+        span: tok.span,
+        value: false,
+      };
+    }
+
+    if (this.check(TokenKind.LeftParen)) {
+      const start = this.advance().span.start;
+      const inner = this.parseCondition();
+      const end = this.expect(TokenKind.RightParen).span.end;
+
+      if (
+        isComparisonOp(this.peek().kind) ||
+        this.check(TokenKind.In) ||
+        this.check(TokenKind.Is)
+      ) {
+        const wrappedExpr = conditionToExpression(inner);
+        return this.finishConditionAfterAdditive(wrappedExpr);
+      }
+
+      return {
+        ...inner,
+        span: { start, end },
+      };
+    }
+
+    const left = this.parseAdditive();
+    return this.finishConditionAfterAdditive(left);
+  }
+
+  private finishConditionAfterAdditive(left: Expression): Condition {
+    const tok = this.peek();
+
+    if (isComparisonOp(tok.kind)) {
+      const operator = comparisonOpFromToken(tok.kind);
+      this.advance();
+      const right = this.parseCoalesce();
+      return {
+        kind: "Comparison",
+        span: { start: left.span.start, end: right.span.end },
+        left,
+        operator,
+        right,
+      };
+    }
+
+    if (this.check(TokenKind.In)) {
+      this.advance();
+      const low = this.parseCoalesce();
+      this.expect(TokenKind.DotDotDot);
+      const high = this.parseCoalesce();
+      return {
+        kind: "RangeTest",
+        span: { start: left.span.start, end: high.span.end },
+        subject: left,
+        low,
+        high,
+      };
+    }
+
+    if (this.check(TokenKind.Is)) {
+      this.advance();
+      const testType = this.parseBaseType();
+      return {
+        kind: "TypeTest",
+        span: { start: left.span.start, end: testType.span.end },
+        subject: left,
+        testType,
+      };
+    }
+
+    return {
+      kind: "BooleanReference",
+      span: left.span,
+      subject: left,
     };
   }
 
@@ -348,11 +629,117 @@ export class Parser {
   }
 
   private parseExpression(): Expression {
-    return this.parseCoalesce();
+    if (this.check(TokenKind.Not)) {
+      return this.parseTernaryWithConditionStart();
+    }
+    return this.parsePipelineOrTernary();
   }
 
-  private parseCoalesce(): Expression {
-    let left = this.parseAdditive();
+  private parseTernaryWithConditionStart(): TernaryExpression {
+    const cond = this.parseCondition();
+    this.expect(TokenKind.Question);
+    const consequent = this.parseExpression();
+    this.expect(TokenKind.Colon);
+    const alternate = this.parseExpression();
+    return {
+      kind: "TernaryExpression",
+      span: { start: cond.span.start, end: alternate.span.end },
+      condition: cond,
+      consequent,
+      alternate,
+    };
+  }
+
+  private parsePipelineOrTernary(): Expression {
+    const left = this.parseAdditive();
+
+    if (this.check(TokenKind.Question)) {
+      const cond = this.finishConditionAfterAdditive(left);
+      if (cond.kind !== "BooleanReference" || this.check(TokenKind.Question)) {
+        this.expect(TokenKind.Question);
+        const consequent = this.parseExpression();
+        this.expect(TokenKind.Colon);
+        const alternate = this.parseExpression();
+        return {
+          kind: "TernaryExpression",
+          span: { start: cond.span.start, end: alternate.span.end },
+          condition: cond,
+          consequent,
+          alternate,
+        };
+      }
+    }
+
+    if (isComparisonOp(this.peek().kind) || this.check(TokenKind.Is)) {
+      const cond = this.finishConditionAfterAdditive(left);
+      let fullCond: Condition = cond;
+      while (this.check(TokenKind.And)) {
+        this.advance();
+        const right = this.parseConditionAtom();
+        fullCond = {
+          kind: "AndCondition",
+          span: { start: fullCond.span.start, end: right.span.end },
+          left: fullCond,
+          right,
+        };
+      }
+      while (this.check(TokenKind.Or)) {
+        this.advance();
+        const right = this.parseConjunction();
+        fullCond = {
+          kind: "OrCondition",
+          span: { start: fullCond.span.start, end: right.span.end },
+          left: fullCond,
+          right,
+        };
+      }
+      this.expect(TokenKind.Question);
+      const consequent = this.parseExpression();
+      this.expect(TokenKind.Colon);
+      const alternate = this.parseExpression();
+      return {
+        kind: "TernaryExpression",
+        span: { start: fullCond.span.start, end: alternate.span.end },
+        condition: fullCond,
+        consequent,
+        alternate,
+      };
+    }
+
+    if (this.check(TokenKind.In) && this.isRangeTestAhead()) {
+      const cond = this.finishConditionAfterAdditive(left);
+      this.expect(TokenKind.Question);
+      const consequent = this.parseExpression();
+      this.expect(TokenKind.Colon);
+      const alternate = this.parseExpression();
+      return {
+        kind: "TernaryExpression",
+        span: { start: cond.span.start, end: alternate.span.end },
+        condition: cond,
+        consequent,
+        alternate,
+      };
+    }
+
+    return this.finishCoalesce(left);
+  }
+
+  private isRangeTestAhead(): boolean {
+    let depth = 0;
+    let pos = this.pos;
+    while (pos < this.tokens.length) {
+      const tok = this.tokens.at(pos);
+      if (!tok || tok.kind === TokenKind.Eof) break;
+      if (tok.kind === TokenKind.DotDotDot && depth === 0) return true;
+      if (tok.kind === TokenKind.LeftParen || tok.kind === TokenKind.LeftBracket) depth++;
+      if (tok.kind === TokenKind.RightParen || tok.kind === TokenKind.RightBracket) depth--;
+      if (tok.kind === TokenKind.Semicolon || tok.kind === TokenKind.LeftBrace) break;
+      pos++;
+    }
+    return false;
+  }
+
+  private finishCoalesce(left: Expression): Expression {
     while (this.check(TokenKind.QuestionQuestion)) {
       this.advance();
       const right = this.parseAdditive();
@@ -364,6 +751,10 @@ export class Parser {
       };
     }
     return left;
+  }
+
+  private parseCoalesce(): Expression {
+    return this.finishCoalesce(this.parseAdditive());
   }
 
   private parseAdditive(): Expression {
@@ -562,6 +953,11 @@ export class Parser {
       return { kind: "NilLiteral", span: tok.span };
     }
 
+    if (tok.kind === TokenKind.HashIndex) {
+      this.advance();
+      return { kind: "HashIndexExpression", span: tok.span };
+    }
+
     if (tok.kind === TokenKind.LeftParen) {
       this.advance();
       const expr = this.parseExpression();
@@ -748,6 +1144,55 @@ function exprToPlace(expr: Expression): Place {
     root: current.name,
     accessors,
   };
+}
+
+function isComparisonOp(kind: TokenKind): boolean {
+  return (
+    kind === TokenKind.EqualEqual ||
+    kind === TokenKind.BangEqual ||
+    kind === TokenKind.Greater ||
+    kind === TokenKind.GreaterEqual ||
+    kind === TokenKind.Less ||
+    kind === TokenKind.LessEqual ||
+    kind === TokenKind.Contains ||
+    kind === TokenKind.BangContains ||
+    kind === TokenKind.HasPrefix ||
+    kind === TokenKind.HasSuffix
+  );
+}
+
+function comparisonOpFromToken(kind: TokenKind): ComparisonOperator {
+  switch (kind) {
+    case TokenKind.EqualEqual:
+      return "==";
+    case TokenKind.BangEqual:
+      return "!=";
+    case TokenKind.Greater:
+      return ">";
+    case TokenKind.GreaterEqual:
+      return ">=";
+    case TokenKind.Less:
+      return "<";
+    case TokenKind.LessEqual:
+      return "<=";
+    case TokenKind.Contains:
+      return "contains";
+    case TokenKind.BangContains:
+      return "!contains";
+    case TokenKind.HasPrefix:
+      return "hasPrefix";
+    case TokenKind.HasSuffix:
+      return "hasSuffix";
+    default:
+      throw new Error(`not a comparison operator: ${kind}`);
+  }
+}
+
+function conditionToExpression(cond: import("./ast.ts").Condition): Expression {
+  if (cond.kind === "BooleanReference") {
+    return cond.subject;
+  }
+  throw new ParseError("expected expression in parentheses", cond.span);
 }
 
 function tokenValue(tok: Token): string {

@@ -667,4 +667,337 @@ showAlert(text: "Hello from Chute!");`;
       expect(() => parse("let x = {};")).toThrow(ParseError);
     });
   });
+
+  describe("if statements", () => {
+    it("should parse if with comparison condition", () => {
+      const ast = parse("if x > 5 { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("IfStatement");
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "Comparison",
+          operator: ">",
+        });
+        expect(stmt.body).toHaveLength(1);
+        expect(stmt.elseBody).toBeUndefined();
+      }
+    });
+
+    it("should parse if/else", () => {
+      const ast = parse("if x == 1 { showAlert(text: x); } else { showResult(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "Comparison",
+          operator: "==",
+        });
+        expect(stmt.body).toHaveLength(1);
+        expect(Array.isArray(stmt.elseBody)).toBe(true);
+        if (Array.isArray(stmt.elseBody)) {
+          expect(stmt.elseBody).toHaveLength(1);
+        }
+      }
+    });
+
+    it("should parse if/else if/else chain", () => {
+      const ast = parse(`
+        if x > 10 {
+          showAlert(text: x);
+        } else if x > 5 {
+          showResult(text: x);
+        } else {
+          showAlert(text: x);
+        }
+      `);
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.elseBody).toMatchObject({
+          kind: "IfStatement",
+        });
+        if (stmt.elseBody && !Array.isArray(stmt.elseBody)) {
+          expect(Array.isArray(stmt.elseBody.elseBody)).toBe(true);
+        }
+      }
+    });
+
+    it("should parse boolean reference condition", () => {
+      const ast = parse("if flag { showAlert(text: flag); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "BooleanReference",
+        });
+      }
+    });
+
+    it("should parse not condition", () => {
+      const ast = parse("if not flag { showAlert(text: flag); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "NotCondition",
+        });
+        if (stmt.condition.kind === "NotCondition") {
+          expect(stmt.condition.operand).toMatchObject({
+            kind: "BooleanReference",
+          });
+        }
+      }
+    });
+
+    it("should parse and/or conditions", () => {
+      const ast = parse("if x > 1 and y < 10 { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition.kind).toBe("AndCondition");
+      }
+    });
+
+    it("should parse or with lower precedence than and", () => {
+      const ast = parse("if a or b and c { showAlert(text: a); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition.kind).toBe("OrCondition");
+        if (stmt.condition.kind === "OrCondition") {
+          expect(stmt.condition.left).toMatchObject({
+            kind: "BooleanReference",
+          });
+          expect(stmt.condition.right.kind).toBe("AndCondition");
+        }
+      }
+    });
+
+    it("should parse all comparison operators", () => {
+      const ops = ["==", "!=", ">", ">=", "<", "<="];
+      for (const op of ops) {
+        const ast = parse(`if x ${op} 5 { showAlert(text: x); }`);
+        const stmt = ast.body.at(0);
+        if (stmt?.kind === "IfStatement") {
+          expect(stmt.condition).toMatchObject({
+            kind: "Comparison",
+            operator: op,
+          });
+        }
+      }
+    });
+
+    it("should parse contains and string comparison operators", () => {
+      const ops = ["contains", "!contains", "hasPrefix", "hasSuffix"];
+      for (const op of ops) {
+        const src =
+          op === "!contains"
+            ? `if x !contains "y" { showAlert(text: x); }`
+            : `if x ${op} "y" { showAlert(text: x); }`;
+        const ast = parse(src);
+        const stmt = ast.body.at(0);
+        if (stmt?.kind === "IfStatement") {
+          expect(stmt.condition).toMatchObject({
+            kind: "Comparison",
+            operator: op,
+          });
+        }
+      }
+    });
+
+    it("should parse range test condition", () => {
+      const ast = parse("if x in 1...10 { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "RangeTest",
+        });
+        if (stmt.condition.kind === "RangeTest") {
+          expect(stmt.condition.subject).toMatchObject({ kind: "Identifier", name: "x" });
+          expect(stmt.condition.low).toMatchObject({ kind: "NumberLiteral", value: 1 });
+          expect(stmt.condition.high).toMatchObject({ kind: "NumberLiteral", value: 10 });
+        }
+      }
+    });
+
+    it("should parse type test condition", () => {
+      const ast = parse("if x is Text { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "TypeTest",
+        });
+        if (stmt.condition.kind === "TypeTest") {
+          expect(stmt.condition.testType).toMatchObject({
+            kind: "NamedType",
+            name: "Text",
+          });
+        }
+      }
+    });
+
+    it("should parse nil comparison", () => {
+      const ast = parse("if x == nil { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "Comparison",
+          operator: "==",
+        });
+        if (stmt.condition.kind === "Comparison") {
+          expect(stmt.condition.right).toMatchObject({ kind: "NilLiteral" });
+        }
+      }
+    });
+
+    it("should parse boolean literal condition true", () => {
+      const ast = parse("if true { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition).toMatchObject({
+          kind: "BooleanLiteralCondition",
+          value: true,
+        });
+      }
+    });
+
+    it("should parse parenthesized condition", () => {
+      const ast = parse("if (x > 5) and y { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "IfStatement") {
+        expect(stmt.condition.kind).toBe("AndCondition");
+      }
+    });
+  });
+
+  describe("for statements", () => {
+    it("should parse for...in loop", () => {
+      const ast = parse("for item in items { showAlert(text: item); }");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("ForStatement");
+      if (stmt?.kind === "ForStatement") {
+        expect(stmt.variable).toBe("item");
+        expect(stmt.iterable).toMatchObject({ kind: "Identifier", name: "items" });
+        expect(stmt.body).toHaveLength(1);
+      }
+    });
+  });
+
+  describe("repeat statements", () => {
+    it("should parse repeat loop", () => {
+      const ast = parse("repeat 5 { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("RepeatStatement");
+      if (stmt?.kind === "RepeatStatement") {
+        expect(stmt.count).toMatchObject({ kind: "NumberLiteral", value: 5 });
+        expect(stmt.body).toHaveLength(1);
+      }
+    });
+
+    it("should parse repeat with expression count", () => {
+      const ast = parse("repeat n { showAlert(text: x); }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "RepeatStatement") {
+        expect(stmt.count).toMatchObject({ kind: "Identifier", name: "n" });
+      }
+    });
+  });
+
+  describe("menu statements", () => {
+    it("should parse menu with cases", () => {
+      const ast = parse(`
+        menu "Choose" {
+          case "Option A" {
+            showAlert(text: x);
+          }
+          case "Option B" {
+            showResult(text: x);
+          }
+        }
+      `);
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("MenuStatement");
+      if (stmt?.kind === "MenuStatement") {
+        expect(stmt.prompt).toMatchObject({ kind: "StringLiteral", value: "Choose" });
+        expect(stmt.cases).toHaveLength(2);
+        expect(stmt.cases.at(0)?.label).toBe("Option A");
+        expect(stmt.cases.at(1)?.label).toBe("Option B");
+      }
+    });
+
+    it("should parse menu with variable binding", () => {
+      const ast = parse(`
+        menu "Pick" -> choice {
+          case "A" { showAlert(text: choice); }
+        }
+      `);
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "MenuStatement") {
+        expect(stmt.variable).toBe("choice");
+        expect(stmt.variableType).toBeUndefined();
+      }
+    });
+
+    it("should parse menu with typed variable binding", () => {
+      const ast = parse(`
+        menu "Pick" -> choice: Text {
+          case "A" { showAlert(text: choice); }
+        }
+      `);
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "MenuStatement") {
+        expect(stmt.variable).toBe("choice");
+        expect(stmt.variableType).toMatchObject({
+          kind: "TypeAnnotation",
+          base: { kind: "NamedType", name: "Text" },
+        });
+      }
+    });
+  });
+
+  describe("ternary expressions", () => {
+    it("should parse ternary with comparison condition", () => {
+      const ast = parse('let x = a > 5 ? "big" : "small";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer.kind).toBe("TernaryExpression");
+        if (decl.initializer.kind === "TernaryExpression") {
+          expect(decl.initializer.condition).toMatchObject({
+            kind: "Comparison",
+            operator: ">",
+          });
+          expect(decl.initializer.consequent).toMatchObject({
+            kind: "StringLiteral",
+            value: "big",
+          });
+          expect(decl.initializer.alternate).toMatchObject({
+            kind: "StringLiteral",
+            value: "small",
+          });
+        }
+      }
+    });
+
+    it("should parse ternary with boolean reference condition", () => {
+      const ast = parse('let x = flag ? "yes" : "no";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "TernaryExpression") {
+        expect(decl.initializer.condition).toMatchObject({
+          kind: "BooleanReference",
+        });
+      }
+    });
+
+    it("should parse ternary with not condition", () => {
+      const ast = parse('let x = not flag ? "no" : "yes";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "TernaryExpression") {
+        expect(decl.initializer.condition.kind).toBe("NotCondition");
+      }
+    });
+  });
+
+  describe("#index expression", () => {
+    it("should parse #index in expression position", () => {
+      const ast = parse("let x = #index;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({ kind: "HashIndexExpression" });
+      }
+    });
+  });
 });
