@@ -130,4 +130,121 @@ describe("lower", () => {
       expect(param).toMatchObject({ kind: "InterpolatedText" });
     });
   });
+
+  describe("if statement", () => {
+    it("should lower if to conditional start/end", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let x = 5; if x > 3 { showAlert(text: "big"); }',
+      );
+      const conditionals = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.conditional",
+      );
+      expect(conditionals).toHaveLength(2);
+      expect(conditionals.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
+      expect(conditionals.at(1)?.parameters.get("WFControlFlowMode")).toBe(2);
+      const groupId = conditionals.at(0)?.groupingIdentifier;
+      expect(groupId).toBeDefined();
+      expect(conditionals.at(1)?.groupingIdentifier).toBe(groupId);
+    });
+
+    it("should lower if/else to conditional start/otherwise/end", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let x = 5; if x > 3 { showAlert(text: "big"); } else { showAlert(text: "small"); }',
+      );
+      const conditionals = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.conditional",
+      );
+      expect(conditionals).toHaveLength(3);
+      expect(conditionals.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
+      expect(conditionals.at(1)?.parameters.get("WFControlFlowMode")).toBe(1);
+      expect(conditionals.at(2)?.parameters.get("WFControlFlowMode")).toBe(2);
+    });
+  });
+
+  describe("for statement", () => {
+    it("should lower for to repeat.each start/end", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let items = [1, 2]; for item in items { showAlert(text: "go"); }',
+      );
+      const repeats = actions.filter((a) => a.identifier === "is.workflow.actions.repeat.each");
+      expect(repeats).toHaveLength(2);
+      expect(repeats.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
+      expect(repeats.at(1)?.parameters.get("WFControlFlowMode")).toBe(2);
+      const groupId = repeats.at(0)?.groupingIdentifier;
+      expect(groupId).toBeDefined();
+      expect(repeats.at(1)?.groupingIdentifier).toBe(groupId);
+    });
+
+    it("should emit setvariable for loop variable after repeat start", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let items = [1, 2]; for item in items { showAlert(text: "go"); }',
+      );
+      const repeatIdx = actions.findIndex(
+        (a) => a.identifier === "is.workflow.actions.repeat.each",
+      );
+      const nextAction = actions.at(repeatIdx + 1);
+      expect(nextAction?.identifier).toBe("is.workflow.actions.setvariable");
+      expect(nextAction?.parameters.get("WFVariableName")).toBe("item");
+    });
+  });
+
+  describe("repeat statement", () => {
+    it("should lower repeat to repeat.count start/end", () => {
+      const actions = lowerSource('shortcut { name: "Test" } repeat 5 { showAlert(text: "go"); }');
+      const repeats = actions.filter((a) => a.identifier === "is.workflow.actions.repeat.count");
+      expect(repeats).toHaveLength(2);
+      expect(repeats.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
+      expect(repeats.at(0)?.parameters.get("WFRepeatCount")).toBe(5);
+      expect(repeats.at(1)?.parameters.get("WFControlFlowMode")).toBe(2);
+    });
+  });
+
+  describe("menu statement", () => {
+    it("should lower menu to choosefrommenu start/cases/end", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        menu "Pick" {
+          case "A" { showAlert(text: "a"); }
+          case "B" { showAlert(text: "b"); }
+        }
+      `);
+      const menus = actions.filter((a) => a.identifier === "is.workflow.actions.choosefrommenu");
+      expect(menus).toHaveLength(4);
+      expect(menus.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
+      expect(menus.at(1)?.parameters.get("WFControlFlowMode")).toBe(1);
+      expect(menus.at(1)?.parameters.get("WFMenuItemTitle")).toBe("A");
+      expect(menus.at(2)?.parameters.get("WFControlFlowMode")).toBe(1);
+      expect(menus.at(2)?.parameters.get("WFMenuItemTitle")).toBe("B");
+      expect(menus.at(3)?.parameters.get("WFControlFlowMode")).toBe(2);
+    });
+  });
+
+  describe("ternary expression", () => {
+    it("should lower ternary to conditional actions", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let x = 5; let y = x > 3 ? "big" : "small";',
+      );
+      const conditionals = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.conditional",
+      );
+      expect(conditionals).toHaveLength(3);
+      expect(conditionals.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
+      expect(conditionals.at(1)?.parameters.get("WFControlFlowMode")).toBe(1);
+      expect(conditionals.at(2)?.parameters.get("WFControlFlowMode")).toBe(2);
+    });
+  });
+
+  describe("#index", () => {
+    it("should lower #index to getvariable for Repeat Index", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } let items = [1, 2]; for item in items { let idx = #index; }',
+      );
+      const getVars = actions.filter((a) => a.identifier === "is.workflow.actions.getvariable");
+      const indexRef = getVars.find((a) => {
+        const v = a.parameters.get("WFVariable");
+        return v && typeof v === "object" && "kind" in v && v.name === "Repeat Index";
+      });
+      expect(indexRef).toBeDefined();
+    });
+  });
 });
