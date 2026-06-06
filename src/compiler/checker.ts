@@ -472,13 +472,23 @@ function describeType(type: ChuteType): string {
 
 function checkIfStatement(stmt: IfStatement, scope: Scope): void {
   checkCondition(stmt.condition, scope);
+
   const bodyScope = new Scope(scope);
+  const narrowing = extractNilNarrowing(stmt.condition, scope);
+  if (narrowing && narrowing.branch === "body") {
+    bodyScope.define(narrowing.name, narrowing.narrowedType, false);
+  }
+
   for (const s of stmt.body) {
     checkStatement(s, bodyScope);
   }
+
   if (stmt.elseBody) {
     if (Array.isArray(stmt.elseBody)) {
       const elseScope = new Scope(scope);
+      if (narrowing && narrowing.branch === "else") {
+        elseScope.define(narrowing.name, narrowing.narrowedType, false);
+      }
       for (const s of stmt.elseBody) {
         checkStatement(s, elseScope);
       }
@@ -486,6 +496,40 @@ function checkIfStatement(stmt: IfStatement, scope: Scope): void {
       checkIfStatement(stmt.elseBody, scope);
     }
   }
+}
+
+interface NilNarrowing {
+  name: string;
+  narrowedType: ChuteType;
+  branch: "body" | "else";
+}
+
+function extractNilNarrowing(cond: Condition, scope: Scope): NilNarrowing | undefined {
+  if (cond.kind !== "Comparison") return undefined;
+  if (cond.operator !== "==" && cond.operator !== "!=") return undefined;
+
+  let identName: string | undefined;
+  let isNilRight = false;
+
+  if (cond.left.kind === "Identifier" && cond.right.kind === "NilLiteral") {
+    identName = cond.left.name;
+    isNilRight = true;
+  } else if (cond.right.kind === "Identifier" && cond.left.kind === "NilLiteral") {
+    identName = cond.right.name;
+    isNilRight = true;
+  }
+
+  if (!identName || !isNilRight) return undefined;
+
+  const binding = scope.lookup(identName);
+  if (!binding || binding.type.kind !== "optional") return undefined;
+
+  const narrowedType = binding.type.inner;
+
+  if (cond.operator === "!=") {
+    return { name: identName, narrowedType, branch: "body" };
+  }
+  return { name: identName, narrowedType, branch: "else" };
 }
 
 function checkForStatement(stmt: ForStatement, scope: Scope): void {

@@ -210,4 +210,176 @@ describe("checker", () => {
       expect(() => checkSource('showAlert(text: "hello");')).not.toThrow();
     });
   });
+
+  describe("if statements", () => {
+    it("should accept if with comparison condition", () => {
+      expect(() =>
+        checkSource(`
+          let x = 5;
+          if x > 3 { showAlert(text: "big"); }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept if/else", () => {
+      expect(() =>
+        checkSource(`
+          let x = 5;
+          if x > 3 { showAlert(text: "big"); } else { showAlert(text: "small"); }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should scope variables to if body", () => {
+      expect(() =>
+        checkSource(`
+          if true {
+            let y = 1;
+          }
+          let z = y + 1;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should scope variables to else body", () => {
+      expect(() =>
+        checkSource(`
+          if true {
+            showAlert(text: "a");
+          } else {
+            let y = 1;
+          }
+          let z = y + 1;
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("for statements", () => {
+    it("should accept for loop over list", () => {
+      expect(() =>
+        checkSource(`
+          let items = [1, 2, 3];
+          for item in items { showAlert(text: "go"); }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject for loop over non-list", () => {
+      expect(() =>
+        checkSource(`
+          let x = 5;
+          for item in x { showAlert(text: "go"); }
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should type loop variable from list element type", () => {
+      expect(() =>
+        checkSource(`
+          let items = [1, 2, 3];
+          for item in items {
+            let y = item + 1;
+          }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should scope loop variable to loop body", () => {
+      expect(() =>
+        checkSource(`
+          let items = [1, 2, 3];
+          for item in items { showAlert(text: "go"); }
+          let x = item + 1;
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("repeat statements", () => {
+    it("should accept repeat with number", () => {
+      expect(() => checkSource('repeat 5 { showAlert(text: "go"); }')).not.toThrow();
+    });
+
+    it("should reject repeat with non-number", () => {
+      expect(() =>
+        checkSource(`
+          let s = "hello";
+          repeat s { showAlert(text: "go"); }
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("menu statements", () => {
+    it("should accept menu with cases", () => {
+      expect(() =>
+        checkSource(`
+          menu "Pick" {
+            case "A" { showAlert(text: "a"); }
+            case "B" { showAlert(text: "b"); }
+          }
+        `),
+      ).not.toThrow();
+    });
+  });
+
+  describe("ternary expressions", () => {
+    it("should type ternary from branches", () => {
+      expect(() =>
+        checkSource(`
+          let x = 5;
+          let y: Number = x > 3 ? 1 : 0;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject mismatched ternary assigned to typed variable", () => {
+      expect(() =>
+        checkSource(`
+          let x = 5;
+          let y: Number = x > 3 ? "yes" : "no";
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("nil narrowing", () => {
+    it("should narrow optional to non-optional in != nil branch", () => {
+      expect(() =>
+        checkSource(`
+          let x: Number? = nil;
+          if x != nil {
+            let y = x + 1;
+          }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should narrow optional to nil in == nil branch's else", () => {
+      expect(() =>
+        checkSource(`
+          let x: Number? = nil;
+          if x == nil {
+            showAlert(text: "nil");
+          } else {
+            let y = x + 1;
+          }
+        `),
+      ).not.toThrow();
+    });
+  });
+
+  describe("#index", () => {
+    it("should type #index as number", () => {
+      expect(() =>
+        checkSource(`
+          let items = [1, 2, 3];
+          for item in items {
+            let idx = #index + 1;
+          }
+        `),
+      ).not.toThrow();
+    });
+  });
 });
