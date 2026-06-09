@@ -242,7 +242,13 @@ describe("lower", () => {
       const getVars = actions.filter((a) => a.identifier === "is.workflow.actions.getvariable");
       const indexRef = getVars.find((a) => {
         const v = a.parameters.get("WFVariable");
-        return v && typeof v === "object" && "kind" in v && v.name === "Repeat Index";
+        return (
+          v &&
+          typeof v === "object" &&
+          "kind" in v &&
+          v.kind === "VariableRef" &&
+          v.name === "Repeat Index"
+        );
       });
       expect(indexRef).toBeDefined();
     });
