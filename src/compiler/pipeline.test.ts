@@ -70,4 +70,73 @@ showResult(text: "done");`;
 
     expect(compile(source)).toMatchSnapshot();
   });
+
+  it("should compile if/else statement", () => {
+    const source = `shortcut {
+  name: "IfElse",
+}
+
+let x = 5;
+if x > 3 {
+  showAlert(text: "big");
+} else {
+  showAlert(text: "small");
+}`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile for loop", () => {
+    const source = `shortcut {
+  name: "ForLoop",
+}
+
+let items = [1, 2, 3];
+for item in items {
+  showAlert(text: "item");
+}`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile repeat loop", () => {
+    const source = `shortcut {
+  name: "Repeat",
+}
+
+repeat 3 {
+  showAlert(text: "again");
+}`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile menu statement", () => {
+    const source = `shortcut {
+  name: "Menu",
+}
+
+menu "Choose one" {
+  case "Option A" {
+    showAlert(text: "A");
+  }
+  case "Option B" {
+    showAlert(text: "B");
+  }
+}`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile ternary expression", () => {
+    const source = `shortcut {
+  name: "Ternary",
+}
+
+let x = 5;
+let result = x > 3 ? "big" : "small";
+showAlert(text: result);`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
 });
