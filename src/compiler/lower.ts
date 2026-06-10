@@ -613,27 +613,27 @@ function nextTempName(ctx: LowerContext): string {
 }
 
 function lowerIfStatement(stmt: IfStatement, actions: ActionIR[], ctx: LowerContext): void {
-  const groupId = nextUuid(ctx);
-
-  lowerCondition(stmt.condition, actions, ctx);
-  actions.push(makeConditionalAction(0, groupId, ctx));
-
-  for (const s of stmt.body) {
-    lowerStatement(s, actions, ctx);
-  }
-
-  if (stmt.elseBody) {
-    actions.push(makeConditionalAction(1, groupId, ctx));
-    if (Array.isArray(stmt.elseBody)) {
-      for (const s of stmt.elseBody) {
+  emitConditionBlock(
+    stmt.condition,
+    actions,
+    ctx,
+    () => {
+      for (const s of stmt.body) {
         lowerStatement(s, actions, ctx);
       }
-    } else {
-      lowerIfStatement(stmt.elseBody, actions, ctx);
-    }
-  }
-
-  actions.push(makeConditionalAction(2, groupId, ctx));
+    },
+    stmt.elseBody
+      ? () => {
+          if (Array.isArray(stmt.elseBody)) {
+            for (const s of stmt.elseBody) {
+              lowerStatement(s, actions, ctx);
+            }
+          } else if (stmt.elseBody) {
+            lowerIfStatement(stmt.elseBody, actions, ctx);
+          }
+        }
+      : undefined,
+  );
 }
 
 function lowerForStatement(stmt: ForStatement, actions: ActionIR[], ctx: LowerContext): void {
@@ -741,58 +741,245 @@ function lowerTernaryExpression(
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
-  const groupId = nextUuid(ctx);
-
-  lowerCondition(expr.condition, actions, ctx);
-  actions.push(makeConditionalAction(0, groupId, ctx));
-
-  lowerExpression(expr.consequent, actions, ctx);
-
-  actions.push(makeConditionalAction(1, groupId, ctx));
-
-  lowerExpression(expr.alternate, actions, ctx);
-
-  actions.push(makeConditionalAction(2, groupId, ctx));
+  emitConditionBlock(
+    expr.condition,
+    actions,
+    ctx,
+    () => {
+      lowerExpression(expr.consequent, actions, ctx);
+    },
+    () => {
+      lowerExpression(expr.alternate, actions, ctx);
+    },
+  );
 }
 
 function lowerHashIndexExpression(actions: ActionIR[], ctx: LowerContext): void {
-  const parameters = new Map<string, ParameterValue>();
-  parameters.set("WFVariable", {
-    kind: "VariableRef",
-    name: "Repeat Index",
-  });
-  actions.push({
-    identifier: "is.workflow.actions.getvariable",
-    uuid: nextUuid(ctx),
-    parameters,
-  });
+  actions.push(makeGetVariableAction("Repeat Index", ctx));
 }
 
-function lowerCondition(cond: Condition, actions: ActionIR[], ctx: LowerContext): void {
+function emitConditionBlock(
+  cond: Condition,
+  actions: ActionIR[],
+  ctx: LowerContext,
+  thenBranch: () => void,
+  elseBranch: (() => void) | undefined,
+): void {
   switch (cond.kind) {
     case "Comparison":
-      lowerExpression(cond.left, actions, ctx);
+      emitComparisonBlock(cond, actions, ctx, thenBranch, elseBranch);
       return;
     case "RangeTest":
-      lowerExpression(cond.subject, actions, ctx);
+      emitRangeTestBlock(cond, actions, ctx, thenBranch, elseBranch);
       return;
     case "TypeTest":
-      lowerExpression(cond.subject, actions, ctx);
+      emitTypeTestBlock(cond, actions, ctx, thenBranch, elseBranch);
       return;
     case "BooleanReference":
-      lowerExpression(cond.subject, actions, ctx);
+      emitBoolRefBlock(cond.subject, false, actions, ctx, thenBranch, elseBranch);
       return;
     case "BooleanLiteralCondition":
+      if (cond.value) {
+        thenBranch();
+      } else if (elseBranch) {
+        elseBranch();
+      }
       return;
     case "NotCondition":
-      lowerCondition(cond.operand, actions, ctx);
-      return;
-    case "OrCondition":
-      lowerCondition(cond.left, actions, ctx);
+      emitConditionBlock(cond.operand, actions, ctx, elseBranch ?? (() => {}), thenBranch);
       return;
     case "AndCondition":
-      lowerCondition(cond.left, actions, ctx);
+      emitConditionBlock(
+        cond.left,
+        actions,
+        ctx,
+        () => {
+          emitConditionBlock(cond.right, actions, ctx, thenBranch, elseBranch);
+        },
+        elseBranch,
+      );
       return;
+    case "OrCondition":
+      emitOrConditionBlock(cond, actions, ctx, thenBranch, elseBranch);
+      return;
+  }
+}
+
+function emitComparisonBlock(
+  cond: import("./ast.ts").Comparison,
+  actions: ActionIR[],
+  ctx: LowerContext,
+  thenBranch: () => void,
+  elseBranch: (() => void) | undefined,
+): void {
+  const groupId = nextUuid(ctx);
+
+  lowerExpression(cond.left, actions, ctx);
+  const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
+  const condCode = comparisonConditionCode(cond.operator);
+
+  const extra: Record<string, ParameterValue> = {
+    WFCondition: condCode,
+  };
+
+  if (typeof rightValue === "number") {
+    extra["WFNumberValue"] = rightValue;
+  } else {
+    extra["WFConditionalActionString"] = rightValue;
+  }
+
+  actions.push(makeConditionalAction(0, groupId, ctx, extra));
+  thenBranch();
+  if (elseBranch) {
+    actions.push(makeConditionalAction(1, groupId, ctx));
+    elseBranch();
+  }
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function emitRangeTestBlock(
+  cond: import("./ast.ts").RangeTest,
+  actions: ActionIR[],
+  ctx: LowerContext,
+  thenBranch: () => void,
+  elseBranch: (() => void) | undefined,
+): void {
+  const groupId = nextUuid(ctx);
+
+  lowerExpression(cond.subject, actions, ctx);
+  const lowValue = lowerOperandPreservingMagicVariable(cond.low, actions, ctx);
+  const highValue = lowerToParamValue(cond.high, actions, ctx);
+
+  const extra: Record<string, ParameterValue> = {
+    WFCondition: 999,
+    WFNumberValue: lowValue,
+    WFAnotherNumber: highValue,
+  };
+
+  actions.push(makeConditionalAction(0, groupId, ctx, extra));
+  thenBranch();
+  if (elseBranch) {
+    actions.push(makeConditionalAction(1, groupId, ctx));
+    elseBranch();
+  }
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function emitTypeTestBlock(
+  cond: import("./ast.ts").TypeTest,
+  actions: ActionIR[],
+  ctx: LowerContext,
+  thenBranch: () => void,
+  elseBranch: (() => void) | undefined,
+): void {
+  const groupId = nextUuid(ctx);
+
+  lowerExpression(cond.subject, actions, ctx);
+
+  const extra: Record<string, ParameterValue> = {
+    WFCondition: 100,
+  };
+
+  actions.push(makeConditionalAction(0, groupId, ctx, extra));
+  thenBranch();
+  if (elseBranch) {
+    actions.push(makeConditionalAction(1, groupId, ctx));
+    elseBranch();
+  }
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function emitBoolRefBlock(
+  subject: Expression,
+  _negate: boolean,
+  actions: ActionIR[],
+  ctx: LowerContext,
+  thenBranch: () => void,
+  elseBranch: (() => void) | undefined,
+): void {
+  const groupId = nextUuid(ctx);
+
+  lowerExpression(subject, actions, ctx);
+
+  const extra: Record<string, ParameterValue> = {
+    WFCondition: 100,
+  };
+
+  actions.push(makeConditionalAction(0, groupId, ctx, extra));
+  thenBranch();
+  if (elseBranch) {
+    actions.push(makeConditionalAction(1, groupId, ctx));
+    elseBranch();
+  }
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function emitOrConditionBlock(
+  cond: import("./ast.ts").OrCondition,
+  actions: ActionIR[],
+  ctx: LowerContext,
+  thenBranch: () => void,
+  elseBranch: (() => void) | undefined,
+): void {
+  const tempName = nextTempName(ctx);
+  actions.push(makeNumberAction(0, ctx));
+  actions.push(makeSetVariableAction(tempName, ctx));
+
+  emitConditionBlock(
+    cond.left,
+    actions,
+    ctx,
+    () => {
+      actions.push(makeNumberAction(1, ctx));
+      actions.push(makeSetVariableAction(tempName, ctx));
+    },
+    undefined,
+  );
+
+  emitConditionBlock(
+    cond.right,
+    actions,
+    ctx,
+    () => {
+      actions.push(makeNumberAction(1, ctx));
+      actions.push(makeSetVariableAction(tempName, ctx));
+    },
+    undefined,
+  );
+
+  const groupId = nextUuid(ctx);
+  actions.push(makeGetVariableAction(tempName, ctx));
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 4, WFNumberValue: 0 }));
+  thenBranch();
+  if (elseBranch) {
+    actions.push(makeConditionalAction(1, groupId, ctx));
+    elseBranch();
+  }
+  actions.push(makeConditionalAction(2, groupId, ctx));
+}
+
+function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): number {
+  switch (op) {
+    case "==":
+      return 0;
+    case "!=":
+      return 1;
+    case ">":
+      return 4;
+    case ">=":
+      return 4;
+    case "<":
+      return 5;
+    case "<=":
+      return 5;
+    case "contains":
+      return 8;
+    case "!contains":
+      return 9;
+    case "hasPrefix":
+      return 2;
+    case "hasSuffix":
+      return 3;
   }
 }
 

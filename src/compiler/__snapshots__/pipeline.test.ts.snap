@@ -480,6 +480,10 @@ exports[`compile > should compile if/else statement 1`] = `
 			<string>00000000-0000-0000-0000-000000000004</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
+				<key>WFCondition</key>
+				<integer>4</integer>
+				<key>WFNumberValue</key>
+				<integer>3</integer>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
@@ -1274,6 +1278,10 @@ exports[`compile > should compile ternary expression 1`] = `
 			<string>00000000-0000-0000-0000-000000000004</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
+				<key>WFCondition</key>
+				<integer>4</integer>
+				<key>WFNumberValue</key>
+				<integer>3</integer>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>

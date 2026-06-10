@@ -476,7 +476,7 @@ function checkIfStatement(stmt: IfStatement, scope: Scope): void {
   const bodyScope = new Scope(scope);
   const narrowing = extractNilNarrowing(stmt.condition, scope);
   if (narrowing && narrowing.branch === "body") {
-    bodyScope.define(narrowing.name, narrowing.narrowedType, false);
+    bodyScope.define(narrowing.name, narrowing.narrowedType, narrowing.mutable);
   }
 
   for (const s of stmt.body) {
@@ -487,7 +487,7 @@ function checkIfStatement(stmt: IfStatement, scope: Scope): void {
     if (Array.isArray(stmt.elseBody)) {
       const elseScope = new Scope(scope);
       if (narrowing && narrowing.branch === "else") {
-        elseScope.define(narrowing.name, narrowing.narrowedType, false);
+        elseScope.define(narrowing.name, narrowing.narrowedType, narrowing.mutable);
       }
       for (const s of stmt.elseBody) {
         checkStatement(s, elseScope);
@@ -501,6 +501,7 @@ function checkIfStatement(stmt: IfStatement, scope: Scope): void {
 interface NilNarrowing {
   name: string;
   narrowedType: ChuteType;
+  mutable: boolean;
   branch: "body" | "else";
 }
 
@@ -525,11 +526,12 @@ function extractNilNarrowing(cond: Condition, scope: Scope): NilNarrowing | unde
   if (!binding || binding.type.kind !== "optional") return undefined;
 
   const narrowedType = binding.type.inner;
+  const mutable = binding.mutable;
 
   if (cond.operator === "!=") {
-    return { name: identName, narrowedType, branch: "body" };
+    return { name: identName, narrowedType, mutable, branch: "body" };
   }
-  return { name: identName, narrowedType, branch: "else" };
+  return { name: identName, narrowedType, mutable, branch: "else" };
 }
 
 function checkForStatement(stmt: ForStatement, scope: Scope): void {

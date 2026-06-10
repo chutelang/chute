@@ -368,6 +368,17 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should preserve var mutability through nil narrowing", () => {
+      expect(() =>
+        checkSource(`
+          var x: Number? = nil;
+          if x != nil {
+            x = 42;
+          }
+        `),
+      ).not.toThrow();
+    });
   });
 
   describe("#index", () => {
