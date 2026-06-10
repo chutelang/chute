@@ -286,29 +286,28 @@ export class Parser {
   private parseIfStatement(): IfStatement {
     const start = this.expect(TokenKind.If).span.start;
     const condition = this.parseCondition();
-    const body = this.parseBlock();
+    const block = this.parseBlock();
 
     let elseBody: Statement[] | IfStatement | undefined;
+    let end = block.end;
     if (this.check(TokenKind.Else)) {
       this.advance();
       if (this.check(TokenKind.If)) {
-        elseBody = this.parseIfStatement();
+        const elseIf = this.parseIfStatement();
+        elseBody = elseIf;
+        end = elseIf.span.end;
       } else {
-        elseBody = this.parseBlock();
+        const elseBlock = this.parseBlock();
+        elseBody = elseBlock.stmts;
+        end = elseBlock.end;
       }
     }
-
-    const end = elseBody
-      ? Array.isArray(elseBody)
-        ? (elseBody.at(elseBody.length - 1)?.span.end ?? start)
-        : elseBody.span.end
-      : (body.at(body.length - 1)?.span.end ?? start);
 
     return {
       kind: "IfStatement",
       span: { start, end },
       condition,
-      body,
+      body: block.stmts,
       elseBody,
     };
   }
@@ -318,27 +317,25 @@ export class Parser {
     const variable = tokenValue(this.expect(TokenKind.Identifier));
     this.expect(TokenKind.In);
     const iterable = this.parseExpression();
-    const body = this.parseBlock();
-    const end = body.at(body.length - 1)?.span.end ?? start;
+    const block = this.parseBlock();
     return {
       kind: "ForStatement",
-      span: { start, end },
+      span: { start, end: block.end },
       variable,
       iterable,
-      body,
+      body: block.stmts,
     };
   }
 
   private parseRepeatStatement(): RepeatStatement {
     const start = this.expect(TokenKind.Repeat).span.start;
     const count = this.parsePostfix();
-    const body = this.parseBlock();
-    const end = body.at(body.length - 1)?.span.end ?? start;
+    const block = this.parseBlock();
     return {
       kind: "RepeatStatement",
-      span: { start, end },
+      span: { start, end: block.end },
       count,
-      body,
+      body: block.stmts,
     };
   }
 
@@ -392,25 +389,24 @@ export class Parser {
       );
     }
 
-    const body = this.parseBlock();
-    const end = body.at(body.length - 1)?.span.end ?? start;
+    const block = this.parseBlock();
 
     return {
       kind: "MenuCase",
-      span: { start, end },
+      span: { start, end: block.end },
       label,
-      body,
+      body: block.stmts,
     };
   }
 
-  private parseBlock(): Statement[] {
+  private parseBlock(): { stmts: Statement[]; end: number } {
     this.expect(TokenKind.LeftBrace);
     const stmts: Statement[] = [];
     while (!this.check(TokenKind.RightBrace)) {
       stmts.push(this.parseStatement());
     }
-    this.expect(TokenKind.RightBrace);
-    return stmts;
+    const end = this.expect(TokenKind.RightBrace).span.end;
+    return { stmts, end };
   }
 
   private parseCondition(): Condition {
@@ -656,72 +652,63 @@ export class Parser {
     if (this.check(TokenKind.Question)) {
       const cond = this.finishConditionAfterAdditive(left);
       if (cond.kind !== "BooleanReference" || this.check(TokenKind.Question)) {
-        this.expect(TokenKind.Question);
-        const consequent = this.parseExpression();
-        this.expect(TokenKind.Colon);
-        const alternate = this.parseExpression();
-        return {
-          kind: "TernaryExpression",
-          span: { start: cond.span.start, end: alternate.span.end },
-          condition: cond,
-          consequent,
-          alternate,
-        };
+        const fullCond = this.finishConditionChaining(cond);
+        return this.finishTernaryTail(fullCond);
       }
     }
 
     if (isComparisonOp(this.peek().kind) || this.check(TokenKind.Is)) {
       const cond = this.finishConditionAfterAdditive(left);
-      let fullCond: Condition = cond;
-      while (this.check(TokenKind.And)) {
-        this.advance();
-        const right = this.parseConditionAtom();
-        fullCond = {
-          kind: "AndCondition",
-          span: { start: fullCond.span.start, end: right.span.end },
-          left: fullCond,
-          right,
-        };
-      }
-      while (this.check(TokenKind.Or)) {
-        this.advance();
-        const right = this.parseConjunction();
-        fullCond = {
-          kind: "OrCondition",
-          span: { start: fullCond.span.start, end: right.span.end },
-          left: fullCond,
-          right,
-        };
-      }
-      this.expect(TokenKind.Question);
-      const consequent = this.parseExpression();
-      this.expect(TokenKind.Colon);
-      const alternate = this.parseExpression();
-      return {
-        kind: "TernaryExpression",
-        span: { start: fullCond.span.start, end: alternate.span.end },
-        condition: fullCond,
-        consequent,
-        alternate,
-      };
+      const fullCond = this.finishConditionChaining(cond);
+      return this.finishTernaryTail(fullCond);
     }
 
     if (this.check(TokenKind.In) && this.isRangeTestAhead()) {
       const cond = this.finishConditionAfterAdditive(left);
-      this.expect(TokenKind.Question);
-      const consequent = this.parseExpression();
-      this.expect(TokenKind.Colon);
-      const alternate = this.parseExpression();
-      return {
-        kind: "TernaryExpression",
-        span: { start: cond.span.start, end: alternate.span.end },
-        condition: cond,
-        consequent,
-        alternate,
-      };
+      const fullCond = this.finishConditionChaining(cond);
+      return this.finishTernaryTail(fullCond);
     }
 
     return this.finishCoalesce(left);
+  }
+
+  private finishConditionChaining(cond: Condition): Condition {
+    let result = cond;
+    while (this.check(TokenKind.And)) {
+      this.advance();
+      const right = this.parseConditionAtom();
+      result = {
+        kind: "AndCondition",
+        span: { start: result.span.start, end: right.span.end },
+        left: result,
+        right,
+      };
+    }
+    while (this.check(TokenKind.Or)) {
+      this.advance();
+      const right = this.parseConjunction();
+      result = {
+        kind: "OrCondition",
+        span: { start: result.span.start, end: right.span.end },
+        left: result,
+        right,
+      };
+    }
+    return result;
+  }
+
+  private finishTernaryTail(cond: Condition): TernaryExpression {
+    this.expect(TokenKind.Question);
+    const consequent = this.parseExpression();
+    this.expect(TokenKind.Colon);
+    const alternate = this.parseExpression();
+    return {
+      kind: "TernaryExpression",
+      span: { start: cond.span.start, end: alternate.span.end },
+      condition: cond,
+      consequent,
+      alternate,
+    };
   }
 
   private isRangeTestAhead(): boolean {
