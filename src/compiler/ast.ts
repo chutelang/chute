@@ -68,12 +68,15 @@ export interface MetadataDotName {
 export type Statement =
   | ExpressionStatement
   | LetDeclaration
+  | LetDestructure
   | VarDeclaration
   | Assignment
   | IfStatement
   | ForStatement
   | RepeatStatement
-  | MenuStatement;
+  | MenuStatement
+  | EnumDeclaration
+  | RecordDeclaration;
 
 export interface Assignment {
   kind: "Assignment";
@@ -114,6 +117,13 @@ export interface LetDeclaration {
   span: Span;
   name: string;
   typeAnnotation: TypeAnnotation | undefined;
+  initializer: Expression;
+}
+
+export interface LetDestructure {
+  kind: "LetDestructure";
+  span: Span;
+  names: string[];
   initializer: Expression;
 }
 
@@ -170,6 +180,7 @@ export type Expression =
   | InterpolatedString
   | ListLiteral
   | DictionaryLiteral
+  | DotNameExpression
   | HashIndexExpression;
 
 export interface CallExpression {
@@ -307,6 +318,12 @@ export interface TernaryExpression {
   alternate: Expression;
 }
 
+export interface DotNameExpression {
+  kind: "DotNameExpression";
+  span: Span;
+  name: string;
+}
+
 export interface HashIndexExpression {
   kind: "HashIndexExpression";
   span: Span;
@@ -430,4 +447,35 @@ export interface MenuCase {
   span: Span;
   label: string;
   body: Statement[];
+}
+
+export interface EnumDeclaration {
+  kind: "EnumDeclaration";
+  span: Span;
+  exported: boolean;
+  name: string;
+  defaultValue: string | undefined;
+  cases: EnumCaseNode[];
+}
+
+export interface EnumCaseNode {
+  kind: "EnumCase";
+  span: Span;
+  name: string;
+  value: string | undefined;
+}
+
+export interface RecordDeclaration {
+  kind: "RecordDeclaration";
+  span: Span;
+  exported: boolean;
+  name: string;
+  fields: RecordFieldNode[];
+}
+
+export interface RecordFieldNode {
+  kind: "RecordField";
+  span: Span;
+  name: string;
+  type: TypeAnnotation;
 }
