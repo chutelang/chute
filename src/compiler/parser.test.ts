@@ -1000,4 +1000,165 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
   });
+
+  describe("enum declarations", () => {
+    it("should parse enum with explicit case values", () => {
+      const ast = parse(`
+        enum Color {
+          red = "RED",
+          blue = "BLUE",
+        }
+      `);
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("EnumDeclaration");
+      if (stmt?.kind === "EnumDeclaration") {
+        expect(stmt.name).toBe("Color");
+        expect(stmt.exported).toBe(false);
+        expect(stmt.defaultValue).toBeUndefined();
+        expect(stmt.cases).toHaveLength(2);
+        expect(stmt.cases.at(0)).toMatchObject({
+          kind: "EnumCase",
+          name: "red",
+          value: "RED",
+        });
+        expect(stmt.cases.at(1)).toMatchObject({
+          kind: "EnumCase",
+          name: "blue",
+          value: "BLUE",
+        });
+      }
+    });
+
+    it("should parse enum with implicit case values", () => {
+      const ast = parse("enum Direction { north, south, east, west }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "EnumDeclaration") {
+        expect(stmt.cases).toHaveLength(4);
+        expect(stmt.cases.at(0)).toMatchObject({
+          name: "north",
+          value: undefined,
+        });
+      }
+    });
+
+    it("should parse enum with default value", () => {
+      const ast = parse(`enum Status = "status" { active, inactive }`);
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "EnumDeclaration") {
+        expect(stmt.defaultValue).toBe("status");
+        expect(stmt.cases).toHaveLength(2);
+      }
+    });
+
+    it("should parse exported enum", () => {
+      const ast = parse('export enum Color { red = "R" }');
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "EnumDeclaration") {
+        expect(stmt.exported).toBe(true);
+        expect(stmt.name).toBe("Color");
+      }
+    });
+
+    it("should parse enum with trailing comma", () => {
+      const ast = parse("enum X { a, b, }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "EnumDeclaration") {
+        expect(stmt.cases).toHaveLength(2);
+      }
+    });
+  });
+
+  describe("record declarations", () => {
+    it("should parse record with typed fields", () => {
+      const ast = parse(`
+        record Point {
+          x: Number,
+          y: Number,
+        }
+      `);
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("RecordDeclaration");
+      if (stmt?.kind === "RecordDeclaration") {
+        expect(stmt.name).toBe("Point");
+        expect(stmt.exported).toBe(false);
+        expect(stmt.fields).toHaveLength(2);
+        expect(stmt.fields.at(0)).toMatchObject({
+          kind: "RecordField",
+          name: "x",
+        });
+        expect(stmt.fields.at(0)?.type.base).toMatchObject({
+          kind: "NamedType",
+          name: "Number",
+        });
+      }
+    });
+
+    it("should parse empty record", () => {
+      const ast = parse("record Empty {}");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "RecordDeclaration") {
+        expect(stmt.fields).toHaveLength(0);
+      }
+    });
+
+    it("should parse exported record", () => {
+      const ast = parse("export record Point { x: Number }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "RecordDeclaration") {
+        expect(stmt.exported).toBe(true);
+      }
+    });
+
+    it("should parse record with optional field type", () => {
+      const ast = parse("record User { name: Text, email: Text? }");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "RecordDeclaration") {
+        expect(stmt.fields.at(1)?.type.optional).toBe(true);
+      }
+    });
+  });
+
+  describe("dot-name expressions", () => {
+    it("should parse dot-name in expression position", () => {
+      const ast = parse("let x = .north;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer).toMatchObject({
+          kind: "DotNameExpression",
+          name: "north",
+        });
+      }
+    });
+  });
+
+  describe("let destructuring", () => {
+    it("should parse let destructure with two bindings", () => {
+      const ast = parse("let { x, y } = point;");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("LetDestructure");
+      if (stmt?.kind === "LetDestructure") {
+        expect(stmt.names).toEqual(["x", "y"]);
+        expect(stmt.initializer).toMatchObject({
+          kind: "Identifier",
+          name: "point",
+        });
+      }
+    });
+
+    it("should parse let destructure with trailing comma", () => {
+      const ast = parse("let { a, b, } = rec;");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "LetDestructure") {
+        expect(stmt.names).toEqual(["a", "b"]);
+      }
+    });
+
+    it("should parse let destructure with single binding", () => {
+      const ast = parse("let { name } = user;");
+      const stmt = ast.body.at(0);
+      if (stmt?.kind === "LetDestructure") {
+        expect(stmt.names).toEqual(["name"]);
+      }
+    });
+  });
 });
