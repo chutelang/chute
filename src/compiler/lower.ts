@@ -127,6 +127,13 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
     case "MenuStatement":
       lowerMenuStatement(stmt, actions, ctx);
       return;
+    case "LetDestructure":
+      lowerLetDestructure(stmt, actions, ctx);
+      return;
+    case "EnumDeclaration":
+      return;
+    case "RecordDeclaration":
+      return;
     default:
       assertNever(stmt);
   }
@@ -207,6 +214,9 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       return;
     case "TernaryExpression":
       lowerTernaryExpression(expr, actions, ctx);
+      return;
+    case "DotNameExpression":
+      lowerDotNameExpression(expr, actions, ctx);
       return;
     case "HashIndexExpression":
       lowerHashIndexExpression(actions, ctx);
@@ -981,6 +991,22 @@ function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): num
     case "hasSuffix":
       return 3;
   }
+}
+
+function lowerLetDestructure(
+  _stmt: import("./ast.ts").LetDestructure,
+  _actions: ActionIR[],
+  _ctx: LowerContext,
+): void {
+  throw new LowerError("let destructuring is not yet lowered");
+}
+
+function lowerDotNameExpression(
+  _expr: import("./ast.ts").DotNameExpression,
+  _actions: ActionIR[],
+  _ctx: LowerContext,
+): void {
+  throw new LowerError("dot-name expressions are not yet lowered");
 }
 
 function assertNever(value: never): never {

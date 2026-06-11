@@ -11,12 +11,15 @@ import type {
   Condition,
   DictionaryEntry,
   DictionaryLiteral,
+  EnumCaseNode,
+  EnumDeclaration,
   Expression,
   ForStatement,
   IfStatement,
   InterpolatedPart,
   InterpolatedString,
   LetDeclaration,
+  LetDestructure,
   ListLiteral,
   ListType,
   MemberExpression,
@@ -29,6 +32,8 @@ import type {
   PlaceAccessor,
   Program,
   QuantityType,
+  RecordDeclaration,
+  RecordFieldNode,
   RepeatStatement,
   ShortcutMetadata,
   Statement,
@@ -202,8 +207,17 @@ export class Parser {
   }
 
   private parseStatement(): Statement {
+    if (this.check(TokenKind.Export)) {
+      return this.parseExportedDeclaration();
+    }
+    if (this.check(TokenKind.Enum)) {
+      return this.parseEnumDeclaration(false);
+    }
+    if (this.check(TokenKind.Record)) {
+      return this.parseRecordDeclaration(false);
+    }
     if (this.check(TokenKind.Let)) {
-      return this.parseLetDeclaration();
+      return this.parseLetOrDestructure();
     }
     if (this.check(TokenKind.Var)) {
       return this.parseVarDeclaration();
@@ -232,6 +246,151 @@ export class Parser {
       kind: "ExpressionStatement",
       span: { start: expr.span.start, end },
       expression: expr,
+    };
+  }
+
+  private parseExportedDeclaration(): Statement {
+    const start = this.expect(TokenKind.Export).span.start;
+
+    if (this.check(TokenKind.Enum)) {
+      const decl = this.parseEnumDeclaration(true);
+      decl.span.start = start;
+      return decl;
+    }
+    if (this.check(TokenKind.Record)) {
+      const decl = this.parseRecordDeclaration(true);
+      decl.span.start = start;
+      return decl;
+    }
+
+    throw this.error(
+      `expected 'enum' or 'record' after 'export', got ${tokenKindName(this.peek().kind)}`,
+      this.peek().span,
+    );
+  }
+
+  private parseEnumDeclaration(exported: boolean): EnumDeclaration {
+    const start = this.expect(TokenKind.Enum).span.start;
+    const name = tokenValue(this.expect(TokenKind.Identifier));
+
+    let defaultValue: string | undefined;
+    if (this.check(TokenKind.Equal)) {
+      this.advance();
+      defaultValue = tokenValue(this.expect(TokenKind.String));
+    }
+
+    this.expect(TokenKind.LeftBrace);
+
+    const cases: EnumCaseNode[] = [];
+    cases.push(this.parseEnumCase());
+
+    while (this.check(TokenKind.Comma)) {
+      this.advance();
+      if (this.check(TokenKind.RightBrace)) break;
+      cases.push(this.parseEnumCase());
+    }
+
+    const end = this.expect(TokenKind.RightBrace).span.end;
+    return {
+      kind: "EnumDeclaration",
+      span: { start, end },
+      exported,
+      name,
+      defaultValue,
+      cases,
+    };
+  }
+
+  private parseEnumCase(): EnumCaseNode {
+    const nameTok = this.expect(TokenKind.Identifier);
+    let value: string | undefined;
+    let end = nameTok.span.end;
+
+    if (this.check(TokenKind.Equal)) {
+      this.advance();
+      const valTok = this.expect(TokenKind.String);
+      value = tokenValue(valTok);
+      end = valTok.span.end;
+    }
+
+    return {
+      kind: "EnumCase",
+      span: { start: nameTok.span.start, end },
+      name: tokenValue(nameTok),
+      value,
+    };
+  }
+
+  private parseRecordDeclaration(exported: boolean): RecordDeclaration {
+    const start = this.expect(TokenKind.Record).span.start;
+    const name = tokenValue(this.expect(TokenKind.Identifier));
+
+    this.expect(TokenKind.LeftBrace);
+    const fields: RecordFieldNode[] = [];
+
+    while (!this.check(TokenKind.RightBrace)) {
+      fields.push(this.parseRecordField());
+      if (!this.check(TokenKind.RightBrace)) {
+        this.expect(TokenKind.Comma);
+      }
+    }
+
+    const end = this.expect(TokenKind.RightBrace).span.end;
+    return {
+      kind: "RecordDeclaration",
+      span: { start, end },
+      exported,
+      name,
+      fields,
+    };
+  }
+
+  private parseRecordField(): RecordFieldNode {
+    const nameTok = this.expect(TokenKind.Identifier);
+    const type = this.parseTypeAnnotationWithColon();
+    return {
+      kind: "RecordField",
+      span: { start: nameTok.span.start, end: type.span.end },
+      name: tokenValue(nameTok),
+      type,
+    };
+  }
+
+  private parseLetOrDestructure(): LetDeclaration | LetDestructure {
+    const start = this.peek().span.start;
+
+    if (this.check(TokenKind.Let)) {
+      const lookahead = this.tokens.at(this.pos + 1);
+      if (lookahead?.kind === TokenKind.LeftBrace) {
+        return this.parseLetDestructure();
+      }
+      return this.parseLetDeclaration();
+    }
+
+    return this.parseLetDeclaration();
+  }
+
+  private parseLetDestructure(): LetDestructure {
+    const start = this.expect(TokenKind.Let).span.start;
+    this.expect(TokenKind.LeftBrace);
+
+    const names: string[] = [];
+    names.push(tokenValue(this.expect(TokenKind.Identifier)));
+    while (this.check(TokenKind.Comma)) {
+      this.advance();
+      if (this.check(TokenKind.RightBrace)) break;
+      names.push(tokenValue(this.expect(TokenKind.Identifier)));
+    }
+    this.expect(TokenKind.RightBrace);
+
+    this.expect(TokenKind.Equal);
+    const initializer = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "LetDestructure",
+      span: { start, end },
+      names,
+      initializer,
     };
   }
 
@@ -938,6 +1097,16 @@ export class Parser {
     if (tok.kind === TokenKind.Nil) {
       this.advance();
       return { kind: "NilLiteral", span: tok.span };
+    }
+
+    if (tok.kind === TokenKind.Dot) {
+      this.advance();
+      const nameTok = this.expect(TokenKind.Identifier);
+      return {
+        kind: "DotNameExpression",
+        span: { start: tok.span.start, end: nameTok.span.end },
+        name: tokenValue(nameTok),
+      };
     }
 
     if (tok.kind === TokenKind.HashIndex) {

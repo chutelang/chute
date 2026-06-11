@@ -110,6 +110,15 @@ function checkStatement(stmt: Statement, scope: Scope): void {
     case "MenuStatement":
       checkMenuStatement(stmt, scope);
       return;
+    case "LetDestructure":
+      checkLetDestructure(stmt, scope);
+      return;
+    case "EnumDeclaration":
+      checkEnumDeclaration(stmt, scope);
+      return;
+    case "RecordDeclaration":
+      checkRecordDeclaration(stmt, scope);
+      return;
     default:
       assertNever(stmt);
   }
@@ -218,6 +227,8 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
       return inferCallExpression(expr, scope);
     case "TernaryExpression":
       return inferTernaryExpression(expr, scope);
+    case "DotNameExpression":
+      return inferDotNameExpression(expr, scope);
     case "HashIndexExpression":
       return { kind: "number" };
     default:
@@ -623,6 +634,25 @@ function inferTernaryExpression(expr: TernaryExpression, scope: Scope): ChuteTyp
     return alternateType;
   }
   return { kind: "any" };
+}
+
+function checkLetDestructure(_stmt: import("./ast.ts").LetDestructure, _scope: Scope): void {
+  // TODO: implement
+}
+
+function checkEnumDeclaration(_stmt: import("./ast.ts").EnumDeclaration, _scope: Scope): void {
+  // TODO: implement
+}
+
+function checkRecordDeclaration(_stmt: import("./ast.ts").RecordDeclaration, _scope: Scope): void {
+  // TODO: implement
+}
+
+function inferDotNameExpression(
+  expr: import("./ast.ts").DotNameExpression,
+  _scope: Scope,
+): ChuteType {
+  throw new CheckError(`cannot resolve '.${expr.name}' without a contextual type`, expr.span);
 }
 
 function assertNever(value: never): never {
