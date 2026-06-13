@@ -393,4 +393,296 @@ describe("checker", () => {
       ).not.toThrow();
     });
   });
+
+  describe("enum declarations", () => {
+    it("should accept enum with explicit case values", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept enum with implicit case values", () => {
+      expect(() =>
+        checkSource(`
+          enum Direction { north, south, east, west }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept enum with default value prefix", () => {
+      expect(() =>
+        checkSource(`
+          enum Status = "status" { active, inactive }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject duplicate enum cases", () => {
+      expect(() =>
+        checkSource(`
+          enum Bad { x = "a", x = "b" }
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should accept enum member access", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          let c = Color.red;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject invalid enum case access", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          let c = Color.green;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should resolve dot-name shorthand with type annotation", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          let c: Color = .red;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject invalid dot-name case", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          let c: Color = .green;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject dot-name without contextual type", () => {
+      expect(() =>
+        checkSource(`
+          let c = .red;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should resolve dot-name in var assignment", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          var c: Color = .red;
+          c = .blue;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should use enum as type annotation", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          let c: Color = Color.red;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject assigning wrong enum type", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED" }
+          enum Size { small = "SM" }
+          let c: Color = Size.small;
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("record declarations", () => {
+    it("should accept empty record", () => {
+      expect(() =>
+        checkSource(`
+          record Empty {}
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept record with typed fields", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject duplicate record fields", () => {
+      expect(() =>
+        checkSource(`
+          record Bad { x: Number, x: Text }
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should accept record construction with matching fields", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject record construction with missing field", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject record construction with unknown field", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2, z: 3);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject record construction with wrong type", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: "two");
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject record construction without labels", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(1, 2);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should accept record field access", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+          let a = p.x + p.y;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject access to nonexistent record field", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+          let a = p.z;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should type record field access correctly", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+          let a: Number = p.x;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should use record as type annotation", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p: Point = Point(x: 1, y: 2);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject assigning wrong record type", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          record Size { w: Number, h: Number }
+          let p: Point = Size(w: 1, h: 2);
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("let destructuring", () => {
+    it("should accept destructuring a record", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+          let { x, y } = p;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should type destructured bindings from record fields", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+          let { x, y } = p;
+          let sum = x + y;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject destructuring a non-record", () => {
+      expect(() =>
+        checkSource(`
+          let x = 42;
+          let { a } = x;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject destructuring with nonexistent field", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let p = Point(x: 1, y: 2);
+          let { x, z } = p;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject destructuring with duplicate name in scope", () => {
+      expect(() =>
+        checkSource(`
+          record Point { x: Number, y: Number }
+          let x = 0;
+          let p = Point(x: 1, y: 2);
+          let { x, y } = p;
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("enum in record fields", () => {
+    it("should accept enum-typed record fields with dot-name construction", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          record Shirt { size: Text, color: Color }
+          let s = Shirt(size: "L", color: .red);
+        `),
+      ).not.toThrow();
+    });
+  });
 });
