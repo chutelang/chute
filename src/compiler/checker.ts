@@ -7,17 +7,21 @@ import type {
   CoalesceExpression,
   Condition,
   DictionaryLiteral,
+  EnumDeclaration,
   Expression,
   ForStatement,
   Identifier,
   IfStatement,
   InterpolatedString,
   LetDeclaration,
+  LetDestructure,
   ListLiteral,
+  MemberExpression,
   MenuStatement,
   NamedType,
   OptionalMemberExpression,
   Program,
+  RecordDeclaration,
   RepeatStatement,
   Statement,
   SubscriptExpression,
@@ -36,6 +40,8 @@ export type ChuteType =
   | { kind: "list"; element: ChuteType }
   | { kind: "dictionary" }
   | { kind: "quantity"; unit: string }
+  | { kind: "enum"; name: string; cases: Map<string, string> }
+  | { kind: "record"; name: string; fields: Map<string, ChuteType> }
   | { kind: "any" };
 
 export class CheckError extends Error {
@@ -54,6 +60,7 @@ interface Binding {
 
 export class Scope {
   private bindings = new Map<string, Binding>();
+  private types = new Map<string, ChuteType>();
   private parent: Scope | undefined;
 
   constructor(parent: Scope | undefined) {
@@ -74,6 +81,18 @@ export class Scope {
       return own;
     }
     return this.parent?.lookup(name);
+  }
+
+  defineType(name: string, type: ChuteType): void {
+    this.types.set(name, type);
+  }
+
+  lookupType(name: string): ChuteType | undefined {
+    const own = this.types.get(name);
+    if (own) {
+      return own;
+    }
+    return this.parent?.lookupType(name);
   }
 }
 
@@ -146,13 +165,12 @@ function checkDeclarationInitializer(
   decl: LetDeclaration | VarDeclaration,
   scope: Scope,
 ): ChuteType {
-  const initializerType = inferType(decl.initializer, scope);
-
   if (!decl.typeAnnotation) {
-    return initializerType;
+    return inferType(decl.initializer, scope);
   }
 
-  const annotationType = typeFromAnnotation(decl.typeAnnotation);
+  const annotationType = typeFromAnnotation(decl.typeAnnotation, scope);
+  const initializerType = inferTypeWithHint(decl.initializer, scope, annotationType);
   if (!isAssignable(initializerType, annotationType)) {
     throw new CheckError(
       `cannot assign ${describeType(initializerType)} to ${describeType(annotationType)}`,
@@ -176,7 +194,8 @@ function checkAssignment(assign: Assignment, scope: Scope): void {
     );
   }
 
-  const valueType = inferType(assign.value, scope);
+  const hint = assign.place.accessors.length === 0 ? binding.type : undefined;
+  const valueType = inferTypeWithHint(assign.value, scope, hint);
 
   for (const accessor of assign.place.accessors) {
     if (accessor.kind === "SubscriptAccessor") {
@@ -190,6 +209,17 @@ function checkAssignment(assign: Assignment, scope: Scope): void {
       assign.span,
     );
   }
+}
+
+function inferTypeWithHint(expr: Expression, scope: Scope, hint: ChuteType | undefined): ChuteType {
+  if (expr.kind === "DotNameExpression" && hint?.kind === "enum") {
+    const backingValue = hint.cases.get(expr.name);
+    if (backingValue === undefined) {
+      throw new CheckError(`'${expr.name}' is not a case of enum '${hint.name}'`, expr.span);
+    }
+    return hint;
+  }
+  return inferType(expr, scope);
 }
 
 function inferType(expr: Expression, scope: Scope): ChuteType {
@@ -211,8 +241,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "CoalesceExpression":
       return inferCoalesceExpression(expr, scope);
     case "MemberExpression":
-      inferType(expr.object, scope);
-      return { kind: "any" };
+      return inferMemberExpression(expr, scope);
     case "OptionalMemberExpression":
       return inferOptionalMemberExpression(expr, scope);
     case "SubscriptExpression":
@@ -228,7 +257,7 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "TernaryExpression":
       return inferTernaryExpression(expr, scope);
     case "DotNameExpression":
-      return inferDotNameExpression(expr, scope);
+      throw new CheckError(`cannot resolve '.${expr.name}' without a contextual type`, expr.span);
     case "HashIndexExpression":
       return { kind: "number" };
     default:
@@ -283,6 +312,37 @@ function inferCoalesceExpression(expr: CoalesceExpression, scope: Scope): ChuteT
   }
 
   return leftType.inner;
+}
+
+function inferMemberExpression(expr: MemberExpression, scope: Scope): ChuteType {
+  if (expr.object.kind === "Identifier") {
+    const typeDef = scope.lookupType(expr.object.name);
+    if (typeDef?.kind === "enum") {
+      const backingValue = typeDef.cases.get(expr.property);
+      if (backingValue === undefined) {
+        throw new CheckError(
+          `'${expr.property}' is not a case of enum '${typeDef.name}'`,
+          expr.span,
+        );
+      }
+      return typeDef;
+    }
+  }
+
+  const objectType = inferType(expr.object, scope);
+
+  if (objectType.kind === "record") {
+    const fieldType = objectType.fields.get(expr.property);
+    if (!fieldType) {
+      throw new CheckError(
+        `record '${objectType.name}' has no field '${expr.property}'`,
+        expr.span,
+      );
+    }
+    return fieldType;
+  }
+
+  return { kind: "any" };
 }
 
 function inferOptionalMemberExpression(expr: OptionalMemberExpression, scope: Scope): ChuteType {
@@ -365,10 +425,60 @@ function inferDictionaryLiteral(expr: DictionaryLiteral, scope: Scope): ChuteTyp
 }
 
 function inferCallExpression(expr: CallExpression, scope: Scope): ChuteType {
+  if (expr.callee.kind === "Identifier") {
+    const typeDef = scope.lookupType(expr.callee.name);
+    if (typeDef?.kind === "record") {
+      return checkRecordConstruction(expr, typeDef, scope);
+    }
+  }
+
   for (const arg of expr.args) {
     inferType(arg.value, scope);
   }
   return { kind: "any" };
+}
+
+function checkRecordConstruction(
+  expr: CallExpression,
+  recordType: ChuteType & { kind: "record" },
+  scope: Scope,
+): ChuteType {
+  const provided = new Set<string>();
+
+  for (const arg of expr.args) {
+    if (!arg.label) {
+      throw new CheckError(`record construction requires labeled arguments`, arg.span);
+    }
+
+    const fieldType = recordType.fields.get(arg.label);
+    if (!fieldType) {
+      throw new CheckError(`record '${recordType.name}' has no field '${arg.label}'`, arg.span);
+    }
+
+    if (provided.has(arg.label)) {
+      throw new CheckError(`duplicate field '${arg.label}' in record construction`, arg.span);
+    }
+    provided.add(arg.label);
+
+    const argType = inferTypeWithHint(arg.value, scope, fieldType);
+    if (!isAssignable(argType, fieldType)) {
+      throw new CheckError(
+        `cannot assign ${describeType(argType)} to field '${arg.label}' of type ${describeType(fieldType)}`,
+        arg.span,
+      );
+    }
+  }
+
+  for (const [fieldName] of recordType.fields) {
+    if (!provided.has(fieldName)) {
+      throw new CheckError(
+        `missing field '${fieldName}' in construction of record '${recordType.name}'`,
+        expr.span,
+      );
+    }
+  }
+
+  return recordType;
 }
 
 function requireNumber(type: ChuteType, span: Span): void {
@@ -377,8 +487,8 @@ function requireNumber(type: ChuteType, span: Span): void {
   }
 }
 
-function typeFromAnnotation(annotation: TypeAnnotation): ChuteType {
-  const base = baseTypeFromAnnotation(annotation.base);
+function typeFromAnnotation(annotation: TypeAnnotation, scope: Scope): ChuteType {
+  const base = baseTypeFromAnnotation(annotation.base, scope);
   return annotation.optional
     ? {
         kind: "optional",
@@ -387,14 +497,14 @@ function typeFromAnnotation(annotation: TypeAnnotation): ChuteType {
     : base;
 }
 
-function baseTypeFromAnnotation(base: BaseType): ChuteType {
+function baseTypeFromAnnotation(base: BaseType, scope: Scope): ChuteType {
   switch (base.kind) {
     case "NamedType":
-      return namedTypeFromAnnotation(base);
+      return namedTypeFromAnnotation(base, scope);
     case "ListType":
       return {
         kind: "list",
-        element: typeFromAnnotation(base.elementType),
+        element: typeFromAnnotation(base.elementType, scope),
       };
     case "QuantityType":
       return {
@@ -406,7 +516,7 @@ function baseTypeFromAnnotation(base: BaseType): ChuteType {
   }
 }
 
-function namedTypeFromAnnotation(named: NamedType): ChuteType {
+function namedTypeFromAnnotation(named: NamedType, scope: Scope): ChuteType {
   switch (named.name) {
     case "Text":
       return { kind: "text" };
@@ -416,8 +526,13 @@ function namedTypeFromAnnotation(named: NamedType): ChuteType {
       return { kind: "boolean" };
     case "Dictionary":
       return { kind: "dictionary" };
-    default:
+    default: {
+      const typeDef = scope.lookupType(named.name);
+      if (typeDef) {
+        return typeDef;
+      }
       return { kind: "any" };
+    }
   }
 }
 
@@ -453,6 +568,14 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
     return source.unit === target.unit;
   }
 
+  if (source.kind === "enum" && target.kind === "enum") {
+    return source.name === target.name;
+  }
+
+  if (source.kind === "record" && target.kind === "record") {
+    return source.name === target.name;
+  }
+
   return true;
 }
 
@@ -474,6 +597,10 @@ function describeType(type: ChuteType): string {
       return "Dictionary";
     case "quantity":
       return `Quantity<${type.unit}>`;
+    case "enum":
+      return type.name;
+    case "record":
+      return type.name;
     case "any":
       return "any";
     default:
@@ -636,23 +763,82 @@ function inferTernaryExpression(expr: TernaryExpression, scope: Scope): ChuteTyp
   return { kind: "any" };
 }
 
-function checkLetDestructure(_stmt: import("./ast.ts").LetDestructure, _scope: Scope): void {
-  // TODO: implement
+function checkLetDestructure(stmt: LetDestructure, scope: Scope): void {
+  const initializerType = inferType(stmt.initializer, scope);
+
+  if (initializerType.kind !== "record" && initializerType.kind !== "any") {
+    throw new CheckError(
+      `let destructuring requires a record, got ${describeType(initializerType)}`,
+      stmt.span,
+    );
+  }
+
+  for (const name of stmt.names) {
+    if (scope.hasOwn(name)) {
+      throw new CheckError(`variable '${name}' is already declared in this scope`, stmt.span);
+    }
+
+    if (initializerType.kind === "record") {
+      const fieldType = initializerType.fields.get(name);
+      if (!fieldType) {
+        throw new CheckError(`record '${initializerType.name}' has no field '${name}'`, stmt.span);
+      }
+      scope.define(name, fieldType, false);
+    } else {
+      scope.define(name, { kind: "any" }, false);
+    }
+  }
 }
 
-function checkEnumDeclaration(_stmt: import("./ast.ts").EnumDeclaration, _scope: Scope): void {
-  // TODO: implement
+function checkEnumDeclaration(stmt: EnumDeclaration, scope: Scope): void {
+  const cases = new Map<string, string>();
+  const seen = new Set<string>();
+
+  for (const c of stmt.cases) {
+    if (seen.has(c.name)) {
+      throw new CheckError(`duplicate enum case '${c.name}'`, c.span);
+    }
+    seen.add(c.name);
+
+    let backingValue: string;
+    if (c.value !== undefined) {
+      backingValue = c.value;
+    } else if (stmt.defaultValue !== undefined) {
+      backingValue = `${stmt.defaultValue}.${c.name}`;
+    } else {
+      backingValue = c.name;
+    }
+    cases.set(c.name, backingValue);
+  }
+
+  const enumType: ChuteType = {
+    kind: "enum",
+    name: stmt.name,
+    cases,
+  };
+
+  scope.defineType(stmt.name, enumType);
 }
 
-function checkRecordDeclaration(_stmt: import("./ast.ts").RecordDeclaration, _scope: Scope): void {
-  // TODO: implement
-}
+function checkRecordDeclaration(stmt: RecordDeclaration, scope: Scope): void {
+  const fields = new Map<string, ChuteType>();
+  const seen = new Set<string>();
 
-function inferDotNameExpression(
-  expr: import("./ast.ts").DotNameExpression,
-  _scope: Scope,
-): ChuteType {
-  throw new CheckError(`cannot resolve '.${expr.name}' without a contextual type`, expr.span);
+  for (const f of stmt.fields) {
+    if (seen.has(f.name)) {
+      throw new CheckError(`duplicate record field '${f.name}'`, f.span);
+    }
+    seen.add(f.name);
+    fields.set(f.name, typeFromAnnotation(f.type, scope));
+  }
+
+  const recordType: ChuteType = {
+    kind: "record",
+    name: stmt.name,
+    fields,
+  };
+
+  scope.defineType(stmt.name, recordType);
 }
 
 function assertNever(value: never): never {
