@@ -6,14 +6,17 @@ import type {
   CoalesceExpression,
   Condition,
   DictionaryLiteral,
+  EnumDeclaration,
   Expression,
   ForStatement,
   IfStatement,
   InterpolatedString,
   LetDeclaration,
+  LetDestructure,
   ListLiteral,
   MenuStatement,
   Program,
+  RecordDeclaration,
   RepeatStatement,
   Statement,
   SubscriptExpression,
@@ -70,14 +73,29 @@ export class LowerError extends Error {
 interface LowerContext {
   uuidCounter: number;
   tempCounter: number;
+  enums: Map<string, Map<string, string>>;
+  records: Set<string>;
 }
 
 export function lower(program: Program): ShortcutIR {
   const name = extractName(program);
   const actions: ActionIR[] = [];
+  const enums = new Map<string, Map<string, string>>();
+  const records = new Set<string>();
+
+  for (const stmt of program.body) {
+    if (stmt.kind === "EnumDeclaration") {
+      collectEnum(stmt, enums);
+    } else if (stmt.kind === "RecordDeclaration") {
+      records.add(stmt.name);
+    }
+  }
+
   const ctx: LowerContext = {
     uuidCounter: 0,
     tempCounter: 0,
+    enums,
+    records,
   };
 
   for (const stmt of program.body) {
@@ -85,6 +103,22 @@ export function lower(program: Program): ShortcutIR {
   }
 
   return { name, actions };
+}
+
+function collectEnum(decl: EnumDeclaration, enums: Map<string, Map<string, string>>): void {
+  const cases = new Map<string, string>();
+  for (const c of decl.cases) {
+    let backingValue: string;
+    if (c.value !== undefined) {
+      backingValue = c.value;
+    } else if (decl.defaultValue !== undefined) {
+      backingValue = `${decl.defaultValue}.${c.name}`;
+    } else {
+      backingValue = c.name;
+    }
+    cases.set(c.name, backingValue);
+  }
+  enums.set(decl.name, cases);
 }
 
 function extractName(program: Program): string {
@@ -168,6 +202,10 @@ function lowerAssignment(assign: Assignment, actions: ActionIR[], ctx: LowerCont
 function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContext): void {
   switch (expr.kind) {
     case "CallExpression":
+      if (expr.callee.kind === "Identifier" && ctx.records.has(expr.callee.name)) {
+        lowerRecordConstruction(expr, actions, ctx);
+        return;
+      }
       actions.push(lowerCall(expr, actions, ctx));
       return;
     case "StringLiteral":
@@ -204,6 +242,10 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       lowerDictionaryLiteral(expr, actions, ctx);
       return;
     case "MemberExpression":
+      if (expr.object.kind === "Identifier" && ctx.enums.has(expr.object.name)) {
+        lowerEnumMemberAccess(expr.object.name, expr.property, actions, ctx);
+        return;
+      }
       lowerKeyedAccess(expr.object, expr.property, actions, ctx);
       return;
     case "OptionalMemberExpression":
@@ -993,20 +1035,84 @@ function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): num
   }
 }
 
-function lowerLetDestructure(
-  _stmt: import("./ast.ts").LetDestructure,
-  _actions: ActionIR[],
-  _ctx: LowerContext,
+function lowerLetDestructure(stmt: LetDestructure, actions: ActionIR[], ctx: LowerContext): void {
+  lowerExpression(stmt.initializer, actions, ctx);
+  const sourceName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(sourceName, ctx));
+
+  for (const name of stmt.names) {
+    actions.push(makeGetVariableAction(sourceName, ctx));
+
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", name);
+    actions.push({
+      identifier: "is.workflow.actions.getvalueforkey",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+
+    actions.push(makeSetVariableAction(name, ctx));
+  }
+}
+
+function lowerEnumMemberAccess(
+  enumName: string,
+  caseName: string,
+  actions: ActionIR[],
+  ctx: LowerContext,
 ): void {
-  throw new LowerError("let destructuring is not yet lowered");
+  const cases = ctx.enums.get(enumName);
+  const backingValue = cases?.get(caseName);
+  if (backingValue === undefined) {
+    throw new LowerError(`unknown enum case '${enumName}.${caseName}'`);
+  }
+  actions.push(makeTextAction(backingValue, ctx));
 }
 
 function lowerDotNameExpression(
-  _expr: import("./ast.ts").DotNameExpression,
-  _actions: ActionIR[],
-  _ctx: LowerContext,
+  expr: import("./ast.ts").DotNameExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
 ): void {
-  throw new LowerError("dot-name expressions are not yet lowered");
+  for (const [, cases] of ctx.enums) {
+    const backingValue = cases.get(expr.name);
+    if (backingValue !== undefined) {
+      actions.push(makeTextAction(backingValue, ctx));
+      return;
+    }
+  }
+  throw new LowerError(`cannot resolve dot-name '.${expr.name}'`);
+}
+
+function lowerRecordConstruction(
+  expr: CallExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
+
+  for (const arg of expr.args) {
+    if (!arg.label) {
+      throw new LowerError("record construction requires labeled arguments");
+    }
+
+    const key = arg.label;
+    const value = lowerToParamValue(arg.value, actions, ctx);
+
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", key);
+    parameters.set("WFDictionaryValue", value);
+
+    actions.push({
+      identifier: "is.workflow.actions.setvalueforkey",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+  }
 }
 
 function assertNever(value: never): never {
