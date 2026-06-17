@@ -1,4 +1,5 @@
 import type { Span } from "./token.ts";
+import { resolveEnumBackingValue } from "./ast.ts";
 import type {
   Assignment,
   BaseType,
@@ -217,6 +218,7 @@ function inferTypeWithHint(expr: Expression, scope: Scope, hint: ChuteType | und
     if (backingValue === undefined) {
       throw new CheckError(`'${expr.name}' is not a case of enum '${hint.name}'`, expr.span);
     }
+    expr.resolvedBackingValue = backingValue;
     return hint;
   }
   return inferType(expr, scope);
@@ -791,24 +793,18 @@ function checkLetDestructure(stmt: LetDestructure, scope: Scope): void {
 }
 
 function checkEnumDeclaration(stmt: EnumDeclaration, scope: Scope): void {
+  if (scope.lookupType(stmt.name)) {
+    throw new CheckError(`type '${stmt.name}' is already declared`, stmt.span);
+  }
+
   const cases = new Map<string, string>();
-  const seen = new Set<string>();
 
   for (const c of stmt.cases) {
-    if (seen.has(c.name)) {
+    if (cases.has(c.name)) {
       throw new CheckError(`duplicate enum case '${c.name}'`, c.span);
     }
-    seen.add(c.name);
 
-    let backingValue: string;
-    if (c.value !== undefined) {
-      backingValue = c.value;
-    } else if (stmt.defaultValue !== undefined) {
-      backingValue = `${stmt.defaultValue}.${c.name}`;
-    } else {
-      backingValue = c.name;
-    }
-    cases.set(c.name, backingValue);
+    cases.set(c.name, resolveEnumBackingValue(c.name, c.value, stmt.defaultValue));
   }
 
   const enumType: ChuteType = {
@@ -821,14 +817,16 @@ function checkEnumDeclaration(stmt: EnumDeclaration, scope: Scope): void {
 }
 
 function checkRecordDeclaration(stmt: RecordDeclaration, scope: Scope): void {
+  if (scope.lookupType(stmt.name)) {
+    throw new CheckError(`type '${stmt.name}' is already declared`, stmt.span);
+  }
+
   const fields = new Map<string, ChuteType>();
-  const seen = new Set<string>();
 
   for (const f of stmt.fields) {
-    if (seen.has(f.name)) {
+    if (fields.has(f.name)) {
       throw new CheckError(`duplicate record field '${f.name}'`, f.span);
     }
-    seen.add(f.name);
     fields.set(f.name, typeFromAnnotation(f.type, scope));
   }
 
