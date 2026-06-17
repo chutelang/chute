@@ -76,7 +76,9 @@ export type Statement =
   | RepeatStatement
   | MenuStatement
   | EnumDeclaration
-  | RecordDeclaration;
+  | RecordDeclaration
+  | FunctionDeclaration
+  | ReturnStatement;
 
 export interface Assignment {
   kind: "Assignment";
@@ -479,6 +481,30 @@ export interface RecordFieldNode {
   span: Span;
   name: string;
   type: TypeAnnotation;
+}
+
+export interface FunctionParameter {
+  kind: "FunctionParameter";
+  span: Span;
+  name: string;
+  type: TypeAnnotation;
+  defaultValue: Expression | undefined;
+}
+
+export interface FunctionDeclaration {
+  kind: "FunctionDeclaration";
+  span: Span;
+  exported: boolean;
+  name: string;
+  params: FunctionParameter[];
+  returnType: TypeAnnotation | undefined;
+  body: Statement[];
+}
+
+export interface ReturnStatement {
+  kind: "ReturnStatement";
+  span: Span;
+  value: Expression | undefined;
 }
 
 export function resolveEnumBackingValue(
