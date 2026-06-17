@@ -281,6 +281,10 @@ export class Parser {
 
     this.expect(TokenKind.LeftBrace);
 
+    if (this.check(TokenKind.RightBrace)) {
+      throw this.error("enum requires at least one case", this.peek().span);
+    }
+
     const cases: EnumCaseNode[] = [];
     cases.push(this.parseEnumCase());
 
@@ -357,16 +361,10 @@ export class Parser {
   }
 
   private parseLetOrDestructure(): LetDeclaration | LetDestructure {
-    const start = this.peek().span.start;
-
-    if (this.check(TokenKind.Let)) {
-      const lookahead = this.tokens.at(this.pos + 1);
-      if (lookahead?.kind === TokenKind.LeftBrace) {
-        return this.parseLetDestructure();
-      }
-      return this.parseLetDeclaration();
+    const lookahead = this.tokens.at(this.pos + 1);
+    if (lookahead?.kind === TokenKind.LeftBrace) {
+      return this.parseLetDestructure();
     }
-
     return this.parseLetDeclaration();
   }
 

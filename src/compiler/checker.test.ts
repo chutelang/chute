@@ -499,6 +499,15 @@ describe("checker", () => {
         `),
       ).toThrow(CheckError);
     });
+
+    it("should reject duplicate type names", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "R" }
+          enum Color { blue = "B" }
+        `),
+      ).toThrow(CheckError);
+    });
   });
 
   describe("record declarations", () => {

@@ -322,6 +322,7 @@ export interface DotNameExpression {
   kind: "DotNameExpression";
   span: Span;
   name: string;
+  resolvedBackingValue?: string;
 }
 
 export interface HashIndexExpression {
@@ -478,4 +479,14 @@ export interface RecordFieldNode {
   span: Span;
   name: string;
   type: TypeAnnotation;
+}
+
+export function resolveEnumBackingValue(
+  caseName: string,
+  caseValue: string | undefined,
+  enumDefault: string | undefined,
+): string {
+  if (caseValue !== undefined) return caseValue;
+  if (enumDefault !== undefined) return `${enumDefault}.${caseName}`;
+  return caseName;
 }

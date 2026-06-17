@@ -1,3 +1,4 @@
+import { resolveEnumBackingValue } from "./ast.ts";
 import type {
   Assignment,
   BinaryExpression,
@@ -108,15 +109,7 @@ export function lower(program: Program): ShortcutIR {
 function collectEnum(decl: EnumDeclaration, enums: Map<string, Map<string, string>>): void {
   const cases = new Map<string, string>();
   for (const c of decl.cases) {
-    let backingValue: string;
-    if (c.value !== undefined) {
-      backingValue = c.value;
-    } else if (decl.defaultValue !== undefined) {
-      backingValue = `${decl.defaultValue}.${c.name}`;
-    } else {
-      backingValue = c.name;
-    }
-    cases.set(c.name, backingValue);
+    cases.set(c.name, resolveEnumBackingValue(c.name, c.value, decl.defaultValue));
   }
   enums.set(decl.name, cases);
 }
@@ -1074,14 +1067,10 @@ function lowerDotNameExpression(
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
-  for (const [, cases] of ctx.enums) {
-    const backingValue = cases.get(expr.name);
-    if (backingValue !== undefined) {
-      actions.push(makeTextAction(backingValue, ctx));
-      return;
-    }
+  if (expr.resolvedBackingValue === undefined) {
+    throw new LowerError(`cannot resolve dot-name '.${expr.name}'`);
   }
-  throw new LowerError(`cannot resolve dot-name '.${expr.name}'`);
+  actions.push(makeTextAction(expr.resolvedBackingValue, ctx));
 }
 
 function lowerRecordConstruction(

@@ -1066,6 +1066,10 @@ showAlert(text: "Hello from Chute!");`;
         expect(stmt.cases).toHaveLength(2);
       }
     });
+
+    it("should reject empty enum with clear error", () => {
+      expect(() => parse("enum Empty {}")).toThrow("enum requires at least one case");
+    });
   });
 
   describe("record declarations", () => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
+import { check } from "./checker.ts";
 import { lower } from "./lower.ts";
 import type { Program } from "./ast.ts";
 import type { ActionIR } from "./ir.ts";
@@ -10,7 +11,9 @@ function parse(source: string): Program {
 }
 
 function lowerSource(source: string): ActionIR[] {
-  return lower(parse(source)).actions;
+  const ast = parse(source);
+  check(ast);
+  return lower(ast).actions;
 }
 
 describe("lower", () => {
@@ -251,6 +254,106 @@ describe("lower", () => {
         );
       });
       expect(indexRef).toBeDefined();
+    });
+  });
+
+  describe("enum declarations", () => {
+    it("should emit no actions for enum declaration itself", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" }',
+      );
+      expect(actions).toHaveLength(0);
+    });
+
+    it("should lower enum member access to backing string", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" } let c = Color.red;',
+      );
+      expect(actions.at(0)?.identifier).toBe("is.workflow.actions.gettext");
+      expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("RED");
+      expect(actions.at(1)?.identifier).toBe("is.workflow.actions.setvariable");
+      expect(actions.at(1)?.parameters.get("WFVariableName")).toBe("c");
+    });
+
+    it("should lower enum with implicit case values to case name", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } enum Dir { north, south } let d = Dir.north;',
+      );
+      expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("north");
+    });
+
+    it("should lower enum with default value to prefixed name", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } enum Status = "st" { active, done } let s = Status.active;',
+      );
+      expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("st.active");
+    });
+
+    it("should lower dot-name expression to backing string", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" } let c: Color = .red;',
+      );
+      expect(actions.at(0)?.identifier).toBe("is.workflow.actions.gettext");
+      expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("RED");
+    });
+  });
+
+  describe("record declarations", () => {
+    it("should emit no actions for record declaration itself", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } record Point { x: Number, y: Number }',
+      );
+      expect(actions).toHaveLength(0);
+    });
+
+    it("should lower record construction to dictionary with field keys", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } record Point { x: Number, y: Number } let p = Point(x: 1, y: 2);',
+      );
+
+      const dictAction = actions.find((a) => a.identifier === "is.workflow.actions.dictionary");
+      expect(dictAction).toBeDefined();
+
+      const setKeyActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.setvalueforkey",
+      );
+      expect(setKeyActions).toHaveLength(2);
+      expect(setKeyActions.at(0)?.parameters.get("WFDictionaryKey")).toBe("x");
+      expect(setKeyActions.at(0)?.parameters.get("WFDictionaryValue")).toBe(1);
+      expect(setKeyActions.at(1)?.parameters.get("WFDictionaryKey")).toBe("y");
+      expect(setKeyActions.at(1)?.parameters.get("WFDictionaryValue")).toBe(2);
+    });
+
+    it("should lower record field access to getvalueforkey", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } record Point { x: Number, y: Number } let p = Point(x: 1, y: 2); let a = p.x;',
+      );
+      const getKeyActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvalueforkey",
+      );
+      expect(getKeyActions).toHaveLength(1);
+      expect(getKeyActions.at(0)?.parameters.get("WFDictionaryKey")).toBe("x");
+    });
+  });
+
+  describe("let destructuring", () => {
+    it("should lower let destructure to getvalueforkey per binding", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } record Point { x: Number, y: Number } let p = Point(x: 1, y: 2); let { x, y } = p;',
+      );
+      const getKeyActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvalueforkey",
+      );
+      expect(getKeyActions).toHaveLength(2);
+      expect(getKeyActions.at(0)?.parameters.get("WFDictionaryKey")).toBe("x");
+      expect(getKeyActions.at(1)?.parameters.get("WFDictionaryKey")).toBe("y");
+
+      const setVarActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.setvariable",
+      );
+      const lastSetVars = setVarActions.slice(-2);
+      expect(lastSetVars.at(0)?.parameters.get("WFVariableName")).toBe("x");
+      expect(lastSetVars.at(1)?.parameters.get("WFVariableName")).toBe("y");
     });
   });
 });

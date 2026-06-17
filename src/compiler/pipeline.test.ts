@@ -139,4 +139,54 @@ showAlert(text: result);`;
 
     expect(compile(source)).toMatchSnapshot();
   });
+
+  it("should compile enum declaration and member access", () => {
+    const source = `shortcut {
+  name: "Enum",
+}
+
+enum Color { red = "RED", blue = "BLUE" }
+let c = Color.red;
+showAlert(text: c);`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile record construction and field access", () => {
+    const source = `shortcut {
+  name: "Record",
+}
+
+record Point { x: Number, y: Number }
+let p = Point(x: 10, y: 20);
+let sum = p.x + p.y;
+showAlert(text: sum);`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile let destructuring", () => {
+    const source = `shortcut {
+  name: "Destructure",
+}
+
+record Point { x: Number, y: Number }
+let p = Point(x: 5, y: 7);
+let { x, y } = p;
+showAlert(text: x);`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
+
+  it("should compile enum dot-name shorthand with type annotation", () => {
+    const source = `shortcut {
+  name: "DotName",
+}
+
+enum Direction { north, south, east, west }
+let dir: Direction = .north;
+showAlert(text: dir);`;
+
+    expect(compile(source)).toMatchSnapshot();
+  });
 });
