@@ -15,6 +15,8 @@ import type {
   EnumDeclaration,
   Expression,
   ForStatement,
+  FunctionDeclaration,
+  FunctionParameter,
   IfStatement,
   InterpolatedPart,
   InterpolatedString,
@@ -35,6 +37,7 @@ import type {
   RecordDeclaration,
   RecordFieldNode,
   RepeatStatement,
+  ReturnStatement,
   ShortcutMetadata,
   Statement,
   SubscriptExpression,
@@ -216,6 +219,12 @@ export class Parser {
     if (this.check(TokenKind.Record)) {
       return this.parseRecordDeclaration(false);
     }
+    if (this.check(TokenKind.Func)) {
+      return this.parseFunctionDeclaration(false);
+    }
+    if (this.check(TokenKind.Return)) {
+      return this.parseReturnStatement();
+    }
     if (this.check(TokenKind.Let)) {
       return this.parseLetOrDestructure();
     }
@@ -262,9 +271,14 @@ export class Parser {
       decl.span.start = start;
       return decl;
     }
+    if (this.check(TokenKind.Func)) {
+      const decl = this.parseFunctionDeclaration(true);
+      decl.span.start = start;
+      return decl;
+    }
 
     throw this.error(
-      `expected 'enum' or 'record' after 'export', got ${tokenKindName(this.peek().kind)}`,
+      `expected 'enum', 'record', or 'func' after 'export', got ${tokenKindName(this.peek().kind)}`,
       this.peek().span,
     );
   }
@@ -357,6 +371,79 @@ export class Parser {
       span: { start: nameTok.span.start, end: type.span.end },
       name: tokenValue(nameTok),
       type,
+    };
+  }
+
+  private parseFunctionDeclaration(exported: boolean): FunctionDeclaration {
+    const start = this.expect(TokenKind.Func).span.start;
+    const name = tokenValue(this.expect(TokenKind.Identifier));
+    this.expect(TokenKind.LeftParen);
+
+    const params: FunctionParameter[] = [];
+    while (!this.check(TokenKind.RightParen)) {
+      params.push(this.parseFunctionParameter());
+      if (!this.check(TokenKind.RightParen)) {
+        this.expect(TokenKind.Comma);
+      }
+    }
+    this.expect(TokenKind.RightParen);
+
+    let returnType: TypeAnnotation | undefined;
+    if (this.check(TokenKind.Arrow)) {
+      this.advance();
+      returnType = this.parseTypeAnnotation();
+    }
+
+    const block = this.parseBlock();
+
+    return {
+      kind: "FunctionDeclaration",
+      span: { start, end: block.end },
+      exported,
+      name,
+      params,
+      returnType,
+      body: block.stmts,
+    };
+  }
+
+  private parseFunctionParameter(): FunctionParameter {
+    const nameTok = this.expect(TokenKind.Identifier);
+    const type = this.parseTypeAnnotationWithColon();
+
+    let defaultValue: Expression | undefined;
+    if (this.check(TokenKind.Equal)) {
+      this.advance();
+      defaultValue = this.parseExpression();
+    }
+
+    return {
+      kind: "FunctionParameter",
+      span: { start: nameTok.span.start, end: (defaultValue ?? type).span.end },
+      name: tokenValue(nameTok),
+      type,
+      defaultValue,
+    };
+  }
+
+  private parseReturnStatement(): ReturnStatement {
+    const start = this.expect(TokenKind.Return).span.start;
+
+    if (this.check(TokenKind.Semicolon)) {
+      const end = this.advance().span.end;
+      return {
+        kind: "ReturnStatement",
+        span: { start, end },
+        value: undefined,
+      };
+    }
+
+    const value = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "ReturnStatement",
+      span: { start, end },
+      value,
     };
   }
 
