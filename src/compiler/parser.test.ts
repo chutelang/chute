@@ -1165,4 +1165,73 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
   });
+
+  describe("function declarations", () => {
+    it("should parse func with no parameters", () => {
+      const ast = parse('func greet() { showAlert(text: "hi"); }');
+      const func = ast.body.at(0);
+      expect(func?.kind).toBe("FunctionDeclaration");
+      if (func?.kind === "FunctionDeclaration") {
+        expect(func.name).toBe("greet");
+        expect(func.params).toHaveLength(0);
+        expect(func.returnType).toBeUndefined();
+        expect(func.body).toHaveLength(1);
+      }
+    });
+
+    it("should parse func with typed parameters", () => {
+      const ast = parse("func add(a: Number, b: Number) -> Number { return a + b; }");
+      const func = ast.body.at(0);
+      expect(func?.kind).toBe("FunctionDeclaration");
+      if (func?.kind === "FunctionDeclaration") {
+        expect(func.name).toBe("add");
+        expect(func.params).toHaveLength(2);
+        expect(func.params.at(0)?.name).toBe("a");
+        expect(func.params.at(1)?.name).toBe("b");
+        expect(func.returnType).toBeDefined();
+      }
+    });
+
+    it("should parse func with default parameter values", () => {
+      const ast = parse('func greet(name: Text = "World") { showAlert(text: name); }');
+      const func = ast.body.at(0);
+      if (func?.kind === "FunctionDeclaration") {
+        expect(func.params.at(0)?.defaultValue).toBeDefined();
+      }
+    });
+
+    it("should parse exported func", () => {
+      const ast = parse('export func greet() { showAlert(text: "hi"); }');
+      const func = ast.body.at(0);
+      if (func?.kind === "FunctionDeclaration") {
+        expect(func.exported).toBe(true);
+      }
+    });
+  });
+
+  describe("return statements", () => {
+    it("should parse return with expression", () => {
+      const ast = parse("func add(a: Number, b: Number) -> Number { return a + b; }");
+      const func = ast.body.at(0);
+      if (func?.kind === "FunctionDeclaration") {
+        const ret = func.body.at(0);
+        expect(ret?.kind).toBe("ReturnStatement");
+        if (ret?.kind === "ReturnStatement") {
+          expect(ret.value).toBeDefined();
+        }
+      }
+    });
+
+    it("should parse bare return", () => {
+      const ast = parse('func greet() { showAlert(text: "hi"); return; }');
+      const func = ast.body.at(0);
+      if (func?.kind === "FunctionDeclaration") {
+        const ret = func.body.at(1);
+        expect(ret?.kind).toBe("ReturnStatement");
+        if (ret?.kind === "ReturnStatement") {
+          expect(ret.value).toBeUndefined();
+        }
+      }
+    });
+  });
 });
