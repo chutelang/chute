@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
-import { check, CheckError } from "./checker.ts";
+import { check, CheckError, type CheckWarning } from "./checker.ts";
 import type { Program } from "./ast.ts";
 
 function parse(source: string): Program {
@@ -10,6 +10,10 @@ function parse(source: string): Program {
 
 function checkSource(source: string): void {
   check(parse(source));
+}
+
+function checkSourceWithWarnings(source: string): CheckWarning[] {
+  return check(parse(source));
 }
 
 describe("checker", () => {
@@ -692,6 +696,168 @@ describe("checker", () => {
           let s = Shirt(size: "L", color: .red);
         `),
       ).not.toThrow();
+    });
+  });
+
+  describe("function declarations", () => {
+    it("should accept a function with no parameters", () => {
+      expect(() => checkSource('func greet() { showAlert(text: "hi"); }')).not.toThrow();
+    });
+
+    it("should accept a function with typed parameters", () => {
+      expect(() =>
+        checkSource("func add(a: Number, b: Number) -> Number { return a + b; }"),
+      ).not.toThrow();
+    });
+
+    it("should reject duplicate parameter names", () => {
+      expect(() => checkSource("func bad(a: Number, a: Number) -> Number { return a; }")).toThrow(
+        CheckError,
+      );
+    });
+
+    it("should reject return type mismatch", () => {
+      expect(() => checkSource('func bad() -> Number { return "hello"; }')).toThrow(CheckError);
+    });
+
+    it("should accept bare return in void function", () => {
+      expect(() => checkSource('func greet() { showAlert(text: "hi"); return; }')).not.toThrow();
+    });
+
+    it("should reject return with value in void function", () => {
+      expect(() => checkSource("func greet() { return 42; }")).toThrow(CheckError);
+    });
+
+    it("should reject bare return in function with return type", () => {
+      expect(() => checkSource("func add(a: Number, b: Number) -> Number { return; }")).toThrow(
+        CheckError,
+      );
+    });
+
+    it("should accept function with default parameter", () => {
+      expect(() =>
+        checkSource('func greet(name: Text = "World") { showAlert(text: name); }'),
+      ).not.toThrow();
+    });
+
+    it("should reject default parameter with wrong type", () => {
+      expect(() => checkSource("func bad(name: Text = 42) { showAlert(text: name); }")).toThrow(
+        CheckError,
+      );
+    });
+
+    it("should reject duplicate function names", () => {
+      expect(() =>
+        checkSource(`
+          func greet() { showAlert(text: "hi"); }
+          func greet() { showAlert(text: "hello"); }
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("function calls", () => {
+    it("should accept valid function call", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let result = add(a: 1, b: 2);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should type function call result from return type", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let result: Number = add(a: 1, b: 2);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject function call with wrong argument type", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let result = add(a: "x", b: 2);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject function call with missing required argument", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let result = add(a: 1);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject function call with unknown parameter name", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let result = add(a: 1, c: 2);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should accept function call with default parameter omitted", () => {
+      expect(() =>
+        checkSource(`
+          func greet(name: Text = "World") -> Text { return name; }
+          let result = greet();
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept function call with default parameter provided", () => {
+      expect(() =>
+        checkSource(`
+          func greet(name: Text = "World") -> Text { return name; }
+          let result = greet(name: "Alice");
+        `),
+      ).not.toThrow();
+    });
+
+    it("should type void function call as any", () => {
+      expect(() =>
+        checkSource(`
+          func greet() { showAlert(text: "hi"); }
+          greet();
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject unlabeled arguments in function call", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let result = add(1, 2);
+        `),
+      ).toThrow(CheckError);
+    });
+  });
+
+  describe("recursion warnings", () => {
+    it("should emit warning for direct recursion", () => {
+      const warnings = checkSourceWithWarnings(`
+        func countdown(n: Number) {
+          if n > 0 {
+            countdown(n: n - 1);
+          }
+        }
+      `);
+      expect(warnings).toHaveLength(1);
+      expect(warnings.at(0)?.message).toContain("recursive");
+    });
+
+    it("should not emit warning for non-recursive call", () => {
+      const warnings = checkSourceWithWarnings(`
+        func greet() { showAlert(text: "hi"); }
+        func main() { greet(); }
+      `);
+      expect(warnings).toHaveLength(0);
     });
   });
 });
