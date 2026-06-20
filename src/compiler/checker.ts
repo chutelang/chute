@@ -11,6 +11,7 @@ import type {
   EnumDeclaration,
   Expression,
   ForStatement,
+  FunctionDeclaration,
   Identifier,
   IfStatement,
   InterpolatedString,
@@ -24,6 +25,7 @@ import type {
   Program,
   RecordDeclaration,
   RepeatStatement,
+  ReturnStatement,
   Statement,
   SubscriptExpression,
   TernaryExpression,
@@ -43,7 +45,26 @@ export type ChuteType =
   | { kind: "quantity"; unit: string }
   | { kind: "enum"; name: string; cases: Map<string, string> }
   | { kind: "record"; name: string; fields: Map<string, ChuteType> }
+  | {
+      kind: "function";
+      name: string;
+      params: Array<{ name: string; type: ChuteType; hasDefault: boolean }>;
+      returnType: ChuteType | undefined;
+    }
   | { kind: "any" };
+
+export class CheckWarning {
+  constructor(
+    public message: string,
+    public span: Span,
+  ) {}
+}
+
+interface CheckContext {
+  expectedReturnType: ChuteType | undefined;
+  currentFunction: string | undefined;
+  warnings: CheckWarning[];
+}
 
 export class CheckError extends Error {
   constructor(
@@ -97,41 +118,47 @@ export class Scope {
   }
 }
 
-export function check(program: Program): void {
+export function check(program: Program): CheckWarning[] {
   const scope = new Scope(undefined);
+  const context: CheckContext = {
+    expectedReturnType: undefined,
+    currentFunction: undefined,
+    warnings: [],
+  };
   for (const stmt of program.body) {
-    checkStatement(stmt, scope);
+    checkStatement(stmt, scope, context);
   }
+  return context.warnings;
 }
 
-function checkStatement(stmt: Statement, scope: Scope): void {
+function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): void {
   switch (stmt.kind) {
     case "ExpressionStatement":
-      inferType(stmt.expression, scope);
+      inferType(stmt.expression, scope, context);
       return;
     case "LetDeclaration":
-      checkLetDeclaration(stmt, scope);
+      checkLetDeclaration(stmt, scope, context);
       return;
     case "VarDeclaration":
-      checkVarDeclaration(stmt, scope);
+      checkVarDeclaration(stmt, scope, context);
       return;
     case "Assignment":
-      checkAssignment(stmt, scope);
+      checkAssignment(stmt, scope, context);
       return;
     case "IfStatement":
-      checkIfStatement(stmt, scope);
+      checkIfStatement(stmt, scope, context);
       return;
     case "ForStatement":
-      checkForStatement(stmt, scope);
+      checkForStatement(stmt, scope, context);
       return;
     case "RepeatStatement":
-      checkRepeatStatement(stmt, scope);
+      checkRepeatStatement(stmt, scope, context);
       return;
     case "MenuStatement":
-      checkMenuStatement(stmt, scope);
+      checkMenuStatement(stmt, scope, context);
       return;
     case "LetDestructure":
-      checkLetDestructure(stmt, scope);
+      checkLetDestructure(stmt, scope, context);
       return;
     case "EnumDeclaration":
       checkEnumDeclaration(stmt, scope);
@@ -139,39 +166,46 @@ function checkStatement(stmt: Statement, scope: Scope): void {
     case "RecordDeclaration":
       checkRecordDeclaration(stmt, scope);
       return;
+    case "FunctionDeclaration":
+      checkFunctionDeclaration(stmt, scope, context);
+      return;
+    case "ReturnStatement":
+      checkReturnStatement(stmt, scope, context);
+      return;
     default:
       assertNever(stmt);
   }
 }
 
-function checkLetDeclaration(decl: LetDeclaration, scope: Scope): void {
+function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckContext): void {
   if (scope.hasOwn(decl.name)) {
     throw new CheckError(`variable '${decl.name}' is already declared in this scope`, decl.span);
   }
 
-  const bindingType = checkDeclarationInitializer(decl, scope);
+  const bindingType = checkDeclarationInitializer(decl, scope, context);
   scope.define(decl.name, bindingType, false);
 }
 
-function checkVarDeclaration(decl: VarDeclaration, scope: Scope): void {
+function checkVarDeclaration(decl: VarDeclaration, scope: Scope, context: CheckContext): void {
   if (scope.hasOwn(decl.name)) {
     throw new CheckError(`variable '${decl.name}' is already declared in this scope`, decl.span);
   }
 
-  const bindingType = checkDeclarationInitializer(decl, scope);
+  const bindingType = checkDeclarationInitializer(decl, scope, context);
   scope.define(decl.name, bindingType, true);
 }
 
 function checkDeclarationInitializer(
   decl: LetDeclaration | VarDeclaration,
   scope: Scope,
+  context: CheckContext,
 ): ChuteType {
   if (!decl.typeAnnotation) {
-    return inferType(decl.initializer, scope);
+    return inferType(decl.initializer, scope, context);
   }
 
   const annotationType = typeFromAnnotation(decl.typeAnnotation, scope);
-  const initializerType = inferTypeWithHint(decl.initializer, scope, annotationType);
+  const initializerType = inferTypeWithHint(decl.initializer, scope, annotationType, context);
   if (!isAssignable(initializerType, annotationType)) {
     throw new CheckError(
       `cannot assign ${describeType(initializerType)} to ${describeType(annotationType)}`,
@@ -182,7 +216,7 @@ function checkDeclarationInitializer(
   return annotationType;
 }
 
-function checkAssignment(assign: Assignment, scope: Scope): void {
+function checkAssignment(assign: Assignment, scope: Scope, context: CheckContext): void {
   const binding = scope.lookup(assign.place.root);
   if (!binding) {
     throw new CheckError(`undefined variable '${assign.place.root}'`, assign.place.span);
@@ -196,11 +230,11 @@ function checkAssignment(assign: Assignment, scope: Scope): void {
   }
 
   const hint = assign.place.accessors.length === 0 ? binding.type : undefined;
-  const valueType = inferTypeWithHint(assign.value, scope, hint);
+  const valueType = inferTypeWithHint(assign.value, scope, hint, context);
 
   for (const accessor of assign.place.accessors) {
     if (accessor.kind === "SubscriptAccessor") {
-      inferType(accessor.index, scope);
+      inferType(accessor.index, scope, context);
     }
   }
 
@@ -212,7 +246,12 @@ function checkAssignment(assign: Assignment, scope: Scope): void {
   }
 }
 
-function inferTypeWithHint(expr: Expression, scope: Scope, hint: ChuteType | undefined): ChuteType {
+function inferTypeWithHint(
+  expr: Expression,
+  scope: Scope,
+  hint: ChuteType | undefined,
+  context: CheckContext,
+): ChuteType {
   if (expr.kind === "DotNameExpression" && hint?.kind === "enum") {
     const backingValue = hint.cases.get(expr.name);
     if (backingValue === undefined) {
@@ -221,10 +260,10 @@ function inferTypeWithHint(expr: Expression, scope: Scope, hint: ChuteType | und
     expr.resolvedBackingValue = backingValue;
     return hint;
   }
-  return inferType(expr, scope);
+  return inferType(expr, scope, context);
 }
 
-function inferType(expr: Expression, scope: Scope): ChuteType {
+function inferType(expr: Expression, scope: Scope, context: CheckContext): ChuteType {
   switch (expr.kind) {
     case "StringLiteral":
       return { kind: "text" };
@@ -237,27 +276,27 @@ function inferType(expr: Expression, scope: Scope): ChuteType {
     case "Identifier":
       return inferIdentifier(expr, scope);
     case "BinaryExpression":
-      return inferBinaryExpression(expr, scope);
+      return inferBinaryExpression(expr, scope, context);
     case "UnaryExpression":
-      return inferUnaryExpression(expr, scope);
+      return inferUnaryExpression(expr, scope, context);
     case "CoalesceExpression":
-      return inferCoalesceExpression(expr, scope);
+      return inferCoalesceExpression(expr, scope, context);
     case "MemberExpression":
-      return inferMemberExpression(expr, scope);
+      return inferMemberExpression(expr, scope, context);
     case "OptionalMemberExpression":
-      return inferOptionalMemberExpression(expr, scope);
+      return inferOptionalMemberExpression(expr, scope, context);
     case "SubscriptExpression":
-      return inferSubscriptExpression(expr, scope);
+      return inferSubscriptExpression(expr, scope, context);
     case "InterpolatedString":
-      return inferInterpolatedString(expr, scope);
+      return inferInterpolatedString(expr, scope, context);
     case "ListLiteral":
-      return inferListLiteral(expr, scope);
+      return inferListLiteral(expr, scope, context);
     case "DictionaryLiteral":
-      return inferDictionaryLiteral(expr, scope);
+      return inferDictionaryLiteral(expr, scope, context);
     case "CallExpression":
-      return inferCallExpression(expr, scope);
+      return inferCallExpression(expr, scope, context);
     case "TernaryExpression":
-      return inferTernaryExpression(expr, scope);
+      return inferTernaryExpression(expr, scope, context);
     case "DotNameExpression":
       throw new CheckError(`cannot resolve '.${expr.name}' without a contextual type`, expr.span);
     case "HashIndexExpression":
@@ -275,9 +314,13 @@ function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
   return binding.type;
 }
 
-function inferBinaryExpression(expr: BinaryExpression, scope: Scope): ChuteType {
-  const leftType = inferType(expr.left, scope);
-  const rightType = inferType(expr.right, scope);
+function inferBinaryExpression(
+  expr: BinaryExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const leftType = inferType(expr.left, scope, context);
+  const rightType = inferType(expr.right, scope, context);
 
   requireNumber(leftType, expr.left.span);
   requireNumber(rightType, expr.right.span);
@@ -285,15 +328,23 @@ function inferBinaryExpression(expr: BinaryExpression, scope: Scope): ChuteType 
   return { kind: "number" };
 }
 
-function inferUnaryExpression(expr: UnaryExpression, scope: Scope): ChuteType {
-  const operandType = inferType(expr.operand, scope);
+function inferUnaryExpression(
+  expr: UnaryExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const operandType = inferType(expr.operand, scope, context);
   requireNumber(operandType, expr.operand.span);
   return { kind: "number" };
 }
 
-function inferCoalesceExpression(expr: CoalesceExpression, scope: Scope): ChuteType {
-  const leftType = inferType(expr.left, scope);
-  const rightType = inferType(expr.right, scope);
+function inferCoalesceExpression(
+  expr: CoalesceExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const leftType = inferType(expr.left, scope, context);
+  const rightType = inferType(expr.right, scope, context);
 
   if (leftType.kind === "any") {
     return rightType;
@@ -316,7 +367,11 @@ function inferCoalesceExpression(expr: CoalesceExpression, scope: Scope): ChuteT
   return leftType.inner;
 }
 
-function inferMemberExpression(expr: MemberExpression, scope: Scope): ChuteType {
+function inferMemberExpression(
+  expr: MemberExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
   if (expr.object.kind === "Identifier") {
     const typeDef = scope.lookupType(expr.object.name);
     if (typeDef?.kind === "enum") {
@@ -331,7 +386,7 @@ function inferMemberExpression(expr: MemberExpression, scope: Scope): ChuteType 
     }
   }
 
-  const objectType = inferType(expr.object, scope);
+  const objectType = inferType(expr.object, scope, context);
 
   if (objectType.kind === "record") {
     const fieldType = objectType.fields.get(expr.property);
@@ -347,8 +402,12 @@ function inferMemberExpression(expr: MemberExpression, scope: Scope): ChuteType 
   return { kind: "any" };
 }
 
-function inferOptionalMemberExpression(expr: OptionalMemberExpression, scope: Scope): ChuteType {
-  const objectType = inferType(expr.object, scope);
+function inferOptionalMemberExpression(
+  expr: OptionalMemberExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const objectType = inferType(expr.object, scope, context);
 
   if (objectType.kind !== "optional" && objectType.kind !== "any") {
     throw new CheckError(
@@ -365,9 +424,13 @@ function inferOptionalMemberExpression(expr: OptionalMemberExpression, scope: Sc
   };
 }
 
-function inferSubscriptExpression(expr: SubscriptExpression, scope: Scope): ChuteType {
-  const objectType = inferType(expr.object, scope);
-  inferType(expr.index, scope);
+function inferSubscriptExpression(
+  expr: SubscriptExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const objectType = inferType(expr.object, scope, context);
+  inferType(expr.index, scope, context);
 
   if (objectType.kind === "list") {
     return objectType.element;
@@ -380,16 +443,20 @@ function inferSubscriptExpression(expr: SubscriptExpression, scope: Scope): Chut
   throw new CheckError(`cannot subscript ${describeType(objectType)}`, expr.object.span);
 }
 
-function inferInterpolatedString(expr: InterpolatedString, scope: Scope): ChuteType {
+function inferInterpolatedString(
+  expr: InterpolatedString,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
   for (const part of expr.parts) {
     if (part.kind === "ExpressionPart") {
-      inferType(part.expression, scope);
+      inferType(part.expression, scope, context);
     }
   }
   return { kind: "text" };
 }
 
-function inferListLiteral(expr: ListLiteral, scope: Scope): ChuteType {
+function inferListLiteral(expr: ListLiteral, scope: Scope, context: CheckContext): ChuteType {
   const first = expr.elements.at(0);
   if (!first) {
     return {
@@ -400,10 +467,10 @@ function inferListLiteral(expr: ListLiteral, scope: Scope): ChuteType {
     };
   }
 
-  const elementType = inferType(first, scope);
+  const elementType = inferType(first, scope, context);
 
   for (const element of expr.elements.slice(1)) {
-    const type = inferType(element, scope);
+    const type = inferType(element, scope, context);
     if (!isAssignable(type, elementType)) {
       throw new CheckError(
         `list elements must have a consistent type: expected ${describeType(elementType)}, got ${describeType(type)}`,
@@ -418,32 +485,95 @@ function inferListLiteral(expr: ListLiteral, scope: Scope): ChuteType {
   };
 }
 
-function inferDictionaryLiteral(expr: DictionaryLiteral, scope: Scope): ChuteType {
+function inferDictionaryLiteral(
+  expr: DictionaryLiteral,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
   for (const entry of expr.entries) {
-    inferType(entry.key, scope);
-    inferType(entry.value, scope);
+    inferType(entry.key, scope, context);
+    inferType(entry.value, scope, context);
   }
   return { kind: "dictionary" };
 }
 
-function inferCallExpression(expr: CallExpression, scope: Scope): ChuteType {
+function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckContext): ChuteType {
   if (expr.callee.kind === "Identifier") {
     const typeDef = scope.lookupType(expr.callee.name);
     if (typeDef?.kind === "record") {
-      return checkRecordConstruction(expr, typeDef, scope);
+      return checkRecordConstruction(expr, typeDef, scope, context);
+    }
+
+    const binding = scope.lookup(expr.callee.name);
+    if (binding?.type.kind === "function") {
+      return checkFunctionCall(expr, binding.type, scope, context);
     }
   }
 
   for (const arg of expr.args) {
-    inferType(arg.value, scope);
+    inferType(arg.value, scope, context);
   }
   return { kind: "any" };
+}
+
+function checkFunctionCall(
+  expr: CallExpression,
+  funcType: ChuteType & { kind: "function" },
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const provided = new Map<string, Expression>();
+
+  for (const arg of expr.args) {
+    if (!arg.label) {
+      throw new CheckError(`function calls require labeled arguments`, arg.span);
+    }
+
+    const param = funcType.params.find((p) => p.name === arg.label);
+    if (!param) {
+      throw new CheckError(`function '${funcType.name}' has no parameter '${arg.label}'`, arg.span);
+    }
+
+    if (provided.has(arg.label)) {
+      throw new CheckError(`duplicate argument '${arg.label}' in function call`, arg.span);
+    }
+    provided.set(arg.label, arg.value);
+
+    const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+    if (!isAssignable(argType, param.type)) {
+      throw new CheckError(
+        `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+        arg.span,
+      );
+    }
+  }
+
+  for (const param of funcType.params) {
+    if (!provided.has(param.name) && !param.hasDefault) {
+      throw new CheckError(
+        `missing argument '${param.name}' in call to '${funcType.name}'`,
+        expr.span,
+      );
+    }
+  }
+
+  if (context.currentFunction === funcType.name) {
+    context.warnings.push(
+      new CheckWarning(
+        `recursive call to '${funcType.name}' — each level starts a complete shortcut run, so deep recursion is slow`,
+        expr.span,
+      ),
+    );
+  }
+
+  return funcType.returnType ?? { kind: "any" };
 }
 
 function checkRecordConstruction(
   expr: CallExpression,
   recordType: ChuteType & { kind: "record" },
   scope: Scope,
+  context: CheckContext,
 ): ChuteType {
   const provided = new Set<string>();
 
@@ -462,7 +592,7 @@ function checkRecordConstruction(
     }
     provided.add(arg.label);
 
-    const argType = inferTypeWithHint(arg.value, scope, fieldType);
+    const argType = inferTypeWithHint(arg.value, scope, fieldType, context);
     if (!isAssignable(argType, fieldType)) {
       throw new CheckError(
         `cannot assign ${describeType(argType)} to field '${arg.label}' of type ${describeType(fieldType)}`,
@@ -603,6 +733,8 @@ function describeType(type: ChuteType): string {
       return type.name;
     case "record":
       return type.name;
+    case "function":
+      return `func ${type.name}`;
     case "any":
       return "any";
     default:
@@ -610,8 +742,8 @@ function describeType(type: ChuteType): string {
   }
 }
 
-function checkIfStatement(stmt: IfStatement, scope: Scope): void {
-  checkCondition(stmt.condition, scope);
+function checkIfStatement(stmt: IfStatement, scope: Scope, context: CheckContext): void {
+  checkCondition(stmt.condition, scope, context);
 
   const bodyScope = new Scope(scope);
   const narrowing = extractNilNarrowing(stmt.condition, scope);
@@ -620,7 +752,7 @@ function checkIfStatement(stmt: IfStatement, scope: Scope): void {
   }
 
   for (const s of stmt.body) {
-    checkStatement(s, bodyScope);
+    checkStatement(s, bodyScope, context);
   }
 
   if (stmt.elseBody) {
@@ -630,10 +762,10 @@ function checkIfStatement(stmt: IfStatement, scope: Scope): void {
         elseScope.define(narrowing.name, narrowing.narrowedType, narrowing.mutable);
       }
       for (const s of stmt.elseBody) {
-        checkStatement(s, elseScope);
+        checkStatement(s, elseScope, context);
       }
     } else {
-      checkIfStatement(stmt.elseBody, scope);
+      checkIfStatement(stmt.elseBody, scope, context);
     }
   }
 }
@@ -674,8 +806,8 @@ function extractNilNarrowing(cond: Condition, scope: Scope): NilNarrowing | unde
   return { name: identName, narrowedType, mutable, branch: "else" };
 }
 
-function checkForStatement(stmt: ForStatement, scope: Scope): void {
-  const iterableType = inferType(stmt.iterable, scope);
+function checkForStatement(stmt: ForStatement, scope: Scope, context: CheckContext): void {
+  const iterableType = inferType(stmt.iterable, scope, context);
   const bodyScope = new Scope(scope);
 
   if (iterableType.kind === "list") {
@@ -690,59 +822,59 @@ function checkForStatement(stmt: ForStatement, scope: Scope): void {
   }
 
   for (const s of stmt.body) {
-    checkStatement(s, bodyScope);
+    checkStatement(s, bodyScope, context);
   }
 }
 
-function checkRepeatStatement(stmt: RepeatStatement, scope: Scope): void {
-  const countType = inferType(stmt.count, scope);
+function checkRepeatStatement(stmt: RepeatStatement, scope: Scope, context: CheckContext): void {
+  const countType = inferType(stmt.count, scope, context);
   requireNumber(countType, stmt.count.span);
   const bodyScope = new Scope(scope);
   for (const s of stmt.body) {
-    checkStatement(s, bodyScope);
+    checkStatement(s, bodyScope, context);
   }
 }
 
-function checkMenuStatement(stmt: MenuStatement, scope: Scope): void {
-  inferType(stmt.prompt, scope);
+function checkMenuStatement(stmt: MenuStatement, scope: Scope, context: CheckContext): void {
+  inferType(stmt.prompt, scope, context);
   for (const c of stmt.cases) {
     const caseScope = new Scope(scope);
     if (stmt.variable) {
       caseScope.define(stmt.variable, { kind: "text" }, false);
     }
     for (const s of c.body) {
-      checkStatement(s, caseScope);
+      checkStatement(s, caseScope, context);
     }
   }
 }
 
-function checkCondition(cond: Condition, scope: Scope): void {
+function checkCondition(cond: Condition, scope: Scope, context: CheckContext): void {
   switch (cond.kind) {
     case "OrCondition":
-      checkCondition(cond.left, scope);
-      checkCondition(cond.right, scope);
+      checkCondition(cond.left, scope, context);
+      checkCondition(cond.right, scope, context);
       return;
     case "AndCondition":
-      checkCondition(cond.left, scope);
-      checkCondition(cond.right, scope);
+      checkCondition(cond.left, scope, context);
+      checkCondition(cond.right, scope, context);
       return;
     case "NotCondition":
-      checkCondition(cond.operand, scope);
+      checkCondition(cond.operand, scope, context);
       return;
     case "Comparison":
-      inferType(cond.left, scope);
-      inferType(cond.right, scope);
+      inferType(cond.left, scope, context);
+      inferType(cond.right, scope, context);
       return;
     case "RangeTest":
-      inferType(cond.subject, scope);
-      inferType(cond.low, scope);
-      inferType(cond.high, scope);
+      inferType(cond.subject, scope, context);
+      inferType(cond.low, scope, context);
+      inferType(cond.high, scope, context);
       return;
     case "TypeTest":
-      inferType(cond.subject, scope);
+      inferType(cond.subject, scope, context);
       return;
     case "BooleanReference":
-      inferType(cond.subject, scope);
+      inferType(cond.subject, scope, context);
       return;
     case "BooleanLiteralCondition":
       return;
@@ -751,10 +883,14 @@ function checkCondition(cond: Condition, scope: Scope): void {
   }
 }
 
-function inferTernaryExpression(expr: TernaryExpression, scope: Scope): ChuteType {
-  checkCondition(expr.condition, scope);
-  const consequentType = inferType(expr.consequent, scope);
-  const alternateType = inferType(expr.alternate, scope);
+function inferTernaryExpression(
+  expr: TernaryExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  checkCondition(expr.condition, scope, context);
+  const consequentType = inferType(expr.consequent, scope, context);
+  const alternateType = inferType(expr.alternate, scope, context);
 
   if (isAssignable(alternateType, consequentType)) {
     return consequentType;
@@ -765,8 +901,8 @@ function inferTernaryExpression(expr: TernaryExpression, scope: Scope): ChuteTyp
   return { kind: "any" };
 }
 
-function checkLetDestructure(stmt: LetDestructure, scope: Scope): void {
-  const initializerType = inferType(stmt.initializer, scope);
+function checkLetDestructure(stmt: LetDestructure, scope: Scope, context: CheckContext): void {
+  const initializerType = inferType(stmt.initializer, scope, context);
 
   if (initializerType.kind !== "record" && initializerType.kind !== "any") {
     throw new CheckError(
@@ -837,6 +973,98 @@ function checkRecordDeclaration(stmt: RecordDeclaration, scope: Scope): void {
   };
 
   scope.defineType(stmt.name, recordType);
+}
+
+function checkFunctionDeclaration(
+  decl: FunctionDeclaration,
+  scope: Scope,
+  context: CheckContext,
+): void {
+  if (scope.hasOwn(decl.name)) {
+    throw new CheckError(`'${decl.name}' is already declared in this scope`, decl.span);
+  }
+
+  const params: Array<{ name: string; type: ChuteType; hasDefault: boolean }> = [];
+  const paramNames = new Set<string>();
+
+  for (const p of decl.params) {
+    if (paramNames.has(p.name)) {
+      throw new CheckError(`duplicate parameter '${p.name}'`, p.span);
+    }
+    paramNames.add(p.name);
+
+    const paramType = typeFromAnnotation(p.type, scope);
+
+    if (p.defaultValue) {
+      const defaultType = inferTypeWithHint(p.defaultValue, scope, paramType, context);
+      if (!isAssignable(defaultType, paramType)) {
+        throw new CheckError(
+          `default value of type ${describeType(defaultType)} is not assignable to parameter type ${describeType(paramType)}`,
+          p.defaultValue.span,
+        );
+      }
+    }
+
+    params.push({
+      name: p.name,
+      type: paramType,
+      hasDefault: p.defaultValue !== undefined,
+    });
+  }
+
+  const returnType = decl.returnType ? typeFromAnnotation(decl.returnType, scope) : undefined;
+
+  const funcType: ChuteType = {
+    kind: "function",
+    name: decl.name,
+    params,
+    returnType,
+  };
+
+  scope.define(decl.name, funcType, false);
+
+  const bodyScope = new Scope(scope);
+  for (const p of params) {
+    bodyScope.define(p.name, p.type, false);
+  }
+
+  const bodyContext: CheckContext = {
+    expectedReturnType: returnType,
+    currentFunction: decl.name,
+    warnings: context.warnings,
+  };
+
+  for (const s of decl.body) {
+    checkStatement(s, bodyScope, bodyContext);
+  }
+}
+
+function checkReturnStatement(stmt: ReturnStatement, scope: Scope, context: CheckContext): void {
+  if (context.expectedReturnType === undefined) {
+    if (stmt.value) {
+      inferType(stmt.value, scope, context);
+      throw new CheckError(
+        `cannot return a value from a function without a return type`,
+        stmt.span,
+      );
+    }
+    return;
+  }
+
+  if (!stmt.value) {
+    throw new CheckError(
+      `function expects a return value of type ${describeType(context.expectedReturnType)}`,
+      stmt.span,
+    );
+  }
+
+  const valueType = inferTypeWithHint(stmt.value, scope, context.expectedReturnType, context);
+  if (!isAssignable(valueType, context.expectedReturnType)) {
+    throw new CheckError(
+      `cannot return ${describeType(valueType)} from function expecting ${describeType(context.expectedReturnType)}`,
+      stmt.span,
+    );
+  }
 }
 
 function assertNever(value: never): never {
