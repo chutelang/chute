@@ -4,16 +4,20 @@ import { Parser } from "./parser.ts";
 import { check } from "./checker.ts";
 import { lower } from "./lower.ts";
 import type { Program } from "./ast.ts";
-import type { ActionIR } from "./ir.ts";
+import type { ActionIR, CompilationResult } from "./ir.ts";
 
 function parse(source: string): Program {
   return new Parser(new Lexer(source).tokenize()).parse();
 }
 
-function lowerSource(source: string): ActionIR[] {
+function lowerSourceResult(source: string): CompilationResult {
   const ast = parse(source);
   check(ast);
-  return lower(ast).actions;
+  return lower(ast);
+}
+
+function lowerSource(source: string): ActionIR[] {
+  return lowerSourceResult(source).main.actions;
 }
 
 describe("lower", () => {
@@ -354,6 +358,80 @@ describe("lower", () => {
       const lastSetVars = setVarActions.slice(-2);
       expect(lastSetVars.at(0)?.parameters.get("WFVariableName")).toBe("x");
       expect(lastSetVars.at(1)?.parameters.get("WFVariableName")).toBe("y");
+    });
+  });
+
+  describe("function declarations", () => {
+    it("should emit no actions in main for function declaration", () => {
+      const result = lowerSourceResult(
+        'shortcut { name: "Test" } func greet() { showAlert(text: "hi"); }',
+      );
+      expect(result.main.actions).toHaveLength(0);
+    });
+
+    it("should produce a sub-shortcut for each function", () => {
+      const result = lowerSourceResult(
+        'shortcut { name: "Test" } func greet() { showAlert(text: "hi"); }',
+      );
+      expect(result.subShortcuts).toHaveLength(1);
+      expect(result.subShortcuts.at(0)?.name).toContain("greet");
+    });
+
+    it("should lower function call to runworkflow action", () => {
+      const result = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func greet() { showAlert(text: "hi"); }
+        greet();
+      `);
+      const runActions = result.main.actions.filter(
+        (a) => a.identifier === "is.workflow.actions.runworkflow",
+      );
+      expect(runActions).toHaveLength(1);
+    });
+
+    it("should pass arguments as dictionary in function call", () => {
+      const result = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func add(a: Number, b: Number) -> Number { return a + b; }
+        let result = add(a: 1, b: 2);
+      `);
+      const runActions = result.main.actions.filter(
+        (a) => a.identifier === "is.workflow.actions.runworkflow",
+      );
+      expect(runActions).toHaveLength(1);
+    });
+
+    it("should emit output action for return statement", () => {
+      const result = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func add(a: Number, b: Number) -> Number { return a + b; }
+      `);
+      const sub = result.subShortcuts.at(0);
+      const outputActions = sub?.actions.filter(
+        (a) => a.identifier === "is.workflow.actions.output",
+      );
+      expect(outputActions?.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("should fill default parameter values at the call site", () => {
+      const result = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func greet(name: Text = "World") -> Text { return name; }
+        let msg = greet();
+      `);
+      const runActions = result.main.actions.filter(
+        (a) => a.identifier === "is.workflow.actions.runworkflow",
+      );
+      expect(runActions).toHaveLength(1);
+    });
+
+    it("should derive sub-shortcut name from function name plus content hash", () => {
+      const result = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func greet() { showAlert(text: "hi"); }
+      `);
+      const subName = result.subShortcuts.at(0)?.name;
+      expect(subName).toMatch(/^greet_[a-f0-9]+$/);
     });
   });
 });

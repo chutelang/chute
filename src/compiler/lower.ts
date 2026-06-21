@@ -10,6 +10,7 @@ import type {
   EnumDeclaration,
   Expression,
   ForStatement,
+  FunctionDeclaration,
   IfStatement,
   InterpolatedString,
   LetDeclaration,
@@ -19,6 +20,7 @@ import type {
   Program,
   RecordDeclaration,
   RepeatStatement,
+  ReturnStatement,
   Statement,
   SubscriptExpression,
   TernaryExpression,
@@ -27,6 +29,7 @@ import type {
 } from "./ast.ts";
 import type {
   ActionIR,
+  CompilationResult,
   InterpolatedText,
   InterpolatedTextPart,
   ParameterValue,
@@ -76,34 +79,104 @@ interface LowerContext {
   tempCounter: number;
   enums: Map<string, Map<string, string>>;
   records: Set<string>;
+  functions: Map<string, FunctionDeclaration>;
+  subShortcuts: ShortcutIR[];
 }
 
-export function lower(program: Program): ShortcutIR {
+export function lower(program: Program): CompilationResult {
   const name = extractName(program);
   const actions: ActionIR[] = [];
   const enums = new Map<string, Map<string, string>>();
   const records = new Set<string>();
+  const functions = new Map<string, FunctionDeclaration>();
 
   for (const stmt of program.body) {
     if (stmt.kind === "EnumDeclaration") {
       collectEnum(stmt, enums);
     } else if (stmt.kind === "RecordDeclaration") {
       records.add(stmt.name);
+    } else if (stmt.kind === "FunctionDeclaration") {
+      functions.set(stmt.name, stmt);
     }
   }
+
+  const subShortcuts: ShortcutIR[] = [];
 
   const ctx: LowerContext = {
     uuidCounter: 0,
     tempCounter: 0,
     enums,
     records,
+    functions,
+    subShortcuts,
   };
+
+  for (const [, decl] of functions) {
+    const subShortcut = lowerFunctionToSubShortcut(decl, ctx);
+    subShortcuts.push(subShortcut);
+  }
 
   for (const stmt of program.body) {
     lowerStatement(stmt, actions, ctx);
   }
 
-  return { name, actions };
+  return {
+    main: { name, actions },
+    subShortcuts,
+  };
+}
+
+function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext): ShortcutIR {
+  const subCtx: LowerContext = {
+    uuidCounter: 0,
+    tempCounter: 0,
+    enums: ctx.enums,
+    records: ctx.records,
+    functions: ctx.functions,
+    subShortcuts: ctx.subShortcuts,
+  };
+
+  const actions: ActionIR[] = [];
+
+  for (const param of decl.params) {
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", param.name);
+    actions.push({
+      identifier: "is.workflow.actions.getvalueforkey",
+      uuid: nextUuid(subCtx),
+      parameters,
+    });
+    actions.push(makeSetVariableAction(param.name, subCtx));
+  }
+
+  for (const stmt of decl.body) {
+    lowerStatement(stmt, actions, subCtx);
+  }
+
+  const subName = deriveFunctionShortcutName(decl);
+  return { name: subName, actions };
+}
+
+function deriveFunctionShortcutName(decl: FunctionDeclaration): string {
+  const content = JSON.stringify({
+    params: decl.params.map((p) => ({
+      name: p.name,
+      type: p.type,
+    })),
+    body: decl.body,
+    returnType: decl.returnType,
+  });
+  const hash = simpleHash(content);
+  return `${decl.name}_${hash}`;
+}
+
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash + char) | 0;
+  }
+  return (hash >>> 0).toString(16);
 }
 
 function collectEnum(decl: EnumDeclaration, enums: Map<string, Map<string, string>>): void {
@@ -161,6 +234,11 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
       return;
     case "RecordDeclaration":
       return;
+    case "FunctionDeclaration":
+      return;
+    case "ReturnStatement":
+      lowerReturnStatement(stmt, actions, ctx);
+      return;
     default:
       assertNever(stmt);
   }
@@ -190,6 +268,17 @@ function lowerAssignment(assign: Assignment, actions: ActionIR[], ctx: LowerCont
 
   lowerExpression(assign.value, actions, ctx);
   actions.push(makeSetVariableAction(assign.place.root, ctx));
+}
+
+function lowerReturnStatement(stmt: ReturnStatement, actions: ActionIR[], ctx: LowerContext): void {
+  if (stmt.value) {
+    lowerExpression(stmt.value, actions, ctx);
+  }
+  actions.push({
+    identifier: "is.workflow.actions.output",
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
 }
 
 function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContext): void {
@@ -267,6 +356,12 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
   }
 
   const actionName = expr.callee.name;
+  const funcDecl = ctx.functions.get(actionName);
+
+  if (funcDecl) {
+    return lowerFunctionCall(expr, funcDecl, actions, ctx);
+  }
+
   const builtin = BUILTIN_ACTIONS.get(actionName);
 
   if (!builtin) {
@@ -292,6 +387,55 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     identifier: builtin.identifier,
     uuid: nextUuid(ctx),
     parameters,
+  };
+}
+
+function lowerFunctionCall(
+  expr: CallExpression,
+  decl: FunctionDeclaration,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): ActionIR {
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
+
+  const provided = new Map<string, Expression>();
+  for (const arg of expr.args) {
+    if (arg.label) {
+      provided.set(arg.label, arg.value);
+    }
+  }
+
+  for (const param of decl.params) {
+    const valueExpr = provided.get(param.name) ?? param.defaultValue;
+    if (!valueExpr) continue;
+
+    const key = param.name;
+    const value = lowerToParamValue(valueExpr, actions, ctx);
+
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", key);
+    parameters.set("WFDictionaryValue", value);
+
+    actions.push({
+      identifier: "is.workflow.actions.setvalueforkey",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+  }
+
+  const subName = deriveFunctionShortcutName(decl);
+
+  const runParams = new Map<string, ParameterValue>();
+  runParams.set("WFWorkflowName", subName);
+
+  return {
+    identifier: "is.workflow.actions.runworkflow",
+    uuid: nextUuid(ctx),
+    parameters: runParams,
   };
 }
 

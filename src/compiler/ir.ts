@@ -3,6 +3,11 @@ export interface ShortcutIR {
   actions: ActionIR[];
 }
 
+export interface CompilationResult {
+  main: ShortcutIR;
+  subShortcuts: ShortcutIR[];
+}
+
 export interface ActionIR {
   identifier: string;
   uuid: string;
