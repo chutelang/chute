@@ -13,13 +13,18 @@ export function run(file: string, io: IO = realIO): void {
   }
 
   const source = io.readFile(resolved);
-  const plist = compile(source);
+  const compileResult = compile(source);
 
   const outDir = path.dirname(resolved);
   const baseName = path.basename(resolved, ".chute");
   const plistPath = path.join(outDir, `${baseName}.plist`);
 
-  io.writeFile(plistPath, plist);
+  io.writeFile(plistPath, compileResult.main);
+
+  for (const sub of compileResult.subShortcuts) {
+    const subPath = path.join(outDir, `${sub.name}.shortcut`);
+    io.writeFile(subPath, sub.plist);
+  }
 
   if (!isSigningAvailable(io.spawn)) {
     io.removeFile(plistPath);

@@ -519,6 +519,215 @@ exports[`compile > should compile for loop 1`] = `
 "
 `;
 
+exports[`compile > should compile function declaration and call 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>WFWorkflowClientVersion</key>
+	<string>1</string>
+	<key>WFWorkflowHasOutputFallback</key>
+	<false/>
+	<key>WFWorkflowHasShortcutInputVariables</key>
+	<false/>
+	<key>WFWorkflowIcon</key>
+	<dict>
+		<key>WFWorkflowIconGlyphNumber</key>
+		<integer>59511</integer>
+		<key>WFWorkflowIconStartColor</key>
+		<integer>4274264319</integer>
+	</dict>
+	<key>WFWorkflowImportQuestions</key>
+	<array/>
+	<key>WFWorkflowInputContentItemClasses</key>
+	<array/>
+	<key>WFWorkflowMinimumClientVersion</key>
+	<integer>900</integer>
+	<key>WFWorkflowMinimumClientVersionString</key>
+	<string>900</string>
+	<key>WFWorkflowName</key>
+	<string>Functions</string>
+	<key>WFWorkflowTypes</key>
+	<array>
+		<string>NCWidget</string>
+		<string>WatchKit</string>
+	</array>
+	<key>WFWorkflowActions</key>
+	<array>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.dictionary</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000000</string>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvalueforkey</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000001</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFDictionaryKey</key>
+				<string>name</string>
+				<key>WFDictionaryValue</key>
+				<string>World</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.runworkflow</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000002</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFWorkflowName</key>
+				<string>greet_63abece9</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000003</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariableName</key>
+				<string>msg</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.alert</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000004</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFAlertActionTitle</key>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenAttachment</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>msg</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>
+"
+`;
+
+exports[`compile > should compile function declaration and call 2`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>WFWorkflowClientVersion</key>
+	<string>1</string>
+	<key>WFWorkflowHasOutputFallback</key>
+	<false/>
+	<key>WFWorkflowHasShortcutInputVariables</key>
+	<false/>
+	<key>WFWorkflowIcon</key>
+	<dict>
+		<key>WFWorkflowIconGlyphNumber</key>
+		<integer>59511</integer>
+		<key>WFWorkflowIconStartColor</key>
+		<integer>4274264319</integer>
+	</dict>
+	<key>WFWorkflowImportQuestions</key>
+	<array/>
+	<key>WFWorkflowInputContentItemClasses</key>
+	<array/>
+	<key>WFWorkflowMinimumClientVersion</key>
+	<integer>900</integer>
+	<key>WFWorkflowMinimumClientVersionString</key>
+	<string>900</string>
+	<key>WFWorkflowName</key>
+	<string>greet_63abece9</string>
+	<key>WFWorkflowTypes</key>
+	<array>
+		<string>NCWidget</string>
+		<string>WatchKit</string>
+	</array>
+	<key>WFWorkflowActions</key>
+	<array>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.getvalueforkey</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000000</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFDictionaryKey</key>
+				<string>name</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000001</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariableName</key>
+				<string>name</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.getvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000002</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariable</key>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenAttachment</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>name</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.output</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000003</string>
+		</dict>
+	</array>
+</dict>
+</plist>
+"
+`;
+
 exports[`compile > should compile hello world to a valid plist 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -1254,6 +1463,189 @@ exports[`compile > should compile multiple actions 1`] = `
 			<dict>
 				<key>Text</key>
 				<string>second</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>
+"
+`;
+
+exports[`compile > should compile multiple functions 1`] = `
+"<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>WFWorkflowClientVersion</key>
+	<string>1</string>
+	<key>WFWorkflowHasOutputFallback</key>
+	<false/>
+	<key>WFWorkflowHasShortcutInputVariables</key>
+	<false/>
+	<key>WFWorkflowIcon</key>
+	<dict>
+		<key>WFWorkflowIconGlyphNumber</key>
+		<integer>59511</integer>
+		<key>WFWorkflowIconStartColor</key>
+		<integer>4274264319</integer>
+	</dict>
+	<key>WFWorkflowImportQuestions</key>
+	<array/>
+	<key>WFWorkflowInputContentItemClasses</key>
+	<array/>
+	<key>WFWorkflowMinimumClientVersion</key>
+	<integer>900</integer>
+	<key>WFWorkflowMinimumClientVersionString</key>
+	<string>900</string>
+	<key>WFWorkflowName</key>
+	<string>MultiFunctions</string>
+	<key>WFWorkflowTypes</key>
+	<array>
+		<string>NCWidget</string>
+		<string>WatchKit</string>
+	</array>
+	<key>WFWorkflowActions</key>
+	<array>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.dictionary</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000000</string>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvalueforkey</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000001</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFDictionaryKey</key>
+				<string>a</string>
+				<key>WFDictionaryValue</key>
+				<integer>3</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvalueforkey</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000002</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFDictionaryKey</key>
+				<string>b</string>
+				<key>WFDictionaryValue</key>
+				<integer>4</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.runworkflow</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000003</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFWorkflowName</key>
+				<string>add_3ebad7cc</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000004</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariableName</key>
+				<string>x</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.dictionary</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000005</string>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvalueforkey</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000006</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFDictionaryKey</key>
+				<string>n</string>
+				<key>WFDictionaryValue</key>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenAttachment</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>x</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.runworkflow</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000007</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFWorkflowName</key>
+				<string>double_398d6431</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000008</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariableName</key>
+				<string>y</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.showresult</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000009</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>Text</key>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenAttachment</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>y</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 	</array>

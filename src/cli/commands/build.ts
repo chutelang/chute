@@ -64,13 +64,18 @@ function buildFile(file: string, sign: boolean, io: IO): void {
   }
 
   const source = io.readFile(resolved);
-  const plist = compile(source);
+  const result = compile(source);
 
   const outDir = path.dirname(resolved);
   const baseName = path.basename(resolved, ".chute");
   const plistPath = path.join(outDir, `${baseName}.plist`);
 
-  io.writeFile(plistPath, plist);
+  io.writeFile(plistPath, result.main);
+
+  for (const sub of result.subShortcuts) {
+    const subPath = path.join(outDir, `${sub.name}.shortcut`);
+    io.writeFile(subPath, sub.plist);
+  }
 
   if (sign) {
     const shortcutPath = path.join(outDir, `${baseName}.shortcut`);
