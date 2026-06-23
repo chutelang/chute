@@ -10,7 +10,7 @@ describe("compile", () => {
 
 showAlert(text: "Hello from Chute!");`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile multiple actions", () => {
@@ -21,7 +21,7 @@ showAlert(text: "Hello from Chute!");`;
 showAlert(text: "first");
 showResult(text: "second");`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile let declaration with variable use", () => {
@@ -32,7 +32,7 @@ showResult(text: "second");`;
 let greeting = "Hello";
 showAlert(text: greeting);`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile arithmetic expression", () => {
@@ -45,7 +45,7 @@ let b = 20;
 let c = a + b;
 showResult(text: "done");`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile string interpolation", () => {
@@ -56,7 +56,7 @@ showResult(text: "done");`;
 let name = "World";
 showAlert(text: "Hello \${name}!");`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile nil coalescing", () => {
@@ -68,7 +68,7 @@ let x: Number? = nil;
 let y = x ?? 42;
 showResult(text: "done");`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile if/else statement", () => {
@@ -83,7 +83,7 @@ if x > 3 {
   showAlert(text: "small");
 }`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile for loop", () => {
@@ -96,7 +96,7 @@ for item in items {
   showAlert(text: "item");
 }`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile repeat loop", () => {
@@ -108,7 +108,7 @@ repeat 3 {
   showAlert(text: "again");
 }`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile menu statement", () => {
@@ -125,7 +125,7 @@ menu "Choose one" {
   }
 }`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile ternary expression", () => {
@@ -137,7 +137,7 @@ let x = 5;
 let result = x > 3 ? "big" : "small";
 showAlert(text: result);`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile enum declaration and member access", () => {
@@ -149,7 +149,7 @@ enum Color { red = "RED", blue = "BLUE" }
 let c = Color.red;
 showAlert(text: c);`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile record construction and field access", () => {
@@ -162,7 +162,7 @@ let p = Point(x: 10, y: 20);
 let sum = p.x + p.y;
 showAlert(text: sum);`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile let destructuring", () => {
@@ -175,7 +175,7 @@ let p = Point(x: 5, y: 7);
 let { x, y } = p;
 showAlert(text: x);`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile enum dot-name shorthand with type annotation", () => {
@@ -187,6 +187,37 @@ enum Direction { north, south, east, west }
 let dir: Direction = .north;
 showAlert(text: dir);`;
 
-    expect(compile(source)).toMatchSnapshot();
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile function declaration and call", () => {
+    const source = `shortcut {
+  name: "Functions",
+}
+
+func greet(name: Text = "World") -> Text { return name; }
+let msg = greet();
+showAlert(text: msg);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+    expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
+  });
+
+  it("should compile multiple functions", () => {
+    const source = `shortcut {
+  name: "MultiFunctions",
+}
+
+func add(a: Number, b: Number) -> Number { return a + b; }
+func double(n: Number) -> Number { return n * 2; }
+let x = add(a: 3, b: 4);
+let y = double(n: x);
+showResult(text: y);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(2);
   });
 });
