@@ -860,4 +860,16 @@ describe("checker", () => {
       expect(warnings).toHaveLength(0);
     });
   });
+
+  describe("dot-name in function argument", () => {
+    it("should resolve dot-name in function argument", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red = "RED", blue = "BLUE" }
+          func paint(c: Color) { showAlert(text: "painted"); }
+          paint(c: .red);
+        `),
+      ).not.toThrow();
+    });
+  });
 });
