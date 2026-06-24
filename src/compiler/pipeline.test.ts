@@ -220,4 +220,57 @@ showResult(text: y);`;
     expect(result.main).toMatchSnapshot();
     expect(result.subShortcuts).toHaveLength(2);
   });
+
+  it("should compile function with conditional return", () => {
+    const source = `shortcut {
+  name: "Conditional",
+}
+
+func abs(n: Number) -> Number {
+  if n < 0 {
+    return -n;
+  }
+  return n;
+}
+let x = abs(n: -5);
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+    expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
+  });
+
+  it("should compile function calling another function", () => {
+    const source = `shortcut {
+  name: "Compose",
+}
+
+func double(n: Number) -> Number { return n * 2; }
+func quadruple(n: Number) -> Number { return double(n: double(n: n)); }
+let x = quadruple(n: 3);
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(2);
+  });
+
+  it("should compile function using enums and records", () => {
+    const source = `shortcut {
+  name: "TypedFunc",
+}
+
+enum Color { red = "RED", blue = "BLUE" }
+record Shirt { size: Text, color: Color }
+func makeShirt(size: Text, color: Color) -> Shirt {
+  return Shirt(size: size, color: color);
+}
+let s = makeShirt(size: "L", color: Color.red);
+showAlert(text: s.size);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+  });
 });
