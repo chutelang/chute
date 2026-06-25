@@ -21,11 +21,6 @@ export function run(file: string, io: IO = realIO): void {
 
   io.writeFile(plistPath, compileResult.main);
 
-  for (const sub of compileResult.subShortcuts) {
-    const subPath = path.join(outDir, `${sub.name}.shortcut`);
-    io.writeFile(subPath, sub.plist);
-  }
-
   if (!isSigningAvailable(io.spawn)) {
     io.removeFile(plistPath);
     io.stderr(
@@ -48,6 +43,23 @@ export function run(file: string, io: IO = realIO): void {
     return;
   }
   io.removeFile(plistPath);
+
+  for (const sub of compileResult.subShortcuts) {
+    const subPlistPath = path.join(outDir, `${sub.name}.plist`);
+    const subShortcutPath = path.join(outDir, `${sub.name}.shortcut`);
+    io.writeFile(subPlistPath, sub.plist);
+    try {
+      signShortcut(io.spawn, subPlistPath, subShortcutPath);
+    } catch (err) {
+      io.removeFile(subPlistPath);
+      io.stderr(
+        `chute run: signing failed for sub-shortcut ${sub.name}: ${err instanceof Error ? err.message : err}\n`,
+      );
+      io.setExitCode(1);
+      return;
+    }
+    io.removeFile(subPlistPath);
+  }
 
   const result = io.spawn("open", [shortcutPath], {
     stdio: "inherit",
