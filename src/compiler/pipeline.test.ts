@@ -205,6 +205,20 @@ showAlert(text: msg);`;
     expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
   });
 
+  it("should compile a multi-parameter function's sub-shortcut", () => {
+    const source = `shortcut {
+  name: "AddTwo",
+}
+
+func add(a: Number, b: Number) -> Number { return a + b; }
+let x = add(a: 3, b: 4);
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.subShortcuts).toHaveLength(1);
+    expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
+  });
+
   it("should compile multiple functions", () => {
     const source = `shortcut {
   name: "MultiFunctions",

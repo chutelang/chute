@@ -138,15 +138,23 @@ function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext
 
   const actions: ActionIR[] = [];
 
-  for (const param of decl.params) {
-    const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFDictionaryKey", param.name);
-    actions.push({
-      identifier: "is.workflow.actions.getvalueforkey",
-      uuid: nextUuid(subCtx),
-      parameters,
-    });
-    actions.push(makeSetVariableAction(param.name, subCtx));
+  if (decl.params.length > 0) {
+    const inputTempName = nextTempName(subCtx);
+    actions.push(makeGetVariableAction("Shortcut Input", subCtx));
+    actions.push(makeSetVariableAction(inputTempName, subCtx));
+
+    for (const param of decl.params) {
+      actions.push(makeGetVariableAction(inputTempName, subCtx));
+
+      const parameters = new Map<string, ParameterValue>();
+      parameters.set("WFDictionaryKey", param.name);
+      actions.push({
+        identifier: "is.workflow.actions.getvalueforkey",
+        uuid: nextUuid(subCtx),
+        parameters,
+      });
+      actions.push(makeSetVariableAction(param.name, subCtx));
+    }
   }
 
   for (const stmt of decl.body) {
