@@ -1040,6 +1040,10 @@ function checkFunctionDeclaration(
 }
 
 function checkReturnStatement(stmt: ReturnStatement, scope: Scope, context: CheckContext): void {
+  if (context.currentFunction === undefined) {
+    throw new CheckError(`'return' can only be used inside a function`, stmt.span);
+  }
+
   if (context.expectedReturnType === undefined) {
     if (stmt.value) {
       inferType(stmt.value, scope, context);
