@@ -434,6 +434,20 @@ describe("lower", () => {
       expect(subName).toMatch(/^greet_[a-f0-9]+$/);
     });
 
+    it("should derive the same sub-shortcut name regardless of source position", () => {
+      const resultA = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func add(a: Number, b: Number) -> Number { return a + b; }
+      `);
+      const resultB = lowerSourceResult(`
+        shortcut { name: "Test" }
+
+
+        func add(a: Number, b: Number) -> Number { return a + b; }
+      `);
+      expect(resultA.subShortcuts.at(0)?.name).toBe(resultB.subShortcuts.at(0)?.name);
+    });
+
     it("should restore the input dictionary before extracting each parameter", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }

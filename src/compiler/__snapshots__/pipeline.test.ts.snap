@@ -27,7 +27,7 @@ exports[`compile > should compile a multi-parameter function's sub-shortcut 1`] 
 	<key>WFWorkflowMinimumClientVersionString</key>
 	<string>900</string>
 	<key>WFWorkflowName</key>
-	<string>add_6141594c</string>
+	<string>add_ebf3320b</string>
 	<key>WFWorkflowTypes</key>
 	<array>
 		<string>NCWidget</string>
@@ -830,7 +830,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>quadruple_f50ebf01</string>
+				<string>quadruple_ab06af8d</string>
 			</dict>
 		</dict>
 		<dict>
@@ -941,7 +941,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>greet_63abece9</string>
+				<string>greet_64931b27</string>
 			</dict>
 		</dict>
 		<dict>
@@ -1017,7 +1017,7 @@ exports[`compile > should compile function declaration and call 2`] = `
 	<key>WFWorkflowMinimumClientVersionString</key>
 	<string>900</string>
 	<key>WFWorkflowName</key>
-	<string>greet_63abece9</string>
+	<string>greet_64931b27</string>
 	<key>WFWorkflowTypes</key>
 	<array>
 		<string>NCWidget</string>
@@ -1272,7 +1272,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>makeShirt_9bfe6fe1</string>
+				<string>makeShirt_d7add6fc</string>
 			</dict>
 		</dict>
 		<dict>
@@ -1487,7 +1487,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>abs_66dec852</string>
+				<string>abs_3740cc8</string>
 			</dict>
 		</dict>
 		<dict>
@@ -1563,7 +1563,7 @@ exports[`compile > should compile function with conditional return 2`] = `
 	<key>WFWorkflowMinimumClientVersionString</key>
 	<string>900</string>
 	<key>WFWorkflowName</key>
-	<string>abs_66dec852</string>
+	<string>abs_3740cc8</string>
 	<key>WFWorkflowTypes</key>
 	<array>
 		<string>NCWidget</string>
@@ -2628,7 +2628,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>add_3ebad7cc</string>
+				<string>add_ebf3320b</string>
 			</dict>
 		</dict>
 		<dict>
@@ -2687,7 +2687,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>double_398d6431</string>
+				<string>double_71a936ba</string>
 			</dict>
 		</dict>
 		<dict>
