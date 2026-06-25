@@ -872,4 +872,18 @@ describe("checker", () => {
       ).not.toThrow();
     });
   });
+
+  describe("top-level return", () => {
+    it("should reject bare return at top level", () => {
+      expect(() => checkSource("return;")).toThrow(CheckError);
+    });
+
+    it("should reject return with value at top level", () => {
+      expect(() => checkSource("return 42;")).toThrow(CheckError);
+    });
+
+    it("should include descriptive error for top-level return", () => {
+      expect(() => checkSource("return;")).toThrow("'return' can only be used inside a function");
+    });
+  });
 });
