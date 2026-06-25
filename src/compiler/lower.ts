@@ -166,16 +166,37 @@ function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext
 }
 
 function deriveFunctionShortcutName(decl: FunctionDeclaration): string {
-  const content = JSON.stringify({
-    params: decl.params.map((p) => ({
-      name: p.name,
-      type: p.type,
-    })),
-    body: decl.body,
-    returnType: decl.returnType,
-  });
+  const content = JSON.stringify(
+    stripSpans({
+      params: decl.params.map((p) => ({
+        name: p.name,
+        type: p.type,
+      })),
+      body: decl.body,
+      returnType: decl.returnType,
+    }),
+  );
   const hash = simpleHash(content);
   return `${decl.name}_${hash}`;
+}
+
+/**
+ * Recursively removes `span` fields from an object so that content hashes
+ * derived from it are independent of source position.
+ */
+function stripSpans(obj: unknown): unknown {
+  if (obj === null || obj === undefined || typeof obj !== "object") {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(stripSpans);
+  }
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+    if (key === "span") continue;
+    result[key] = stripSpans(value);
+  }
+  return result;
 }
 
 function simpleHash(str: string): string {
