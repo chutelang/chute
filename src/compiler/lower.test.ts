@@ -433,5 +433,48 @@ describe("lower", () => {
       const subName = result.subShortcuts.at(0)?.name;
       expect(subName).toMatch(/^greet_[a-f0-9]+$/);
     });
+
+    it("should restore the input dictionary before extracting each parameter", () => {
+      const result = lowerSourceResult(`
+        shortcut { name: "Test" }
+        func add(a: Number, b: Number) -> Number { return a + b; }
+      `);
+      const sub = result.subShortcuts.at(0);
+      const actions = sub?.actions ?? [];
+
+      const identifiers = actions.map((a) => a.identifier);
+      expect(identifiers.slice(0, 8)).toEqual([
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.getvalueforkey",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.getvalueforkey",
+        "is.workflow.actions.setvariable",
+      ]);
+
+      const firstGetVariable = actions.at(0);
+      expect(firstGetVariable?.parameters.get("WFVariable")).toEqual({
+        kind: "VariableRef",
+        name: "Shortcut Input",
+      });
+
+      const firstDictionaryKey = actions.at(3);
+      expect(firstDictionaryKey?.parameters.get("WFDictionaryKey")).toBe("a");
+
+      const secondDictionaryKey = actions.at(6);
+      expect(secondDictionaryKey?.parameters.get("WFDictionaryKey")).toBe("b");
+
+      const restoreBeforeSecondExtraction = actions.at(5);
+      const tempName = actions.at(1)?.parameters.get("WFVariableName") as string | undefined;
+      expect(
+        (
+          restoreBeforeSecondExtraction?.parameters.get("WFVariable") as
+            | { kind: "VariableRef"; name: string }
+            | undefined
+        )?.name,
+      ).toBe(tempName);
+    });
   });
 });
