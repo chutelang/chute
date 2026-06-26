@@ -859,6 +859,28 @@ describe("checker", () => {
       `);
       expect(warnings).toHaveLength(0);
     });
+
+    it("should emit warning for mutual recursion", () => {
+      const warnings = checkSourceWithWarnings(`
+        func ping(n: Number) {
+          if n > 0 { pong(n: n - 1); }
+        }
+        func pong(n: Number) {
+          if n > 0 { ping(n: n - 1); }
+        }
+      `);
+      expect(warnings.length).toBeGreaterThanOrEqual(1);
+      expect(warnings.at(0)?.message).toContain("recursive");
+    });
+
+    it("should allow forward function calls", () => {
+      expect(() =>
+        checkSource(`
+          func main() { helper(); }
+          func helper() { showAlert(text: "hi"); }
+        `),
+      ).not.toThrow();
+    });
   });
 
   describe("dot-name in function argument", () => {

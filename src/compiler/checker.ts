@@ -60,10 +60,17 @@ export class CheckWarning {
   ) {}
 }
 
+interface CallEdge {
+  caller: string;
+  callee: string;
+  span: Span;
+}
+
 interface CheckContext {
   expectedReturnType: ChuteType | undefined;
   currentFunction: string | undefined;
   warnings: CheckWarning[];
+  callEdges: CallEdge[];
 }
 
 export class CheckError extends Error {
@@ -124,10 +131,28 @@ export function check(program: Program): CheckWarning[] {
     expectedReturnType: undefined,
     currentFunction: undefined,
     warnings: [],
+    callEdges: [],
   };
+
   for (const stmt of program.body) {
+    if (stmt.kind === "FunctionDeclaration") {
+      registerFunctionSignature(stmt, scope, context);
+    } else if (stmt.kind === "EnumDeclaration") {
+      checkEnumDeclaration(stmt, scope);
+    } else if (stmt.kind === "RecordDeclaration") {
+      checkRecordDeclaration(stmt, scope);
+    }
+  }
+
+  for (const stmt of program.body) {
+    if (stmt.kind === "EnumDeclaration" || stmt.kind === "RecordDeclaration") {
+      continue;
+    }
     checkStatement(stmt, scope, context);
   }
+
+  detectRecursiveCycles(context);
+
   return context.warnings;
 }
 
@@ -557,13 +582,12 @@ function checkFunctionCall(
     }
   }
 
-  if (context.currentFunction === funcType.name) {
-    context.warnings.push(
-      new CheckWarning(
-        `recursive call to '${funcType.name}' — each level starts a complete shortcut run, so deep recursion is slow`,
-        expr.span,
-      ),
-    );
+  if (context.currentFunction) {
+    context.callEdges.push({
+      caller: context.currentFunction,
+      callee: funcType.name,
+      span: expr.span,
+    });
   }
 
   return funcType.returnType ?? { kind: "any" };
@@ -975,7 +999,7 @@ function checkRecordDeclaration(stmt: RecordDeclaration, scope: Scope): void {
   scope.defineType(stmt.name, recordType);
 }
 
-function checkFunctionDeclaration(
+function registerFunctionSignature(
   decl: FunctionDeclaration,
   scope: Scope,
   context: CheckContext,
@@ -1022,16 +1046,28 @@ function checkFunctionDeclaration(
   };
 
   scope.define(decl.name, funcType, false);
+}
+
+function checkFunctionDeclaration(
+  decl: FunctionDeclaration,
+  scope: Scope,
+  context: CheckContext,
+): void {
+  const binding = scope.lookup(decl.name);
+  if (!binding || binding.type.kind !== "function") return;
+
+  const funcType = binding.type;
 
   const bodyScope = new Scope(scope);
-  for (const p of params) {
+  for (const p of funcType.params) {
     bodyScope.define(p.name, p.type, false);
   }
 
   const bodyContext: CheckContext = {
-    expectedReturnType: returnType,
+    expectedReturnType: funcType.returnType,
     currentFunction: decl.name,
     warnings: context.warnings,
+    callEdges: context.callEdges,
   };
 
   for (const s of decl.body) {
@@ -1068,6 +1104,52 @@ function checkReturnStatement(stmt: ReturnStatement, scope: Scope, context: Chec
       `cannot return ${describeType(valueType)} from function expecting ${describeType(context.expectedReturnType)}`,
       stmt.span,
     );
+  }
+}
+
+function detectRecursiveCycles(context: CheckContext): void {
+  const adjacency = new Map<string, CallEdge[]>();
+  for (const edge of context.callEdges) {
+    const existing = adjacency.get(edge.caller);
+    if (existing) {
+      existing.push(edge);
+    } else {
+      adjacency.set(edge.caller, [edge]);
+    }
+  }
+
+  const visited = new Set<string>();
+  const inStack = new Set<string>();
+  const warned = new Set<string>();
+
+  function dfs(node: string): void {
+    if (visited.has(node)) return;
+    visited.add(node);
+    inStack.add(node);
+
+    const edges = adjacency.get(node);
+    if (edges) {
+      for (const edge of edges) {
+        if (inStack.has(edge.callee) && !warned.has(edge.callee)) {
+          warned.add(edge.callee);
+          warned.add(node);
+          context.warnings.push(
+            new CheckWarning(
+              `recursive call to '${edge.callee}' — each level starts a complete shortcut run, so deep recursion is slow`,
+              edge.span,
+            ),
+          );
+        } else if (!visited.has(edge.callee)) {
+          dfs(edge.callee);
+        }
+      }
+    }
+
+    inStack.delete(node);
+  }
+
+  for (const node of adjacency.keys()) {
+    dfs(node);
   }
 }
 
