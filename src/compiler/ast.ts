@@ -174,6 +174,7 @@ export type Expression =
   | UnaryExpression
   | CoalesceExpression
   | TernaryExpression
+  | PipelineExpression
   | Identifier
   | StringLiteral
   | NumberLiteral
@@ -183,7 +184,8 @@ export type Expression =
   | ListLiteral
   | DictionaryLiteral
   | DotNameExpression
-  | HashIndexExpression;
+  | HashIndexExpression
+  | PlaceholderExpression;
 
 export interface CallExpression {
   kind: "CallExpression";
@@ -329,6 +331,28 @@ export interface DotNameExpression {
 
 export interface HashIndexExpression {
   kind: "HashIndexExpression";
+  span: Span;
+}
+
+export type PipelineOperator = "|>" | "|>?";
+
+export interface PipelineStage {
+  kind: "PipelineStage";
+  span: Span;
+  operator: PipelineOperator;
+  callee: Expression;
+  args: Argument[];
+}
+
+export interface PipelineExpression {
+  kind: "PipelineExpression";
+  span: Span;
+  input: Expression;
+  stages: PipelineStage[];
+}
+
+export interface PlaceholderExpression {
+  kind: "PlaceholderExpression";
   span: Span;
 }
 
