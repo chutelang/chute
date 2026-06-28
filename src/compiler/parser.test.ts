@@ -1234,4 +1234,108 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
   });
+
+  describe("pipelines", () => {
+    it("should parse a simple |> pipeline", () => {
+      const ast = parse("let x = a |> foo;");
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("LetDeclaration");
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.initializer.kind).toBe("PipelineExpression");
+        if (decl.initializer.kind === "PipelineExpression") {
+          expect(decl.initializer.input.kind).toBe("Identifier");
+          expect(decl.initializer.stages).toHaveLength(1);
+          expect(decl.initializer.stages.at(0)?.operator).toBe("|>");
+          expect(decl.initializer.stages.at(0)?.callee).toMatchObject({
+            kind: "Identifier",
+            name: "foo",
+          });
+          expect(decl.initializer.stages.at(0)?.args).toEqual([]);
+        }
+      }
+    });
+
+    it("should parse a multi-stage pipeline", () => {
+      const ast = parse("let x = a |> foo |> bar;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        const pipe = decl.initializer;
+        expect(pipe.kind).toBe("PipelineExpression");
+        if (pipe.kind === "PipelineExpression") {
+          expect(pipe.stages).toHaveLength(2);
+          expect(pipe.stages.at(1)?.callee).toMatchObject({
+            kind: "Identifier",
+            name: "bar",
+          });
+        }
+      }
+    });
+
+    it("should parse |>? optional pipeline operator", () => {
+      const ast = parse("let x = a |>? foo |> bar;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+        expect(decl.initializer.stages.at(0)?.operator).toBe("|>?");
+        expect(decl.initializer.stages.at(1)?.operator).toBe("|>");
+      }
+    });
+
+    it("should parse a stage with arguments", () => {
+      const ast = parse('let x = a |> foo(label: "hi");');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+        const stage = decl.initializer.stages.at(0);
+        expect(stage?.args).toHaveLength(1);
+        expect(stage?.args.at(0)?.label).toBe("label");
+      }
+    });
+
+    it("should parse a stage with _ placeholder", () => {
+      const ast = parse("let x = a |> foo(_, label: b);");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+        const stage = decl.initializer.stages.at(0);
+        expect(stage?.args).toHaveLength(2);
+        expect(stage?.args.at(0)?.value.kind).toBe("PlaceholderExpression");
+      }
+    });
+
+    it("should parse a qualified stage name", () => {
+      const ast = parse("let x = a |> Scan.parse;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+        const stage = decl.initializer.stages.at(0);
+        expect(stage?.callee.kind).toBe("MemberExpression");
+        if (stage?.callee.kind === "MemberExpression") {
+          expect(stage.callee.object).toMatchObject({
+            kind: "Identifier",
+            name: "Scan",
+          });
+          expect(stage.callee.property).toBe("parse");
+        }
+      }
+    });
+
+    it("should parse a static member stage name", () => {
+      const ast = parse("let x = a |> helpers.Scan.parse;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+        const stage = decl.initializer.stages.at(0);
+        expect(stage?.callee.kind).toBe("MemberExpression");
+        if (stage?.callee.kind === "MemberExpression") {
+          expect(stage.callee.property).toBe("parse");
+          expect(stage.callee.object.kind).toBe("MemberExpression");
+        }
+      }
+    });
+
+    it("should parse pipeline in expression statement", () => {
+      const ast = parse("a |> doSomething;");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("ExpressionStatement");
+      if (stmt?.kind === "ExpressionStatement") {
+        expect(stmt.expression.kind).toBe("PipelineExpression");
+      }
+    });
+  });
 });

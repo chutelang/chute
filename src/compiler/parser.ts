@@ -30,6 +30,9 @@ import type {
   MetadataField,
   MetadataValue,
   OptionalMemberExpression,
+  PipelineExpression,
+  PipelineOperator,
+  PipelineStage,
   Place,
   PlaceAccessor,
   Program,
@@ -913,7 +916,109 @@ export class Parser {
       return this.finishTernaryTail(fullCond);
     }
 
-    return this.finishCoalesce(left);
+    return this.finishPipeline(this.finishCoalesce(left));
+  }
+
+  private finishPipeline(input: Expression): Expression {
+    if (!this.check(TokenKind.Pipe) && !this.check(TokenKind.PipeQuestion)) {
+      return input;
+    }
+
+    const stages: PipelineStage[] = [];
+
+    while (this.check(TokenKind.Pipe) || this.check(TokenKind.PipeQuestion)) {
+      const opToken = this.advance();
+      const operator: PipelineOperator = opToken.kind === TokenKind.Pipe ? "|>" : "|>?";
+      const stage = this.parsePipelineStage(operator, opToken.span.start);
+      stages.push(stage);
+    }
+
+    return {
+      kind: "PipelineExpression",
+      span: { start: input.span.start, end: stages.at(-1)!.span.end },
+      input,
+      stages,
+    } satisfies PipelineExpression;
+  }
+
+  private parsePipelineStage(operator: PipelineOperator, opStart: number): PipelineStage {
+    const callee = this.parseQualifiedName();
+
+    let args: Argument[] = [];
+    let end = callee.span.end;
+
+    if (this.check(TokenKind.LeftParen)) {
+      this.advance();
+      while (!this.check(TokenKind.RightParen)) {
+        args.push(this.parsePipelineArgument());
+        if (!this.check(TokenKind.RightParen)) {
+          this.expect(TokenKind.Comma);
+        }
+      }
+      end = this.expect(TokenKind.RightParen).span.end;
+    }
+
+    return {
+      kind: "PipelineStage",
+      span: { start: opStart, end },
+      operator,
+      callee,
+      args,
+    };
+  }
+
+  private parseQualifiedName(): Expression {
+    const tok = this.expect(TokenKind.Identifier);
+    let expr: Expression = { kind: "Identifier", span: tok.span, name: tokenValue(tok) };
+
+    while (this.check(TokenKind.Dot)) {
+      this.advance();
+      const prop = this.expect(TokenKind.Identifier);
+      expr = {
+        kind: "MemberExpression",
+        span: { start: expr.span.start, end: prop.span.end },
+        object: expr,
+        property: tokenValue(prop),
+      };
+    }
+
+    return expr;
+  }
+
+  private parsePipelineArgument(): Argument {
+    if (this.check(TokenKind.Underscore)) {
+      const tok = this.advance();
+      return {
+        kind: "Argument",
+        span: tok.span,
+        label: undefined,
+        value: { kind: "PlaceholderExpression", span: tok.span },
+      };
+    }
+
+    const first = this.peek();
+    const lookahead = this.tokens.at(this.pos + 1);
+
+    if (
+      (first.kind === TokenKind.Identifier || isKeyword(first.kind)) &&
+      lookahead?.kind === TokenKind.Colon
+    ) {
+      const afterColon = this.tokens.at(this.pos + 2);
+      if (afterColon?.kind === TokenKind.Underscore) {
+        this.advance();
+        this.advance();
+        const uTok = this.advance();
+        const label = first.value ?? keywordText(first.kind);
+        return {
+          kind: "Argument",
+          span: { start: first.span.start, end: uTok.span.end },
+          label,
+          value: { kind: "PlaceholderExpression", span: uTok.span },
+        };
+      }
+    }
+
+    return this.parseArgument();
   }
 
   private finishConditionChaining(cond: Condition): Condition {
@@ -1123,6 +1228,20 @@ export class Parser {
       (first.kind === TokenKind.Identifier || isKeyword(first.kind)) &&
       lookahead?.kind === TokenKind.Colon
     ) {
+      const afterColon = this.tokens.at(this.pos + 2);
+      if (afterColon?.kind === TokenKind.Underscore) {
+        this.advance();
+        this.advance();
+        const uTok = this.advance();
+        const label = first.value ?? keywordText(first.kind);
+        return {
+          kind: "Argument",
+          span: { start: first.span.start, end: uTok.span.end },
+          label,
+          value: { kind: "PlaceholderExpression", span: uTok.span },
+        };
+      }
+
       this.advance();
       this.advance();
       const value = this.parseExpression();
@@ -1132,6 +1251,16 @@ export class Parser {
         span: { start: first.span.start, end: value.span.end },
         label,
         value,
+      };
+    }
+
+    if (first.kind === TokenKind.Underscore) {
+      const tok = this.advance();
+      return {
+        kind: "Argument",
+        span: tok.span,
+        label: undefined,
+        value: { kind: "PlaceholderExpression", span: tok.span },
       };
     }
 
