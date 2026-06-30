@@ -908,4 +908,118 @@ describe("checker", () => {
       expect(() => checkSource("return;")).toThrow("'return' can only be used inside a function");
     });
   });
+
+  describe("pipelines", () => {
+    it("should accept a pipeline through a function", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x = 5 |> double;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should infer type through a pipeline", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x: Number = 5 |> double;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject type mismatch through a pipeline", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x: Text = 5 |> double;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should infer type through a multi-stage pipeline", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          func triple(n: Number) -> Number { return n * 3; }
+          let x: Number = 5 |> double |> triple;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should make result optional through |>?", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x: Number? = nil;
+          let y: Number? = x |>? double;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject non-optional input to |>?", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x = 5 |>? double;
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should unwrap optional for stages after |>?", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          func triple(n: Number) -> Number { return n * 3; }
+          let x: Number? = nil;
+          let y: Number? = x |>? double |> triple;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept pipeline with explicit arguments", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let x = 5 |> add(b: 10);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject _ outside pipeline stages", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x = double(n: _);
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should accept _ in pipeline stage arguments", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          let x = 5 |> add(b: 10, a: _);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept bare stage name as zero-arg call", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          let x = 5 |> double;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept expression statement with pipeline ending in action call", () => {
+      expect(() =>
+        checkSource(`
+          let x = "hello";
+          x |> showAlert;
+        `),
+      ).not.toThrow();
+    });
+  });
 });
