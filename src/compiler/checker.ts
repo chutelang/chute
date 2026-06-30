@@ -22,6 +22,7 @@ import type {
   MenuStatement,
   NamedType,
   OptionalMemberExpression,
+  PipelineExpression,
   Program,
   RecordDeclaration,
   RepeatStatement,
@@ -322,6 +323,13 @@ function inferType(expr: Expression, scope: Scope, context: CheckContext): Chute
       return inferCallExpression(expr, scope, context);
     case "TernaryExpression":
       return inferTernaryExpression(expr, scope, context);
+    case "PipelineExpression":
+      return inferPipelineExpression(expr, scope, context);
+    case "PlaceholderExpression":
+      throw new CheckError(
+        `'_' placeholder can only be used in pipeline stage arguments`,
+        expr.span,
+      );
     case "DotNameExpression":
       throw new CheckError(`cannot resolve '.${expr.name}' without a contextual type`, expr.span);
     case "HashIndexExpression":
@@ -1151,6 +1159,179 @@ function detectRecursiveCycles(context: CheckContext): void {
   for (const node of adjacency.keys()) {
     dfs(node);
   }
+}
+
+function inferPipelineExpression(
+  expr: PipelineExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  let currentType = inferType(expr.input, scope, context);
+  let isOptionalPipeline = false;
+
+  for (const stage of expr.stages) {
+    if (stage.operator === "|>?") {
+      if (currentType.kind !== "optional" && currentType.kind !== "any") {
+        throw new CheckError(
+          `'|>?' requires an optional input, got ${describeType(currentType)}`,
+          stage.span,
+        );
+      }
+      isOptionalPipeline = true;
+      if (currentType.kind === "optional") {
+        currentType = currentType.inner;
+      }
+    }
+
+    currentType = inferStageType(stage, currentType, scope, context);
+  }
+
+  if (isOptionalPipeline) {
+    return { kind: "optional", inner: currentType };
+  }
+  return currentType;
+}
+
+function inferStageType(
+  stage: import("./ast.ts").PipelineStage,
+  inputType: ChuteType,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const calleeName = resolveStageCalleeName(stage.callee);
+  if (!calleeName) {
+    for (const arg of stage.args) {
+      if (arg.value.kind !== "PlaceholderExpression") {
+        inferType(arg.value, scope, context);
+      }
+    }
+    return { kind: "any" };
+  }
+
+  const binding = scope.lookup(calleeName);
+  if (binding?.type.kind === "function") {
+    return inferPipelineFunctionCall(stage, binding.type, inputType, scope, context);
+  }
+
+  for (const arg of stage.args) {
+    if (arg.value.kind !== "PlaceholderExpression") {
+      inferType(arg.value, scope, context);
+    }
+  }
+  return { kind: "any" };
+}
+
+function resolveStageCalleeName(callee: Expression): string | undefined {
+  if (callee.kind === "Identifier") return callee.name;
+  if (callee.kind === "MemberExpression") return resolveStageCalleeName(callee.object);
+  return undefined;
+}
+
+function inferPipelineFunctionCall(
+  stage: import("./ast.ts").PipelineStage,
+  funcType: ChuteType & { kind: "function" },
+  inputType: ChuteType,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const hasPlaceholder = stage.args.some((a) => a.value.kind === "PlaceholderExpression");
+  const provided = new Map<string, Expression>();
+
+  if (hasPlaceholder) {
+    for (const arg of stage.args) {
+      if (arg.value.kind === "PlaceholderExpression") {
+        if (arg.label) {
+          const param = funcType.params.find((p) => p.name === arg.label);
+          if (param && !isAssignable(inputType, param.type)) {
+            throw new CheckError(
+              `cannot pass ${describeType(inputType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+              arg.span,
+            );
+          }
+          provided.set(arg.label, arg.value);
+        } else {
+          const firstParam = funcType.params.at(0);
+          if (firstParam) {
+            if (!isAssignable(inputType, firstParam.type)) {
+              throw new CheckError(
+                `cannot pass ${describeType(inputType)} for parameter '${firstParam.name}' of type ${describeType(firstParam.type)}`,
+                arg.span,
+              );
+            }
+            provided.set(firstParam.name, arg.value);
+          }
+        }
+      } else {
+        if (arg.label) {
+          const param = funcType.params.find((p) => p.name === arg.label);
+          if (!param) {
+            throw new CheckError(
+              `function '${funcType.name}' has no parameter '${arg.label}'`,
+              arg.span,
+            );
+          }
+          const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+          if (!isAssignable(argType, param.type)) {
+            throw new CheckError(
+              `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+              arg.span,
+            );
+          }
+          provided.set(arg.label, arg.value);
+        }
+      }
+    }
+  } else {
+    const firstParam = funcType.params.at(0);
+    if (firstParam) {
+      if (!isAssignable(inputType, firstParam.type)) {
+        throw new CheckError(
+          `cannot pass ${describeType(inputType)} for parameter '${firstParam.name}' of type ${describeType(firstParam.type)}`,
+          stage.span,
+        );
+      }
+      provided.set(firstParam.name, stage.callee);
+    }
+
+    for (const arg of stage.args) {
+      if (arg.label) {
+        const param = funcType.params.find((p) => p.name === arg.label);
+        if (!param) {
+          throw new CheckError(
+            `function '${funcType.name}' has no parameter '${arg.label}'`,
+            arg.span,
+          );
+        }
+        const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+        if (!isAssignable(argType, param.type)) {
+          throw new CheckError(
+            `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+            arg.span,
+          );
+        }
+        provided.set(arg.label, arg.value);
+      }
+    }
+  }
+
+  for (const param of funcType.params) {
+    if (!provided.has(param.name) && !param.hasDefault) {
+      throw new CheckError(
+        `missing argument '${param.name}' in pipeline call to '${funcType.name}'`,
+        stage.span,
+      );
+    }
+  }
+
+  if (context.currentFunction) {
+    context.callEdges.push({
+      caller: context.currentFunction,
+      callee: funcType.name,
+      span: stage.span,
+    });
+  }
+
+  return funcType.returnType ?? { kind: "any" };
 }
 
 function assertNever(value: never): never {
