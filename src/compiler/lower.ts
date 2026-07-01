@@ -17,6 +17,8 @@ import type {
   LetDestructure,
   ListLiteral,
   MenuStatement,
+  PipelineExpression,
+  PipelineStage,
   Program,
   RecordDeclaration,
   RepeatStatement,
@@ -274,7 +276,7 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
 }
 
 function lowerExpressionStatement(expr: Expression, actions: ActionIR[], ctx: LowerContext): void {
-  if (expr.kind !== "CallExpression") {
+  if (expr.kind !== "CallExpression" && expr.kind !== "PipelineExpression") {
     throw new LowerError(`expression statements must be action calls, got ${expr.kind}`);
   }
 
@@ -371,6 +373,11 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "DotNameExpression":
       lowerDotNameExpression(expr, actions, ctx);
       return;
+    case "PipelineExpression":
+      lowerPipelineExpression(expr, actions, ctx);
+      return;
+    case "PlaceholderExpression":
+      throw new LowerError("'_' placeholder cannot appear outside a pipeline stage");
     case "HashIndexExpression":
       lowerHashIndexExpression(actions, ctx);
       return;
@@ -1275,6 +1282,194 @@ function lowerRecordConstruction(
       parameters,
     });
   }
+}
+
+function lowerPipelineExpression(
+  expr: PipelineExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  lowerExpression(expr.input, actions, ctx);
+
+  for (const stage of expr.stages) {
+    if (stage.operator === "|>?") {
+      lowerOptionalPipelineStage(stage, actions, ctx);
+    } else {
+      lowerPipelineStage(stage, actions, ctx);
+    }
+  }
+}
+
+function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
+  const calleeName = resolveStageCalleeName(stage.callee);
+  const funcDecl = calleeName ? ctx.functions.get(calleeName) : undefined;
+
+  if (funcDecl) {
+    lowerPipelineFunctionStage(stage, funcDecl, actions, ctx);
+  } else {
+    lowerPipelineActionStage(stage, calleeName, actions, ctx);
+  }
+}
+
+function resolveStageCalleeName(callee: Expression): string | undefined {
+  if (callee.kind === "Identifier") return callee.name;
+  if (callee.kind === "MemberExpression") {
+    return resolveStageCalleeName(callee.object);
+  }
+  return undefined;
+}
+
+function lowerPipelineFunctionStage(
+  stage: PipelineStage,
+  decl: FunctionDeclaration,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const pipedTempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(pipedTempName, ctx));
+
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
+
+  const hasPlaceholder = stage.args.some((a) => a.value.kind === "PlaceholderExpression");
+  const provided = new Map<string, Expression>();
+
+  if (hasPlaceholder) {
+    for (const arg of stage.args) {
+      if (arg.value.kind === "PlaceholderExpression") {
+        const targetName = arg.label ?? decl.params.at(0)?.name;
+        if (targetName) {
+          provided.set(targetName, arg.value);
+          const value: ParameterValue = { kind: "VariableRef", name: pipedTempName };
+          const parameters = new Map<string, ParameterValue>();
+          parameters.set("WFDictionaryKey", targetName);
+          parameters.set("WFDictionaryValue", value);
+          actions.push({
+            identifier: "is.workflow.actions.setvalueforkey",
+            uuid: nextUuid(ctx),
+            parameters,
+          });
+        }
+      } else if (arg.label) {
+        provided.set(arg.label, arg.value);
+        const value = lowerToParamValue(arg.value, actions, ctx);
+        const parameters = new Map<string, ParameterValue>();
+        parameters.set("WFDictionaryKey", arg.label);
+        parameters.set("WFDictionaryValue", value);
+        actions.push({
+          identifier: "is.workflow.actions.setvalueforkey",
+          uuid: nextUuid(ctx),
+          parameters,
+        });
+      }
+    }
+  } else {
+    const firstParam = decl.params.at(0);
+    if (firstParam) {
+      provided.set(firstParam.name, stage.callee);
+      const value: ParameterValue = { kind: "VariableRef", name: pipedTempName };
+      const parameters = new Map<string, ParameterValue>();
+      parameters.set("WFDictionaryKey", firstParam.name);
+      parameters.set("WFDictionaryValue", value);
+      actions.push({
+        identifier: "is.workflow.actions.setvalueforkey",
+        uuid: nextUuid(ctx),
+        parameters,
+      });
+    }
+
+    for (const arg of stage.args) {
+      if (arg.label) {
+        provided.set(arg.label, arg.value);
+        const value = lowerToParamValue(arg.value, actions, ctx);
+        const parameters = new Map<string, ParameterValue>();
+        parameters.set("WFDictionaryKey", arg.label);
+        parameters.set("WFDictionaryValue", value);
+        actions.push({
+          identifier: "is.workflow.actions.setvalueforkey",
+          uuid: nextUuid(ctx),
+          parameters,
+        });
+      }
+    }
+  }
+
+  for (const param of decl.params) {
+    if (!provided.has(param.name) && param.defaultValue) {
+      const value = lowerToParamValue(param.defaultValue, actions, ctx);
+      const parameters = new Map<string, ParameterValue>();
+      parameters.set("WFDictionaryKey", param.name);
+      parameters.set("WFDictionaryValue", value);
+      actions.push({
+        identifier: "is.workflow.actions.setvalueforkey",
+        uuid: nextUuid(ctx),
+        parameters,
+      });
+    }
+  }
+
+  const subName = deriveFunctionShortcutName(decl);
+  const runParams = new Map<string, ParameterValue>();
+  runParams.set("WFWorkflowName", subName);
+  actions.push({
+    identifier: "is.workflow.actions.runworkflow",
+    uuid: nextUuid(ctx),
+    parameters: runParams,
+  });
+}
+
+function lowerPipelineActionStage(
+  stage: PipelineStage,
+  calleeName: string | undefined,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  if (!calleeName) {
+    throw new LowerError("pipeline stage must be a direct or qualified name");
+  }
+
+  const builtin = BUILTIN_ACTIONS.get(calleeName);
+  if (!builtin) {
+    throw new LowerError(`unknown action: ${calleeName}`);
+  }
+
+  const parameters = new Map<string, ParameterValue>();
+
+  for (const arg of stage.args) {
+    if (arg.value.kind === "PlaceholderExpression") continue;
+    if (!arg.label) continue;
+
+    const paramKey = builtin.params[arg.label];
+    if (!paramKey) {
+      throw new LowerError(`unknown parameter '${arg.label}' for action '${calleeName}'`);
+    }
+    parameters.set(paramKey, lowerToParamValue(arg.value, actions, ctx));
+  }
+
+  actions.push({
+    identifier: builtin.identifier,
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function lowerOptionalPipelineStage(
+  stage: PipelineStage,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const groupId = nextUuid(ctx);
+
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
+
+  lowerPipelineStage(stage, actions, ctx);
+
+  actions.push(makeConditionalAction(1, groupId, ctx));
+  actions.push(makeNothingAction(ctx));
+  actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
 function assertNever(value: never): never {

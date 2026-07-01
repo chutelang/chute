@@ -491,4 +491,60 @@ describe("lower", () => {
       ).toBe(tempName);
     });
   });
+
+  describe("pipelines", () => {
+    it("should lower a single-stage function pipeline", () => {
+      const actions = lowerSource(`
+        func double(n: Number) -> Number { return n * 2; }
+        let x = 5 |> double;
+      `);
+
+      const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
+      expect(runWorkflow).toHaveLength(1);
+    });
+
+    it("should lower a multi-stage pipeline", () => {
+      const actions = lowerSource(`
+        func double(n: Number) -> Number { return n * 2; }
+        func triple(n: Number) -> Number { return n * 3; }
+        let x = 5 |> double |> triple;
+      `);
+
+      const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
+      expect(runWorkflow).toHaveLength(2);
+    });
+
+    it("should lower |>? with a nil-check conditional", () => {
+      const actions = lowerSource(`
+        func double(n: Number) -> Number { return n * 2; }
+        let x: Number? = nil;
+        let y = x |>? double;
+      `);
+
+      const conditionals = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.conditional",
+      );
+      expect(conditionals.length).toBeGreaterThanOrEqual(2);
+    });
+
+    it("should lower pipeline as expression statement", () => {
+      const actions = lowerSource(`
+        let x = "hello";
+        x |> showAlert;
+      `);
+
+      const alert = actions.find((a) => a.identifier === "is.workflow.actions.alert");
+      expect(alert).toBeDefined();
+    });
+
+    it("should lower pipeline with _ placeholder in explicit position", () => {
+      const actions = lowerSource(`
+        func add(a: Number, b: Number) -> Number { return a + b; }
+        let x = 5 |> add(b: 10, a: _);
+      `);
+
+      const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
+      expect(runWorkflow).toHaveLength(1);
+    });
+  });
 });
