@@ -287,4 +287,103 @@ showAlert(text: s.size);`;
     expect(result.main).toMatchSnapshot();
     expect(result.subShortcuts).toHaveLength(1);
   });
+
+  it("should compile a single-stage pipeline", () => {
+    const source = `shortcut {
+  name: "Pipe",
+}
+
+func double(n: Number) -> Number { return n * 2; }
+let x = 5 |> double;
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+  });
+
+  it("should compile a multi-stage pipeline", () => {
+    const source = `shortcut {
+  name: "MultiPipe",
+}
+
+func double(n: Number) -> Number { return n * 2; }
+func triple(n: Number) -> Number { return n * 3; }
+let x = 5 |> double |> triple;
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(2);
+  });
+
+  it("should compile an optional pipeline with |>?", () => {
+    const source = `shortcut {
+  name: "OptionalPipe",
+}
+
+func double(n: Number) -> Number { return n * 2; }
+let x: Number? = nil;
+let y = x |>? double;
+showResult(text: "done");`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+  });
+
+  it("should compile a pipeline with explicit arguments", () => {
+    const source = `shortcut {
+  name: "PipeArgs",
+}
+
+func add(a: Number, b: Number) -> Number { return a + b; }
+let x = 5 |> add(b: 10);
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+  });
+
+  it("should compile a pipeline with _ placeholder", () => {
+    const source = `shortcut {
+  name: "PipePlaceholder",
+}
+
+func add(a: Number, b: Number) -> Number { return a + b; }
+let x = 5 |> add(b: 10, a: _);
+showResult(text: x);`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(1);
+  });
+
+  it("should compile a pipeline ending in an action call", () => {
+    const source = `shortcut {
+  name: "PipeAction",
+}
+
+let msg = "Hello from pipe";
+msg |> showAlert;`;
+
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile |>? followed by |> stages", () => {
+    const source = `shortcut {
+  name: "MixedPipe",
+}
+
+func double(n: Number) -> Number { return n * 2; }
+func triple(n: Number) -> Number { return n * 3; }
+let x: Number? = nil;
+let y = x |>? double |> triple;
+showResult(text: "done");`;
+
+    const result = compile(source);
+    expect(result.main).toMatchSnapshot();
+    expect(result.subShortcuts).toHaveLength(2);
+  });
 });
