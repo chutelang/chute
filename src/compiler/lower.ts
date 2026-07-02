@@ -1291,13 +1291,29 @@ function lowerPipelineExpression(
 ): void {
   lowerExpression(expr.input, actions, ctx);
 
-  for (const stage of expr.stages) {
-    if (stage.operator === "|>?") {
-      lowerOptionalPipelineStage(stage, actions, ctx);
-    } else {
+  const optionalIndex = expr.stages.findIndex((s) => s.operator === "|>?");
+
+  if (optionalIndex === -1) {
+    for (const stage of expr.stages) {
       lowerPipelineStage(stage, actions, ctx);
     }
+    return;
   }
+
+  for (let i = 0; i < optionalIndex; i++) {
+    lowerPipelineStage(expr.stages[i], actions, ctx);
+  }
+
+  const groupId = nextUuid(ctx);
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
+
+  for (let i = optionalIndex; i < expr.stages.length; i++) {
+    lowerPipelineStage(expr.stages[i], actions, ctx);
+  }
+
+  actions.push(makeConditionalAction(1, groupId, ctx));
+  actions.push(makeNothingAction(ctx));
+  actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
 function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
@@ -1454,22 +1470,6 @@ function lowerPipelineActionStage(
     uuid: nextUuid(ctx),
     parameters,
   });
-}
-
-function lowerOptionalPipelineStage(
-  stage: PipelineStage,
-  actions: ActionIR[],
-  ctx: LowerContext,
-): void {
-  const groupId = nextUuid(ctx);
-
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
-
-  lowerPipelineStage(stage, actions, ctx);
-
-  actions.push(makeConditionalAction(1, groupId, ctx));
-  actions.push(makeNothingAction(ctx));
-  actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
 function assertNever(value: never): never {

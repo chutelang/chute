@@ -546,5 +546,31 @@ describe("lower", () => {
       const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
       expect(runWorkflow).toHaveLength(1);
     });
+
+    it("should wrap all stages from |>? onward in one conditional", () => {
+      const actions = lowerSource(`
+        func double(n: Number) -> Number { return n * 2; }
+        func triple(n: Number) -> Number { return n * 3; }
+        let x: Number? = nil;
+        let y = x |>? double |> triple;
+      `);
+
+      const conditionals = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.conditional",
+      );
+      const runWorkflows = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.runworkflow",
+      );
+
+      expect(conditionals).toHaveLength(3);
+
+      const condStart = actions.indexOf(conditionals.at(0)!);
+      const condEnd = actions.indexOf(conditionals.at(2)!);
+      const runIndices = runWorkflows.map((r) => actions.indexOf(r));
+      for (const ri of runIndices) {
+        expect(ri).toBeGreaterThan(condStart);
+        expect(ri).toBeLessThan(condEnd);
+      }
+    });
   });
 });
