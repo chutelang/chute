@@ -925,17 +925,19 @@ export class Parser {
     }
 
     const stages: PipelineStage[] = [];
+    let end = input.span.end;
 
     while (this.check(TokenKind.Pipe) || this.check(TokenKind.PipeQuestion)) {
       const opToken = this.advance();
       const operator: PipelineOperator = opToken.kind === TokenKind.Pipe ? "|>" : "|>?";
       const stage = this.parsePipelineStage(operator, opToken.span.start);
       stages.push(stage);
+      end = stage.span.end;
     }
 
     return {
       kind: "PipelineExpression",
-      span: { start: input.span.start, end: stages.at(-1)!.span.end },
+      span: { start: input.span.start, end },
       input,
       stages,
     } satisfies PipelineExpression;
