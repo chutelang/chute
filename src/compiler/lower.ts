@@ -1,4 +1,4 @@
-import { resolveEnumBackingValue } from "./ast.ts";
+import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
   Assignment,
   BinaryExpression,
@@ -1300,15 +1300,15 @@ function lowerPipelineExpression(
     return;
   }
 
-  for (let i = 0; i < optionalIndex; i++) {
-    lowerPipelineStage(expr.stages[i], actions, ctx);
+  for (const stage of expr.stages.slice(0, optionalIndex)) {
+    lowerPipelineStage(stage, actions, ctx);
   }
 
   const groupId = nextUuid(ctx);
   actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
 
-  for (let i = optionalIndex; i < expr.stages.length; i++) {
-    lowerPipelineStage(expr.stages[i], actions, ctx);
+  for (const stage of expr.stages.slice(optionalIndex)) {
+    lowerPipelineStage(stage, actions, ctx);
   }
 
   actions.push(makeConditionalAction(1, groupId, ctx));
@@ -1325,14 +1325,6 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
   } else {
     lowerPipelineActionStage(stage, calleeName, actions, ctx);
   }
-}
-
-function resolveStageCalleeName(callee: Expression): string | undefined {
-  if (callee.kind === "Identifier") return callee.name;
-  if (callee.kind === "MemberExpression") {
-    return resolveStageCalleeName(callee.object);
-  }
-  return undefined;
 }
 
 function lowerPipelineFunctionStage(

@@ -1,5 +1,5 @@
 import type { Span } from "./token.ts";
-import { resolveEnumBackingValue } from "./ast.ts";
+import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
   Assignment,
   BaseType,
@@ -160,7 +160,7 @@ export function check(program: Program): CheckWarning[] {
 function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): void {
   switch (stmt.kind) {
     case "ExpressionStatement":
-      inferType(stmt.expression, scope, context);
+      checkExpressionStatement(stmt.expression, scope, context);
       return;
     case "LetDeclaration":
       checkLetDeclaration(stmt, scope, context);
@@ -200,6 +200,26 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
       return;
     default:
       assertNever(stmt);
+  }
+}
+
+function checkExpressionStatement(expr: Expression, scope: Scope, context: CheckContext): void {
+  inferType(expr, scope, context);
+
+  if (expr.kind === "PipelineExpression") {
+    const lastStage = expr.stages.at(-1);
+    if (lastStage) {
+      const calleeName = resolveStageCalleeName(lastStage.callee);
+      if (calleeName) {
+        const binding = scope.lookup(calleeName);
+        if (binding?.type.kind === "function") {
+          throw new CheckError(
+            `pipeline expression statement must end in an action call`,
+            lastStage.span,
+          );
+        }
+      }
+    }
   }
 }
 
@@ -1187,7 +1207,10 @@ function inferPipelineExpression(
   }
 
   if (isOptionalPipeline) {
-    return { kind: "optional", inner: currentType };
+    return {
+      kind: "optional",
+      inner: currentType,
+    };
   }
   return currentType;
 }
@@ -1219,12 +1242,6 @@ function inferStageType(
     }
   }
   return { kind: "any" };
-}
-
-function resolveStageCalleeName(callee: Expression): string | undefined {
-  if (callee.kind === "Identifier") return callee.name;
-  if (callee.kind === "MemberExpression") return resolveStageCalleeName(callee.object);
-  return undefined;
 }
 
 function inferPipelineFunctionCall(

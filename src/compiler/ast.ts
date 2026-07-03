@@ -540,3 +540,9 @@ export function resolveEnumBackingValue(
   if (enumDefault !== undefined) return `${enumDefault}.${caseName}`;
   return caseName;
 }
+
+export function resolveStageCalleeName(callee: Expression): string | undefined {
+  if (callee.kind === "Identifier") return callee.name;
+  if (callee.kind === "MemberExpression") return resolveStageCalleeName(callee.object);
+  return undefined;
+}

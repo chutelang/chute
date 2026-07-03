@@ -952,7 +952,7 @@ export class Parser {
     if (this.check(TokenKind.LeftParen)) {
       this.advance();
       while (!this.check(TokenKind.RightParen)) {
-        args.push(this.parsePipelineArgument());
+        args.push(this.parseArgument());
         if (!this.check(TokenKind.RightParen)) {
           this.expect(TokenKind.Comma);
         }
@@ -985,42 +985,6 @@ export class Parser {
     }
 
     return expr;
-  }
-
-  private parsePipelineArgument(): Argument {
-    if (this.check(TokenKind.Underscore)) {
-      const tok = this.advance();
-      return {
-        kind: "Argument",
-        span: tok.span,
-        label: undefined,
-        value: { kind: "PlaceholderExpression", span: tok.span },
-      };
-    }
-
-    const first = this.peek();
-    const lookahead = this.tokens.at(this.pos + 1);
-
-    if (
-      (first.kind === TokenKind.Identifier || isKeyword(first.kind)) &&
-      lookahead?.kind === TokenKind.Colon
-    ) {
-      const afterColon = this.tokens.at(this.pos + 2);
-      if (afterColon?.kind === TokenKind.Underscore) {
-        this.advance();
-        this.advance();
-        const uTok = this.advance();
-        const label = first.value ?? keywordText(first.kind);
-        return {
-          kind: "Argument",
-          span: { start: first.span.start, end: uTok.span.end },
-          label,
-          value: { kind: "PlaceholderExpression", span: uTok.span },
-        };
-      }
-    }
-
-    return this.parseArgument();
   }
 
   private finishConditionChaining(cond: Condition): Condition {
