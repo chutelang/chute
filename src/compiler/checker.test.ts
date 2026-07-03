@@ -1021,5 +1021,14 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should reject expression statement with pipeline ending in function call", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          5 |> double;
+        `),
+      ).toThrow(CheckError);
+    });
   });
 });
