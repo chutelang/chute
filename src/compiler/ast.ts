@@ -3,6 +3,7 @@ import type { Span } from "./token.ts";
 export interface Program {
   kind: "Program";
   span: Span;
+  imports: ImportDeclaration[];
   metadata: ShortcutMetadata | undefined;
   body: Statement[];
 }
@@ -78,7 +79,8 @@ export type Statement =
   | EnumDeclaration
   | RecordDeclaration
   | FunctionDeclaration
-  | ReturnStatement;
+  | ReturnStatement
+  | ActionDeclaration;
 
 export interface Assignment {
   kind: "Assignment";
@@ -529,6 +531,61 @@ export interface ReturnStatement {
   kind: "ReturnStatement";
   span: Span;
   value: Expression | undefined;
+}
+
+export interface ActionParameter {
+  kind: "ActionParameter";
+  span: Span;
+  label: string;
+  name: string;
+  type: TypeAnnotation;
+  defaultValue: Expression | undefined;
+}
+
+export type AttributeValue =
+  | MetadataString
+  | MetadataNumber
+  | MetadataBoolean
+  | MetadataNil
+  | AttributeIdentifier;
+
+export interface AttributeIdentifier {
+  kind: "AttributeIdentifier";
+  span: Span;
+  name: string;
+}
+
+export interface AttributeArgument {
+  kind: "AttributeArgument";
+  span: Span;
+  label: string | undefined;
+  value: AttributeValue;
+}
+
+export interface Attribute {
+  kind: "Attribute";
+  span: Span;
+  name: string;
+  args: AttributeArgument[] | undefined;
+}
+
+export interface ActionDeclaration {
+  kind: "ActionDeclaration";
+  span: Span;
+  exported: boolean;
+  name: string;
+  params: ActionParameter[];
+  returnType: TypeAnnotation | undefined;
+  runtimeIdentifier: string;
+  attributes: Attribute[];
+}
+
+export interface ImportDeclaration {
+  kind: "ImportDeclaration";
+  span: Span;
+  path: string;
+  alias: string;
+  isPackage: boolean;
 }
 
 export function resolveEnumBackingValue(
