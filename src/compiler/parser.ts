@@ -1,8 +1,13 @@
 import { TokenKind } from "./token.ts";
 import type { Token, Span } from "./token.ts";
 import type {
+  ActionDeclaration,
+  ActionParameter,
   Argument,
   Assignment,
+  Attribute,
+  AttributeArgument,
+  AttributeValue,
   BaseType,
   BinaryExpression,
   BinaryOperator,
@@ -18,6 +23,7 @@ import type {
   FunctionDeclaration,
   FunctionParameter,
   IfStatement,
+  ImportDeclaration,
   InterpolatedPart,
   InterpolatedString,
   LetDeclaration,
@@ -69,6 +75,12 @@ export class Parser {
 
   parse(): Program {
     const start = this.peek().span.start;
+    const imports: ImportDeclaration[] = [];
+
+    while (this.check(TokenKind.Import)) {
+      imports.push(this.parseImport());
+    }
+
     let metadata: ShortcutMetadata | undefined;
 
     if (this.check(TokenKind.Shortcut)) {
@@ -83,8 +95,50 @@ export class Parser {
     return {
       kind: "Program",
       span: { start, end: this.peek().span.end },
+      imports,
       metadata,
       body,
+    };
+  }
+
+  private parseImport(): ImportDeclaration {
+    const start = this.expect(TokenKind.Import).span.start;
+    const pathTok = this.peek();
+    let importPath: string;
+    let alias: string;
+    let isPackage: boolean;
+
+    if (pathTok.kind === TokenKind.Identifier) {
+      this.advance();
+      importPath = tokenValue(pathTok);
+      alias = importPath;
+      isPackage = true;
+
+      if (this.check(TokenKind.As)) {
+        this.advance();
+        alias = tokenValue(this.expect(TokenKind.Identifier));
+      }
+    } else if (pathTok.kind === TokenKind.String) {
+      this.advance();
+      importPath = tokenValue(pathTok);
+      isPackage = false;
+      this.expect(TokenKind.As);
+      alias = tokenValue(this.expect(TokenKind.Identifier));
+    } else {
+      throw this.error(
+        `expected package name or string path after 'import', got ${tokenKindName(pathTok.kind)}`,
+        pathTok.span,
+      );
+    }
+
+    const end = this.expect(TokenKind.Semicolon).span.end;
+
+    return {
+      kind: "ImportDeclaration",
+      span: { start, end },
+      path: importPath,
+      alias,
+      isPackage,
     };
   }
 
@@ -225,6 +279,9 @@ export class Parser {
     if (this.check(TokenKind.Func)) {
       return this.parseFunctionDeclaration(false);
     }
+    if (this.check(TokenKind.Action)) {
+      return this.parseActionDeclaration(false);
+    }
     if (this.check(TokenKind.Return)) {
       return this.parseReturnStatement();
     }
@@ -279,9 +336,14 @@ export class Parser {
       decl.span.start = start;
       return decl;
     }
+    if (this.check(TokenKind.Action)) {
+      const decl = this.parseActionDeclaration(true);
+      decl.span.start = start;
+      return decl;
+    }
 
     throw this.error(
-      `expected 'enum', 'record', or 'func' after 'export', got ${tokenKindName(this.peek().kind)}`,
+      `expected 'enum', 'record', 'func', or 'action' after 'export', got ${tokenKindName(this.peek().kind)}`,
       this.peek().span,
     );
   }
@@ -427,6 +489,193 @@ export class Parser {
       type,
       defaultValue,
     };
+  }
+
+  private parseActionDeclaration(exported: boolean): ActionDeclaration {
+    const start = this.expect(TokenKind.Action).span.start;
+    const name = tokenValue(this.expect(TokenKind.Identifier));
+    this.expect(TokenKind.LeftParen);
+
+    const params: ActionParameter[] = [];
+    while (!this.check(TokenKind.RightParen)) {
+      params.push(this.parseActionParameter());
+      if (!this.check(TokenKind.RightParen)) {
+        this.expect(TokenKind.Comma);
+      }
+    }
+    this.expect(TokenKind.RightParen);
+
+    let returnType: TypeAnnotation | undefined;
+    if (this.check(TokenKind.Arrow)) {
+      this.advance();
+      returnType = this.parseTypeAnnotation();
+    }
+
+    this.expect(TokenKind.Equal);
+    const identifierTok = this.expect(TokenKind.String);
+    const runtimeIdentifier = tokenValue(identifierTok);
+
+    const attributes: Attribute[] = [];
+    while (this.check(TokenKind.At)) {
+      attributes.push(this.parseAttribute());
+    }
+
+    const end = this.expect(TokenKind.Semicolon).span.end;
+
+    return {
+      kind: "ActionDeclaration",
+      span: { start, end },
+      exported,
+      name,
+      params,
+      returnType,
+      runtimeIdentifier,
+      attributes,
+    };
+  }
+
+  private parseActionParameter(): ActionParameter {
+    const labelTok = this.peek();
+    let label: string;
+
+    if (isKeyword(labelTok.kind) || labelTok.kind === TokenKind.Identifier) {
+      label = labelTok.value ?? keywordText(labelTok.kind);
+      this.advance();
+    } else {
+      throw this.error(
+        `expected parameter label, got ${tokenKindName(labelTok.kind)}`,
+        labelTok.span,
+      );
+    }
+
+    const type = this.parseTypeAnnotationWithColon();
+
+    let defaultValue: Expression | undefined;
+    if (this.check(TokenKind.Equal)) {
+      this.advance();
+      defaultValue = this.parseExpression();
+    }
+
+    return {
+      kind: "ActionParameter",
+      span: {
+        start: labelTok.span.start,
+        end: (defaultValue ?? type).span.end,
+      },
+      label,
+      name: label,
+      type,
+      defaultValue,
+    };
+  }
+
+  private parseAttribute(): Attribute {
+    const start = this.expect(TokenKind.At).span.start;
+    const nameTok = this.expect(TokenKind.Identifier);
+    const name = tokenValue(nameTok);
+
+    let args: AttributeArgument[] | undefined;
+    let end = nameTok.span.end;
+
+    if (this.check(TokenKind.LeftParen)) {
+      this.advance();
+      args = [];
+      while (!this.check(TokenKind.RightParen)) {
+        args.push(this.parseAttributeArgument());
+        if (!this.check(TokenKind.RightParen)) {
+          this.expect(TokenKind.Comma);
+        }
+      }
+      end = this.expect(TokenKind.RightParen).span.end;
+    }
+
+    return {
+      kind: "Attribute",
+      span: { start, end },
+      name,
+      args,
+    };
+  }
+
+  private parseAttributeArgument(): AttributeArgument {
+    const first = this.peek();
+    const lookahead = this.tokens.at(this.pos + 1);
+
+    if (first.kind === TokenKind.Identifier && lookahead?.kind === TokenKind.Colon) {
+      const label = tokenValue(first);
+      this.advance();
+      this.advance();
+      const value = this.parseAttributeValue();
+      return {
+        kind: "AttributeArgument",
+        span: { start: first.span.start, end: value.span.end },
+        label,
+        value,
+      };
+    }
+
+    const value = this.parseAttributeValue();
+    return {
+      kind: "AttributeArgument",
+      span: value.span,
+      label: undefined,
+      value,
+    };
+  }
+
+  private parseAttributeValue(): AttributeValue {
+    const tok = this.peek();
+
+    if (tok.kind === TokenKind.String || tok.kind === TokenKind.RawString) {
+      this.advance();
+      return { kind: "MetadataString", span: tok.span, value: tokenValue(tok) };
+    }
+
+    if (tok.kind === TokenKind.Minus) {
+      this.advance();
+      const num = this.expect(TokenKind.Number);
+      return {
+        kind: "MetadataNumber",
+        span: { start: tok.span.start, end: num.span.end },
+        value: -Number(tokenValue(num)),
+        negative: true,
+      };
+    }
+
+    if (tok.kind === TokenKind.Number || tok.kind === TokenKind.Quantity) {
+      this.advance();
+      return {
+        kind: "MetadataNumber",
+        span: tok.span,
+        value: Number(tokenValue(tok)),
+        negative: false,
+      };
+    }
+
+    if (tok.kind === TokenKind.True || tok.kind === TokenKind.False) {
+      this.advance();
+      return {
+        kind: "MetadataBoolean",
+        span: tok.span,
+        value: tok.kind === TokenKind.True,
+      };
+    }
+
+    if (tok.kind === TokenKind.Nil) {
+      this.advance();
+      return { kind: "MetadataNil", span: tok.span };
+    }
+
+    if (tok.kind === TokenKind.Identifier) {
+      this.advance();
+      return {
+        kind: "AttributeIdentifier",
+        span: tok.span,
+        name: tokenValue(tok),
+      };
+    }
+
+    throw this.error(`expected attribute value, got ${tokenKindName(tok.kind)}`, tok.span);
   }
 
   private parseReturnStatement(): ReturnStatement {
