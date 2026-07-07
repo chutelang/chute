@@ -270,6 +270,8 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
     case "ReturnStatement":
       lowerReturnStatement(stmt, actions, ctx);
       return;
+    case "ActionDeclaration":
+      return;
     default:
       assertNever(stmt);
   }

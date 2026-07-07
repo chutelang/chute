@@ -1,6 +1,7 @@
 import type { Span } from "./token.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
+  ActionDeclaration,
   Assignment,
   BaseType,
   BinaryExpression,
@@ -197,6 +198,9 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
       return;
     case "ReturnStatement":
       checkReturnStatement(stmt, scope, context);
+      return;
+    case "ActionDeclaration":
+      checkActionDeclaration(stmt, scope, context);
       return;
     default:
       assertNever(stmt);
@@ -1349,6 +1353,14 @@ function inferPipelineFunctionCall(
   }
 
   return funcType.returnType ?? { kind: "any" };
+}
+
+function checkActionDeclaration(
+  decl: ActionDeclaration,
+  scope: Scope,
+  context: CheckContext,
+): void {
+  // Full implementation in Task 4
 }
 
 function assertNever(value: never): never {

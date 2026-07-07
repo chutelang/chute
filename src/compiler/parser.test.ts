@@ -1338,4 +1338,157 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
   });
+
+  describe("action declarations", () => {
+    it("should parse action with no parameters", () => {
+      const ast = parse('action doThing() = "com.example.dothing";');
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("ActionDeclaration");
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.name).toBe("doThing");
+        expect(decl.params).toHaveLength(0);
+        expect(decl.returnType).toBeUndefined();
+        expect(decl.runtimeIdentifier).toBe("com.example.dothing");
+        expect(decl.attributes).toHaveLength(0);
+        expect(decl.exported).toBe(false);
+      }
+    });
+
+    it("should parse action with typed parameters", () => {
+      const ast = parse('action sendMessage(to: Text, body: Text) = "com.example.send";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.params).toHaveLength(2);
+        expect(decl.params.at(0)?.label).toBe("to");
+        expect(decl.params.at(0)?.name).toBe("to");
+        expect(decl.params.at(1)?.label).toBe("body");
+      }
+    });
+
+    it("should parse action with keyword parameter labels", () => {
+      const ast = parse('action search(in: Text, for: Text) -> List<Text> = "com.example.search";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.params).toHaveLength(2);
+        expect(decl.params.at(0)?.label).toBe("in");
+        expect(decl.params.at(0)?.name).toBe("in");
+        expect(decl.params.at(1)?.label).toBe("for");
+        expect(decl.returnType).toBeDefined();
+      }
+    });
+
+    it("should parse action with return type", () => {
+      const ast = parse('action getClipboard() -> Text = "is.workflow.actions.getclipboard";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.returnType).toBeDefined();
+      }
+    });
+
+    it("should parse action with default parameter value", () => {
+      const ast = parse(
+        'action notify(body: Text, title: Text = "Alert") = "is.workflow.actions.notification";',
+      );
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.params.at(1)?.defaultValue).toBeDefined();
+      }
+    });
+
+    it("should parse exported action", () => {
+      const ast = parse('export action doThing() = "com.example.dothing";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.exported).toBe(true);
+      }
+    });
+  });
+
+  describe("attributes", () => {
+    it("should parse action with one attribute", () => {
+      const ast = parse('action doThing() = "com.example.dothing" @retry(enabled: true);');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.attributes).toHaveLength(1);
+        expect(decl.attributes.at(0)?.name).toBe("retry");
+        expect(decl.attributes.at(0)?.args).toHaveLength(1);
+      }
+    });
+
+    it("should parse action with multiple attributes", () => {
+      const ast = parse(
+        'action doThing() = "com.example.dothing" @retry(enabled: true) @platform(min: ios17);',
+      );
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.attributes).toHaveLength(2);
+      }
+    });
+
+    it("should parse attribute with no arguments", () => {
+      const ast = parse('action doThing() = "com.example.dothing" @deprecated;');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.attributes).toHaveLength(1);
+        expect(decl.attributes.at(0)?.name).toBe("deprecated");
+        expect(decl.attributes.at(0)?.args).toBeUndefined();
+      }
+    });
+
+    it("should parse attribute with bare identifier value", () => {
+      const ast = parse('action doThing() = "com.example.dothing" @platform(min: ios17);');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        const arg = decl.attributes.at(0)?.args?.at(0);
+        expect(arg?.label).toBe("min");
+        expect(arg?.value.kind).toBe("AttributeIdentifier");
+      }
+    });
+
+    it("should parse attribute with positional value", () => {
+      const ast = parse('action doThing() = "com.example.dothing" @timeout(30);');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        const arg = decl.attributes.at(0)?.args?.at(0);
+        expect(arg?.label).toBeUndefined();
+        expect(arg?.value.kind).toBe("MetadataNumber");
+      }
+    });
+  });
+
+  describe("import declarations", () => {
+    it("should parse string import with alias", () => {
+      const ast = parse('import "./helpers" as H;');
+      expect(ast.imports).toHaveLength(1);
+      expect(ast.imports.at(0)?.path).toBe("./helpers");
+      expect(ast.imports.at(0)?.alias).toBe("H");
+      expect(ast.imports.at(0)?.isPackage).toBe(false);
+    });
+
+    it("should parse package import with default alias", () => {
+      const ast = parse("import Toolbox;");
+      expect(ast.imports).toHaveLength(1);
+      expect(ast.imports.at(0)?.path).toBe("Toolbox");
+      expect(ast.imports.at(0)?.alias).toBe("Toolbox");
+      expect(ast.imports.at(0)?.isPackage).toBe(true);
+    });
+
+    it("should parse package import with explicit alias", () => {
+      const ast = parse("import Toolbox as TB;");
+      expect(ast.imports).toHaveLength(1);
+      expect(ast.imports.at(0)?.alias).toBe("TB");
+      expect(ast.imports.at(0)?.isPackage).toBe(true);
+    });
+
+    it("should parse multiple imports", () => {
+      const ast = parse('import "./a" as A; import "./b" as B;');
+      expect(ast.imports).toHaveLength(2);
+    });
+
+    it("should parse imports before shortcut metadata", () => {
+      const ast = parse('import "./helpers" as H; shortcut { name: "Test" }');
+      expect(ast.imports).toHaveLength(1);
+      expect(ast.metadata).toBeDefined();
+    });
+  });
 });
