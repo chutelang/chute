@@ -1,5 +1,6 @@
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
+  ActionDeclaration,
   Assignment,
   BinaryExpression,
   BinaryOperator,
@@ -82,6 +83,7 @@ interface LowerContext {
   enums: Map<string, Map<string, string>>;
   records: Set<string>;
   functions: Map<string, FunctionDeclaration>;
+  actions: Map<string, ActionDeclaration>;
   subShortcuts: ShortcutIR[];
 }
 
@@ -91,6 +93,7 @@ export function lower(program: Program): CompilationResult {
   const enums = new Map<string, Map<string, string>>();
   const records = new Set<string>();
   const functions = new Map<string, FunctionDeclaration>();
+  const actionDecls = new Map<string, ActionDeclaration>();
 
   for (const stmt of program.body) {
     if (stmt.kind === "EnumDeclaration") {
@@ -99,6 +102,8 @@ export function lower(program: Program): CompilationResult {
       records.add(stmt.name);
     } else if (stmt.kind === "FunctionDeclaration") {
       functions.set(stmt.name, stmt);
+    } else if (stmt.kind === "ActionDeclaration") {
+      actionDecls.set(stmt.name, stmt);
     }
   }
 
@@ -110,6 +115,7 @@ export function lower(program: Program): CompilationResult {
     enums,
     records,
     functions,
+    actions: actionDecls,
     subShortcuts,
   };
 
@@ -135,6 +141,7 @@ function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext
     enums: ctx.enums,
     records: ctx.records,
     functions: ctx.functions,
+    actions: ctx.actions,
     subShortcuts: ctx.subShortcuts,
   };
 
@@ -400,6 +407,12 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     return lowerFunctionCall(expr, funcDecl, actions, ctx);
   }
 
+  const actionDecl = ctx.actions.get(actionName);
+
+  if (actionDecl) {
+    return lowerDeclaredActionCall(expr, actionDecl, actions, ctx);
+  }
+
   const builtin = BUILTIN_ACTIONS.get(actionName);
 
   if (!builtin) {
@@ -474,6 +487,34 @@ function lowerFunctionCall(
     identifier: "is.workflow.actions.runworkflow",
     uuid: nextUuid(ctx),
     parameters: runParams,
+  };
+}
+
+function lowerDeclaredActionCall(
+  expr: CallExpression,
+  decl: ActionDeclaration,
+  parentActions: ActionIR[],
+  ctx: LowerContext,
+): ActionIR {
+  const parameters = new Map<string, ParameterValue>();
+
+  const provided = new Map<string, Expression>();
+  for (const arg of expr.args) {
+    if (arg.label) {
+      provided.set(arg.label, arg.value);
+    }
+  }
+
+  for (const param of decl.params) {
+    const valueExpr = provided.get(param.label) ?? param.defaultValue;
+    if (!valueExpr) continue;
+    parameters.set(param.label, lowerToParamValue(valueExpr, parentActions, ctx));
+  }
+
+  return {
+    identifier: decl.runtimeIdentifier,
+    uuid: nextUuid(ctx),
+    parameters,
   };
 }
 
