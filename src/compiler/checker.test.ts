@@ -1031,4 +1031,140 @@ describe("checker", () => {
       ).toThrow(CheckError);
     });
   });
+
+  describe("action declarations", () => {
+    it("should accept an action declaration with no parameters", () => {
+      expect(() => checkSource('action doThing() = "com.example.dothing";')).not.toThrow();
+    });
+
+    it("should accept an action declaration with parameters", () => {
+      expect(() =>
+        checkSource('action sendMessage(to: Text, body: Text) = "com.example.send";'),
+      ).not.toThrow();
+    });
+
+    it("should accept an action declaration with keyword labels", () => {
+      expect(() =>
+        checkSource('action search(in: Text, for: Text) -> List<Text> = "com.example.search";'),
+      ).not.toThrow();
+    });
+
+    it("should reject duplicate action names", () => {
+      expect(() =>
+        checkSource(`
+          action doA() = "com.example.a";
+          action doA() = "com.example.b";
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject duplicate parameter labels", () => {
+      expect(() => checkSource('action bad(x: Text, x: Text) = "com.example.bad";')).toThrow(
+        CheckError,
+      );
+    });
+
+    it("should reject default parameter with wrong type", () => {
+      expect(() => checkSource('action bad(x: Text = 42) = "com.example.bad";')).toThrow(
+        CheckError,
+      );
+    });
+  });
+
+  describe("action calls", () => {
+    it("should accept valid action call", () => {
+      expect(() =>
+        checkSource(`
+          action sendMessage(to: Text, body: Text) = "com.example.send";
+          sendMessage(to: "alice", body: "hello");
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept action call with keyword-labeled argument", () => {
+      expect(() =>
+        checkSource(`
+          action search(in: Text, for: Text) -> List<Text> = "com.example.search";
+          let results = search(in: "inbox", for: "urgent");
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject action call with wrong argument type", () => {
+      expect(() =>
+        checkSource(`
+          action sendMessage(to: Text, body: Text) = "com.example.send";
+          sendMessage(to: 42, body: "hello");
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject action call with missing required argument", () => {
+      expect(() =>
+        checkSource(`
+          action sendMessage(to: Text, body: Text) = "com.example.send";
+          sendMessage(to: "alice");
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject action call with unknown parameter label", () => {
+      expect(() =>
+        checkSource(`
+          action sendMessage(to: Text, body: Text) = "com.example.send";
+          sendMessage(to: "alice", subject: "hello");
+        `),
+      ).toThrow(CheckError);
+    });
+
+    it("should accept action call with default parameter omitted", () => {
+      expect(() =>
+        checkSource(`
+          action notify(body: Text, title: Text = "Alert") = "is.workflow.actions.notification";
+          notify(body: "done");
+        `),
+      ).not.toThrow();
+    });
+
+    it("should type action call result from return type", () => {
+      expect(() =>
+        checkSource(`
+          action getClipboard() -> Text = "is.workflow.actions.getclipboard";
+          let text: Text = getClipboard();
+        `),
+      ).not.toThrow();
+    });
+
+    it("should type action call without return type as any", () => {
+      expect(() =>
+        checkSource(`
+          action doThing() = "com.example.dothing";
+          let x = doThing();
+        `),
+      ).not.toThrow();
+    });
+
+    it("should allow action call as expression statement", () => {
+      expect(() =>
+        checkSource(`
+          action doThing() = "com.example.dothing";
+          doThing();
+        `),
+      ).not.toThrow();
+    });
+  });
+
+  describe("input built-in", () => {
+    it("should accept input reference in shortcut body", () => {
+      expect(() =>
+        checkSource(`
+          shortcut {
+            name: "Test",
+            input: [.text],
+          }
+          let x = input;
+        `),
+      ).not.toThrow();
+    });
+  });
 });
