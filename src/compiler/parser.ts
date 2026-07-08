@@ -159,13 +159,18 @@ export class Parser {
   }
 
   private parseMetadataField(): MetadataField {
-    const name = this.expect(TokenKind.Identifier);
+    const nameTok = this.peek();
+    if (nameTok.kind !== TokenKind.Identifier && nameTok.kind !== TokenKind.Input) {
+      throw this.error(`expected identifier, got ${tokenKindName(nameTok.kind)}`, nameTok.span);
+    }
+    const name = nameTok;
+    this.advance();
     this.expect(TokenKind.Colon);
     const value = this.parseMetadataValue();
     return {
       kind: "MetadataField",
       span: { start: name.span.start, end: value.span.end },
-      name: tokenValue(name),
+      name: name.value ?? keywordText(name.kind),
       value,
     };
   }
@@ -1494,6 +1499,11 @@ export class Parser {
     if (tok.kind === TokenKind.Identifier) {
       this.advance();
       return { kind: "Identifier", span: tok.span, name: tokenValue(tok) };
+    }
+
+    if (tok.kind === TokenKind.Input) {
+      this.advance();
+      return { kind: "Identifier", span: tok.span, name: keywordText(tok.kind) };
     }
 
     if (tok.kind === TokenKind.StringStart) {

@@ -53,6 +53,13 @@ export type ChuteType =
       params: Array<{ name: string; type: ChuteType; hasDefault: boolean }>;
       returnType: ChuteType | undefined;
     }
+  | {
+      kind: "action";
+      name: string;
+      runtimeIdentifier: string;
+      params: Array<{ label: string; type: ChuteType; hasDefault: boolean }>;
+      returnType: ChuteType | undefined;
+    }
   | { kind: "any" };
 
 export class CheckWarning {
@@ -136,6 +143,8 @@ export function check(program: Program): CheckWarning[] {
     callEdges: [],
   };
 
+  scope.define("input", { kind: "any" }, false);
+
   for (const stmt of program.body) {
     if (stmt.kind === "FunctionDeclaration") {
       registerFunctionSignature(stmt, scope, context);
@@ -143,11 +152,17 @@ export function check(program: Program): CheckWarning[] {
       checkEnumDeclaration(stmt, scope);
     } else if (stmt.kind === "RecordDeclaration") {
       checkRecordDeclaration(stmt, scope);
+    } else if (stmt.kind === "ActionDeclaration") {
+      checkActionDeclaration(stmt, scope, context);
     }
   }
 
   for (const stmt of program.body) {
-    if (stmt.kind === "EnumDeclaration" || stmt.kind === "RecordDeclaration") {
+    if (
+      stmt.kind === "EnumDeclaration" ||
+      stmt.kind === "RecordDeclaration" ||
+      stmt.kind === "ActionDeclaration"
+    ) {
       continue;
     }
     checkStatement(stmt, scope, context);
@@ -565,6 +580,9 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
     if (binding?.type.kind === "function") {
       return checkFunctionCall(expr, binding.type, scope, context);
     }
+    if (binding?.type.kind === "action") {
+      return checkActionCall(expr, binding.type, scope, context);
+    }
   }
 
   for (const arg of expr.args) {
@@ -791,6 +809,8 @@ function describeType(type: ChuteType): string {
       return type.name;
     case "function":
       return `func ${type.name}`;
+    case "action":
+      return `action ${type.name}`;
     case "any":
       return "any";
     default:
@@ -1360,7 +1380,93 @@ function checkActionDeclaration(
   scope: Scope,
   context: CheckContext,
 ): void {
-  // Full implementation in Task 4
+  if (scope.hasOwn(decl.name)) {
+    throw new CheckError(`'${decl.name}' is already declared in this scope`, decl.span);
+  }
+
+  const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
+  const paramLabels = new Set<string>();
+
+  for (const p of decl.params) {
+    if (paramLabels.has(p.label)) {
+      throw new CheckError(`duplicate parameter '${p.label}'`, p.span);
+    }
+    paramLabels.add(p.label);
+
+    const paramType = typeFromAnnotation(p.type, scope);
+
+    if (p.defaultValue) {
+      const defaultType = inferTypeWithHint(p.defaultValue, scope, paramType, context);
+      if (!isAssignable(defaultType, paramType)) {
+        throw new CheckError(
+          `default value of type ${describeType(defaultType)} is not assignable to parameter type ${describeType(paramType)}`,
+          p.defaultValue.span,
+        );
+      }
+    }
+
+    params.push({
+      label: p.label,
+      type: paramType,
+      hasDefault: p.defaultValue !== undefined,
+    });
+  }
+
+  const returnType = decl.returnType ? typeFromAnnotation(decl.returnType, scope) : undefined;
+
+  const actionType: ChuteType = {
+    kind: "action",
+    name: decl.name,
+    runtimeIdentifier: decl.runtimeIdentifier,
+    params,
+    returnType,
+  };
+
+  scope.define(decl.name, actionType, false);
+}
+
+function checkActionCall(
+  expr: CallExpression,
+  actionType: ChuteType & { kind: "action" },
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const provided = new Map<string, Expression>();
+
+  for (const arg of expr.args) {
+    if (!arg.label) {
+      throw new CheckError(`action calls require labeled arguments`, arg.span);
+    }
+
+    const param = actionType.params.find((p) => p.label === arg.label);
+    if (!param) {
+      throw new CheckError(`action '${actionType.name}' has no parameter '${arg.label}'`, arg.span);
+    }
+
+    if (provided.has(arg.label)) {
+      throw new CheckError(`duplicate argument '${arg.label}' in action call`, arg.span);
+    }
+    provided.set(arg.label, arg.value);
+
+    const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+    if (!isAssignable(argType, param.type)) {
+      throw new CheckError(
+        `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+        arg.span,
+      );
+    }
+  }
+
+  for (const param of actionType.params) {
+    if (!provided.has(param.label) && !param.hasDefault) {
+      throw new CheckError(
+        `missing argument '${param.label}' in call to '${actionType.name}'`,
+        expr.span,
+      );
+    }
+  }
+
+  return actionType.returnType ?? { kind: "any" };
 }
 
 function assertNever(value: never): never {
