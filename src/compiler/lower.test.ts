@@ -573,4 +573,45 @@ describe("lower", () => {
       }
     });
   });
+
+  describe("action declarations", () => {
+    it("should emit no actions in main for action declaration", () => {
+      const result = lowerSource(
+        'shortcut { name: "Test" } action doThing() = "com.example.dothing";',
+      );
+      expect(result).toHaveLength(0);
+    });
+
+    it("should lower action call to the runtime identifier", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action doThing(text: Text) = "com.example.dothing";
+        doThing(text: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "com.example.dothing");
+      expect(action).toBeDefined();
+    });
+
+    it("should map action parameters to their labels as keys", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action sendMessage(to: Text, body: Text) = "com.example.send";
+        sendMessage(to: "alice", body: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "com.example.send");
+      expect(action?.parameters.get("to")).toBe("alice");
+      expect(action?.parameters.get("body")).toBe("hello");
+    });
+
+    it("should fill default parameter values at the call site", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action notify(body: Text, title: Text = "Alert") = "is.workflow.actions.notification";
+        notify(body: "done");
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.notification");
+      expect(action?.parameters.get("body")).toBe("done");
+      expect(action?.parameters.get("title")).toBe("Alert");
+    });
+  });
 });
