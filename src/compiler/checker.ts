@@ -237,7 +237,15 @@ function resolveImports(
       continue;
     }
 
-    const resolvedPath = resolver.resolve(currentFile, imp.path);
+    let resolvedPath: string;
+    try {
+      resolvedPath = resolver.resolve(currentFile, imp.path);
+    } catch (e) {
+      throw new CheckError(
+        `cannot resolve import '${imp.path}': ${e instanceof Error ? e.message : String(e)}`,
+        imp.span,
+      );
+    }
 
     if (resolving.has(resolvedPath)) {
       throw new CheckError(`import cycle detected: '${imp.path}'`, imp.span);
@@ -245,7 +253,15 @@ function resolveImports(
 
     resolving.add(resolvedPath);
 
-    const source = resolver.read(resolvedPath);
+    let source: string;
+    try {
+      source = resolver.read(resolvedPath);
+    } catch (e) {
+      throw new CheckError(
+        `cannot read import '${imp.path}': ${e instanceof Error ? e.message : String(e)}`,
+        imp.span,
+      );
+    }
     const libTokens = new Lexer(source).tokenize();
     const libAst = new Parser(libTokens).parse();
 
