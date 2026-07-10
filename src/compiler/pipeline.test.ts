@@ -386,4 +386,49 @@ showResult(text: "done");`;
     expect(result.main).toMatchSnapshot();
     expect(result.subShortcuts).toHaveLength(2);
   });
+
+  it("should compile action declaration and call", () => {
+    const source = `shortcut {
+  name: "Actions",
+}
+
+action sendMessage(to: Text, body: Text) = "com.example.send";
+sendMessage(to: "alice", body: "hello");`;
+
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile action with keyword parameter labels", () => {
+    const source = `shortcut {
+  name: "Keywords",
+}
+
+action search(in: Text, for: Text) -> List<Text> = "com.example.search";
+let results = search(in: "inbox", for: "urgent");
+showResult(text: "done");`;
+
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile action with default parameter", () => {
+    const source = `shortcut {
+  name: "Defaults",
+}
+
+action notify(body: Text, title: Text = "Alert") = "is.workflow.actions.notification";
+notify(body: "Task complete");`;
+
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile action with attributes", () => {
+    const source = `shortcut {
+  name: "Attributes",
+}
+
+action doThing() = "com.example.dothing" @retry(enabled: true) @platform(min: ios17);
+doThing();`;
+
+    expect(compile(source).main).toMatchSnapshot();
+  });
 });
