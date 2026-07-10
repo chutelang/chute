@@ -1,6 +1,9 @@
 import type { Span } from "./token.ts";
+import { Lexer } from "./lexer.ts";
+import { Parser } from "./parser.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
+  ImportDeclaration,
   ActionDeclaration,
   Assignment,
   BaseType,
@@ -91,6 +94,16 @@ export class CheckError extends Error {
   }
 }
 
+export interface FileResolver {
+  resolve(importingFile: string, importPath: string): string;
+  read(resolvedPath: string): string;
+}
+
+export interface CheckOptions {
+  resolver?: FileResolver;
+  filePath?: string;
+}
+
 interface Binding {
   type: ChuteType;
   mutable: boolean;
@@ -99,6 +112,7 @@ interface Binding {
 export class Scope {
   private bindings = new Map<string, Binding>();
   private types = new Map<string, ChuteType>();
+  private namespaces = new Map<string, Scope>();
   private parent: Scope | undefined;
 
   constructor(parent: Scope | undefined) {
@@ -132,9 +146,19 @@ export class Scope {
     }
     return this.parent?.lookupType(name);
   }
+
+  defineNamespace(name: string, scope: Scope): void {
+    this.namespaces.set(name, scope);
+  }
+
+  lookupNamespace(name: string): Scope | undefined {
+    const own = this.namespaces.get(name);
+    if (own) return own;
+    return this.parent?.lookupNamespace(name);
+  }
 }
 
-export function check(program: Program): CheckWarning[] {
+export function check(program: Program, options?: CheckOptions): CheckWarning[] {
   const scope = new Scope(undefined);
   const context: CheckContext = {
     expectedReturnType: undefined,
@@ -144,6 +168,24 @@ export function check(program: Program): CheckWarning[] {
   };
 
   scope.define("input", { kind: "any" }, false);
+
+  const resolver = options?.resolver;
+  const filePath = options?.filePath ?? "<main>";
+  const importAliases = new Set<string>();
+
+  if (resolver && program.imports.length > 0) {
+    const resolving = new Set<string>([filePath]);
+    resolveImports(program.imports, scope, context, resolver, filePath, resolving, importAliases);
+  }
+
+  for (const stmt of program.body) {
+    if ("name" in stmt && typeof stmt.name === "string" && importAliases.has(stmt.name)) {
+      throw new CheckError(
+        `declaration '${stmt.name}' conflicts with import alias '${stmt.name}'`,
+        stmt.span,
+      );
+    }
+  }
 
   for (const stmt of program.body) {
     if (stmt.kind === "FunctionDeclaration") {
@@ -171,6 +213,130 @@ export function check(program: Program): CheckWarning[] {
   detectRecursiveCycles(context);
 
   return context.warnings;
+}
+
+function resolveImports(
+  imports: ImportDeclaration[],
+  scope: Scope,
+  context: CheckContext,
+  resolver: FileResolver,
+  currentFile: string,
+  resolving: Set<string>,
+  importAliases: Set<string>,
+): void {
+  const seenAliases = new Set<string>();
+
+  for (const imp of imports) {
+    if (seenAliases.has(imp.alias)) {
+      throw new CheckError(`duplicate import alias '${imp.alias}'`, imp.span);
+    }
+    seenAliases.add(imp.alias);
+    importAliases.add(imp.alias);
+
+    if (imp.isPackage) {
+      continue;
+    }
+
+    const resolvedPath = resolver.resolve(currentFile, imp.path);
+
+    if (resolving.has(resolvedPath)) {
+      throw new CheckError(`import cycle detected: '${imp.path}'`, imp.span);
+    }
+
+    resolving.add(resolvedPath);
+
+    const source = resolver.read(resolvedPath);
+    const libTokens = new Lexer(source).tokenize();
+    const libAst = new Parser(libTokens).parse();
+
+    validateLibrary(libAst, imp.span);
+
+    const libScope = new Scope(undefined);
+    const libAliases = new Set<string>();
+    if (libAst.imports.length > 0) {
+      resolveImports(
+        libAst.imports,
+        libScope,
+        context,
+        resolver,
+        resolvedPath,
+        resolving,
+        libAliases,
+      );
+    }
+
+    for (const stmt of libAst.body) {
+      if (stmt.kind === "FunctionDeclaration") {
+        registerFunctionSignature(stmt, libScope, context);
+      } else if (stmt.kind === "EnumDeclaration") {
+        checkEnumDeclaration(stmt, libScope);
+      } else if (stmt.kind === "RecordDeclaration") {
+        checkRecordDeclaration(stmt, libScope);
+      } else if (stmt.kind === "ActionDeclaration") {
+        checkActionDeclaration(stmt, libScope, context);
+      } else if (stmt.kind === "LetDeclaration") {
+        checkLetDeclaration(stmt, libScope, context);
+      }
+    }
+
+    for (const stmt of libAst.body) {
+      if (stmt.kind === "FunctionDeclaration") {
+        checkFunctionDeclaration(stmt, libScope, context);
+      }
+    }
+
+    const namespaceScope = new Scope(undefined);
+    for (const stmt of libAst.body) {
+      if (!("exported" in stmt) || !stmt.exported) continue;
+
+      if (stmt.kind === "FunctionDeclaration") {
+        const binding = libScope.lookup(stmt.name);
+        if (binding) namespaceScope.define(stmt.name, binding.type, false);
+      } else if (stmt.kind === "ActionDeclaration") {
+        const binding = libScope.lookup(stmt.name);
+        if (binding) namespaceScope.define(stmt.name, binding.type, false);
+      } else if (stmt.kind === "EnumDeclaration") {
+        const typeDef = libScope.lookupType(stmt.name);
+        if (typeDef) {
+          namespaceScope.defineType(stmt.name, typeDef);
+          namespaceScope.define(stmt.name, typeDef, false);
+        }
+      } else if (stmt.kind === "RecordDeclaration") {
+        const typeDef = libScope.lookupType(stmt.name);
+        if (typeDef) {
+          namespaceScope.defineType(stmt.name, typeDef);
+          namespaceScope.define(stmt.name, typeDef, false);
+        }
+      }
+    }
+
+    scope.defineNamespace(imp.alias, namespaceScope);
+    resolving.delete(resolvedPath);
+  }
+}
+
+function validateLibrary(ast: Program, importSpan: Span): void {
+  if (ast.metadata) {
+    throw new CheckError("libraries cannot contain a shortcut block", importSpan);
+  }
+
+  for (const stmt of ast.body) {
+    if (stmt.kind === "VarDeclaration") {
+      throw new CheckError("libraries cannot contain var declarations", stmt.span);
+    }
+
+    const isDeclaration =
+      stmt.kind === "LetDeclaration" ||
+      stmt.kind === "LetDestructure" ||
+      stmt.kind === "FunctionDeclaration" ||
+      stmt.kind === "ActionDeclaration" ||
+      stmt.kind === "EnumDeclaration" ||
+      stmt.kind === "RecordDeclaration";
+
+    if (!isDeclaration) {
+      throw new CheckError("libraries cannot contain statements", stmt.span);
+    }
+  }
 }
 
 function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): void {
@@ -445,6 +611,20 @@ function inferMemberExpression(
   context: CheckContext,
 ): ChuteType {
   if (expr.object.kind === "Identifier") {
+    const ns = scope.lookupNamespace(expr.object.name);
+    if (ns) {
+      const binding = ns.lookup(expr.property);
+      if (binding) return binding.type;
+
+      const typeDef = ns.lookupType(expr.property);
+      if (typeDef) return typeDef;
+
+      throw new CheckError(
+        `'${expr.property}' is not exported from '${expr.object.name}'`,
+        expr.span,
+      );
+    }
+
     const typeDef = scope.lookupType(expr.object.name);
     if (typeDef?.kind === "enum") {
       const backingValue = typeDef.cases.get(expr.property);
@@ -570,6 +750,27 @@ function inferDictionaryLiteral(
 }
 
 function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckContext): ChuteType {
+  if (expr.callee.kind === "MemberExpression" && expr.callee.object.kind === "Identifier") {
+    const ns = scope.lookupNamespace(expr.callee.object.name);
+    if (ns) {
+      const binding = ns.lookup(expr.callee.property);
+      if (binding?.type.kind === "function") {
+        return checkFunctionCall(expr, binding.type, scope, context);
+      }
+      if (binding?.type.kind === "action") {
+        return checkActionCall(expr, binding.type, scope, context);
+      }
+      const typeDef = ns.lookupType(expr.callee.property);
+      if (typeDef?.kind === "record") {
+        return checkRecordConstruction(expr, typeDef, scope, context);
+      }
+      throw new CheckError(
+        `'${expr.callee.property}' is not exported from '${expr.callee.object.name}'`,
+        expr.callee.span,
+      );
+    }
+  }
+
   if (expr.callee.kind === "Identifier") {
     const typeDef = scope.lookupType(expr.callee.name);
     if (typeDef?.kind === "record") {
@@ -585,6 +786,9 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
     }
   }
 
+  if (expr.callee.kind !== "Identifier") {
+    inferType(expr.callee, scope, context);
+  }
   for (const arg of expr.args) {
     inferType(arg.value, scope, context);
   }
