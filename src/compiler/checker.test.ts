@@ -1,19 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
-import { check, CheckError, type CheckWarning } from "./checker.ts";
+import { check, CheckError, type CheckWarning, type FileResolver } from "./checker.ts";
 import type { Program } from "./ast.ts";
 
 function parse(source: string): Program {
   return new Parser(new Lexer(source).tokenize()).parse();
 }
 
-function checkSource(source: string): void {
-  check(parse(source));
+function checkSource(
+  source: string,
+  options?: { resolver?: FileResolver; filePath?: string },
+): void {
+  check(parse(source), options);
 }
 
-function checkSourceWithWarnings(source: string): CheckWarning[] {
-  return check(parse(source));
+function checkSourceWithWarnings(
+  source: string,
+  options?: { resolver?: FileResolver; filePath?: string },
+): CheckWarning[] {
+  return check(parse(source), options);
 }
 
 describe("checker", () => {
@@ -1165,6 +1171,198 @@ describe("checker", () => {
           let x = input;
         `),
       ).not.toThrow();
+    });
+  });
+
+  describe("imports", () => {
+    const makeResolver = (
+      files: Record<string, string>,
+    ): { resolve: (from: string, path: string) => string; read: (path: string) => string } => ({
+      resolve: (_from: string, importPath: string) => importPath,
+      read: (path: string) => {
+        const content = files[path];
+        if (content === undefined) throw new Error(`file not found: ${path}`);
+        return content;
+      },
+    });
+
+    it("should resolve an imported function and allow qualified call", () => {
+      const resolver = makeResolver({
+        "./helpers": "export func greet(name: Text) -> Text { return name; }",
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./helpers" as H;
+            let msg = H.greet(name: "world");
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).not.toThrow();
+    });
+
+    it("should resolve an imported enum and allow qualified access", () => {
+      const resolver = makeResolver({
+        "./types": 'export enum Color { red = "RED", blue = "BLUE" }',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./types" as T;
+            let c = T.Color.red;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).not.toThrow();
+    });
+
+    it("should resolve an imported action and allow qualified call", () => {
+      const resolver = makeResolver({
+        "./actions": 'export action doThing(text: Text) = "com.example.dothing";',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./actions" as A;
+            A.doThing(text: "hello");
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).not.toThrow();
+    });
+
+    it("should reject access to non-exported declarations", () => {
+      const resolver = makeResolver({
+        "./helpers": "func greet(name: Text) -> Text { return name; }",
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./helpers" as H;
+            let msg = H.greet(name: "world");
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject shortcut block in library", () => {
+      const resolver = makeResolver({
+        "./bad": 'shortcut { name: "Bad" }',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./bad" as B;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject var declaration in library", () => {
+      const resolver = makeResolver({
+        "./bad": "var x = 42;",
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./bad" as B;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject bare statements in library", () => {
+      const resolver = makeResolver({
+        "./bad": 'showAlert(text: "hi");',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./bad" as B;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should detect import cycles", () => {
+      const resolver = makeResolver({
+        "./a": 'import "./b" as B; export func fa() -> Text { return "a"; }',
+        "./b": 'import "./a" as A; export func fb() -> Text { return "b"; }',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./a" as A;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject duplicate import aliases", () => {
+      const resolver = makeResolver({
+        "./a": 'export func fa() -> Text { return "a"; }',
+        "./b": 'export func fb() -> Text { return "b"; }',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./a" as H;
+            import "./b" as H;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject alias that conflicts with a declaration", () => {
+      const resolver = makeResolver({
+        "./helpers": "export func greet(name: Text) -> Text { return name; }",
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./helpers" as greet;
+            func greet() -> Text { return "hi"; }
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should reject access to non-exported let binding in library", () => {
+      const resolver = makeResolver({
+        "./constants": 'let greeting = "hello"; export func greet() -> Text { return greeting; }',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./constants" as C;
+            let x = C.greeting;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
+    });
+
+    it("should not re-export imports from a library", () => {
+      const resolver = makeResolver({
+        "./inner": 'export func innerFn() -> Text { return "inner"; }',
+        "./outer": 'import "./inner" as I; export func outerFn() -> Text { return I.innerFn(); }',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./outer" as O;
+            let x = O.I.innerFn();
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).toThrow(CheckError);
     });
   });
 });
