@@ -1404,6 +1404,26 @@ showAlert(text: "Hello from Chute!");`;
     });
   });
 
+  describe("export let", () => {
+    it("should parse export let declaration", () => {
+      const ast = parse('export let greeting = "hello";');
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("LetDeclaration");
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.exported).toBe(true);
+        expect(decl.name).toBe("greeting");
+      }
+    });
+
+    it("should parse non-exported let with exported false", () => {
+      const ast = parse("let x = 42;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.exported).toBe(false);
+      }
+    });
+  });
+
   describe("attributes", () => {
     it("should parse action with one attribute", () => {
       const ast = parse('action doThing() = "com.example.dothing" @retry(enabled: true);');

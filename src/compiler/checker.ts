@@ -323,6 +323,9 @@ function resolveImports(
           namespaceScope.defineType(stmt.name, typeDef);
           namespaceScope.define(stmt.name, typeDef, false);
         }
+      } else if (stmt.kind === "LetDeclaration") {
+        const binding = libScope.lookup(stmt.name);
+        if (binding) namespaceScope.define(stmt.name, binding.type, false);
       }
     }
 

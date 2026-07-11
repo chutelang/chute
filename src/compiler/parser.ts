@@ -346,9 +346,14 @@ export class Parser {
       decl.span.start = start;
       return decl;
     }
+    if (this.check(TokenKind.Let)) {
+      const decl = this.parseLetOrDestructure(true);
+      decl.span.start = start;
+      return decl;
+    }
 
     throw this.error(
-      `expected 'enum', 'record', 'func', or 'action' after 'export', got ${tokenKindName(this.peek().kind)}`,
+      `expected 'enum', 'record', 'func', 'action', or 'let' after 'export', got ${tokenKindName(this.peek().kind)}`,
       this.peek().span,
     );
   }
@@ -704,12 +709,12 @@ export class Parser {
     };
   }
 
-  private parseLetOrDestructure(): LetDeclaration | LetDestructure {
+  private parseLetOrDestructure(exported = false): LetDeclaration | LetDestructure {
     const lookahead = this.tokens.at(this.pos + 1);
     if (lookahead?.kind === TokenKind.LeftBrace) {
       return this.parseLetDestructure();
     }
-    return this.parseLetDeclaration();
+    return this.parseLetDeclaration(exported);
   }
 
   private parseLetDestructure(): LetDestructure {
@@ -748,7 +753,7 @@ export class Parser {
     };
   }
 
-  private parseLetDeclaration(): LetDeclaration {
+  private parseLetDeclaration(exported = false): LetDeclaration {
     const start = this.expect(TokenKind.Let).span.start;
     const name = this.expect(TokenKind.Identifier);
     const typeAnnotation = this.check(TokenKind.Colon)
@@ -760,6 +765,7 @@ export class Parser {
     return {
       kind: "LetDeclaration",
       span: { start, end },
+      exported,
       name: tokenValue(name),
       typeAnnotation,
       initializer,
