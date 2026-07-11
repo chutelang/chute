@@ -558,6 +558,11 @@ export class Parser {
       );
     }
 
+    let name = label;
+    if (this.check(TokenKind.Identifier)) {
+      name = tokenValue(this.advance());
+    }
+
     const type = this.parseTypeAnnotationWithColon();
 
     let defaultValue: Expression | undefined;
@@ -573,7 +578,7 @@ export class Parser {
         end: (defaultValue ?? type).span.end,
       },
       label,
-      name: label,
+      name,
       type,
       defaultValue,
     };
