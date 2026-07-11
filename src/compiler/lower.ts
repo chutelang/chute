@@ -508,7 +508,7 @@ function lowerDeclaredActionCall(
   for (const param of decl.params) {
     const valueExpr = provided.get(param.label) ?? param.defaultValue;
     if (!valueExpr) continue;
-    parameters.set(param.label, lowerToParamValue(valueExpr, parentActions, ctx));
+    parameters.set(param.name, lowerToParamValue(valueExpr, parentActions, ctx));
   }
 
   return {
@@ -1498,7 +1498,7 @@ function lowerPipelineDeclaredActionStage(
   for (const param of decl.params) {
     const valueExpr = provided.get(param.label) ?? param.defaultValue;
     if (!valueExpr) continue;
-    parameters.set(param.label, lowerToParamValue(valueExpr, actions, ctx));
+    parameters.set(param.name, lowerToParamValue(valueExpr, actions, ctx));
   }
 
   actions.push({

@@ -634,5 +634,28 @@ describe("lower", () => {
       const action = result.find((a) => a.identifier === "com.example.process");
       expect(action).toBeDefined();
     });
+
+    it("should use param name (not label) as plist key when they differ", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action showAlert(text WFAlertActionTitle: Text) = "is.workflow.actions.alert";
+        showAlert(text: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
+      expect(action?.parameters.has("text")).toBe(false);
+    });
+
+    it("should use param name in pipeline declared action stage", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action transform(mode WFTransformMode: Text) -> Text = "com.example.transform";
+        let x = "hello" |> transform(mode: "upper");
+      `);
+      const action = result.find((a) => a.identifier === "com.example.transform");
+      expect(action?.parameters.get("WFTransformMode")).toBe("upper");
+      expect(action?.parameters.has("mode")).toBe(false);
+    });
   });
 });
