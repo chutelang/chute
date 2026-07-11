@@ -1158,6 +1158,33 @@ describe("checker", () => {
         `),
       ).not.toThrow();
     });
+
+    it("should accept declared action as pipeline stage", () => {
+      expect(() =>
+        checkSource(`
+          action transform(mode: Text) -> Text = "com.example.transform";
+          let result = "hello" |> transform(mode: "upper");
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept declared action as bare pipeline stage", () => {
+      expect(() =>
+        checkSource(`
+          action process() -> Text = "com.example.process";
+          let result = "hello" |> process;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject wrong argument type in action pipeline stage", () => {
+      expect(() =>
+        checkSource(`
+          action transform(mode: Text) -> Text = "com.example.transform";
+          let result = "hello" |> transform(mode: 42);
+        `),
+      ).toThrow(CheckError);
+    });
   });
 
   describe("input built-in", () => {
