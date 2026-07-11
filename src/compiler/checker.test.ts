@@ -1349,6 +1349,36 @@ describe("checker", () => {
       ).toThrow(CheckError);
     });
 
+    it("should fold static let in library and allow qualified access", () => {
+      const resolver = makeResolver({
+        "./constants": 'export let greeting = "hello";',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./constants" as C;
+            let x = C.greeting;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).not.toThrow();
+    });
+
+    it("should allow exported let referencing another static let", () => {
+      const resolver = makeResolver({
+        "./constants": 'let base = "hello"; export let greeting = "${base} world";',
+      });
+      expect(() =>
+        checkSource(
+          `
+            import "./constants" as C;
+            let x = C.greeting;
+          `,
+          { resolver, filePath: "main.chute" },
+        ),
+      ).not.toThrow();
+    });
+
     it("should not re-export imports from a library", () => {
       const resolver = makeResolver({
         "./inner": 'export func innerFn() -> Text { return "inner"; }',

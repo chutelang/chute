@@ -119,6 +119,7 @@ export interface ExpressionStatement {
 export interface LetDeclaration {
   kind: "LetDeclaration";
   span: Span;
+  exported: boolean;
   name: string;
   typeAnnotation: TypeAnnotation | undefined;
   initializer: Expression;
