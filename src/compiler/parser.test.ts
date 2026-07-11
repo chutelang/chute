@@ -1402,6 +1402,36 @@ showAlert(text: "Hello from Chute!");`;
         expect(decl.exported).toBe(true);
       }
     });
+
+    it("should parse action parameter with separate label and name", () => {
+      const ast = parse(
+        'action showAlert(text WFAlertActionTitle: Text) = "is.workflow.actions.alert";',
+      );
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.params).toHaveLength(1);
+        expect(decl.params.at(0)?.label).toBe("text");
+        expect(decl.params.at(0)?.name).toBe("WFAlertActionTitle");
+      }
+    });
+
+    it("should default name to label when only one identifier given", () => {
+      const ast = parse('action doThing(text: Text) = "com.example.do";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.params.at(0)?.label).toBe("text");
+        expect(decl.params.at(0)?.name).toBe("text");
+      }
+    });
+
+    it("should parse keyword as label with separate name", () => {
+      const ast = parse('action search(in WFSearchIn: Text) = "com.example.search";');
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ActionDeclaration") {
+        expect(decl.params.at(0)?.label).toBe("in");
+        expect(decl.params.at(0)?.name).toBe("WFSearchIn");
+      }
+    });
   });
 
   describe("export let", () => {
