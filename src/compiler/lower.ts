@@ -1365,9 +1365,16 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
 
   if (funcDecl) {
     lowerPipelineFunctionStage(stage, funcDecl, actions, ctx);
-  } else {
-    lowerPipelineActionStage(stage, calleeName, actions, ctx);
+    return;
   }
+
+  const actionDecl = calleeName ? ctx.actions.get(calleeName) : undefined;
+  if (actionDecl) {
+    lowerPipelineDeclaredActionStage(stage, actionDecl, actions, ctx);
+    return;
+  }
+
+  lowerPipelineActionStage(stage, calleeName, actions, ctx);
 }
 
 function lowerPipelineFunctionStage(
@@ -1469,6 +1476,35 @@ function lowerPipelineFunctionStage(
     identifier: "is.workflow.actions.runworkflow",
     uuid: nextUuid(ctx),
     parameters: runParams,
+  });
+}
+
+function lowerPipelineDeclaredActionStage(
+  stage: PipelineStage,
+  decl: import("./ast.ts").ActionDeclaration,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const parameters = new Map<string, ParameterValue>();
+
+  const provided = new Map<string, Expression>();
+  for (const arg of stage.args) {
+    if (arg.value.kind === "PlaceholderExpression") continue;
+    if (arg.label) {
+      provided.set(arg.label, arg.value);
+    }
+  }
+
+  for (const param of decl.params) {
+    const valueExpr = provided.get(param.label) ?? param.defaultValue;
+    if (!valueExpr) continue;
+    parameters.set(param.label, lowerToParamValue(valueExpr, actions, ctx));
+  }
+
+  actions.push({
+    identifier: decl.runtimeIdentifier,
+    uuid: nextUuid(ctx),
+    parameters,
   });
 }
 

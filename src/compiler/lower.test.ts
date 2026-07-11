@@ -613,5 +613,26 @@ describe("lower", () => {
       expect(action?.parameters.get("body")).toBe("done");
       expect(action?.parameters.get("title")).toBe("Alert");
     });
+
+    it("should lower declared action as pipeline stage", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action transform(mode: Text) -> Text = "com.example.transform";
+        let x = "hello" |> transform(mode: "upper");
+      `);
+      const action = result.find((a) => a.identifier === "com.example.transform");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("mode")).toBe("upper");
+    });
+
+    it("should lower declared action as bare pipeline stage", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action process() -> Text = "com.example.process";
+        let x = "hello" |> process;
+      `);
+      const action = result.find((a) => a.identifier === "com.example.process");
+      expect(action).toBeDefined();
+    });
   });
 });

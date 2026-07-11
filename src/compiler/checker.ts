@@ -1482,6 +1482,9 @@ function inferStageType(
   if (binding?.type.kind === "function") {
     return inferPipelineFunctionCall(stage, binding.type, inputType, scope, context);
   }
+  if (binding?.type.kind === "action") {
+    return inferPipelineActionCall(stage, binding.type, scope, context);
+  }
 
   for (const arg of stage.args) {
     if (arg.value.kind !== "PlaceholderExpression") {
@@ -1596,6 +1599,38 @@ function inferPipelineFunctionCall(
   }
 
   return funcType.returnType ?? { kind: "any" };
+}
+
+function inferPipelineActionCall(
+  stage: import("./ast.ts").PipelineStage,
+  actionType: ChuteType & { kind: "action" },
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  for (const arg of stage.args) {
+    if (arg.value.kind === "PlaceholderExpression") continue;
+
+    if (arg.label) {
+      const param = actionType.params.find((p) => p.label === arg.label);
+      if (!param) {
+        throw new CheckError(
+          `action '${actionType.name}' has no parameter '${arg.label}'`,
+          arg.span,
+        );
+      }
+      const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+      if (!isAssignable(argType, param.type)) {
+        throw new CheckError(
+          `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+          arg.span,
+        );
+      }
+    } else {
+      inferType(arg.value, scope, context);
+    }
+  }
+
+  return actionType.returnType ?? { kind: "any" };
 }
 
 function checkActionDeclaration(
