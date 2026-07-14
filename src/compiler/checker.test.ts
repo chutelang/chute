@@ -1422,4 +1422,47 @@ describe("checker", () => {
       ).toThrow(CheckError);
     });
   });
+
+  describe("stdlib", () => {
+    it("should accept stdlib action call without explicit declaration", () => {
+      expect(() => checkSource('showAlert(text: "hello");')).not.toThrow();
+    });
+
+    it("should type-check stdlib action arguments", () => {
+      expect(() => checkSource("showAlert(text: 42);")).toThrow(CheckError);
+    });
+
+    it("should reject unknown parameter on stdlib action", () => {
+      expect(() => checkSource('showAlert(title: "hello");')).toThrow(CheckError);
+    });
+
+    it("should allow user declaration to shadow stdlib name", () => {
+      expect(() =>
+        checkSource(`
+          action showAlert(message: Text) = "custom.alert";
+          showAlert(message: "hello");
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept notification with default title", () => {
+      expect(() => checkSource('notification(body: "Task complete");')).not.toThrow();
+    });
+
+    it("should accept getClipboard return type as Text", () => {
+      expect(() => checkSource("let clip: Text = getClipboard();")).not.toThrow();
+    });
+  });
+
+  describe("quantity unit validation", () => {
+    it("should accept known quantity unit", () => {
+      expect(() => checkSource("let d: Quantity<meters> = 5;")).not.toThrow();
+    });
+
+    it("should warn on unknown quantity unit", () => {
+      const warnings = checkSourceWithWarnings("let d: Quantity<parsecs> = 5;");
+      expect(warnings.length).toBeGreaterThan(0);
+      expect(warnings.at(0)?.message).toContain("parsecs");
+    });
+  });
 });
