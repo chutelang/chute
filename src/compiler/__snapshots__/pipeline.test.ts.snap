@@ -708,7 +708,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -970,7 +970,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1134,7 +1134,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1285,7 +1285,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1990,7 +1990,7 @@ exports[`compile > should compile enum declaration and member access 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -2082,7 +2082,7 @@ exports[`compile > should compile enum dot-name shorthand with type annotation 1
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -2361,7 +2361,7 @@ exports[`compile > should compile function calling another function 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -3018,7 +3018,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -3848,7 +3848,7 @@ exports[`compile > should compile let destructuring 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -4218,7 +4218,7 @@ exports[`compile > should compile multiple functions 1`] = `
 				<key>Text</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -4694,7 +4694,7 @@ exports[`compile > should compile record construction and field access 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
