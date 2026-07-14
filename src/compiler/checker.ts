@@ -72,13 +72,13 @@ export class CheckWarning {
   ) {}
 }
 
-interface CallEdge {
+export interface CallEdge {
   caller: string;
   callee: string;
   span: Span;
 }
 
-interface CheckContext {
+export interface CheckContext {
   expectedReturnType: ChuteType | undefined;
   currentFunction: string | undefined;
   warnings: CheckWarning[];
@@ -1633,7 +1633,7 @@ function inferPipelineActionCall(
   return actionType.returnType ?? { kind: "any" };
 }
 
-function checkActionDeclaration(
+export function checkActionDeclaration(
   decl: ActionDeclaration,
   scope: Scope,
   context: CheckContext,
