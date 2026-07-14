@@ -1,6 +1,7 @@
 import type { Span } from "./token.ts";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
+import { getStdlibScope, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
   ImportDeclaration,
@@ -159,7 +160,7 @@ export class Scope {
 }
 
 export function check(program: Program, options?: CheckOptions): CheckWarning[] {
-  const scope = new Scope(undefined);
+  const scope = new Scope(getStdlibScope());
   const context: CheckContext = {
     expectedReturnType: undefined,
     currentFunction: undefined,
@@ -193,7 +194,7 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
     } else if (stmt.kind === "EnumDeclaration") {
       checkEnumDeclaration(stmt, scope);
     } else if (stmt.kind === "RecordDeclaration") {
-      checkRecordDeclaration(stmt, scope);
+      checkRecordDeclaration(stmt, scope, context);
     } else if (stmt.kind === "ActionDeclaration") {
       checkActionDeclaration(stmt, scope, context);
     }
@@ -287,7 +288,7 @@ function resolveImports(
       } else if (stmt.kind === "EnumDeclaration") {
         checkEnumDeclaration(stmt, libScope);
       } else if (stmt.kind === "RecordDeclaration") {
-        checkRecordDeclaration(stmt, libScope);
+        checkRecordDeclaration(stmt, libScope, context);
       } else if (stmt.kind === "ActionDeclaration") {
         checkActionDeclaration(stmt, libScope, context);
       } else if (stmt.kind === "LetDeclaration") {
@@ -391,7 +392,7 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
       checkEnumDeclaration(stmt, scope);
       return;
     case "RecordDeclaration":
-      checkRecordDeclaration(stmt, scope);
+      checkRecordDeclaration(stmt, scope, context);
       return;
     case "FunctionDeclaration":
       checkFunctionDeclaration(stmt, scope, context);
@@ -454,7 +455,7 @@ function checkDeclarationInitializer(
     return inferType(decl.initializer, scope, context);
   }
 
-  const annotationType = typeFromAnnotation(decl.typeAnnotation, scope);
+  const annotationType = typeFromAnnotation(decl.typeAnnotation, scope, context);
   const initializerType = inferTypeWithHint(decl.initializer, scope, annotationType, context);
   if (!isAssignable(initializerType, annotationType)) {
     throw new CheckError(
@@ -916,8 +917,12 @@ function requireNumber(type: ChuteType, span: Span): void {
   }
 }
 
-function typeFromAnnotation(annotation: TypeAnnotation, scope: Scope): ChuteType {
-  const base = baseTypeFromAnnotation(annotation.base, scope);
+function typeFromAnnotation(
+  annotation: TypeAnnotation,
+  scope: Scope,
+  context?: CheckContext,
+): ChuteType {
+  const base = baseTypeFromAnnotation(annotation.base, scope, context);
   return annotation.optional
     ? {
         kind: "optional",
@@ -926,16 +931,19 @@ function typeFromAnnotation(annotation: TypeAnnotation, scope: Scope): ChuteType
     : base;
 }
 
-function baseTypeFromAnnotation(base: BaseType, scope: Scope): ChuteType {
+function baseTypeFromAnnotation(base: BaseType, scope: Scope, context?: CheckContext): ChuteType {
   switch (base.kind) {
     case "NamedType":
       return namedTypeFromAnnotation(base, scope);
     case "ListType":
       return {
         kind: "list",
-        element: typeFromAnnotation(base.elementType, scope),
+        element: typeFromAnnotation(base.elementType, scope, context),
       };
     case "QuantityType":
+      if (!KNOWN_QUANTITY_UNITS.has(base.unit)) {
+        context?.warnings.push(new CheckWarning(`unknown quantity unit '${base.unit}'`, base.span));
+      }
       return {
         kind: "quantity",
         unit: base.unit,
@@ -983,6 +991,10 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
 
   if (source.kind === "optional") {
     return false;
+  }
+
+  if (source.kind === "number" && target.kind === "quantity") {
+    return true;
   }
 
   if (source.kind !== target.kind) {
@@ -1251,7 +1263,11 @@ function checkEnumDeclaration(stmt: EnumDeclaration, scope: Scope): void {
   scope.defineType(stmt.name, enumType);
 }
 
-function checkRecordDeclaration(stmt: RecordDeclaration, scope: Scope): void {
+function checkRecordDeclaration(
+  stmt: RecordDeclaration,
+  scope: Scope,
+  context?: CheckContext,
+): void {
   if (scope.lookupType(stmt.name)) {
     throw new CheckError(`type '${stmt.name}' is already declared`, stmt.span);
   }
@@ -1262,7 +1278,7 @@ function checkRecordDeclaration(stmt: RecordDeclaration, scope: Scope): void {
     if (fields.has(f.name)) {
       throw new CheckError(`duplicate record field '${f.name}'`, f.span);
     }
-    fields.set(f.name, typeFromAnnotation(f.type, scope));
+    fields.set(f.name, typeFromAnnotation(f.type, scope, context));
   }
 
   const recordType: ChuteType = {
@@ -1292,7 +1308,7 @@ function registerFunctionSignature(
     }
     paramNames.add(p.name);
 
-    const paramType = typeFromAnnotation(p.type, scope);
+    const paramType = typeFromAnnotation(p.type, scope, context);
 
     if (p.defaultValue) {
       const defaultType = inferTypeWithHint(p.defaultValue, scope, paramType, context);
@@ -1311,7 +1327,9 @@ function registerFunctionSignature(
     });
   }
 
-  const returnType = decl.returnType ? typeFromAnnotation(decl.returnType, scope) : undefined;
+  const returnType = decl.returnType
+    ? typeFromAnnotation(decl.returnType, scope, context)
+    : undefined;
 
   const funcType: ChuteType = {
     kind: "function",
@@ -1651,7 +1669,7 @@ export function checkActionDeclaration(
     }
     paramLabels.add(p.label);
 
-    const paramType = typeFromAnnotation(p.type, scope);
+    const paramType = typeFromAnnotation(p.type, scope, context);
 
     if (p.defaultValue) {
       const defaultType = inferTypeWithHint(p.defaultValue, scope, paramType, context);
@@ -1670,7 +1688,9 @@ export function checkActionDeclaration(
     });
   }
 
-  const returnType = decl.returnType ? typeFromAnnotation(decl.returnType, scope) : undefined;
+  const returnType = decl.returnType
+    ? typeFromAnnotation(decl.returnType, scope, context)
+    : undefined;
 
   const actionType: ChuteType = {
     kind: "action",
