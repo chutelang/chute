@@ -147,7 +147,7 @@ showAlert(text: result);`;
 
 enum Color { red = "RED", blue = "BLUE" }
 let c = Color.red;
-showAlert(text: c);`;
+showAlert(text: "\${c}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -160,7 +160,7 @@ showAlert(text: c);`;
 record Point { x: Number, y: Number }
 let p = Point(x: 10, y: 20);
 let sum = p.x + p.y;
-showAlert(text: sum);`;
+showAlert(text: "\${sum}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -173,7 +173,7 @@ showAlert(text: sum);`;
 record Point { x: Number, y: Number }
 let p = Point(x: 5, y: 7);
 let { x, y } = p;
-showAlert(text: x);`;
+showAlert(text: "\${x}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -185,7 +185,7 @@ showAlert(text: x);`;
 
 enum Direction { north, south, east, west }
 let dir: Direction = .north;
-showAlert(text: dir);`;
+showAlert(text: "\${dir}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -212,7 +212,7 @@ showAlert(text: msg);`;
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 let x = add(a: 3, b: 4);
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.subShortcuts).toHaveLength(1);
@@ -228,7 +228,7 @@ func add(a: Number, b: Number) -> Number { return a + b; }
 func double(n: Number) -> Number { return n * 2; }
 let x = add(a: 3, b: 4);
 let y = double(n: x);
-showResult(text: y);`;
+showResult(text: "\${y}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -247,7 +247,7 @@ func abs(n: Number) -> Number {
   return n;
 }
 let x = abs(n: -5);
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -263,7 +263,7 @@ showResult(text: x);`;
 func double(n: Number) -> Number { return n * 2; }
 func quadruple(n: Number) -> Number { return double(n: double(n: n)); }
 let x = quadruple(n: 3);
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -295,7 +295,7 @@ showAlert(text: s.size);`;
 
 func double(n: Number) -> Number { return n * 2; }
 let x = 5 |> double;
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -310,7 +310,7 @@ showResult(text: x);`;
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 let x = 5 |> double |> triple;
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -339,7 +339,7 @@ showResult(text: "done");`;
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 let x = 5 |> add(b: 10);
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -353,7 +353,7 @@ showResult(text: x);`;
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 let x = 5 |> add(b: 10, a: _);
-showResult(text: x);`;
+showResult(text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
