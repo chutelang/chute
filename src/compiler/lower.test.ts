@@ -658,4 +658,37 @@ describe("lower", () => {
       expect(action?.parameters.has("mode")).toBe(false);
     });
   });
+
+  describe("stdlib integration", () => {
+    it("should lower showAlert using stdlib declaration with correct plist key", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        showAlert(text: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
+    });
+
+    it("should lower showResult using stdlib declaration", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        showResult(text: "done");
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.showresult");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("Text")).toBe("done");
+    });
+
+    it("should allow user action to shadow stdlib", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action showAlert(msg: Text) = "custom.alert";
+        showAlert(msg: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "custom.alert");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("msg")).toBe("hello");
+    });
+  });
 });
