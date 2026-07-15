@@ -432,3 +432,64 @@ doThing();`;
     expect(compile(source).main).toMatchSnapshot();
   });
 });
+
+describe("stdlib smoke tests", () => {
+  it("should compile showAlert from stdlib", () => {
+    const source = `shortcut { name: "StdlibAlert" }
+showAlert(text: "Hello from stdlib!");`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile notification with default title", () => {
+    const source = `shortcut { name: "StdlibNotify" }
+notification(body: "Task complete");`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile getClipboard and setClipboard", () => {
+    const source = `shortcut { name: "Clipboard" }
+let text = getClipboard();
+setClipboard(value: text);`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile getCurrentDate", () => {
+    const source = `shortcut { name: "Date" }
+let now = getCurrentDate();
+showResult(text: now);`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile openURL", () => {
+    const source = `shortcut { name: "OpenURL" }
+openURL(url: "https://example.com");`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile wait action", () => {
+    const source = `shortcut { name: "Wait" }
+wait(seconds: 5);`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile settings toggle actions", () => {
+    const source = `shortcut { name: "Settings" }
+setWiFi(enabled: false);
+setBluetooth(enabled: true);`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile stdlib action in pipeline", () => {
+    const source = `shortcut { name: "PipeStdlib" }
+let msg = "hello";
+msg |> showAlert;`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+
+  it("should compile user action shadowing stdlib", () => {
+    const source = `shortcut { name: "Shadow" }
+action showAlert(message: Text) = "custom.alert";
+showAlert(message: "custom");`;
+    expect(compile(source).main).toMatchSnapshot();
+  });
+});
