@@ -38,38 +38,7 @@ import type {
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
-
-interface BuiltinAction {
-  identifier: string;
-  params: Record<string, string>;
-}
-
-const BUILTIN_ACTIONS: ReadonlyMap<string, BuiltinAction> = new Map([
-  [
-    "showAlert",
-    {
-      identifier: "is.workflow.actions.alert",
-      params: { text: "WFAlertActionTitle" },
-    },
-  ],
-  [
-    "showResult",
-    {
-      identifier: "is.workflow.actions.showresult",
-      params: { text: "Text" },
-    },
-  ],
-  [
-    "notification",
-    {
-      identifier: "is.workflow.actions.notification",
-      params: {
-        body: "WFNotificationActionBody",
-        title: "WFNotificationActionTitle",
-      },
-    },
-  ],
-]);
+import { getStdlibActions } from "./stdlib.ts";
 
 export class LowerError extends Error {
   constructor(message: string) {
@@ -93,7 +62,7 @@ export function lower(program: Program): CompilationResult {
   const enums = new Map<string, Map<string, string>>();
   const records = new Set<string>();
   const functions = new Map<string, FunctionDeclaration>();
-  const actionDecls = new Map<string, ActionDeclaration>();
+  const actionDecls = new Map<string, ActionDeclaration>(getStdlibActions());
 
   for (const stmt of program.body) {
     if (stmt.kind === "EnumDeclaration") {
@@ -413,32 +382,7 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     return lowerDeclaredActionCall(expr, actionDecl, actions, ctx);
   }
 
-  const builtin = BUILTIN_ACTIONS.get(actionName);
-
-  if (!builtin) {
-    throw new LowerError(`unknown action: ${actionName}`);
-  }
-
-  const parameters = new Map<string, ParameterValue>();
-
-  for (const arg of expr.args) {
-    if (!arg.label) {
-      throw new LowerError(`action arguments must be labeled`);
-    }
-
-    const paramKey = builtin.params[arg.label];
-    if (!paramKey) {
-      throw new LowerError(`unknown parameter '${arg.label}' for action '${actionName}'`);
-    }
-
-    parameters.set(paramKey, lowerToParamValue(arg.value, actions, ctx));
-  }
-
-  return {
-    identifier: builtin.identifier,
-    uuid: nextUuid(ctx),
-    parameters,
-  };
+  throw new LowerError(`unknown action: ${actionName}`);
 }
 
 function lowerFunctionCall(
@@ -1374,7 +1318,7 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
     return;
   }
 
-  lowerPipelineActionStage(stage, calleeName, actions, ctx);
+  throw new LowerError(`unknown action: ${calleeName ?? "unknown"}`);
 }
 
 function lowerPipelineFunctionStage(
@@ -1503,41 +1447,6 @@ function lowerPipelineDeclaredActionStage(
 
   actions.push({
     identifier: decl.runtimeIdentifier,
-    uuid: nextUuid(ctx),
-    parameters,
-  });
-}
-
-function lowerPipelineActionStage(
-  stage: PipelineStage,
-  calleeName: string | undefined,
-  actions: ActionIR[],
-  ctx: LowerContext,
-): void {
-  if (!calleeName) {
-    throw new LowerError("pipeline stage must be a direct or qualified name");
-  }
-
-  const builtin = BUILTIN_ACTIONS.get(calleeName);
-  if (!builtin) {
-    throw new LowerError(`unknown action: ${calleeName}`);
-  }
-
-  const parameters = new Map<string, ParameterValue>();
-
-  for (const arg of stage.args) {
-    if (arg.value.kind === "PlaceholderExpression") continue;
-    if (!arg.label) continue;
-
-    const paramKey = builtin.params[arg.label];
-    if (!paramKey) {
-      throw new LowerError(`unknown parameter '${arg.label}' for action '${calleeName}'`);
-    }
-    parameters.set(paramKey, lowerToParamValue(arg.value, actions, ctx));
-  }
-
-  actions.push({
-    identifier: builtin.identifier,
     uuid: nextUuid(ctx),
     parameters,
   });
