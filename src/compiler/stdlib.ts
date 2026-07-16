@@ -10,42 +10,42 @@ action showResult(text Text: Text) = "is.workflow.actions.showresult";
 action notification(body WFNotificationActionBody: Text, title WFNotificationActionTitle: Text = "Notification") = "is.workflow.actions.notification";
 action nothing() = "is.workflow.actions.nothing";
 action comment(text WFCommentActionText: Text) = "is.workflow.actions.comment";
-action ask(prompt WFAskActionPrompt: Text, defaultAnswer WFAskActionDefaultAnswer: Text = "") = "is.workflow.actions.ask";
-action chooseFromList(list WFInput: List<Text>, prompt WFChooseFromListActionPrompt: Text = "Choose") = "is.workflow.actions.choosefromlist";
+action ask(prompt WFAskActionPrompt: Text, defaultAnswer WFAskActionDefaultAnswer: Text = "") -> Text = "is.workflow.actions.ask";
+action chooseFromList(list WFInput: List<Text>, prompt WFChooseFromListActionPrompt: Text = "Choose") -> Text = "is.workflow.actions.choosefromlist";
 action wait(seconds WFDelayTime: Number = 1) = "is.workflow.actions.delay";
 action exitShortcut() = "is.workflow.actions.exit";
-action getClipboard() = "is.workflow.actions.getclipboard";
+action getClipboard() -> Text = "is.workflow.actions.getclipboard";
 action setClipboard(value WFInput: Text) = "is.workflow.actions.setclipboard";
-action getBatteryLevel() = "is.workflow.actions.getbatterylevel";
-action getCurrentDate() = "is.workflow.actions.date";
-action getDeviceDetails() = "is.workflow.actions.getdevicedetails";
-action count(input WFInput: List<Text>) = "is.workflow.actions.count";
-action base64Encode(input WFInput: Text, mode WFEncodeMode: Text = "Encode") = "is.workflow.actions.base64encode";
-action hash(input WFInput: Text, type WFHashType: Text = "MD5") = "is.workflow.actions.hash";
-action generateUUID() = "is.workflow.actions.uuid";
-action urlEncode(input WFInput: Text, mode WFEncodeMode: Text = "Encode") = "is.workflow.actions.urlencode";
+action getBatteryLevel() -> Number = "is.workflow.actions.getbatterylevel";
+action getCurrentDate() -> Text = "is.workflow.actions.date";
+action getDeviceDetails() -> Text = "is.workflow.actions.getdevicedetails";
+action count(input WFInput: List<Text>) -> Number = "is.workflow.actions.count";
+action base64Encode(input WFInput: Text, mode WFEncodeMode: Text = "Encode") -> Text = "is.workflow.actions.base64encode";
+action hash(input WFInput: Text, type WFHashType: Text = "MD5") -> Text = "is.workflow.actions.hash";
+action generateUUID() -> Text = "is.workflow.actions.uuid";
+action urlEncode(input WFInput: Text, mode WFEncodeMode: Text = "Encode") -> Text = "is.workflow.actions.urlencode";
 action runShortcut(name WFWorkflowName: Text) = "is.workflow.actions.runworkflow";
 action openApp(app WFAppIdentifier: Text) = "is.workflow.actions.openapp";
 `;
 
 const TEXT_SOURCE = `
-action getText(text WFTextActionText: Text) = "is.workflow.actions.gettext";
-action changeCase(text WFInput: Text, case WFCaseType: Text = "UPPERCASE") = "is.workflow.actions.text.changecase";
-action replaceText(text WFInput: Text, find WFReplaceTextFind: Text, replace WFReplaceTextReplace: Text) = "is.workflow.actions.text.replace";
-action splitText(text WFInput: Text, separator WFTextSeparator: Text = " ") = "is.workflow.actions.text.split";
+action getText(text WFTextActionText: Text) -> Text = "is.workflow.actions.gettext";
+action changeCase(text WFInput: Text, case WFCaseType: Text = "UPPERCASE") -> Text = "is.workflow.actions.text.changecase";
+action replaceText(text WFInput: Text, find WFReplaceTextFind: Text, replace WFReplaceTextReplace: Text) -> Text = "is.workflow.actions.text.replace";
+action splitText(text WFInput: Text, separator WFTextSeparator: Text = " ") -> List<Text> = "is.workflow.actions.text.split";
 action combineText(list WFInput: List<Text>, separator WFTextSeparator: Text = " ") = "is.workflow.actions.text.combine";
-action matchText(text WFInput: Text, pattern WFMatchTextPattern: Text) = "is.workflow.actions.text.match";
+action matchText(text WFInput: Text, pattern WFMatchTextPattern: Text) -> List<Text> = "is.workflow.actions.text.match";
 action speak(text WFText: Text, rate WFSpeakTextRate: Number = 0) = "is.workflow.actions.speaktext";
-action dictateText() = "is.workflow.actions.dictatetext";
+action dictateText() -> Text = "is.workflow.actions.dictatetext";
 `;
 
 const WEB_SOURCE = `
 action openURL(url WFURL: Text) = "is.workflow.actions.openurl";
-action getContentsOfURL(url WFURL: Text, method WFHTTPMethod: Text = "GET") = "is.workflow.actions.downloadurl";
+action getContentsOfURL(url WFURL: Text, method WFHTTPMethod: Text = "GET") -> Text = "is.workflow.actions.downloadurl";
 action searchWeb(query WFSearchQuery: Text) = "is.workflow.actions.searchweb";
 action showWebPage(url WFURL: Text) = "is.workflow.actions.showwebpage";
-action expandURL(url WFURL: Text) = "is.workflow.actions.url.expand";
-action getURLsFromInput(input WFInput: Text) = "is.workflow.actions.detect.link";
+action expandURL(url WFURL: Text) -> Text = "is.workflow.actions.url.expand";
+action getURLsFromInput(input WFInput: Text) -> List<Text> = "is.workflow.actions.detect.link";
 `;
 
 const SHARING_SOURCE = `
@@ -64,27 +64,27 @@ action markdownFromRichText(input WFInput: Text) = "is.workflow.actions.getmarkd
 
 const CALENDAR_SOURCE = `
 action addNewEvent(title WFCalendarEventTitle: Text, start WFCalendarEventStartDate: Text, end WFCalendarEventEndDate: Text) = "is.workflow.actions.addnewcalendar";
-action getUpcomingEvents(count WFGetUpcomingItemCount: Number = 1) = "is.workflow.actions.getupcomingevents";
+action getUpcomingEvents(count WFGetUpcomingItemCount: Number = 1) -> List<Text> = "is.workflow.actions.getupcomingevents";
 action addNewReminder(title WFReminderTitle: Text, list WFReminderList: Text = "Reminders") = "is.workflow.actions.addnewreminder";
-action getUpcomingReminders(count WFGetUpcomingItemCount: Number = 1) = "is.workflow.actions.getupcomingreminders";
+action getUpcomingReminders(count WFGetUpcomingItemCount: Number = 1) -> List<Text> = "is.workflow.actions.getupcomingreminders";
 `;
 
 const CONTACTS_SOURCE = `
-action selectContact() = "is.workflow.actions.selectcontact";
+action selectContact() -> Text = "is.workflow.actions.selectcontact";
 action addNewContact(firstName WFContactFirstName: Text, lastName WFContactLastName: Text) = "is.workflow.actions.addnewcontact";
 action phone(number WFPhoneNumber: Text) = "is.workflow.actions.phonecall";
 `;
 
 const MAPS_SOURCE = `
-action getCurrentLocation() = "is.workflow.actions.getcurrentlocation";
+action getCurrentLocation() -> Text = "is.workflow.actions.getcurrentlocation";
 action getDirections(address WFDestination: Text, mode WFGetDirectionsActionMode: Text = "Driving") = "is.workflow.actions.getdirections";
 action searchLocalBusiness(query WFSearchQuery: Text) = "is.workflow.actions.searchlocalbusinesses";
 `;
 
 const MEDIA_SOURCE = `
 action takePicture() = "is.workflow.actions.takephoto";
-action selectPhotos(count WFSelectMultiplePhotosCount: Number = 1) = "is.workflow.actions.selectphoto";
-action getLatestPhotos(count WFGetLatestPhotoCount: Number = 1) = "is.workflow.actions.getlatestphotos";
+action selectPhotos(count WFSelectMultiplePhotosCount: Number = 1) -> List<Text> = "is.workflow.actions.selectphoto";
+action getLatestPhotos(count WFGetLatestPhotoCount: Number = 1) -> List<Text> = "is.workflow.actions.getlatestphotos";
 action saveToPhotoAlbum(input WFInput: Text, album WFPhotoAlbum: Text = "Recents") = "is.workflow.actions.savetocameraroll";
 action encodeMedia(input WFInput: Text, format WFMediaFormat: Text = "M4A") = "is.workflow.actions.encodemedia";
 action trimMedia(input WFInput: Text) = "is.workflow.actions.trimmedia";
