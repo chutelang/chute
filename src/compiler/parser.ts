@@ -1,5 +1,7 @@
 import { TokenKind } from "./token.ts";
 import type { Token, Span } from "./token.ts";
+import { DiagnosticCode, CompileError } from "./diagnostic.ts";
+import type { Diagnostic } from "./diagnostic.ts";
 import type {
   ActionDeclaration,
   ActionParameter,
@@ -59,6 +61,7 @@ export class ParseError extends Error {
   constructor(
     message: string,
     public span: Span,
+    public code: DiagnosticCode = DiagnosticCode.UnexpectedToken,
   ) {
     super(message);
   }
@@ -67,10 +70,12 @@ export class ParseError extends Error {
 export class Parser {
   private tokens: Token[];
   private pos: number;
+  private diagnostics: Diagnostic[];
 
   constructor(tokens: Token[]) {
     this.tokens = tokens;
     this.pos = 0;
+    this.diagnostics = [];
   }
 
   parse(): Program {
@@ -78,18 +83,49 @@ export class Parser {
     const imports: ImportDeclaration[] = [];
 
     while (this.check(TokenKind.Import)) {
-      imports.push(this.parseImport());
+      try {
+        imports.push(this.parseImport());
+      } catch (e) {
+        if (e instanceof ParseError) {
+          this.recordError(e);
+          this.synchronize();
+        } else {
+          throw e;
+        }
+      }
     }
 
     let metadata: ShortcutMetadata | undefined;
 
     if (this.check(TokenKind.Shortcut)) {
-      metadata = this.parseShortcutMetadata();
+      try {
+        metadata = this.parseShortcutMetadata();
+      } catch (e) {
+        if (e instanceof ParseError) {
+          this.recordError(e);
+          this.synchronize();
+        } else {
+          throw e;
+        }
+      }
     }
 
     const body: Statement[] = [];
     while (!this.check(TokenKind.Eof)) {
-      body.push(this.parseStatement());
+      try {
+        body.push(this.parseStatement());
+      } catch (e) {
+        if (e instanceof ParseError) {
+          this.recordError(e);
+          this.synchronize();
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    if (this.diagnostics.length > 0) {
+      throw new CompileError(this.diagnostics);
     }
 
     return {
@@ -99,6 +135,47 @@ export class Parser {
       metadata,
       body,
     };
+  }
+
+  private recordError(e: ParseError): void {
+    this.diagnostics.push({
+      code: e.code,
+      severity: "error",
+      message: e.message,
+      span: e.span,
+    });
+  }
+
+  private synchronize(): void {
+    while (!this.check(TokenKind.Eof)) {
+      const kind = this.peek().kind;
+      if (kind === TokenKind.Semicolon) {
+        this.advance();
+        return;
+      }
+      if (kind === TokenKind.RightBrace) {
+        this.advance();
+        return;
+      }
+      if (
+        kind === TokenKind.Let ||
+        kind === TokenKind.Var ||
+        kind === TokenKind.If ||
+        kind === TokenKind.For ||
+        kind === TokenKind.Repeat ||
+        kind === TokenKind.Menu ||
+        kind === TokenKind.Func ||
+        kind === TokenKind.Action ||
+        kind === TokenKind.Enum ||
+        kind === TokenKind.Record ||
+        kind === TokenKind.Return ||
+        kind === TokenKind.Export ||
+        kind === TokenKind.Import
+      ) {
+        return;
+      }
+      this.advance();
+    }
   }
 
   private parseImport(): ImportDeclaration {
@@ -371,7 +448,11 @@ export class Parser {
     this.expect(TokenKind.LeftBrace);
 
     if (this.check(TokenKind.RightBrace)) {
-      throw this.error("enum requires at least one case", this.peek().span);
+      throw new ParseError(
+        "enum requires at least one case",
+        this.peek().span,
+        DiagnosticCode.EmptyEnum,
+      );
     }
 
     const cases: EnumCaseNode[] = [];
@@ -1659,7 +1740,11 @@ export class Parser {
     }
 
     if (this.check(TokenKind.RightBrace)) {
-      throw new ParseError("empty dictionary must use {:} syntax", this.peek().span);
+      throw new ParseError(
+        "empty dictionary must use {:} syntax",
+        this.peek().span,
+        DiagnosticCode.InvalidDictionarySyntax,
+      );
     }
 
     const entries: DictionaryEntry[] = [];
@@ -1689,7 +1774,11 @@ export class Parser {
   private peek(): Token {
     const tok = this.tokens.at(this.pos);
     if (!tok) {
-      throw new ParseError("unexpected end of input", { start: 0, end: 0 });
+      throw new ParseError(
+        "unexpected end of input",
+        { start: 0, end: 0 },
+        DiagnosticCode.UnexpectedEndOfInput,
+      );
     }
     return tok;
   }
@@ -1740,7 +1829,11 @@ function exprToPlace(expr: Expression): Place {
   }
 
   if (current.kind !== "Identifier") {
-    throw new ParseError("assignment target must be a variable, field, or subscript", expr.span);
+    throw new ParseError(
+      "assignment target must be a variable, field, or subscript",
+      expr.span,
+      DiagnosticCode.InvalidAssignmentTarget,
+    );
   }
 
   accessors.reverse();
