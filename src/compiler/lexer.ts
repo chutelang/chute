@@ -1,10 +1,13 @@
 import { TokenKind, keywordKind } from "./token.ts";
 import type { Token } from "./token.ts";
+import { DiagnosticCode, CompileError } from "./diagnostic.ts";
+import type { Diagnostic } from "./diagnostic.ts";
 
 export class LexerError extends Error {
   constructor(
     message: string,
     public offset: number,
+    public code: DiagnosticCode = DiagnosticCode.UnexpectedCharacter,
   ) {
     super(message);
   }
@@ -14,21 +17,42 @@ export class Lexer {
   private source: string;
   private pos: number;
   private interpStack: number[];
+  private diagnostics: Diagnostic[];
 
   constructor(source: string) {
     this.source = source;
     this.pos = 0;
     this.interpStack = [];
+    this.diagnostics = [];
   }
 
   tokenize(): Token[] {
     const tokens: Token[] = [];
     for (;;) {
-      const tok = this.next();
-      tokens.push(tok);
-      if (tok.kind === TokenKind.Eof) {
-        break;
+      try {
+        const tok = this.next();
+        tokens.push(tok);
+        if (tok.kind === TokenKind.Eof) {
+          break;
+        }
+      } catch (e) {
+        if (e instanceof LexerError) {
+          this.diagnostics.push({
+            code: e.code,
+            severity: "error",
+            message: e.message,
+            span: { start: e.offset, end: e.offset + 1 },
+          });
+          if (this.pos <= e.offset) {
+            this.pos = e.offset + 1;
+          }
+        } else {
+          throw e;
+        }
       }
+    }
+    if (this.diagnostics.length > 0) {
+      throw new CompileError(this.diagnostics);
     }
     return tokens;
   }
@@ -100,7 +124,7 @@ export class Lexer {
       }
       this.pos++;
     }
-    throw new LexerError("unterminated block comment", start);
+    throw new LexerError("unterminated block comment", start, DiagnosticCode.UnterminatedComment);
   }
 
   private scanString(): Token {
@@ -140,14 +164,14 @@ export class Lexer {
       this.pos++;
     }
 
-    throw new LexerError("unterminated string", spanStart);
+    throw new LexerError("unterminated string", spanStart, DiagnosticCode.UnterminatedString);
   }
 
   private scanEscape(): string {
     const start = this.pos;
     this.pos++;
     if (this.pos >= this.source.length) {
-      throw new LexerError("unterminated escape sequence", start);
+      throw new LexerError("unterminated escape sequence", start, DiagnosticCode.InvalidEscape);
     }
     const ch = this.source.charAt(this.pos);
     this.pos++;
@@ -165,7 +189,11 @@ export class Lexer {
       case "$":
         return "$";
       default:
-        throw new LexerError(`invalid escape sequence: \\${ch}`, start);
+        throw new LexerError(
+          `invalid escape sequence: \\${ch}`,
+          start,
+          DiagnosticCode.InvalidEscape,
+        );
     }
   }
 
@@ -189,7 +217,7 @@ export class Lexer {
     if (word === "index") {
       return this.makeToken(TokenKind.HashIndex, start, this.pos, "#index");
     }
-    throw new LexerError(`unexpected token: #${word}`, start);
+    throw new LexerError(`unexpected token: #${word}`, start, DiagnosticCode.UnexpectedHashToken);
   }
 
   private scanRawString(): Token {
@@ -200,7 +228,11 @@ export class Lexer {
       this.pos++;
     }
     if (this.pos >= this.source.length || this.source.charAt(this.pos) !== '"') {
-      throw new LexerError("expected '\"' after '#' in raw string", start);
+      throw new LexerError(
+        "expected '\"' after '#' in raw string",
+        start,
+        DiagnosticCode.UnterminatedRawString,
+      );
     }
     this.pos++;
 
@@ -225,7 +257,7 @@ export class Lexer {
       this.pos++;
     }
 
-    throw new LexerError("unterminated raw string", start);
+    throw new LexerError("unterminated raw string", start, DiagnosticCode.UnterminatedRawString);
   }
 
   private scanNumber(): Token {
