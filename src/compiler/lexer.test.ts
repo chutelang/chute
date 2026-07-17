@@ -1,7 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { Lexer, LexerError } from "./lexer.ts";
+import { Lexer } from "./lexer.ts";
+import { CompileError, DiagnosticCode } from "./diagnostic.ts";
 import { TokenKind } from "./token.ts";
 import type { Token } from "./token.ts";
+
+function expectDiagnosticCode(fn: () => unknown, code: DiagnosticCode): void {
+  try {
+    fn();
+    expect.unreachable("expected CompileError to be thrown");
+  } catch (e) {
+    expect(e).toBeInstanceOf(CompileError);
+    const err = e as CompileError;
+    expect(err.diagnostics.some((d) => d.code === code)).toBe(true);
+  }
+}
 
 function kinds(source: string): TokenKind[] {
   return new Lexer(source).tokenize().map((t) => t.kind);
@@ -33,7 +45,7 @@ describe("Lexer", () => {
     });
 
     it("should error on unterminated block comment", () => {
-      expect(() => kinds("/* oops")).toThrow(LexerError);
+      expectDiagnosticCode(() => kinds("/* oops"), DiagnosticCode.UnterminatedComment);
     });
   });
 
@@ -162,11 +174,11 @@ describe("Lexer", () => {
     });
 
     it("should error on unterminated string", () => {
-      expect(() => tokens('"oops')).toThrow(LexerError);
+      expectDiagnosticCode(() => tokens('"oops'), DiagnosticCode.UnterminatedString);
     });
 
     it("should error on invalid escape", () => {
-      expect(() => tokens('"\\q"')).toThrow(LexerError);
+      expectDiagnosticCode(() => tokens('"\\q"'), DiagnosticCode.InvalidEscape);
     });
   });
 
@@ -229,7 +241,7 @@ describe("Lexer", () => {
     });
 
     it("should error on unterminated raw string", () => {
-      expect(() => tokens('#"oops')).toThrow(LexerError);
+      expectDiagnosticCode(() => tokens('#"oops'), DiagnosticCode.UnterminatedRawString);
     });
   });
 
@@ -239,7 +251,7 @@ describe("Lexer", () => {
     });
 
     it("should error on unknown # token", () => {
-      expect(() => kinds("#foo")).toThrow(LexerError);
+      expectDiagnosticCode(() => kinds("#foo"), DiagnosticCode.UnexpectedHashToken);
     });
   });
 
@@ -291,7 +303,7 @@ describe("Lexer", () => {
     });
 
     it("should not match !containsX as !contains", () => {
-      expect(() => kinds("!containsX")).toThrow(LexerError);
+      expectDiagnosticCode(() => kinds("!containsX"), DiagnosticCode.UnexpectedCharacter);
     });
   });
 
@@ -300,6 +312,21 @@ describe("Lexer", () => {
       const toks = tokens("ab cd");
       expect(toks.at(0)?.span).toEqual({ start: 0, end: 2 });
       expect(toks.at(1)?.span).toEqual({ start: 3, end: 5 });
+    });
+  });
+
+  describe("multi-error collection", () => {
+    it("should collect multiple errors from a single source", () => {
+      try {
+        kinds("~ ^");
+        expect.unreachable("expected CompileError to be thrown");
+      } catch (e) {
+        expect(e).toBeInstanceOf(CompileError);
+        const err = e as CompileError;
+        expect(err.diagnostics).toHaveLength(2);
+        expect(err.diagnostics[0]?.code).toBe(DiagnosticCode.UnexpectedCharacter);
+        expect(err.diagnostics[1]?.code).toBe(DiagnosticCode.UnexpectedCharacter);
+      }
     });
   });
 
