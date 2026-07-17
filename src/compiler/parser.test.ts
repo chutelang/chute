@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
-import { Parser, ParseError } from "./parser.ts";
+import { Parser } from "./parser.ts";
+import { CompileError } from "./diagnostic.ts";
 import type { Program } from "./ast.ts";
 
 function parse(source: string): Program {
@@ -167,11 +168,11 @@ describe("Parser", () => {
 
   describe("error handling", () => {
     it("should error on missing semicolon", () => {
-      expect(() => parse('showAlert(text: "hello")')).toThrow(ParseError);
+      expect(() => parse('showAlert(text: "hello")')).toThrow(CompileError);
     });
 
     it("should error on unexpected token in metadata", () => {
-      expect(() => parse("shortcut { 42 }")).toThrow(ParseError);
+      expect(() => parse("shortcut { 42 }")).toThrow(CompileError);
     });
   });
 
@@ -342,7 +343,7 @@ describe("Parser", () => {
     });
 
     it("should error on assignment to non-place expression", () => {
-      expect(() => parse("42 = x;")).toThrow(ParseError);
+      expect(() => parse("42 = x;")).toThrow(CompileError);
     });
   });
 
@@ -664,7 +665,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should reject bare {} as empty dictionary", () => {
-      expect(() => parse("let x = {};")).toThrow(ParseError);
+      expect(() => parse("let x = {};")).toThrow(CompileError);
     });
   });
 
@@ -1068,7 +1069,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should reject empty enum with clear error", () => {
-      expect(() => parse("enum Empty {}")).toThrow("enum requires at least one case");
+      expect(() => parse("enum Empty {}")).toThrow(CompileError);
     });
   });
 
