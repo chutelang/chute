@@ -1,4 +1,6 @@
 import type { Span } from "./token.ts";
+import { DiagnosticCode, CompileError } from "./diagnostic.ts";
+import type { Diagnostic } from "./diagnostic.ts";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
 import { getStdlibScope, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
@@ -70,6 +72,7 @@ export class CheckWarning {
   constructor(
     public message: string,
     public span: Span,
+    public code: DiagnosticCode = DiagnosticCode.UnknownUnit,
   ) {}
 }
 
@@ -90,6 +93,7 @@ export class CheckError extends Error {
   constructor(
     message: string,
     public span: Span,
+    public code: DiagnosticCode = DiagnosticCode.TypeMismatch,
   ) {
     super(message);
   }
@@ -167,6 +171,7 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
     warnings: [],
     callEdges: [],
   };
+  const collectedErrors: Diagnostic[] = [];
 
   scope.define("input", { kind: "any" }, false);
 
@@ -175,28 +180,46 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
   const importAliases = new Set<string>();
 
   if (resolver && program.imports.length > 0) {
-    const resolving = new Set<string>([filePath]);
-    resolveImports(program.imports, scope, context, resolver, filePath, resolving, importAliases);
-  }
-
-  for (const stmt of program.body) {
-    if ("name" in stmt && typeof stmt.name === "string" && importAliases.has(stmt.name)) {
-      throw new CheckError(
-        `declaration '${stmt.name}' conflicts with import alias '${stmt.name}'`,
-        stmt.span,
-      );
+    try {
+      const resolving = new Set<string>([filePath]);
+      resolveImports(program.imports, scope, context, resolver, filePath, resolving, importAliases);
+    } catch (e) {
+      if (e instanceof CheckError) {
+        collectedErrors.push(checkErrorToDiagnostic(e));
+      } else {
+        throw e;
+      }
     }
   }
 
   for (const stmt of program.body) {
-    if (stmt.kind === "FunctionDeclaration") {
-      registerFunctionSignature(stmt, scope, context);
-    } else if (stmt.kind === "EnumDeclaration") {
-      checkEnumDeclaration(stmt, scope);
-    } else if (stmt.kind === "RecordDeclaration") {
-      checkRecordDeclaration(stmt, scope, context);
-    } else if (stmt.kind === "ActionDeclaration") {
-      checkActionDeclaration(stmt, scope, context);
+    if ("name" in stmt && typeof stmt.name === "string" && importAliases.has(stmt.name)) {
+      collectedErrors.push({
+        code: DiagnosticCode.DuplicateDeclaration,
+        severity: "error",
+        message: `declaration '${stmt.name}' conflicts with import alias '${stmt.name}'`,
+        span: stmt.span,
+      });
+    }
+  }
+
+  for (const stmt of program.body) {
+    try {
+      if (stmt.kind === "FunctionDeclaration") {
+        registerFunctionSignature(stmt, scope, context);
+      } else if (stmt.kind === "EnumDeclaration") {
+        checkEnumDeclaration(stmt, scope);
+      } else if (stmt.kind === "RecordDeclaration") {
+        checkRecordDeclaration(stmt, scope, context);
+      } else if (stmt.kind === "ActionDeclaration") {
+        checkActionDeclaration(stmt, scope, context);
+      }
+    } catch (e) {
+      if (e instanceof CheckError) {
+        collectedErrors.push(checkErrorToDiagnostic(e));
+      } else {
+        throw e;
+      }
     }
   }
 
@@ -208,12 +231,43 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
     ) {
       continue;
     }
-    checkStatement(stmt, scope, context);
+    try {
+      checkStatement(stmt, scope, context);
+    } catch (e) {
+      if (e instanceof CheckError) {
+        collectedErrors.push(checkErrorToDiagnostic(e));
+      } else {
+        throw e;
+      }
+    }
   }
 
   detectRecursiveCycles(context);
 
+  if (collectedErrors.length > 0) {
+    const warningDiagnostics = context.warnings.map(checkWarningToDiagnostic);
+    throw new CompileError([...collectedErrors, ...warningDiagnostics]);
+  }
+
   return context.warnings;
+}
+
+function checkErrorToDiagnostic(e: CheckError): Diagnostic {
+  return {
+    code: e.code,
+    severity: "error",
+    message: e.message,
+    span: e.span,
+  };
+}
+
+function checkWarningToDiagnostic(w: CheckWarning): Diagnostic {
+  return {
+    code: w.code,
+    severity: "warning",
+    message: w.message,
+    span: w.span,
+  };
 }
 
 function resolveImports(
@@ -229,7 +283,11 @@ function resolveImports(
 
   for (const imp of imports) {
     if (seenAliases.has(imp.alias)) {
-      throw new CheckError(`duplicate import alias '${imp.alias}'`, imp.span);
+      throw new CheckError(
+        `duplicate import alias '${imp.alias}'`,
+        imp.span,
+        DiagnosticCode.ImportError,
+      );
     }
     seenAliases.add(imp.alias);
     importAliases.add(imp.alias);
@@ -245,11 +303,16 @@ function resolveImports(
       throw new CheckError(
         `cannot resolve import '${imp.path}': ${e instanceof Error ? e.message : String(e)}`,
         imp.span,
+        DiagnosticCode.ImportError,
       );
     }
 
     if (resolving.has(resolvedPath)) {
-      throw new CheckError(`import cycle detected: '${imp.path}'`, imp.span);
+      throw new CheckError(
+        `import cycle detected: '${imp.path}'`,
+        imp.span,
+        DiagnosticCode.ImportError,
+      );
     }
 
     resolving.add(resolvedPath);
@@ -261,6 +324,7 @@ function resolveImports(
       throw new CheckError(
         `cannot read import '${imp.path}': ${e instanceof Error ? e.message : String(e)}`,
         imp.span,
+        DiagnosticCode.ImportError,
       );
     }
     const libTokens = new Lexer(source).tokenize();
@@ -337,12 +401,20 @@ function resolveImports(
 
 function validateLibrary(ast: Program, importSpan: Span): void {
   if (ast.metadata) {
-    throw new CheckError("libraries cannot contain a shortcut block", importSpan);
+    throw new CheckError(
+      "libraries cannot contain a shortcut block",
+      importSpan,
+      DiagnosticCode.LibraryRestriction,
+    );
   }
 
   for (const stmt of ast.body) {
     if (stmt.kind === "VarDeclaration") {
-      throw new CheckError("libraries cannot contain var declarations", stmt.span);
+      throw new CheckError(
+        "libraries cannot contain var declarations",
+        stmt.span,
+        DiagnosticCode.LibraryRestriction,
+      );
     }
 
     const isDeclaration =
@@ -354,7 +426,11 @@ function validateLibrary(ast: Program, importSpan: Span): void {
       stmt.kind === "RecordDeclaration";
 
     if (!isDeclaration) {
-      throw new CheckError("libraries cannot contain statements", stmt.span);
+      throw new CheckError(
+        "libraries cannot contain statements",
+        stmt.span,
+        DiagnosticCode.LibraryRestriction,
+      );
     }
   }
 }
@@ -421,6 +497,7 @@ function checkExpressionStatement(expr: Expression, scope: Scope, context: Check
           throw new CheckError(
             `pipeline expression statement must end in an action call`,
             lastStage.span,
+            DiagnosticCode.PipelineError,
           );
         }
       }
@@ -430,7 +507,11 @@ function checkExpressionStatement(expr: Expression, scope: Scope, context: Check
 
 function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckContext): void {
   if (scope.hasOwn(decl.name)) {
-    throw new CheckError(`variable '${decl.name}' is already declared in this scope`, decl.span);
+    throw new CheckError(
+      `variable '${decl.name}' is already declared in this scope`,
+      decl.span,
+      DiagnosticCode.DuplicateDeclaration,
+    );
   }
 
   const bindingType = checkDeclarationInitializer(decl, scope, context);
@@ -439,7 +520,11 @@ function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckC
 
 function checkVarDeclaration(decl: VarDeclaration, scope: Scope, context: CheckContext): void {
   if (scope.hasOwn(decl.name)) {
-    throw new CheckError(`variable '${decl.name}' is already declared in this scope`, decl.span);
+    throw new CheckError(
+      `variable '${decl.name}' is already declared in this scope`,
+      decl.span,
+      DiagnosticCode.DuplicateDeclaration,
+    );
   }
 
   const bindingType = checkDeclarationInitializer(decl, scope, context);
@@ -470,13 +555,18 @@ function checkDeclarationInitializer(
 function checkAssignment(assign: Assignment, scope: Scope, context: CheckContext): void {
   const binding = scope.lookup(assign.place.root);
   if (!binding) {
-    throw new CheckError(`undefined variable '${assign.place.root}'`, assign.place.span);
+    throw new CheckError(
+      `undefined variable '${assign.place.root}'`,
+      assign.place.span,
+      DiagnosticCode.UndefinedVariable,
+    );
   }
 
   if (!binding.mutable) {
     throw new CheckError(
       `cannot assign to '${assign.place.root}' because it is a let binding`,
       assign.span,
+      DiagnosticCode.ImmutableAssignment,
     );
   }
 
@@ -506,7 +596,11 @@ function inferTypeWithHint(
   if (expr.kind === "DotNameExpression" && hint?.kind === "enum") {
     const backingValue = hint.cases.get(expr.name);
     if (backingValue === undefined) {
-      throw new CheckError(`'${expr.name}' is not a case of enum '${hint.name}'`, expr.span);
+      throw new CheckError(
+        `'${expr.name}' is not a case of enum '${hint.name}'`,
+        expr.span,
+        DiagnosticCode.UnknownMember,
+      );
     }
     expr.resolvedBackingValue = backingValue;
     return hint;
@@ -554,9 +648,14 @@ function inferType(expr: Expression, scope: Scope, context: CheckContext): Chute
       throw new CheckError(
         `'_' placeholder can only be used in pipeline stage arguments`,
         expr.span,
+        DiagnosticCode.PipelineError,
       );
     case "DotNameExpression":
-      throw new CheckError(`cannot resolve '.${expr.name}' without a contextual type`, expr.span);
+      throw new CheckError(
+        `cannot resolve '.${expr.name}' without a contextual type`,
+        expr.span,
+        DiagnosticCode.ContextualTypeRequired,
+      );
     case "HashIndexExpression":
       return { kind: "number" };
     default:
@@ -567,7 +666,11 @@ function inferType(expr: Expression, scope: Scope, context: CheckContext): Chute
 function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
   const binding = scope.lookup(expr.name);
   if (!binding) {
-    throw new CheckError(`undefined variable '${expr.name}'`, expr.span);
+    throw new CheckError(
+      `undefined variable '${expr.name}'`,
+      expr.span,
+      DiagnosticCode.UndefinedVariable,
+    );
   }
   return binding.type;
 }
@@ -612,6 +715,7 @@ function inferCoalesceExpression(
     throw new CheckError(
       `'??' requires an optional left operand, got ${describeType(leftType)}`,
       expr.left.span,
+      DiagnosticCode.InvalidOperand,
     );
   }
 
@@ -642,6 +746,7 @@ function inferMemberExpression(
       throw new CheckError(
         `'${expr.property}' is not exported from '${expr.object.name}'`,
         expr.span,
+        DiagnosticCode.UnknownMember,
       );
     }
 
@@ -652,6 +757,7 @@ function inferMemberExpression(
         throw new CheckError(
           `'${expr.property}' is not a case of enum '${typeDef.name}'`,
           expr.span,
+          DiagnosticCode.UnknownMember,
         );
       }
       return typeDef;
@@ -666,6 +772,7 @@ function inferMemberExpression(
       throw new CheckError(
         `record '${objectType.name}' has no field '${expr.property}'`,
         expr.span,
+        DiagnosticCode.UnknownMember,
       );
     }
     return fieldType;
@@ -685,6 +792,7 @@ function inferOptionalMemberExpression(
     throw new CheckError(
       `'?.' requires an optional object, got ${describeType(objectType)}`,
       expr.object.span,
+      DiagnosticCode.InvalidOperand,
     );
   }
 
@@ -787,6 +895,7 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
       throw new CheckError(
         `'${expr.callee.property}' is not exported from '${expr.callee.object.name}'`,
         expr.callee.span,
+        DiagnosticCode.UnknownMember,
       );
     }
   }
@@ -825,16 +934,28 @@ function checkFunctionCall(
 
   for (const arg of expr.args) {
     if (!arg.label) {
-      throw new CheckError(`function calls require labeled arguments`, arg.span);
+      throw new CheckError(
+        `function calls require labeled arguments`,
+        arg.span,
+        DiagnosticCode.ScopeError,
+      );
     }
 
     const param = funcType.params.find((p) => p.name === arg.label);
     if (!param) {
-      throw new CheckError(`function '${funcType.name}' has no parameter '${arg.label}'`, arg.span);
+      throw new CheckError(
+        `function '${funcType.name}' has no parameter '${arg.label}'`,
+        arg.span,
+        DiagnosticCode.UnknownMember,
+      );
     }
 
     if (provided.has(arg.label)) {
-      throw new CheckError(`duplicate argument '${arg.label}' in function call`, arg.span);
+      throw new CheckError(
+        `duplicate argument '${arg.label}' in function call`,
+        arg.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
     provided.set(arg.label, arg.value);
 
@@ -852,6 +973,7 @@ function checkFunctionCall(
       throw new CheckError(
         `missing argument '${param.name}' in call to '${funcType.name}'`,
         expr.span,
+        DiagnosticCode.MissingArgument,
       );
     }
   }
@@ -877,16 +999,28 @@ function checkRecordConstruction(
 
   for (const arg of expr.args) {
     if (!arg.label) {
-      throw new CheckError(`record construction requires labeled arguments`, arg.span);
+      throw new CheckError(
+        `record construction requires labeled arguments`,
+        arg.span,
+        DiagnosticCode.ScopeError,
+      );
     }
 
     const fieldType = recordType.fields.get(arg.label);
     if (!fieldType) {
-      throw new CheckError(`record '${recordType.name}' has no field '${arg.label}'`, arg.span);
+      throw new CheckError(
+        `record '${recordType.name}' has no field '${arg.label}'`,
+        arg.span,
+        DiagnosticCode.UnknownMember,
+      );
     }
 
     if (provided.has(arg.label)) {
-      throw new CheckError(`duplicate field '${arg.label}' in record construction`, arg.span);
+      throw new CheckError(
+        `duplicate field '${arg.label}' in record construction`,
+        arg.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
     provided.add(arg.label);
 
@@ -904,6 +1038,7 @@ function checkRecordConstruction(
       throw new CheckError(
         `missing field '${fieldName}' in construction of record '${recordType.name}'`,
         expr.span,
+        DiagnosticCode.MissingArgument,
       );
     }
   }
@@ -1224,13 +1359,21 @@ function checkLetDestructure(stmt: LetDestructure, scope: Scope, context: CheckC
 
   for (const name of stmt.names) {
     if (scope.hasOwn(name)) {
-      throw new CheckError(`variable '${name}' is already declared in this scope`, stmt.span);
+      throw new CheckError(
+        `variable '${name}' is already declared in this scope`,
+        stmt.span,
+        DiagnosticCode.DuplicateDeclaration,
+      );
     }
 
     if (initializerType.kind === "record") {
       const fieldType = initializerType.fields.get(name);
       if (!fieldType) {
-        throw new CheckError(`record '${initializerType.name}' has no field '${name}'`, stmt.span);
+        throw new CheckError(
+          `record '${initializerType.name}' has no field '${name}'`,
+          stmt.span,
+          DiagnosticCode.UnknownMember,
+        );
       }
       scope.define(name, fieldType, false);
     } else {
@@ -1241,14 +1384,22 @@ function checkLetDestructure(stmt: LetDestructure, scope: Scope, context: CheckC
 
 function checkEnumDeclaration(stmt: EnumDeclaration, scope: Scope): void {
   if (scope.lookupType(stmt.name)) {
-    throw new CheckError(`type '${stmt.name}' is already declared`, stmt.span);
+    throw new CheckError(
+      `type '${stmt.name}' is already declared`,
+      stmt.span,
+      DiagnosticCode.DuplicateDeclaration,
+    );
   }
 
   const cases = new Map<string, string>();
 
   for (const c of stmt.cases) {
     if (cases.has(c.name)) {
-      throw new CheckError(`duplicate enum case '${c.name}'`, c.span);
+      throw new CheckError(
+        `duplicate enum case '${c.name}'`,
+        c.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
 
     cases.set(c.name, resolveEnumBackingValue(c.name, c.value, stmt.defaultValue));
@@ -1269,14 +1420,22 @@ function checkRecordDeclaration(
   context?: CheckContext,
 ): void {
   if (scope.lookupType(stmt.name)) {
-    throw new CheckError(`type '${stmt.name}' is already declared`, stmt.span);
+    throw new CheckError(
+      `type '${stmt.name}' is already declared`,
+      stmt.span,
+      DiagnosticCode.DuplicateDeclaration,
+    );
   }
 
   const fields = new Map<string, ChuteType>();
 
   for (const f of stmt.fields) {
     if (fields.has(f.name)) {
-      throw new CheckError(`duplicate record field '${f.name}'`, f.span);
+      throw new CheckError(
+        `duplicate record field '${f.name}'`,
+        f.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
     fields.set(f.name, typeFromAnnotation(f.type, scope, context));
   }
@@ -1296,7 +1455,11 @@ function registerFunctionSignature(
   context: CheckContext,
 ): void {
   if (scope.hasOwn(decl.name)) {
-    throw new CheckError(`'${decl.name}' is already declared in this scope`, decl.span);
+    throw new CheckError(
+      `'${decl.name}' is already declared in this scope`,
+      decl.span,
+      DiagnosticCode.DuplicateDeclaration,
+    );
   }
 
   const params: Array<{ name: string; type: ChuteType; hasDefault: boolean }> = [];
@@ -1304,7 +1467,11 @@ function registerFunctionSignature(
 
   for (const p of decl.params) {
     if (paramNames.has(p.name)) {
-      throw new CheckError(`duplicate parameter '${p.name}'`, p.span);
+      throw new CheckError(
+        `duplicate parameter '${p.name}'`,
+        p.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
     paramNames.add(p.name);
 
@@ -1370,7 +1537,11 @@ function checkFunctionDeclaration(
 
 function checkReturnStatement(stmt: ReturnStatement, scope: Scope, context: CheckContext): void {
   if (context.currentFunction === undefined) {
-    throw new CheckError(`'return' can only be used inside a function`, stmt.span);
+    throw new CheckError(
+      `'return' can only be used inside a function`,
+      stmt.span,
+      DiagnosticCode.ScopeError,
+    );
   }
 
   if (context.expectedReturnType === undefined) {
@@ -1379,6 +1550,7 @@ function checkReturnStatement(stmt: ReturnStatement, scope: Scope, context: Chec
       throw new CheckError(
         `cannot return a value from a function without a return type`,
         stmt.span,
+        DiagnosticCode.ScopeError,
       );
     }
     return;
@@ -1430,6 +1602,7 @@ function detectRecursiveCycles(context: CheckContext): void {
             new CheckWarning(
               `recursive call to '${edge.callee}' — each level starts a complete shortcut run, so deep recursion is slow`,
               edge.span,
+              DiagnosticCode.RecursiveCall,
             ),
           );
         } else if (!visited.has(edge.callee)) {
@@ -1460,6 +1633,7 @@ function inferPipelineExpression(
         throw new CheckError(
           `'|>?' requires an optional input, got ${describeType(currentType)}`,
           stage.span,
+          DiagnosticCode.PipelineError,
         );
       }
       isOptionalPipeline = true;
@@ -1553,6 +1727,7 @@ function inferPipelineFunctionCall(
             throw new CheckError(
               `function '${funcType.name}' has no parameter '${arg.label}'`,
               arg.span,
+              DiagnosticCode.UnknownMember,
             );
           }
           const argType = inferTypeWithHint(arg.value, scope, param.type, context);
@@ -1585,6 +1760,7 @@ function inferPipelineFunctionCall(
           throw new CheckError(
             `function '${funcType.name}' has no parameter '${arg.label}'`,
             arg.span,
+            DiagnosticCode.UnknownMember,
           );
         }
         const argType = inferTypeWithHint(arg.value, scope, param.type, context);
@@ -1604,6 +1780,7 @@ function inferPipelineFunctionCall(
       throw new CheckError(
         `missing argument '${param.name}' in pipeline call to '${funcType.name}'`,
         stage.span,
+        DiagnosticCode.MissingArgument,
       );
     }
   }
@@ -1634,6 +1811,7 @@ function inferPipelineActionCall(
         throw new CheckError(
           `action '${actionType.name}' has no parameter '${arg.label}'`,
           arg.span,
+          DiagnosticCode.UnknownMember,
         );
       }
       const argType = inferTypeWithHint(arg.value, scope, param.type, context);
@@ -1657,7 +1835,11 @@ export function checkActionDeclaration(
   context: CheckContext,
 ): void {
   if (scope.hasOwn(decl.name)) {
-    throw new CheckError(`'${decl.name}' is already declared in this scope`, decl.span);
+    throw new CheckError(
+      `'${decl.name}' is already declared in this scope`,
+      decl.span,
+      DiagnosticCode.DuplicateDeclaration,
+    );
   }
 
   const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
@@ -1665,7 +1847,11 @@ export function checkActionDeclaration(
 
   for (const p of decl.params) {
     if (paramLabels.has(p.label)) {
-      throw new CheckError(`duplicate parameter '${p.label}'`, p.span);
+      throw new CheckError(
+        `duplicate parameter '${p.label}'`,
+        p.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
     paramLabels.add(p.label);
 
@@ -1713,16 +1899,28 @@ function checkActionCall(
 
   for (const arg of expr.args) {
     if (!arg.label) {
-      throw new CheckError(`action calls require labeled arguments`, arg.span);
+      throw new CheckError(
+        `action calls require labeled arguments`,
+        arg.span,
+        DiagnosticCode.ScopeError,
+      );
     }
 
     const param = actionType.params.find((p) => p.label === arg.label);
     if (!param) {
-      throw new CheckError(`action '${actionType.name}' has no parameter '${arg.label}'`, arg.span);
+      throw new CheckError(
+        `action '${actionType.name}' has no parameter '${arg.label}'`,
+        arg.span,
+        DiagnosticCode.UnknownMember,
+      );
     }
 
     if (provided.has(arg.label)) {
-      throw new CheckError(`duplicate argument '${arg.label}' in action call`, arg.span);
+      throw new CheckError(
+        `duplicate argument '${arg.label}' in action call`,
+        arg.span,
+        DiagnosticCode.DuplicateArgument,
+      );
     }
     provided.set(arg.label, arg.value);
 
@@ -1740,6 +1938,7 @@ function checkActionCall(
       throw new CheckError(
         `missing argument '${param.label}' in call to '${actionType.name}'`,
         expr.span,
+        DiagnosticCode.MissingArgument,
       );
     }
   }

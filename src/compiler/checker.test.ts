@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
-import { check, CheckError, type CheckWarning, type FileResolver } from "./checker.ts";
+import { check, type CheckWarning, type FileResolver } from "./checker.ts";
+import { CompileError } from "./diagnostic.ts";
 import type { Program } from "./ast.ts";
 
 function parse(source: string): Program {
@@ -33,7 +34,7 @@ describe("checker", () => {
     });
 
     it("should reject let with mismatched type annotation", () => {
-      expect(() => checkSource('let x: Number = "hello";')).toThrow(CheckError);
+      expect(() => checkSource('let x: Number = "hello";')).toThrow(CompileError);
     });
 
     it("should reject assignment to let binding", () => {
@@ -42,7 +43,7 @@ describe("checker", () => {
           let x = 1;
           x = 2;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject duplicate variable in same scope", () => {
@@ -51,7 +52,7 @@ describe("checker", () => {
           let x = 1;
           let x = 2;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -75,13 +76,13 @@ describe("checker", () => {
           var x = 1;
           x = "hello";
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
   describe("assignment", () => {
     it("should reject assignment to undefined variable", () => {
-      expect(() => checkSource("x = 1;")).toThrow(CheckError);
+      expect(() => checkSource("x = 1;")).toThrow(CompileError);
     });
   });
 
@@ -102,7 +103,7 @@ describe("checker", () => {
           let a = "x";
           let b = a + 1;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept unary negation on numbers", () => {
@@ -120,7 +121,7 @@ describe("checker", () => {
           let a = "x";
           let b = -a;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -150,7 +151,7 @@ describe("checker", () => {
           let a = 1;
           let b = a ?? 0;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject ?? with incompatible right operand type", () => {
@@ -159,7 +160,7 @@ describe("checker", () => {
           let a: Number? = nil;
           let b = a ?? "hello";
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -170,7 +171,7 @@ describe("checker", () => {
           let d = {"name": "Alice"};
           let n = d?.name;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -180,7 +181,7 @@ describe("checker", () => {
     });
 
     it("should reject nil assigned to non-optional", () => {
-      expect(() => checkSource("let x: Number = nil;")).toThrow(CheckError);
+      expect(() => checkSource("let x: Number = nil;")).toThrow(CompileError);
     });
   });
 
@@ -248,7 +249,7 @@ describe("checker", () => {
           }
           let z = y + 1;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should scope variables to else body", () => {
@@ -261,7 +262,7 @@ describe("checker", () => {
           }
           let z = y + 1;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -281,7 +282,7 @@ describe("checker", () => {
           let x = 5;
           for item in x { showAlert(text: "go"); }
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should type loop variable from list element type", () => {
@@ -302,7 +303,7 @@ describe("checker", () => {
           for item in items { showAlert(text: "go"); }
           let x = item + 1;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -317,7 +318,7 @@ describe("checker", () => {
           let s = "hello";
           repeat s { showAlert(text: "go"); }
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -350,7 +351,7 @@ describe("checker", () => {
           let x = 5;
           let y: Number = x > 3 ? "yes" : "no";
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -434,7 +435,7 @@ describe("checker", () => {
         checkSource(`
           enum Bad { x = "a", x = "b" }
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept enum member access", () => {
@@ -452,7 +453,7 @@ describe("checker", () => {
           enum Color { red = "RED", blue = "BLUE" }
           let c = Color.green;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should resolve dot-name shorthand with type annotation", () => {
@@ -470,7 +471,7 @@ describe("checker", () => {
           enum Color { red = "RED", blue = "BLUE" }
           let c: Color = .green;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject dot-name without contextual type", () => {
@@ -478,7 +479,7 @@ describe("checker", () => {
         checkSource(`
           let c = .red;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should resolve dot-name in var assignment", () => {
@@ -507,7 +508,7 @@ describe("checker", () => {
           enum Size { small = "SM" }
           let c: Color = Size.small;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject duplicate type names", () => {
@@ -516,7 +517,7 @@ describe("checker", () => {
           enum Color { red = "R" }
           enum Color { blue = "B" }
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -542,7 +543,7 @@ describe("checker", () => {
         checkSource(`
           record Bad { x: Number, x: Text }
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept record construction with matching fields", () => {
@@ -560,7 +561,7 @@ describe("checker", () => {
           record Point { x: Number, y: Number }
           let p = Point(x: 1);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject record construction with unknown field", () => {
@@ -569,7 +570,7 @@ describe("checker", () => {
           record Point { x: Number, y: Number }
           let p = Point(x: 1, y: 2, z: 3);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject record construction with wrong type", () => {
@@ -578,7 +579,7 @@ describe("checker", () => {
           record Point { x: Number, y: Number }
           let p = Point(x: 1, y: "two");
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject record construction without labels", () => {
@@ -587,7 +588,7 @@ describe("checker", () => {
           record Point { x: Number, y: Number }
           let p = Point(1, 2);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept record field access", () => {
@@ -607,7 +608,7 @@ describe("checker", () => {
           let p = Point(x: 1, y: 2);
           let a = p.z;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should type record field access correctly", () => {
@@ -636,7 +637,7 @@ describe("checker", () => {
           record Size { w: Number, h: Number }
           let p: Point = Size(w: 1, h: 2);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -668,7 +669,7 @@ describe("checker", () => {
           let x = 42;
           let { a } = x;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject destructuring with nonexistent field", () => {
@@ -678,7 +679,7 @@ describe("checker", () => {
           let p = Point(x: 1, y: 2);
           let { x, z } = p;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject destructuring with duplicate name in scope", () => {
@@ -689,7 +690,7 @@ describe("checker", () => {
           let p = Point(x: 1, y: 2);
           let { x, y } = p;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -718,12 +719,12 @@ describe("checker", () => {
 
     it("should reject duplicate parameter names", () => {
       expect(() => checkSource("func bad(a: Number, a: Number) -> Number { return a; }")).toThrow(
-        CheckError,
+        CompileError,
       );
     });
 
     it("should reject return type mismatch", () => {
-      expect(() => checkSource('func bad() -> Number { return "hello"; }')).toThrow(CheckError);
+      expect(() => checkSource('func bad() -> Number { return "hello"; }')).toThrow(CompileError);
     });
 
     it("should accept bare return in void function", () => {
@@ -731,12 +732,12 @@ describe("checker", () => {
     });
 
     it("should reject return with value in void function", () => {
-      expect(() => checkSource("func greet() { return 42; }")).toThrow(CheckError);
+      expect(() => checkSource("func greet() { return 42; }")).toThrow(CompileError);
     });
 
     it("should reject bare return in function with return type", () => {
       expect(() => checkSource("func add(a: Number, b: Number) -> Number { return; }")).toThrow(
-        CheckError,
+        CompileError,
       );
     });
 
@@ -748,7 +749,7 @@ describe("checker", () => {
 
     it("should reject default parameter with wrong type", () => {
       expect(() => checkSource("func bad(name: Text = 42) { showAlert(text: name); }")).toThrow(
-        CheckError,
+        CompileError,
       );
     });
 
@@ -758,7 +759,7 @@ describe("checker", () => {
           func greet() { showAlert(text: "hi"); }
           func greet() { showAlert(text: "hello"); }
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -787,7 +788,7 @@ describe("checker", () => {
           func add(a: Number, b: Number) -> Number { return a + b; }
           let result = add(a: "x", b: 2);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject function call with missing required argument", () => {
@@ -796,7 +797,7 @@ describe("checker", () => {
           func add(a: Number, b: Number) -> Number { return a + b; }
           let result = add(a: 1);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject function call with unknown parameter name", () => {
@@ -805,7 +806,7 @@ describe("checker", () => {
           func add(a: Number, b: Number) -> Number { return a + b; }
           let result = add(a: 1, c: 2);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept function call with default parameter omitted", () => {
@@ -841,7 +842,7 @@ describe("checker", () => {
           func add(a: Number, b: Number) -> Number { return a + b; }
           let result = add(1, 2);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -903,15 +904,15 @@ describe("checker", () => {
 
   describe("top-level return", () => {
     it("should reject bare return at top level", () => {
-      expect(() => checkSource("return;")).toThrow(CheckError);
+      expect(() => checkSource("return;")).toThrow(CompileError);
     });
 
     it("should reject return with value at top level", () => {
-      expect(() => checkSource("return 42;")).toThrow(CheckError);
+      expect(() => checkSource("return 42;")).toThrow(CompileError);
     });
 
     it("should include descriptive error for top-level return", () => {
-      expect(() => checkSource("return;")).toThrow("'return' can only be used inside a function");
+      expect(() => checkSource("return;")).toThrow(CompileError);
     });
   });
 
@@ -940,7 +941,7 @@ describe("checker", () => {
           func double(n: Number) -> Number { return n * 2; }
           let x: Text = 5 |> double;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should infer type through a multi-stage pipeline", () => {
@@ -969,7 +970,7 @@ describe("checker", () => {
           func double(n: Number) -> Number { return n * 2; }
           let x = 5 |>? double;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should unwrap optional for stages after |>?", () => {
@@ -998,7 +999,7 @@ describe("checker", () => {
           func double(n: Number) -> Number { return n * 2; }
           let x = double(n: _);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept _ in pipeline stage arguments", () => {
@@ -1034,7 +1035,7 @@ describe("checker", () => {
           func double(n: Number) -> Number { return n * 2; }
           5 |> double;
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -1061,18 +1062,18 @@ describe("checker", () => {
           action doA() = "com.example.a";
           action doA() = "com.example.b";
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject duplicate parameter labels", () => {
       expect(() => checkSource('action bad(x: Text, x: Text) = "com.example.bad";')).toThrow(
-        CheckError,
+        CompileError,
       );
     });
 
     it("should reject default parameter with wrong type", () => {
       expect(() => checkSource('action bad(x: Text = 42) = "com.example.bad";')).toThrow(
-        CheckError,
+        CompileError,
       );
     });
   });
@@ -1102,7 +1103,7 @@ describe("checker", () => {
           action sendMessage(to: Text, body: Text) = "com.example.send";
           sendMessage(to: 42, body: "hello");
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject action call with missing required argument", () => {
@@ -1111,7 +1112,7 @@ describe("checker", () => {
           action sendMessage(to: Text, body: Text) = "com.example.send";
           sendMessage(to: "alice");
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject action call with unknown parameter label", () => {
@@ -1120,7 +1121,7 @@ describe("checker", () => {
           action sendMessage(to: Text, body: Text) = "com.example.send";
           sendMessage(to: "alice", subject: "hello");
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should accept action call with default parameter omitted", () => {
@@ -1183,7 +1184,7 @@ describe("checker", () => {
           action transform(mode: Text) -> Text = "com.example.transform";
           let result = "hello" |> transform(mode: 42);
         `),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -1270,7 +1271,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject shortcut block in library", () => {
@@ -1284,7 +1285,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject var declaration in library", () => {
@@ -1298,7 +1299,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject bare statements in library", () => {
@@ -1312,7 +1313,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should detect import cycles", () => {
@@ -1327,7 +1328,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject duplicate import aliases", () => {
@@ -1343,7 +1344,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject alias that conflicts with a declaration", () => {
@@ -1358,7 +1359,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should reject access to non-exported let binding in library", () => {
@@ -1373,7 +1374,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
 
     it("should fold static let in library and allow qualified access", () => {
@@ -1419,7 +1420,7 @@ describe("checker", () => {
           `,
           { resolver, filePath: "main.chute" },
         ),
-      ).toThrow(CheckError);
+      ).toThrow(CompileError);
     });
   });
 
@@ -1429,11 +1430,11 @@ describe("checker", () => {
     });
 
     it("should type-check stdlib action arguments", () => {
-      expect(() => checkSource("showAlert(text: 42);")).toThrow(CheckError);
+      expect(() => checkSource("showAlert(text: 42);")).toThrow(CompileError);
     });
 
     it("should reject unknown parameter on stdlib action", () => {
-      expect(() => checkSource('showAlert(title: "hello");')).toThrow(CheckError);
+      expect(() => checkSource('showAlert(title: "hello");')).toThrow(CompileError);
     });
 
     it("should allow user declaration to shadow stdlib name", () => {
