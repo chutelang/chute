@@ -1,3 +1,6 @@
+import type { Span } from "./token.ts";
+import { DiagnosticCode, CompileError } from "./diagnostic.ts";
+import type { Diagnostic } from "./diagnostic.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
   ActionDeclaration,
@@ -41,7 +44,11 @@ import type {
 import { getStdlibActions } from "./stdlib.ts";
 
 export class LowerError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    public span: Span = { start: 0, end: 0 },
+    public code: DiagnosticCode = DiagnosticCode.UnsupportedExpression,
+  ) {
     super(message);
   }
 }
@@ -63,6 +70,7 @@ export function lower(program: Program): CompilationResult {
   const records = new Set<string>();
   const functions = new Map<string, FunctionDeclaration>();
   const actionDecls = new Map<string, ActionDeclaration>(getStdlibActions());
+  const collectedErrors: Diagnostic[] = [];
 
   for (const stmt of program.body) {
     if (stmt.kind === "EnumDeclaration") {
@@ -89,17 +97,46 @@ export function lower(program: Program): CompilationResult {
   };
 
   for (const [, decl] of functions) {
-    const subShortcut = lowerFunctionToSubShortcut(decl, ctx);
-    subShortcuts.push(subShortcut);
+    try {
+      const subShortcut = lowerFunctionToSubShortcut(decl, ctx);
+      subShortcuts.push(subShortcut);
+    } catch (e) {
+      if (e instanceof LowerError) {
+        collectedErrors.push(lowerErrorToDiagnostic(e));
+      } else {
+        throw e;
+      }
+    }
   }
 
   for (const stmt of program.body) {
-    lowerStatement(stmt, actions, ctx);
+    try {
+      lowerStatement(stmt, actions, ctx);
+    } catch (e) {
+      if (e instanceof LowerError) {
+        collectedErrors.push(lowerErrorToDiagnostic(e));
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  if (collectedErrors.length > 0) {
+    throw new CompileError(collectedErrors);
   }
 
   return {
     main: { name, actions },
     subShortcuts,
+  };
+}
+
+function lowerErrorToDiagnostic(e: LowerError): Diagnostic {
+  return {
+    code: e.code,
+    severity: "error",
+    message: e.message,
+    span: e.span,
   };
 }
 
@@ -255,7 +292,7 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
 
 function lowerExpressionStatement(expr: Expression, actions: ActionIR[], ctx: LowerContext): void {
   if (expr.kind !== "CallExpression" && expr.kind !== "PipelineExpression") {
-    throw new LowerError(`expression statements must be action calls, got ${expr.kind}`);
+    throw new LowerError(`expression statements must be action calls, got ${expr.kind}`, expr.span);
   }
 
   lowerExpression(expr, actions, ctx);
@@ -272,7 +309,7 @@ function lowerDeclaration(
 
 function lowerAssignment(assign: Assignment, actions: ActionIR[], ctx: LowerContext): void {
   if (assign.place.accessors.length > 0) {
-    throw new LowerError("assignment to nested places is not yet supported");
+    throw new LowerError("assignment to nested places is not yet supported", assign.span);
   }
 
   lowerExpression(assign.value, actions, ctx);
@@ -334,7 +371,7 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       return;
     case "MemberExpression":
       if (expr.object.kind === "Identifier" && ctx.enums.has(expr.object.name)) {
-        lowerEnumMemberAccess(expr.object.name, expr.property, actions, ctx);
+        lowerEnumMemberAccess(expr.object.name, expr.property, expr.span, actions, ctx);
         return;
       }
       lowerKeyedAccess(expr.object, expr.property, actions, ctx);
@@ -355,7 +392,11 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       lowerPipelineExpression(expr, actions, ctx);
       return;
     case "PlaceholderExpression":
-      throw new LowerError("'_' placeholder cannot appear outside a pipeline stage");
+      throw new LowerError(
+        "'_' placeholder cannot appear outside a pipeline stage",
+        expr.span,
+        DiagnosticCode.PipelineError,
+      );
     case "HashIndexExpression":
       lowerHashIndexExpression(actions, ctx);
       return;
@@ -366,7 +407,7 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
 
 function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext): ActionIR {
   if (expr.callee.kind !== "Identifier") {
-    throw new LowerError("only direct action calls are supported in this subset");
+    throw new LowerError("only direct action calls are supported in this subset", expr.callee.span);
   }
 
   const actionName = expr.callee.name;
@@ -382,7 +423,11 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     return lowerDeclaredActionCall(expr, actionDecl, actions, ctx);
   }
 
-  throw new LowerError(`unknown action: ${actionName}`);
+  throw new LowerError(
+    `unknown action: ${actionName}`,
+    expr.callee.span,
+    DiagnosticCode.UnknownAction,
+  );
 }
 
 function lowerFunctionCall(
@@ -1218,13 +1263,18 @@ function lowerLetDestructure(stmt: LetDestructure, actions: ActionIR[], ctx: Low
 function lowerEnumMemberAccess(
   enumName: string,
   caseName: string,
+  span: Span,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
   const cases = ctx.enums.get(enumName);
   const backingValue = cases?.get(caseName);
   if (backingValue === undefined) {
-    throw new LowerError(`unknown enum case '${enumName}.${caseName}'`);
+    throw new LowerError(
+      `unknown enum case '${enumName}.${caseName}'`,
+      span,
+      DiagnosticCode.UnknownMember,
+    );
   }
   actions.push(makeTextAction(backingValue, ctx));
 }
@@ -1235,7 +1285,7 @@ function lowerDotNameExpression(
   ctx: LowerContext,
 ): void {
   if (expr.resolvedBackingValue === undefined) {
-    throw new LowerError(`cannot resolve dot-name '.${expr.name}'`);
+    throw new LowerError(`cannot resolve dot-name '.${expr.name}'`, expr.span);
   }
   actions.push(makeTextAction(expr.resolvedBackingValue, ctx));
 }
@@ -1253,7 +1303,11 @@ function lowerRecordConstruction(
 
   for (const arg of expr.args) {
     if (!arg.label) {
-      throw new LowerError("record construction requires labeled arguments");
+      throw new LowerError(
+        "record construction requires labeled arguments",
+        arg.value.span,
+        DiagnosticCode.ScopeError,
+      );
     }
 
     const key = arg.label;
@@ -1318,7 +1372,11 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
     return;
   }
 
-  throw new LowerError(`unknown action: ${calleeName ?? "unknown"}`);
+  throw new LowerError(
+    `unknown action: ${calleeName ?? "unknown"}`,
+    stage.callee.span,
+    DiagnosticCode.UnknownAction,
+  );
 }
 
 function lowerPipelineFunctionStage(
@@ -1453,5 +1511,9 @@ function lowerPipelineDeclaredActionStage(
 }
 
 function assertNever(value: never): never {
-  throw new LowerError(`unhandled case: ${JSON.stringify(value)}`);
+  throw new LowerError(
+    `unhandled case: ${JSON.stringify(value)}`,
+    { start: 0, end: 0 },
+    DiagnosticCode.InternalError,
+  );
 }
