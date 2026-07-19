@@ -1,5 +1,8 @@
 import * as path from "node:path";
+import * as tty from "node:tty";
 import { compile } from "../../compiler/pipeline.ts";
+import { CompileError } from "../../compiler/diagnostic.ts";
+import { renderDiagnostics } from "../../compiler/render-diagnostic.ts";
 import { type IO, realIO } from "../io.ts";
 import { isSigningAvailable, signShortcut } from "../sign.ts";
 
@@ -64,7 +67,23 @@ function buildFile(file: string, sign: boolean, io: IO): void {
   }
 
   const source = io.readFile(resolved);
-  const result = compile(source);
+  let result;
+  try {
+    result = compile(source);
+  } catch (e) {
+    if (e instanceof CompileError) {
+      const color = tty.isatty(2);
+      io.stderr(
+        renderDiagnostics(source, e.diagnostics, {
+          color,
+          filePath: file,
+        }),
+      );
+      io.setExitCode(1);
+      return;
+    }
+    throw e;
+  }
 
   const outDir = path.dirname(resolved);
   const baseName = path.basename(resolved, ".chute");

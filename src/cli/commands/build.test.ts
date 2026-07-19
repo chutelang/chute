@@ -175,6 +175,25 @@ describe("chute build", () => {
     expect(fake.spawnCalls).toEqual([]);
   });
 
+  it("should render diagnostics on compile error", () => {
+    const filePath = path.join(TEST_DIR, "bad.chute");
+    fs.writeFileSync(
+      filePath,
+      `shortcut { name: "Bad" }
+let x = foo;
+`,
+    );
+
+    const fake = createFakeIO();
+    build([filePath], { sign: false }, fake.io);
+
+    expect(fake.exitCode).toBe(1);
+    const stderr = fake.stderrLines.join("");
+    expect(stderr).toContain("CHT");
+    expect(stderr).toContain("error");
+    expect(stderr).toContain("emitted");
+  });
+
   it("should clean up plist and continue when signing throws", () => {
     const fileA = path.join(TEST_DIR, "a.chute");
     const fileB = path.join(TEST_DIR, "b.chute");
