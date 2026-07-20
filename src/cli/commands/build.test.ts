@@ -71,6 +71,7 @@ function createFakeIO(options?: {
     setExitCode: (code) => {
       exitCode = code;
     },
+    stderrSupportsColor: false,
   };
 
   return {

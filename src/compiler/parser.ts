@@ -62,6 +62,7 @@ export class ParseError extends Error {
     message: string,
     public span: Span,
     public code: DiagnosticCode = DiagnosticCode.UnexpectedToken,
+    public suggestion?: string,
   ) {
     super(message);
   }
@@ -138,12 +139,16 @@ export class Parser {
   }
 
   private recordError(e: ParseError): void {
-    this.diagnostics.push({
+    const d: Diagnostic = {
       code: e.code,
       severity: "error",
       message: e.message,
       span: e.span,
-    });
+    };
+    if (e.suggestion) {
+      d.suggestion = e.suggestion;
+    }
+    this.diagnostics.push(d);
   }
 
   private synchronize(): void {
@@ -1744,6 +1749,7 @@ export class Parser {
         "empty dictionary must use {:} syntax",
         this.peek().span,
         DiagnosticCode.InvalidDictionarySyntax,
+        "use {:} instead of {}",
       );
     }
 

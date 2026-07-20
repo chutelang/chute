@@ -1,0 +1,170 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`diagnostic snapshots > checker errors > should render immutable assignment 1`] = `
+"error[CHT205]: cannot assign to 'x' because it is a let binding
+ --> test.chute:3:1
+  |
+ 3 | x = 2;
+  | ^^^^^^
+  | = help: use 'var' instead of 'let' to make it mutable
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > checker errors > should render multiple checker errors across statements 1`] = `
+"error[CHT201]: undefined variable 'foo'
+ --> test.chute:2:9
+  |
+ 2 | let x = foo;
+  |         ^^^
+  |
+error[CHT201]: undefined variable 'bar'
+ --> test.chute:3:9
+  |
+ 3 | let y = bar;
+  |         ^^^
+  |
+2 errors emitted
+"
+`;
+
+exports[`diagnostic snapshots > checker errors > should render type mismatch 1`] = `
+"error[CHT200]: cannot assign Text to Number
+ --> test.chute:2:1
+  |
+ 2 | let x: Number = "hello";
+  | ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > checker errors > should render undefined variable 1`] = `
+"error[CHT201]: undefined variable 'foo'
+ --> test.chute:2:9
+  |
+ 2 | let x = foo;
+  |         ^^^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > file path in output > should include the file path 1`] = `
+"error[CHT002]: unterminated string
+ --> src/hello.chute:1:1
+  |
+ 1 | "oops
+  | ^^^^^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > lexer errors > should render multiple lexer errors 1`] = `
+"error[CHT004]: unexpected character: ~
+ --> test.chute:1:1
+  |
+ 1 | ~ ^
+  | ^
+  |
+error[CHT004]: unexpected character: ^
+ --> test.chute:1:3
+  |
+ 1 | ~ ^
+  |   ^
+  |
+2 errors emitted
+"
+`;
+
+exports[`diagnostic snapshots > lexer errors > should render unexpected character 1`] = `
+"error[CHT004]: unexpected character: ~
+ --> test.chute:1:1
+  |
+ 1 | ~
+  | ^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > lexer errors > should render unterminated block comment 1`] = `
+"error[CHT001]: unterminated block comment
+ --> test.chute:1:1
+  |
+ 1 | /* oops
+  | ^^^^^^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > lexer errors > should render unterminated string 1`] = `
+"error[CHT002]: unterminated string
+ --> test.chute:1:1
+  |
+ 1 | "hello
+  | ^^^^^^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > multi-line source context > should show the correct source line for errors deep in the file 1`] = `
+"error[CHT201]: undefined variable 'foo'
+ --> test.chute:6:9
+  |
+ 6 | let e = foo;
+  |         ^^^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > parser errors > should render empty dictionary error 1`] = `
+"error[CHT103]: empty dictionary must use {:} syntax
+ --> test.chute:2:10
+  |
+ 2 | let x = {};
+  |          ^
+  |          = help: use {:} instead of {}
+  |
+error[CHT100]: expected expression, got ';'
+ --> test.chute:2:11
+  |
+ 2 | let x = {};
+  |           ^
+  |
+2 errors emitted
+"
+`;
+
+exports[`diagnostic snapshots > parser errors > should render missing semicolon 1`] = `
+"error[CHT100]: expected ';', got end of file
+ --> test.chute:2:11
+  |
+ 2 | let x = 42
+  |           ^
+  |
+1 error emitted
+"
+`;
+
+exports[`diagnostic snapshots > warnings with errors > should render warnings alongside errors 1`] = `
+"error[CHT201]: undefined variable 'badVar'
+ --> test.chute:3:9
+  |
+ 3 | let y = badVar;
+  |         ^^^^^^
+  |
+warning[CHT900]: unknown quantity unit 'parsecs'
+ --> test.chute:2:8
+  |
+ 2 | let x: Quantity<parsecs> = 5;
+  |        ^^^^^^^^^^^^^^^^^
+  |
+1 error, 1 warning emitted
+"
+`;
