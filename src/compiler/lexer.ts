@@ -41,7 +41,7 @@ export class Lexer {
             code: e.code,
             severity: "error",
             message: e.message,
-            span: { start: e.offset, end: e.offset + 1 },
+            span: { start: e.offset, end: Math.max(e.offset + 1, this.pos) },
           });
           if (this.pos <= e.offset) {
             this.pos = e.offset + 1;

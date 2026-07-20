@@ -1,5 +1,6 @@
 import * as childProcess from "node:child_process";
 import * as fs from "node:fs";
+import * as tty from "node:tty";
 
 export interface SpawnResult {
   status: number | null;
@@ -24,6 +25,7 @@ export interface IO {
   stdout(msg: string): void;
   stderr(msg: string): void;
   setExitCode(code: number): void;
+  stderrSupportsColor: boolean;
 }
 
 export const realIO: IO = {
@@ -50,4 +52,5 @@ export const realIO: IO = {
   setExitCode: (code) => {
     process.exitCode = code;
   },
+  stderrSupportsColor: tty.isatty(2),
 };

@@ -1,5 +1,4 @@
 import * as path from "node:path";
-import * as tty from "node:tty";
 import { compile } from "../../compiler/pipeline.ts";
 import { CompileError } from "../../compiler/diagnostic.ts";
 import { renderDiagnostics } from "../../compiler/render-diagnostic.ts";
@@ -72,10 +71,9 @@ function buildFile(file: string, sign: boolean, io: IO): void {
     result = compile(source);
   } catch (e) {
     if (e instanceof CompileError) {
-      const color = tty.isatty(2);
       io.stderr(
         renderDiagnostics(source, e.diagnostics, {
-          color,
+          color: io.stderrSupportsColor,
           filePath: file,
         }),
       );

@@ -94,6 +94,7 @@ export class CheckError extends Error {
     message: string,
     public span: Span,
     public code: DiagnosticCode = DiagnosticCode.TypeMismatch,
+    public suggestion?: string,
   ) {
     super(message);
   }
@@ -253,12 +254,16 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
 }
 
 function checkErrorToDiagnostic(e: CheckError): Diagnostic {
-  return {
+  const d: Diagnostic = {
     code: e.code,
     severity: "error",
     message: e.message,
     span: e.span,
   };
+  if (e.suggestion) {
+    d.suggestion = e.suggestion;
+  }
+  return d;
 }
 
 function checkWarningToDiagnostic(w: CheckWarning): Diagnostic {
@@ -567,6 +572,7 @@ function checkAssignment(assign: Assignment, scope: Scope, context: CheckContext
       `cannot assign to '${assign.place.root}' because it is a let binding`,
       assign.span,
       DiagnosticCode.ImmutableAssignment,
+      "use 'var' instead of 'let' to make it mutable",
     );
   }
 
@@ -1560,6 +1566,7 @@ function checkReturnStatement(stmt: ReturnStatement, scope: Scope, context: Chec
     throw new CheckError(
       `function expects a return value of type ${describeType(context.expectedReturnType)}`,
       stmt.span,
+      DiagnosticCode.ScopeError,
     );
   }
 
