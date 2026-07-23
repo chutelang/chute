@@ -85,8 +85,9 @@ function skipString(source: string, pos: number): number {
       let depth = 1;
       while (pos < source.length && depth > 0) {
         const c = source.charAt(pos);
-        if (c === "{") depth++;
-        else if (c === "}") {
+        if (c === "{") {
+          depth++;
+        } else if (c === "}") {
           depth--;
           if (depth === 0) {
             pos++;

@@ -33,6 +33,7 @@ function createFakeIO(options?: {
   const io: IO = {
     fileExists: (p) => fs.existsSync(p),
     readFile: (p) => fs.readFileSync(p, "utf-8"),
+    readDir: (p) => fs.readdirSync(p, { recursive: true }).map(String),
     writeFile: (p, data) => fs.writeFileSync(p, data),
     removeFile: (p) => fs.unlinkSync(p),
     spawn: (command, args) => {

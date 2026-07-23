@@ -5,7 +5,6 @@ import type { SourceComment } from "./comment.ts";
 import type {
   ActionDeclaration,
   Argument,
-  Assignment,
   Attribute,
   AttributeArgument,
   AttributeValue,
@@ -22,13 +21,11 @@ import type {
   ImportDeclaration,
   MenuCase,
   MenuStatement,
-  MetadataField,
   MetadataValue,
   PipelineStage,
   Place,
   Program,
   RecordDeclaration,
-  RecordFieldNode,
   RepeatStatement,
   ShortcutMetadata,
   Statement,
@@ -39,13 +36,15 @@ export interface FormatOptions {
   maxWidth?: number;
 }
 
-export function format(source: string, options?: FormatOptions): string {
-  if (source.trim() === "") return "";
+export function format(source: string, _options?: FormatOptions): string {
+  if (source.trim() === "") {
+    return "";
+  }
 
   const tokens = new Lexer(source).tokenize();
   const ast = new Parser(tokens).parse();
   const comments = extractComments(source);
-  const printer = new Printer(source, comments, options?.maxWidth ?? 120);
+  const printer = new Printer(source, comments);
   return printer.print(ast);
 }
 
@@ -55,15 +54,13 @@ class Printer {
   private commentIndex: number;
   private output: string;
   private indent: number;
-  private maxWidth: number;
 
-  constructor(source: string, comments: SourceComment[], maxWidth: number) {
+  constructor(source: string, comments: SourceComment[]) {
     this.source = source;
     this.comments = comments;
     this.commentIndex = 0;
     this.output = "";
     this.indent = 0;
-    this.maxWidth = maxWidth;
   }
 
   print(program: Program): string {
@@ -74,9 +71,13 @@ class Printer {
 
   private printProgram(program: Program): void {
     for (let i = 0; i < program.imports.length; i++) {
-      this.emitLeadingComments(program.imports[i]!.span.start);
-      this.printImport(program.imports[i]!);
-      this.emitTrailingComment(program.imports[i]!.span.end);
+      const imp = program.imports.at(i);
+      if (!imp) {
+        continue;
+      }
+      this.emitLeadingComments(imp.span.start);
+      this.printImport(imp);
+      this.emitTrailingComment(imp.span.end);
       this.writeLine();
     }
 
@@ -90,29 +91,24 @@ class Printer {
       this.writeLine();
     }
 
-    if (program.body.length > 0) {
-      if (program.imports.length > 0 || program.metadata) {
-        if (!(program.metadata && this.output.endsWith("\n\n"))) {
-          if (program.imports.length > 0 && !program.metadata) {
-            this.writeLine();
-          } else if (program.metadata) {
-            this.writeLine();
-          }
-        }
+    if (program.body.length > 0 && (program.imports.length > 0 || program.metadata)) {
+      if (!this.output.endsWith("\n\n")) {
+        this.writeLine();
       }
     }
 
-    this.printBody(
-      program.body,
-      program.metadata?.span.end ?? program.imports.at(-1)?.span.end ?? 0,
-    );
+    this.printBody(program.body);
   }
 
-  private printBody(statements: Statement[], afterPos: number): void {
+  private printBody(statements: Statement[]): void {
     for (let i = 0; i < statements.length; i++) {
-      this.emitLeadingComments(statements[i]!.span.start);
-      this.printStatement(statements[i]!);
-      this.emitTrailingComment(statements[i]!.span.end);
+      const stmt = statements.at(i);
+      if (!stmt) {
+        continue;
+      }
+      this.emitLeadingComments(stmt.span.start);
+      this.printStatement(stmt);
+      this.emitTrailingComment(stmt.span.end);
       this.writeLine();
     }
   }
@@ -126,7 +122,9 @@ class Printer {
         break;
       case "LetDeclaration":
         this.writeIndent();
-        if (stmt.exported) this.write("export ");
+        if (stmt.exported) {
+          this.write("export ");
+        }
         this.write("let ");
         this.write(stmt.name);
         if (stmt.typeAnnotation) {
@@ -240,25 +238,18 @@ class Printer {
   private printMetadataValue(value: MetadataValue): void {
     switch (value.kind) {
       case "MetadataString":
-        this.write('"');
-        this.write(escapeString(value.value));
-        this.write('"');
-        break;
       case "MetadataNumber":
-        if (value.negative) this.write("-");
-        this.write(String(Math.abs(value.value)));
-        break;
       case "MetadataBoolean":
-        this.write(value.value ? "true" : "false");
-        break;
       case "MetadataNil":
-        this.write("nil");
+        this.printScalarValue(value);
         break;
       case "MetadataList":
         this.write("[");
         for (let i = 0; i < value.elements.length; i++) {
-          if (i > 0) this.write(", ");
-          this.printMetadataValue(value.elements[i]!);
+          if (i > 0) {
+            this.write(", ");
+          }
+          this.printMetadataValue(value.elements.at(i)!);
         }
         this.write("]");
         break;
@@ -268,11 +259,41 @@ class Printer {
         if (value.args) {
           this.write("(");
           for (let i = 0; i < value.args.length; i++) {
-            if (i > 0) this.write(", ");
-            this.printMetadataValue(value.args[i]!);
+            if (i > 0) {
+              this.write(", ");
+            }
+            this.printMetadataValue(value.args.at(i)!);
           }
           this.write(")");
         }
+        break;
+    }
+  }
+
+  private printScalarValue(
+    val:
+      | { kind: "MetadataString"; value: string }
+      | { kind: "MetadataNumber"; value: number; negative: boolean }
+      | { kind: "MetadataBoolean"; value: boolean }
+      | { kind: "MetadataNil" },
+  ): void {
+    switch (val.kind) {
+      case "MetadataString":
+        this.write('"');
+        this.write(escapeString(val.value));
+        this.write('"');
+        break;
+      case "MetadataNumber":
+        if (val.negative) {
+          this.write("-");
+        }
+        this.write(String(Math.abs(val.value)));
+        break;
+      case "MetadataBoolean":
+        this.write(val.value ? "true" : "false");
+        break;
+      case "MetadataNil":
+        this.write("nil");
         break;
     }
   }
@@ -313,8 +334,10 @@ class Printer {
         } else {
           this.write("[");
           for (let i = 0; i < expr.elements.length; i++) {
-            if (i > 0) this.write(", ");
-            this.printExpression(expr.elements[i]!);
+            if (i > 0) {
+              this.write(", ");
+            }
+            this.printExpression(expr.elements.at(i)!);
           }
           this.write("]");
         }
@@ -325,8 +348,10 @@ class Printer {
         } else {
           this.write("{");
           for (let i = 0; i < expr.entries.length; i++) {
-            if (i > 0) this.write(", ");
-            this.printDictionaryEntry(expr.entries[i]!);
+            if (i > 0) {
+              this.write(", ");
+            }
+            this.printDictionaryEntry(expr.entries.at(i)!);
           }
           this.write("}");
         }
@@ -335,8 +360,10 @@ class Printer {
         this.printExpression(expr.callee);
         this.write("(");
         for (let i = 0; i < expr.args.length; i++) {
-          if (i > 0) this.write(", ");
-          this.printArgument(expr.args[i]!);
+          if (i > 0) {
+            this.write(", ");
+          }
+          this.printArgument(expr.args.at(i)!);
         }
         this.write(")");
         break;
@@ -406,8 +433,10 @@ class Printer {
     if (stage.args.length > 0) {
       this.write("(");
       for (let i = 0; i < stage.args.length; i++) {
-        if (i > 0) this.write(", ");
-        this.printArgument(stage.args[i]!);
+        if (i > 0) {
+          this.write(", ");
+        }
+        this.printArgument(stage.args.at(i)!);
       }
       this.write(")");
     }
@@ -485,7 +514,9 @@ class Printer {
 
   private printTypeAnnotation(ta: TypeAnnotation): void {
     this.printBaseType(ta.base);
-    if (ta.optional) this.write("?");
+    if (ta.optional) {
+      this.write("?");
+    }
   }
 
   private printBaseType(bt: BaseType): void {
@@ -511,7 +542,9 @@ class Printer {
   }
 
   private printIfStatement(stmt: IfStatement, isElseIf = false): void {
-    if (!isElseIf) this.writeIndent();
+    if (!isElseIf) {
+      this.writeIndent();
+    }
     this.write("if ");
     this.printCondition(stmt.condition);
     this.write(" {");
@@ -519,7 +552,7 @@ class Printer {
     this.emitTrailingComment(this.findOpenBraceEnd(stmt));
     this.writeLine();
     this.indent++;
-    this.printBody(stmt.body, stmt.condition.span.end);
+    this.printBody(stmt.body);
     this.emitDanglingComments(blockEndPos);
     this.indent--;
     this.writeIndent();
@@ -529,7 +562,7 @@ class Printer {
         this.write(" else {");
         this.writeLine();
         this.indent++;
-        this.printBody(stmt.elseBody, stmt.span.end);
+        this.printBody(stmt.elseBody);
         this.indent--;
         this.writeIndent();
         this.write("}");
@@ -549,7 +582,7 @@ class Printer {
     this.write(" {");
     this.writeLine();
     this.indent++;
-    this.printBody(stmt.body, stmt.iterable.span.end);
+    this.printBody(stmt.body);
     this.indent--;
     this.writeIndent();
     this.write("}");
@@ -562,7 +595,7 @@ class Printer {
     this.write(" {");
     this.writeLine();
     this.indent++;
-    this.printBody(stmt.body, stmt.count.span.end);
+    this.printBody(stmt.body);
     this.indent--;
     this.writeIndent();
     this.write("}");
@@ -600,7 +633,7 @@ class Printer {
     this.write('" {');
     this.writeLine();
     this.indent++;
-    this.printBody(c.body, c.span.start);
+    this.printBody(c.body);
     this.indent--;
     this.writeIndent();
     this.write("}");
@@ -608,7 +641,9 @@ class Printer {
 
   private printEnumDeclaration(stmt: EnumDeclaration): void {
     this.writeIndent();
-    if (stmt.exported) this.write("export ");
+    if (stmt.exported) {
+      this.write("export ");
+    }
     this.write("enum ");
     this.write(stmt.name);
     if (stmt.defaultValue !== undefined) {
@@ -642,7 +677,9 @@ class Printer {
 
   private printRecordDeclaration(stmt: RecordDeclaration): void {
     this.writeIndent();
-    if (stmt.exported) this.write("export ");
+    if (stmt.exported) {
+      this.write("export ");
+    }
     this.write("record ");
     this.write(stmt.name);
     this.write(" {");
@@ -664,13 +701,17 @@ class Printer {
 
   private printFunctionDeclaration(stmt: FunctionDeclaration): void {
     this.writeIndent();
-    if (stmt.exported) this.write("export ");
+    if (stmt.exported) {
+      this.write("export ");
+    }
     this.write("func ");
     this.write(stmt.name);
     this.write("(");
     for (let i = 0; i < stmt.params.length; i++) {
-      if (i > 0) this.write(", ");
-      this.printFunctionParameter(stmt.params[i]!);
+      if (i > 0) {
+        this.write(", ");
+      }
+      this.printFunctionParameter(stmt.params.at(i)!);
     }
     this.write(")");
     if (stmt.returnType) {
@@ -680,7 +721,7 @@ class Printer {
     this.write(" {");
     this.writeLine();
     this.indent++;
-    this.printBody(stmt.body, stmt.span.start);
+    this.printBody(stmt.body);
     this.indent--;
     this.writeIndent();
     this.write("}");
@@ -698,13 +739,17 @@ class Printer {
 
   private printActionDeclaration(stmt: ActionDeclaration): void {
     this.writeIndent();
-    if (stmt.exported) this.write("export ");
+    if (stmt.exported) {
+      this.write("export ");
+    }
     this.write("action ");
     this.write(stmt.name);
     this.write("(");
     for (let i = 0; i < stmt.params.length; i++) {
-      if (i > 0) this.write(", ");
-      this.printActionParameter(stmt.params[i]!);
+      if (i > 0) {
+        this.write(", ");
+      }
+      this.printActionParameter(stmt.params.at(i)!);
     }
     this.write(")");
     if (stmt.returnType) {
@@ -723,8 +768,10 @@ class Printer {
 
   private printActionParameter(param: import("./ast.ts").ActionParameter): void {
     this.write(param.label);
-    this.write(" ");
-    this.write(param.name);
+    if (param.name !== param.label) {
+      this.write(" ");
+      this.write(param.name);
+    }
     this.write(": ");
     this.printTypeAnnotation(param.type);
     if (param.defaultValue) {
@@ -739,8 +786,10 @@ class Printer {
     if (attr.args) {
       this.write("(");
       for (let i = 0; i < attr.args.length; i++) {
-        if (i > 0) this.write(", ");
-        this.printAttributeArgument(attr.args[i]!);
+        if (i > 0) {
+          this.write(", ");
+        }
+        this.printAttributeArgument(attr.args.at(i)!);
       }
       this.write(")");
     }
@@ -757,19 +806,10 @@ class Printer {
   private printAttributeValue(val: AttributeValue): void {
     switch (val.kind) {
       case "MetadataString":
-        this.write('"');
-        this.write(escapeString(val.value));
-        this.write('"');
-        break;
       case "MetadataNumber":
-        if (val.negative) this.write("-");
-        this.write(String(Math.abs(val.value)));
-        break;
       case "MetadataBoolean":
-        this.write(val.value ? "true" : "false");
-        break;
       case "MetadataNil":
-        this.write("nil");
+        this.printScalarValue(val);
         break;
       case "AttributeIdentifier":
         this.write(val.name);
@@ -781,8 +821,10 @@ class Printer {
 
   private emitLeadingComments(beforePos: number): void {
     while (this.commentIndex < this.comments.length) {
-      const comment = this.comments[this.commentIndex]!;
-      if (comment.span.start >= beforePos) break;
+      const comment = this.comments.at(this.commentIndex);
+      if (!comment || comment.span.start >= beforePos) {
+        break;
+      }
       this.writeIndent();
       this.writeComment(comment);
       this.writeLine();
@@ -791,10 +833,16 @@ class Printer {
   }
 
   private emitTrailingComment(afterPos: number): void {
-    if (this.commentIndex >= this.comments.length) return;
-    const comment = this.comments[this.commentIndex]!;
-    if (comment.span.start < afterPos) return;
-    if (!this.isOnSameLine(afterPos, comment.span.start)) return;
+    if (this.commentIndex >= this.comments.length) {
+      return;
+    }
+    const comment = this.comments.at(this.commentIndex);
+    if (!comment || comment.span.start < afterPos) {
+      return;
+    }
+    if (!this.isOnSameLine(afterPos, comment.span.start)) {
+      return;
+    }
     this.write(" ");
     this.writeComment(comment);
     this.commentIndex++;
@@ -802,8 +850,10 @@ class Printer {
 
   private emitDanglingComments(beforePos: number): void {
     while (this.commentIndex < this.comments.length) {
-      const comment = this.comments[this.commentIndex]!;
-      if (comment.span.start >= beforePos) break;
+      const comment = this.comments.at(this.commentIndex);
+      if (!comment || comment.span.start >= beforePos) {
+        break;
+      }
       this.writeIndent();
       this.writeComment(comment);
       this.writeLine();
@@ -813,7 +863,10 @@ class Printer {
 
   private emitRemainingComments(): void {
     while (this.commentIndex < this.comments.length) {
-      const comment = this.comments[this.commentIndex]!;
+      const comment = this.comments.at(this.commentIndex);
+      if (!comment) {
+        break;
+      }
       if (this.output.length > 0 && !this.output.endsWith("\n")) {
         if (this.isOnSameLine(this.lastNodeEnd(), comment.span.start)) {
           this.write(" ");
@@ -844,9 +897,11 @@ class Printer {
   }
 
   private findOpenBraceEnd(stmt: IfStatement): number {
-    const bodyStart = stmt.body[0]?.span.start ?? stmt.span.end;
+    const bodyStart = stmt.body.at(0)?.span.start ?? stmt.span.end;
     for (let i = stmt.condition.span.end; i < bodyStart; i++) {
-      if (this.source.charAt(i) === "{") return i + 1;
+      if (this.source.charAt(i) === "{") {
+        return i + 1;
+      }
     }
     return stmt.condition.span.end;
   }
