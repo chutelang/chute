@@ -19,6 +19,7 @@ export type Spawn = (
 export interface IO {
   fileExists(path: string): boolean;
   readFile(path: string): string;
+  readDir(path: string): string[];
   writeFile(path: string, data: string): void;
   removeFile(path: string): void;
   spawn: Spawn;
@@ -31,6 +32,7 @@ export interface IO {
 export const realIO: IO = {
   fileExists: (p) => fs.existsSync(p),
   readFile: (p) => fs.readFileSync(p, "utf-8"),
+  readDir: (p) => fs.readdirSync(p, { recursive: true }).map(String),
   writeFile: (p, data) => fs.writeFileSync(p, data),
   removeFile: (p) => fs.unlinkSync(p),
   spawn: (command, args, options) => {

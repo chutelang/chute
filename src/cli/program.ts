@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { build, type BuildOptions } from "./commands/build.ts";
+import { fmt, type FmtOptions } from "./commands/fmt.ts";
 import { init } from "./commands/init.ts";
 import { run } from "./commands/run.ts";
 
@@ -39,7 +40,9 @@ export function createProgram(): Command {
     .description("Format .chute files")
     .argument("[files...]", "files to format (defaults to all in sourceDir)")
     .option("--check", "exit nonzero if any file would change")
-    .action(stub("fmt"));
+    .action((files: string[], options: FmtOptions) => {
+      fmt(files, options);
+    });
 
   program.command("lsp").description("Start the language server").action(stub("lsp"));
 

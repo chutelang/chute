@@ -374,6 +374,13 @@ import "b" as B;
         'export action myAction(label param: Number) -> Text = "x.y.z";\n',
       );
     });
+
+    it("should not duplicate label when label equals name", () => {
+      expectFormat(
+        'action doThing(value:Text)="com.example";',
+        'action doThing(value: Text) = "com.example";\n',
+      );
+    });
   });
 
   describe("expressions", () => {

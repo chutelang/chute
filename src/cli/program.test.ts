@@ -38,7 +38,7 @@ describe("chute CLI", () => {
     expect(process.exitCode).toBe(1);
   });
 
-  it("should stub fmt as not yet implemented", async () => {
+  it("should error when fmt has no files to format", async () => {
     await run("fmt");
     expect(process.exitCode).toBe(1);
   });
