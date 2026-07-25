@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      commander:
-        specifier: ^15.0.0
-        version: 15.0.0
     devDependencies:
       '@types/node':
         specifier: ^26.4.0
@@ -30,6 +26,38 @@ importers:
       vitest:
         specifier: ^3.2.0
         version: 3.2.7(@types/node@26.4.0)(jiti@2.7.0)
+
+  packages/cli:
+    dependencies:
+      '@chute-lang/compiler':
+        specifier: workspace:*
+        version: link:../compiler
+      '@chute-lang/formatter':
+        specifier: workspace:*
+        version: link:../formatter
+      commander:
+        specifier: ^15.0.0
+        version: 15.0.0
+
+  packages/compiler: {}
+
+  packages/formatter:
+    dependencies:
+      '@chute-lang/compiler':
+        specifier: workspace:*
+        version: link:../compiler
+
+  packages/linter:
+    dependencies:
+      '@chute-lang/compiler':
+        specifier: workspace:*
+        version: link:../compiler
+
+  packages/lsp:
+    dependencies:
+      '@chute-lang/compiler':
+        specifier: workspace:*
+        version: link:../compiler
 
 packages:
 

@@ -1,0 +1,17 @@
+{
+  "name": "@chute-lang/lsp",
+  "version": "0.1.0",
+  "files": [
+    "src"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@chute-lang/compiler": "workspace:*"
+  }
+}
