@@ -1,0 +1,21 @@
+{
+  "name": "@chute-lang/cli",
+  "version": "0.1.0",
+  "bin": {
+    "chute": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "schema"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@chute-lang/compiler": "workspace:*",
+    "@chute-lang/formatter": "workspace:*",
+    "commander": "^15.0.0"
+  }
+}
