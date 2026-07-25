@@ -1,36 +1,36 @@
-import { Lexer } from "./lexer.ts";
-import { Parser } from "./parser.ts";
+import {
+  Lexer,
+  Parser,
+  type ActionDeclaration,
+  type Argument,
+  type Attribute,
+  type AttributeArgument,
+  type AttributeValue,
+  type BaseType,
+  type Condition,
+  type DictionaryEntry,
+  type EnumCaseNode,
+  type EnumDeclaration,
+  type Expression,
+  type ForStatement,
+  type FunctionDeclaration,
+  type FunctionParameter,
+  type IfStatement,
+  type ImportDeclaration,
+  type MenuCase,
+  type MenuStatement,
+  type MetadataValue,
+  type PipelineStage,
+  type Place,
+  type Program,
+  type RecordDeclaration,
+  type RepeatStatement,
+  type ShortcutMetadata,
+  type Statement,
+  type TypeAnnotation,
+} from "@chute-lang/compiler";
 import { extractComments } from "./comment.ts";
 import type { SourceComment } from "./comment.ts";
-import type {
-  ActionDeclaration,
-  Argument,
-  Attribute,
-  AttributeArgument,
-  AttributeValue,
-  BaseType,
-  Condition,
-  DictionaryEntry,
-  EnumCaseNode,
-  EnumDeclaration,
-  Expression,
-  ForStatement,
-  FunctionDeclaration,
-  FunctionParameter,
-  IfStatement,
-  ImportDeclaration,
-  MenuCase,
-  MenuStatement,
-  MetadataValue,
-  PipelineStage,
-  Place,
-  Program,
-  RecordDeclaration,
-  RepeatStatement,
-  ShortcutMetadata,
-  Statement,
-  TypeAnnotation,
-} from "./ast.ts";
 
 export interface FormatOptions {
   maxWidth?: number;
@@ -413,7 +413,7 @@ class Printer {
     }
   }
 
-  private printInterpolatedString(expr: import("./ast.ts").InterpolatedString): void {
+  private printInterpolatedString(expr: import("@chute-lang/compiler").InterpolatedString): void {
     this.write('"');
     for (const part of expr.parts) {
       if (part.kind === "TextPart") {
@@ -766,7 +766,7 @@ class Printer {
     this.write(";");
   }
 
-  private printActionParameter(param: import("./ast.ts").ActionParameter): void {
+  private printActionParameter(param: import("@chute-lang/compiler").ActionParameter): void {
     this.write(param.label);
     if (param.name !== param.label) {
       this.write(" ");

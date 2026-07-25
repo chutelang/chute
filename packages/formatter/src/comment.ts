@@ -1,4 +1,4 @@
-import type { Span } from "./token.ts";
+import type { Span } from "@chute-lang/compiler";
 
 export interface SourceComment {
   text: string;
