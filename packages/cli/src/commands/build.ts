@@ -1,7 +1,5 @@
 import * as path from "node:path";
-import { compile } from "../../compiler/pipeline.ts";
-import { CompileError } from "../../compiler/diagnostic.ts";
-import { renderDiagnostics } from "../../compiler/render-diagnostic.ts";
+import { compile, CompileError, renderDiagnostics } from "@chute-lang/compiler";
 import { type IO, realIO } from "../io.ts";
 import { isSigningAvailable, signShortcut } from "../sign.ts";
 

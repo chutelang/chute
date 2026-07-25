@@ -1,6 +1,6 @@
 import * as path from "node:path";
-import { format } from "../../compiler/formatter.ts";
-import { CompileError } from "../../compiler/diagnostic.ts";
+import { format } from "@chute-lang/formatter";
+import { CompileError } from "@chute-lang/compiler";
 import { type IO, realIO } from "../io.ts";
 
 export interface FmtOptions {
