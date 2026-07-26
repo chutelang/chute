@@ -164,7 +164,19 @@ export class Scope {
   }
 }
 
-export function check(program: Program, options?: CheckOptions): CheckWarning[] {
+export interface CheckResult {
+  diagnostics: Diagnostic[];
+  scope: Scope;
+}
+
+function checkCore(
+  program: Program,
+  options?: CheckOptions,
+): {
+  errors: Diagnostic[];
+  warnings: CheckWarning[];
+  scope: Scope;
+} {
   const scope = new Scope(getStdlibScope());
   const context: CheckContext = {
     expectedReturnType: undefined,
@@ -245,12 +257,31 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
 
   detectRecursiveCycles(context);
 
-  if (collectedErrors.length > 0) {
-    const warningDiagnostics = context.warnings.map(checkWarningToDiagnostic);
-    throw new CompileError([...collectedErrors, ...warningDiagnostics]);
+  return {
+    errors: collectedErrors,
+    warnings: context.warnings,
+    scope,
+  };
+}
+
+export function check(program: Program, options?: CheckOptions): CheckWarning[] {
+  const result = checkCore(program, options);
+
+  if (result.errors.length > 0) {
+    const warningDiagnostics = result.warnings.map(checkWarningToDiagnostic);
+    throw new CompileError([...result.errors, ...warningDiagnostics]);
   }
 
-  return context.warnings;
+  return result.warnings;
+}
+
+export function checkCollecting(program: Program, options?: CheckOptions): CheckResult {
+  const result = checkCore(program, options);
+  const warningDiagnostics = result.warnings.map(checkWarningToDiagnostic);
+  return {
+    diagnostics: [...result.errors, ...warningDiagnostics],
+    scope: result.scope,
+  };
 }
 
 function checkErrorToDiagnostic(e: CheckError): Diagnostic {
@@ -1161,7 +1192,7 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
   return true;
 }
 
-function describeType(type: ChuteType): string {
+export function describeType(type: ChuteType): string {
   switch (type.kind) {
     case "text":
       return "Text";

@@ -10,6 +10,24 @@ export type { RenderOptions } from "./render-diagnostic.ts";
 export type { Span, Token } from "./token.ts";
 export { TokenKind, keywordKind } from "./token.ts";
 
+export {
+  check,
+  checkCollecting,
+  Scope,
+  CheckError,
+  CheckWarning,
+  describeType,
+} from "./checker.ts";
+export type {
+  ChuteType,
+  CheckResult,
+  CheckContext,
+  CheckOptions,
+  FileResolver,
+} from "./checker.ts";
+
+export { getStdlibScope } from "./stdlib.ts";
+
 export type {
   ActionDeclaration,
   ActionParameter,
