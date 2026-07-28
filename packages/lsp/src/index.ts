@@ -1,1 +1,1 @@
-// Language server implementation will go here.
+export { startServer } from "./server.ts";
