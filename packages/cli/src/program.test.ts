@@ -43,8 +43,10 @@ describe("chute CLI", () => {
     expect(process.exitCode).toBe(1);
   });
 
-  it("should stub lsp as not yet implemented", async () => {
-    await run("lsp");
-    expect(process.exitCode).toBe(1);
+  it("should register the lsp command", () => {
+    const program = createProgram();
+    const lspCommand = program.commands.find((c) => c.name() === "lsp");
+    expect(lspCommand).toBeDefined();
+    expect(lspCommand?.description()).toBe("Start the language server");
   });
 });

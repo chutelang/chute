@@ -4,14 +4,7 @@ import type {
   Expression,
   Condition,
   Span,
-  ImportDeclaration,
   FunctionDeclaration,
-  ActionDeclaration,
-  EnumDeclaration,
-  RecordDeclaration,
-  LetDeclaration,
-  VarDeclaration,
-  LetDestructure,
   PipelineStage,
 } from "@chute-lang/compiler";
 
@@ -206,11 +199,9 @@ function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | 
     case "ExpressionStatement":
       return findInExpression(stmt.expression, offset);
     case "LetDeclaration":
-      return findInLetDeclaration(stmt, offset);
     case "VarDeclaration":
-      return findInVarDeclaration(stmt, offset);
     case "LetDestructure":
-      return findInLetDestructure(stmt, offset);
+      return findInExpression(stmt.initializer, offset);
     case "Assignment":
       return findInExpression(stmt.value, offset);
     case "IfStatement":
@@ -233,27 +224,6 @@ function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | 
     default:
       return undefined;
   }
-}
-
-function findInLetDeclaration(
-  decl: LetDeclaration,
-  offset: number,
-): IdentifierAtOffset | undefined {
-  return findInExpression(decl.initializer, offset);
-}
-
-function findInVarDeclaration(
-  decl: VarDeclaration,
-  offset: number,
-): IdentifierAtOffset | undefined {
-  return findInExpression(decl.initializer, offset);
-}
-
-function findInLetDestructure(
-  decl: LetDestructure,
-  offset: number,
-): IdentifierAtOffset | undefined {
-  return findInExpression(decl.initializer, offset);
 }
 
 function findInIfStatement(

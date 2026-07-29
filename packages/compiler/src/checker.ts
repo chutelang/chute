@@ -162,6 +162,32 @@ export class Scope {
     if (own) return own;
     return this.parent?.lookupNamespace(name);
   }
+
+  allBindings(): ReadonlyMap<string, { type: ChuteType; mutable: boolean }> {
+    const merged = new Map<string, Binding>();
+    if (this.parent) {
+      for (const [k, v] of this.parent.allBindings()) {
+        merged.set(k, v);
+      }
+    }
+    for (const [k, v] of this.bindings) {
+      merged.set(k, v);
+    }
+    return merged;
+  }
+
+  allTypes(): ReadonlyMap<string, ChuteType> {
+    const merged = new Map<string, ChuteType>();
+    if (this.parent) {
+      for (const [k, v] of this.parent.allTypes()) {
+        merged.set(k, v);
+      }
+    }
+    for (const [k, v] of this.types) {
+      merged.set(k, v);
+    }
+    return merged;
+  }
 }
 
 export interface CheckResult {
