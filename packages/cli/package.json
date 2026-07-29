@@ -16,6 +16,7 @@
   "dependencies": {
     "@chute-lang/compiler": "workspace:*",
     "@chute-lang/formatter": "workspace:*",
+    "@chute-lang/lsp": "workspace:*",
     "commander": "^15.0.0"
   }
 }

@@ -76,6 +76,10 @@ export function startServer(): void {
     validateDocument(change.document);
   });
 
+  documents.onDidSave((event: TextDocumentChangeEvent<TextDocument>) => {
+    validateDocument(event.document);
+  });
+
   documents.onDidClose((event: TextDocumentChangeEvent<TextDocument>) => {
     documentStates.delete(event.document.uri);
     connection.sendDiagnostics({
@@ -117,8 +121,8 @@ export function startServer(): void {
     };
   });
 
-  connection.onCompletion((_params: CompletionParams) => {
-    const state = documentStates.get(_params.textDocument.uri);
+  connection.onCompletion((params: CompletionParams) => {
+    const state = documentStates.get(params.textDocument.uri);
     if (!state) return [];
 
     const items = getCompletions(state.analysis);

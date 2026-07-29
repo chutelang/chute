@@ -254,8 +254,9 @@ describe("findIdentifierAtOffset", () => {
   it("should find identifier references", () => {
     const source = "let x = 42;\nlet y = x;";
     const result = analyze(source);
-    expect(result.ast).toBeDefined();
-    const ident = findIdentifierAtOffset(result.ast!, source.lastIndexOf("x"));
+    const ast = result.ast;
+    if (!ast) throw new Error("expected AST");
+    const ident = findIdentifierAtOffset(ast, source.lastIndexOf("x"));
     expect(ident).toBeDefined();
     expect(ident?.name).toBe("x");
     expect(ident?.context).toBe("reference");
@@ -264,9 +265,10 @@ describe("findIdentifierAtOffset", () => {
   it("should find member expressions on enum access", () => {
     const source = "enum Color { red, green }\nlet c = Color.red;";
     const result = analyze(source);
-    expect(result.ast).toBeDefined();
+    const ast = result.ast;
+    if (!ast) throw new Error("expected AST");
     const offset = source.lastIndexOf("red");
-    const ident = findIdentifierAtOffset(result.ast!, offset);
+    const ident = findIdentifierAtOffset(ast, offset);
     expect(ident).toBeDefined();
     expect(ident?.name).toBe("red");
   });
@@ -274,8 +276,9 @@ describe("findIdentifierAtOffset", () => {
   it("should return undefined for non-identifier positions", () => {
     const source = "let x = 42;";
     const result = analyze(source);
-    expect(result.ast).toBeDefined();
-    const ident = findIdentifierAtOffset(result.ast!, 8);
+    const ast = result.ast;
+    if (!ast) throw new Error("expected AST");
+    const ident = findIdentifierAtOffset(ast, 8);
     expect(ident).toBeUndefined();
   });
 });

@@ -3,6 +3,7 @@ import { build, type BuildOptions } from "./commands/build.ts";
 import { fmt, type FmtOptions } from "./commands/fmt.ts";
 import { init } from "./commands/init.ts";
 import { run } from "./commands/run.ts";
+import { startServer } from "@chute-lang/lsp";
 
 const VERSION = "0.1.0";
 
@@ -44,7 +45,12 @@ export function createProgram(): Command {
       fmt(files, options);
     });
 
-  program.command("lsp").description("Start the language server").action(stub("lsp"));
+  program
+    .command("lsp")
+    .description("Start the language server")
+    .action(() => {
+      startServer();
+    });
 
   program
     .command("run")

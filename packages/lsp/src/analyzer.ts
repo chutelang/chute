@@ -1,12 +1,5 @@
-import {
-  Lexer,
-  Parser,
-  checkCollecting,
-  CompileError,
-  TokenKind,
-  describeType,
-} from "@chute-lang/compiler";
-import type { Program, Diagnostic, Span, ChuteType, Scope, Token } from "@chute-lang/compiler";
+import { Lexer, Parser, checkCollecting, CompileError, describeType } from "@chute-lang/compiler";
+import type { Program, Diagnostic, Span, ChuteType, Scope } from "@chute-lang/compiler";
 import type { SymbolInfo, IdentifierAtOffset } from "./find-node.ts";
 import { collectDefinitions, findIdentifierAtOffset } from "./find-node.ts";
 
@@ -15,11 +8,10 @@ export interface AnalysisResult {
   ast: Program | undefined;
   scope: Scope | undefined;
   definitions: SymbolInfo[];
-  tokens: Token[];
 }
 
 export function analyze(source: string): AnalysisResult {
-  let tokens: Token[];
+  let tokens;
   try {
     tokens = new Lexer(source).tokenize();
   } catch (e) {
@@ -29,7 +21,6 @@ export function analyze(source: string): AnalysisResult {
         ast: undefined,
         scope: undefined,
         definitions: [],
-        tokens: [],
       };
     }
     throw e;
@@ -45,7 +36,6 @@ export function analyze(source: string): AnalysisResult {
         ast: undefined,
         scope: undefined,
         definitions: [],
-        tokens,
       };
     }
     throw e;
@@ -59,7 +49,6 @@ export function analyze(source: string): AnalysisResult {
     ast,
     scope: checkResult.scope,
     definitions,
-    tokens,
   };
 }
 
@@ -220,105 +209,19 @@ export function getCompletions(result: AnalysisResult): CompletionItem[] {
 
 function addScopeCompletions(scope: Scope, items: CompletionItem[]): void {
   const seen = new Set(items.map((i) => i.label));
-  const parent = getStdlibScopeBindings(scope);
-  for (const [name, type] of parent) {
+  for (const [name, binding] of scope.allBindings()) {
     if (seen.has(name)) continue;
     seen.add(name);
     items.push({
       label: name,
-      kind: type.kind === "function" ? "function" : type.kind === "action" ? "action" : "variable",
-      detail: describeType(type),
+      kind:
+        binding.type.kind === "function"
+          ? "function"
+          : binding.type.kind === "action"
+            ? "action"
+            : "variable",
+      detail: describeType(binding.type),
     });
-  }
-}
-
-function getStdlibScopeBindings(scope: Scope): Map<string, ChuteType> {
-  const result = new Map<string, ChuteType>();
-  collectBindingsFromScope(scope, result);
-  return result;
-}
-
-function collectBindingsFromScope(scope: Scope, out: Map<string, ChuteType>): void {
-  const names = [
-    "showAlert",
-    "showResult",
-    "notification",
-    "nothing",
-    "comment",
-    "ask",
-    "chooseFromList",
-    "wait",
-    "exitShortcut",
-    "getClipboard",
-    "setClipboard",
-    "getBatteryLevel",
-    "getCurrentDate",
-    "getDeviceDetails",
-    "count",
-    "base64Encode",
-    "hash",
-    "generateUUID",
-    "urlEncode",
-    "runShortcut",
-    "openApp",
-    "getText",
-    "changeCase",
-    "replaceText",
-    "splitText",
-    "combineText",
-    "matchText",
-    "speak",
-    "dictateText",
-    "openURL",
-    "getContentsOfURL",
-    "searchWeb",
-    "showWebPage",
-    "expandURL",
-    "getURLsFromInput",
-    "share",
-    "getFile",
-    "saveFile",
-    "deleteFiles",
-    "createFolder",
-    "renameFile",
-    "richTextFromMarkdown",
-    "markdownFromRichText",
-    "addNewEvent",
-    "getUpcomingEvents",
-    "addNewReminder",
-    "getUpcomingReminders",
-    "selectContact",
-    "addNewContact",
-    "phone",
-    "getCurrentLocation",
-    "getDirections",
-    "searchLocalBusiness",
-    "takePicture",
-    "selectPhotos",
-    "getLatestPhotos",
-    "saveToPhotoAlbum",
-    "encodeMedia",
-    "trimMedia",
-    "setVolume",
-    "setBrightness",
-    "setAirplaneMode",
-    "setWiFi",
-    "setBluetooth",
-    "setDoNotDisturb",
-    "setCellularData",
-    "setLowPowerMode",
-    "setAppearance",
-    "setFlashlight",
-    "logHealthSample",
-    "findHealthSamples",
-    "input",
-  ];
-
-  for (const name of names) {
-    const binding = scope.lookup(name);
-    if (binding) {
-      out.set(name, binding.type);
-    }
   }
 }
 
