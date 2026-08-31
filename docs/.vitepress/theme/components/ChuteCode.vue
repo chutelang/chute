@@ -1,24 +1,27 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import { compile } from "../../../../packages/compiler/src/pipeline.ts";
 
 const props = defineProps<{
   source: string;
-  plist?: string;
-  error?: string;
 }>();
 
 type Tab = "chute" | "plist" | "shortcuts";
 
 const activeTab = ref<Tab>("chute");
 
+const compiled = computed(() => {
+  try {
+    return { plist: compile(props.source).main, error: "" };
+  } catch (e) {
+    return { plist: "", error: e instanceof Error ? e.message : String(e) };
+  }
+});
+
 const tabs = computed(() => {
   const list: Array<{ key: Tab; label: string; available: boolean }> = [
     { key: "chute", label: "Chute", available: true },
-    {
-      key: "plist",
-      label: "Plist",
-      available: !!props.plist || !!props.error,
-    },
+    { key: "plist", label: "Plist", available: true },
     { key: "shortcuts", label: "Shortcuts", available: false },
   ];
   return list;
@@ -60,10 +63,10 @@ function selectTab(tab: Tab) {
         </div>
       </div>
       <div v-show="activeTab === 'plist'" class="chute-code-panel">
-        <div v-if="error" class="chute-code-error">{{ error }}</div>
+        <div v-if="compiled.error" class="chute-code-error">{{ compiled.error }}</div>
         <div v-else class="language-xml vp-adaptive-theme">
           <button class="copy" title="Copy Code" />
-          <pre><code>{{ plist }}</code></pre>
+          <pre><code>{{ compiled.plist }}</code></pre>
         </div>
       </div>
       <div v-show="activeTab === 'shortcuts'" class="chute-code-panel">
