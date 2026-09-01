@@ -1,4 +1,5 @@
 import type { Span } from "./token.ts";
+import type { DocComment } from "./doc-comment.ts";
 
 export interface Program {
   kind: "Program";
@@ -121,6 +122,7 @@ export interface ConstDeclaration {
   kind: "ConstDeclaration";
   span: Span;
   exported: boolean;
+  docComment?: DocComment | undefined;
   name: string;
   typeAnnotation: TypeAnnotation | undefined;
   initializer: Expression;
@@ -137,6 +139,7 @@ export interface LetDeclaration {
   kind: "LetDeclaration";
   span: Span;
   exported: boolean;
+  docComment?: DocComment | undefined;
   name: string;
   typeAnnotation: TypeAnnotation | undefined;
   initializer: Expression;
@@ -531,6 +534,7 @@ export interface FunctionDeclaration {
   kind: "FunctionDeclaration";
   span: Span;
   exported: boolean;
+  docComment?: DocComment | undefined;
   name: string;
   params: FunctionParameter[];
   returnType: TypeAnnotation | undefined;
@@ -583,6 +587,7 @@ export interface ActionDeclaration {
   kind: "ActionDeclaration";
   span: Span;
   exported: boolean;
+  docComment?: DocComment | undefined;
   name: string;
   params: ActionParameter[];
   returnType: TypeAnnotation | undefined;
