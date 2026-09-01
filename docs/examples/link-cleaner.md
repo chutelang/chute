@@ -19,12 +19,12 @@ shortcut {
 }
 
 func cleanURL(url: Text) -> Text {
-  let parts = splitText(text: url, separator: "?");
+  const parts = splitText(text: url, separator: "?");
   return parts[0];
 }
 
-let url = getClipboard();
-let cleaned = url |> cleanURL;
+const url = getClipboard();
+const cleaned = url |> cleanURL;
 setClipboard(value: cleaned);
 showAlert(text: "Cleaned URL copied!\n${cleaned}");
 ```

@@ -13,7 +13,7 @@ import "./helpers" as H;
 Then access its exported declarations through the alias:
 
 ```text
-let result = H.formatName(first: "Alice", last: "Smith");
+const result = H.formatName(first: "Alice", last: "Smith");
 ```
 
 The path is relative to the importing file. The `.chute` extension is inferred. You don't need to include it.
@@ -44,15 +44,15 @@ shortcut {
   name: "My Shortcut",
 }
 
-let result = H.doSomething();
+const result = H.doSomething();
 ```
 
 ## Exporting declarations
 
-Use the `export` keyword to make a declaration available to other files. You can export `let` bindings, `func`, `enum`, `record`, and `action` declarations:
+Use the `export` keyword to make a declaration available to other files. You can export `const` and `let` bindings, `func`, `enum`, `record`, and `action` declarations:
 
 ```text
-export let version = "1.0";
+export const version = "1.0";
 export func greet(name: Text) -> Text { return "Hello, ${name}"; }
 export enum Color { red = "RED", blue = "BLUE" }
 export record Point { x: Number, y: Number }
@@ -68,9 +68,9 @@ Imported declarations are always accessed through their alias. There are no unqu
 ```text
 import "./math" as math;
 
-let result = math.add(a: 1, b: 2);     // function
-let origin = math.Point(x: 0, y: 0);   // record
-let c = math.Color.red;                 // enum member
+const result = math.add(a: 1, b: 2);     // function
+const origin = math.Point(x: 0, y: 0);   // record
+const c = math.Color.red;                 // enum member
 ```
 
 ## Related

@@ -18,8 +18,8 @@ features:
     details: Catch type errors during compilation. The type system supports Text, Number, Boolean, List, Dictionary, optional, and quantity values.
   - title: Functions
     details: Define reusable logic with typed parameters, return values, and default arguments. Functions compile to sub-shortcuts automatically.
-  - title: Pipeline operator
-    details: Chain operations with |> and |>? instead of nesting calls. Pass extra arguments or use _ as a placeholder.
-  - title: Familiar syntax
-    details: Chute uses syntax that resembles Swift, TypeScript, and Rust. It includes let, var, if, else, for, enums, and records.
+  - title: Pipeline Operator
+    details: Chain operations naturally with |> and |>? instead of nesting calls. Pass extra arguments or use _ as a placeholder.
+  - title: Familiar Syntax
+    details: If you've written Swift, TypeScript, or Rust, Chute will feel like home — const/let, if/else, for/in, enums, records, and more.
 ---

@@ -63,7 +63,7 @@ Some actions produce a value. Declare this with `-> Type`:
 ```text
 action ask(prompt WFAskActionPrompt: Text) -> Text = "is.workflow.actions.ask";
 
-let name = ask(prompt: "What's your name?");
+const name = ask(prompt: "What's your name?");
 ```
 
 Actions without a return type don't produce a usable value.
@@ -95,13 +95,13 @@ Call an action the same way you call a function, with labeled arguments:
 ```text
 showAlert(text: "Hello!");
 notification(body: "Done", title: "Success");
-let clipboard = getClipboard();
+const clipboard = getClipboard();
 ```
 
 Actions can also be used in [pipelines](/reference/pipelines):
 
 ```text
-let msg = "Hello";
+const msg = "Hello";
 msg |> showAlert;
 ```
 

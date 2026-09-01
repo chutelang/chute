@@ -15,15 +15,15 @@ Standard arithmetic operators work on `Number` values:
 | `%` | Modulo (remainder) |
 
 ```text
-let sum = a + b;
-let product = width * height;
-let remainder = 10 % 3;
+const sum = a + b;
+const product = width * height;
+const remainder = 10 % 3;
 ```
 
 Unary negation:
 
 ```text
-let negative = -x;
+const negative = -x;
 ```
 
 Arithmetic on non-number types is a compile error.
@@ -33,9 +33,9 @@ Arithmetic on non-number types is a compile error.
 Embed expressions inside a string with `${}`:
 
 ```text
-let name = "World";
-let greeting = "Hello, ${name}!";
-let math = "2 + 2 = ${2 + 2}";
+const name = "World";
+const greeting = "Hello, ${name}!";
+const math = "2 + 2 = ${2 + 2}";
 ```
 
 Interpolated strings are always typed as `Text`.
@@ -45,7 +45,7 @@ Interpolated strings are always typed as `Text`.
 Use `#"..."#` for strings without escape processing:
 
 ```text
-let pattern = #"no \n escapes here"#;
+const pattern = #"no \n escapes here"#;
 ```
 
 ## Literals
@@ -53,16 +53,16 @@ let pattern = #"no \n escapes here"#;
 ### List literals
 
 ```text
-let numbers = [1, 2, 3];
-let names = ["Alice", "Bob"];
-let empty = [];
+const numbers = [1, 2, 3];
+const names = ["Alice", "Bob"];
+const empty = [];
 ```
 
 ### Dictionary literals
 
 ```text
-let person = {"name": "Alice", "age": 30};
-let empty = {:};
+const person = {"name": "Alice", "age": 30};
+const empty = {:};
 ```
 
 The empty dictionary uses `{:}` to distinguish it from an empty block.
@@ -70,14 +70,14 @@ The empty dictionary uses `{:}` to distinguish it from an empty block.
 ### Boolean literals
 
 ```text
-let yes = true;
-let no = false;
+const yes = true;
+const no = false;
 ```
 
 ### Nil literal
 
 ```text
-let nothing: Number? = nil;
+const nothing: Number? = nil;
 ```
 
 See [Types](/reference/types) for optional types and nil coalescing.
@@ -87,8 +87,8 @@ See [Types](/reference/types) for optional types and nil coalescing.
 Access fields on records and dictionaries with dot notation:
 
 ```text
-let name = person.name;
-let x = point.x;
+const name = person.name;
+const x = point.x;
 ```
 
 ## Optional chaining
@@ -96,7 +96,7 @@ let x = point.x;
 Use `?.` to safely access a member of an optional value. If the value is `nil`, the result is `nil` instead of an error:
 
 ```text
-let name = maybePerson?.name; // Text?, nil if maybePerson is nil
+const name = maybePerson?.name; // Text? — nil if maybePerson is nil
 ```
 
 Optional chaining is only valid on optional types. Using `?.` on a non-optional is a compile error.
@@ -106,8 +106,8 @@ Optional chaining is only valid on optional types. Using `?.` on a non-optional 
 Access list elements or dictionary values by index or key:
 
 ```text
-let first = items[0];
-let value = dict["key"];
+const first = items[0];
+const value = dict["key"];
 ```
 
 ## Ternary expression
@@ -115,7 +115,7 @@ let value = dict["key"];
 A compact conditional expression:
 
 ```text
-let label = x > 0 ? "positive" : "non-positive";
+const label = x > 0 ? "positive" : "non-positive";
 ```
 
 The condition uses the same syntax as `if` conditions (see [Control flow](/reference/control-flow)). Both branches must produce the same type.
@@ -145,22 +145,22 @@ Conditions are a separate category from value expressions. They appear in `if` s
 | `hasSuffix` | Text ends with |
 
 ```text
-if name contains "Alice" { ... }
-if url hasPrefix "https" { ... }
+if (name contains "Alice") { ... }
+if (url hasPrefix "https") { ... }
 ```
 
 ### Logical operators
 
 | Operator | Meaning |
 |----------|---------|
-| `and` | Both conditions must be true |
-| `or` | Either condition can be true |
-| `not` | Negates a condition |
+| `&&` | Both conditions must be true |
+| `\|\|` | Either condition can be true |
+| `!` | Negates a condition |
 
 ```text
-if x > 0 and x < 100 { ... }
-if a or b { ... }
-if not done { ... }
+if (x > 0 && x < 100) { ... }
+if (a || b) { ... }
+if (!done) { ... }
 ```
 
 ### Type tests
@@ -168,7 +168,7 @@ if not done { ... }
 Use `is` to test a value's type at runtime:
 
 ```text
-if value is Number { ... }
+if (value is Number) { ... }
 ```
 
 ### Range tests
@@ -176,7 +176,7 @@ if value is Number { ... }
 Use `in` with `...` to test if a value falls within a range:
 
 ```text
-if x in 1...10 { ... }
+if (x in 1...10) { ... }
 ```
 
 ### Grouping
@@ -184,7 +184,7 @@ if x in 1...10 { ... }
 Use parentheses to control evaluation order:
 
 ```text
-if (x > 0 and x < 10) or x == 100 { ... }
+if ((x > 0 && x < 10) || x == 100) { ... }
 ```
 
 ## Dot-name shorthand
@@ -192,7 +192,7 @@ if (x > 0 and x < 10) or x == 100 { ... }
 When the expected type is an enum, you can use `.caseName` instead of `EnumName.caseName`:
 
 ```text
-let dir: Direction = .north;
+const dir: Direction = .north;
 ```
 
 See [Enums and records](/reference/enums-records) for details.

@@ -38,8 +38,8 @@ enum Status = "status" { active, inactive }
 Use the enum name and dot notation:
 
 ```text
-let dir = Direction.north;
-let c = Color.red;
+const dir = Direction.north;
+const c = Color.red;
 ```
 
 ### Dot-name shorthand
@@ -47,10 +47,10 @@ let c = Color.red;
 When the expected type is known (from a type annotation, function parameter, or assignment), you can use the shorthand `.caseName`:
 
 ```text
-let c: Color = .red;            // instead of Color.red
+const c: Color = .red;            // instead of Color.red
 paint(c: .blue);                // in a function argument
 
-var dir: Direction = .north;
+let dir: Direction = .north;
 dir = .south;                   // in reassignment
 ```
 
@@ -62,7 +62,7 @@ You can interpolate an enum value into a string, it uses the backing value:
 
 ```text
 enum Color { red = "RED", blue = "BLUE" }
-let c = Color.red;
+const c = Color.red;
 showAlert(text: "${c}"); // shows "RED"
 ```
 
@@ -79,7 +79,7 @@ record Point { x: Number, y: Number }
 Construct a record by calling it like a function with labeled arguments:
 
 ```text
-let p = Point(x: 10, y: 20);
+const p = Point(x: 10, y: 20);
 ```
 
 All fields are required. You must label all fields be labeled, and types must match:
@@ -95,7 +95,7 @@ Point(x: 10, y: "20");  // error: type mismatch
 Access fields with dot notation:
 
 ```text
-let sum = p.x + p.y;
+const sum = p.x + p.y;
 ```
 
 ### Destructuring
@@ -103,8 +103,8 @@ let sum = p.x + p.y;
 You can destructure a record into individual bindings:
 
 ```text
-let { x, y } = p;
-let sum = x + y;
+const { x, y } = p;
+const sum = x + y;
 ```
 
 The destructured names must match the record's field names.
@@ -117,7 +117,7 @@ Records can use enum types for fields. Dot-name shorthand works in record constr
 enum Color { red = "RED", blue = "BLUE" }
 record Shirt { size: Text, color: Color }
 
-let s = Shirt(size: "L", color: .red);
+const s = Shirt(size: "L", color: .red);
 ```
 
 ## Exporting

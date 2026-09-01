@@ -4,10 +4,10 @@ A shortcut that lets you choose a timer duration, waits, and then sends a notifi
 
 ## What you'll learn
 
-- [Control flow](/reference/control-flow): presenting choices with `menu`
-- [Variables and bindings](/reference/variables): storing values with `let`
-- [String interpolation](/reference/expressions): embedding values in text with `${}`
-- [Standard library actions](/reference/stdlib/scripting): `wait`, `notification`, `showAlert`
+- [Control flow](/reference/control-flow) — presenting choices with `menu`
+- [Variables and bindings](/reference/variables) — storing values with `const` and `let`
+- [String interpolation](/reference/expressions) — embedding values in text with `${}`
+- [Standard library actions](/reference/stdlib/scripting) — `wait`, `notification`, `showAlert`
 
 ## Source
 
@@ -17,7 +17,7 @@ shortcut {
   description: "Choose a duration and get notified when time is up",
 }
 
-let label = "Timer";
+const label = "Timer";
 
 menu "How long?" {
   case "1 minute" {
