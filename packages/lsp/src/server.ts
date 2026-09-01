@@ -90,11 +90,15 @@ export function startServer(): void {
 
   connection.onDefinition((params: DefinitionParams) => {
     const state = documentStates.get(params.textDocument.uri);
-    if (!state) return null;
+    if (!state) {
+      return null;
+    }
 
     const offset = positionToOffset(state.lineMap, params.position);
     const defSpan = resolveDefinition(state.analysis, offset);
-    if (!defSpan) return null;
+    if (!defSpan) {
+      return null;
+    }
 
     return {
       uri: params.textDocument.uri,
@@ -107,11 +111,15 @@ export function startServer(): void {
 
   connection.onHover((params: HoverParams) => {
     const state = documentStates.get(params.textDocument.uri);
-    if (!state) return null;
+    if (!state) {
+      return null;
+    }
 
     const offset = positionToOffset(state.lineMap, params.position);
     const hoverText = resolveHover(state.analysis, offset);
-    if (!hoverText) return null;
+    if (!hoverText) {
+      return null;
+    }
 
     return {
       contents: {
@@ -123,7 +131,9 @@ export function startServer(): void {
 
   connection.onCompletion((params: CompletionParams) => {
     const state = documentStates.get(params.textDocument.uri);
-    if (!state) return [];
+    if (!state) {
+      return [];
+    }
 
     const items = getCompletions(state.analysis);
     return items.map(toLspCompletionItem);

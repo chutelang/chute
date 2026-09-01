@@ -594,13 +594,21 @@ export function resolveEnumBackingValue(
   caseValue: string | undefined,
   enumDefault: string | undefined,
 ): string {
-  if (caseValue !== undefined) return caseValue;
-  if (enumDefault !== undefined) return `${enumDefault}.${caseName}`;
+  if (caseValue !== undefined) {
+    return caseValue;
+  }
+  if (enumDefault !== undefined) {
+    return `${enumDefault}.${caseName}`;
+  }
   return caseName;
 }
 
 export function resolveStageCalleeName(callee: Expression): string | undefined {
-  if (callee.kind === "Identifier") return callee.name;
-  if (callee.kind === "MemberExpression") return resolveStageCalleeName(callee.object);
+  if (callee.kind === "Identifier") {
+    return callee.name;
+  }
+  if (callee.kind === "MemberExpression") {
+    return resolveStageCalleeName(callee.object);
+  }
   return undefined;
 }

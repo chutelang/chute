@@ -32,7 +32,9 @@ export function build(files: string[], options: BuildOptions, io: IO = realIO): 
 }
 
 function resolveSignFlag(cliSign: boolean, io: IO): boolean {
-  if (!cliSign) return false;
+  if (!cliSign) {
+    return false;
+  }
 
   const config = readChuteJson(io);
   if (config !== undefined && typeof config.sign === "boolean") {
@@ -44,7 +46,9 @@ function resolveSignFlag(cliSign: boolean, io: IO): boolean {
 
 function readChuteJson(io: IO): Record<string, unknown> | undefined {
   const configPath = path.resolve("chute.json");
-  if (!io.fileExists(configPath)) return undefined;
+  if (!io.fileExists(configPath)) {
+    return undefined;
+  }
 
   try {
     const raw = io.readFile(configPath);
