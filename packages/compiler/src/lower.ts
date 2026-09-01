@@ -208,7 +208,9 @@ function stripSpans(obj: unknown): unknown {
   }
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
-    if (key === "span") continue;
+    if (key === "span") {
+      continue;
+    }
     result[key] = stripSpans(value);
   }
   return result;
@@ -451,7 +453,9 @@ function lowerFunctionCall(
 
   for (const param of decl.params) {
     const valueExpr = provided.get(param.name) ?? param.defaultValue;
-    if (!valueExpr) continue;
+    if (!valueExpr) {
+      continue;
+    }
 
     const key = param.name;
     const value = lowerToParamValue(valueExpr, actions, ctx);
@@ -496,7 +500,9 @@ function lowerDeclaredActionCall(
 
   for (const param of decl.params) {
     const valueExpr = provided.get(param.label) ?? param.defaultValue;
-    if (!valueExpr) continue;
+    if (!valueExpr) {
+      continue;
+    }
     parameters.set(param.name, lowerToParamValue(valueExpr, parentActions, ctx));
   }
 
@@ -1491,7 +1497,9 @@ function lowerPipelineDeclaredActionStage(
 
   const provided = new Map<string, Expression>();
   for (const arg of stage.args) {
-    if (arg.value.kind === "PlaceholderExpression") continue;
+    if (arg.value.kind === "PlaceholderExpression") {
+      continue;
+    }
     if (arg.label) {
       provided.set(arg.label, arg.value);
     }
@@ -1499,7 +1507,9 @@ function lowerPipelineDeclaredActionStage(
 
   for (const param of decl.params) {
     const valueExpr = provided.get(param.label) ?? param.defaultValue;
-    if (!valueExpr) continue;
+    if (!valueExpr) {
+      continue;
+    }
     parameters.set(param.name, lowerToParamValue(valueExpr, actions, ctx));
   }
 

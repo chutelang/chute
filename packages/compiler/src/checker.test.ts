@@ -1209,7 +1209,9 @@ describe("checker", () => {
       resolve: (_from: string, importPath: string) => importPath,
       read: (path: string) => {
         const content = files[path];
-        if (content === undefined) throw new Error(`file not found: ${path}`);
+        if (content === undefined) {
+          throw new Error(`file not found: ${path}`);
+        }
         return content;
       },
     });
