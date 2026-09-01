@@ -2,7 +2,7 @@
 
 Actions for creating and retrieving calendar events and reminders.
 
-## addNewEvent
+## `addNewEvent`
 
 Create a new calendar event.
 
@@ -12,13 +12,13 @@ addNewEvent(title: Text, start: Text, end: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title` | `Text` | — | The event title. |
-| `start` | `Text` | — | The start date and time. |
-| `end` | `Text` | — | The end date and time. |
+| `title` | `Text` | None | The event title. |
+| `start` | `Text` | None | The start date and time. |
+| `end` | `Text` | None | The end date and time. |
 
 Shortcuts action: `is.workflow.actions.addnewcalendar`
 
-## getUpcomingEvents
+## `getUpcomingEvents`
 
 Get upcoming calendar events.
 
@@ -34,7 +34,7 @@ Returns a list of upcoming events.
 
 Shortcuts action: `is.workflow.actions.getupcomingevents`
 
-## addNewReminder
+## `addNewReminder`
 
 Create a new reminder.
 
@@ -44,12 +44,12 @@ addNewReminder(title: Text, list: Text = "Reminders")
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `title` | `Text` | — | The reminder title. |
+| `title` | `Text` | None | The reminder title. |
 | `list` | `Text` | `"Reminders"` | The reminder list to add to. |
 
 Shortcuts action: `is.workflow.actions.addnewreminder`
 
-## getUpcomingReminders
+## `getUpcomingReminders`
 
 Get upcoming reminders.
 

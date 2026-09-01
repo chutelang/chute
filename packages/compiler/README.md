@@ -1,9 +1,9 @@
 # @chutelang/compiler
 
-Compiler for the [Chute](https://chutelang.dev) programming language. Parses Chute source code and compiles it to signed `.shortcut` files.
+The compiler for the [Chute](https://chutelang.dev) programming language parses Chute source code and compiles it to signed `.shortcut` files.
 
 Part of the [`@chutelang/cli`](https://www.npmjs.com/package/@chutelang/cli) toolchain. Install the CLI to use Chute.
 
-## Documentation
+## Read the documentation
 
-[chutelang.dev](https://chutelang.dev)
+[Chute documentation](https://chutelang.dev)

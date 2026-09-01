@@ -6,11 +6,11 @@ This page explains how Chute maps to Siri Shortcuts. If you already know how Sho
 
 When you run `chute build`, your source code passes through five stages:
 
-1. **Lexer** — splits the source text into tokens (keywords, identifiers, operators, literals).
-2. **Parser** — assembles tokens into an abstract syntax tree (AST) that represents the program's structure.
-3. **Type checker** — validates the AST, resolving types, checking function signatures, and reporting errors with diagnostic codes.
-4. **Lowering** — transforms the checked AST into an intermediate representation (IR) of Shortcuts actions.
-5. **Codegen** — serializes the IR into Apple's plist XML format, producing a `.shortcut` file.
+1. **Lexer.** Splits the source text into tokens (keywords, identifiers, operators, literals).
+2. **Parser.** Assembles tokens into an abstract syntax tree (AST) that represents the program's structure.
+3. **Type checker.** Validates the AST, resolving types, checking function signatures, and reporting errors with diagnostic codes.
+4. **Lowering.** Transforms the checked AST into an intermediate representation (IR) of Shortcuts actions.
+5. **Codegen.** Serializes the IR into Apple's plist XML format, producing a `.shortcut` file.
 
 The output is the same plist XML that the Shortcuts app writes when you export a shortcut. If signing is enabled, the file is passed through the macOS `shortcuts sign` CLI to produce a signed `.shortcut` file that can be imported directly.
 
@@ -34,7 +34,7 @@ var count = 0;
 count = count + 1;
 ```
 
-For more details, see [Variables & Bindings](/reference/variables).
+For more details, see [Variables and bindings](/reference/variables).
 
 ## Functions become sub-shortcuts
 
@@ -57,13 +57,13 @@ Under the hood, the compiler does three things:
 2. Passes parameters as a dictionary through the "Shortcut Input" variable.
 3. Inside the sub-shortcut, extracts each parameter with a "Get Value for Key" action.
 
-This gives you reusable logic without duplicating actions — something that isn't possible in the Shortcuts editor without manually managing sub-shortcuts.
+This gives you reusable logic without duplicating actions, something that isn't possible in the Shortcuts editor without manually managing sub-shortcuts.
 
 For more details, see [Functions](/reference/functions).
 
 ## Actions map to Shortcuts actions
 
-The `action` keyword declares a binding to a real Shortcuts action identifier. Every built-in function you call — `showAlert`, `ask`, `getClipboard` — is an action declaration behind the scenes.
+The `action` keyword declares a binding to a real Shortcuts action identifier. Every built-in function you call, `showAlert`, `ask`, `getClipboard`, is an action declaration behind the scenes.
 
 Here's what the standard library's `showAlert` looks like internally:
 
@@ -101,11 +101,11 @@ for item in items {
 
 The `for` loop compiles to a "Repeat with Each" action. The loop variable `item` references the "Repeat Item" magic variable that Shortcuts provides inside the loop.
 
-For more details, see [Control Flow](/reference/control-flow).
+For more details, see [Control flow](/reference/control-flow).
 
 ## The type system catches errors at compile time
 
-Shortcuts has no type checking. If you connect an incompatible output to an action's input, you find out at runtime — or sometimes not at all.
+Shortcuts has no type checking. If you connect an incompatible output to an action's input, you find out at runtime, or sometimes not at all.
 
 Chute's type system catches these mistakes before the shortcut is compiled. The built-in types are:
 
@@ -136,7 +136,7 @@ let x = 5 |> double |> triple;
 showResult(text: "${x}");
 ```
 
-The value `5` flows into `double`, and the result flows into `triple`. You can also use `|>?` for optional values — if the value is `nil`, the pipeline short-circuits and the result is `nil`.
+The value `5` flows into `double`, and the result flows into `triple`. You can also use `|>?` for optional values. If the value is `nil`, the pipeline short-circuits and the result is `nil`.
 
 For more details, see [Pipelines](/reference/pipelines).
 
@@ -158,9 +158,9 @@ record Point { x: Number, y: Number }
 let p = Point(x: 10, y: 20);
 ```
 
-Records compile to dictionaries in the Shortcuts output — each field becomes a key-value pair.
+Records compile to dictionaries in the Shortcuts output. Each field becomes a key-value pair.
 
-For more details, see [Enums & Records](/reference/enums-records).
+For more details, see [Enums and records](/reference/enums-records).
 
 ## Imports let you split code across files
 
@@ -185,12 +185,12 @@ For more details, see [Imports & Modules](/reference/imports).
 
 Chute ships with a standard library of action declarations covering the most common Shortcuts actions. These are organized into categories:
 
-- [Scripting](/reference/stdlib/scripting) — `showAlert`, `ask`, `getClipboard`, `wait`, and more.
-- [Text](/reference/stdlib/text) — `getText`, `replaceText`, `splitText`, and more.
-- [Web](/reference/stdlib/web) — `openURL`, `getContentsOfURL`, `searchWeb`, and more.
-- [Documents](/reference/stdlib/documents) — `getFile`, `saveFile`, `createFolder`, and more.
-- [Calendar](/reference/stdlib/calendar) — `addNewEvent`, `getUpcomingEvents`, and more.
-- [Media](/reference/stdlib/media) — `takePicture`, `selectPhotos`, and more.
-- [Settings](/reference/stdlib/settings) — `setVolume`, `setBrightness`, `setWiFi`, and more.
+- [Scripting](/reference/stdlib/scripting): `showAlert`, `ask`, `getClipboard`, `wait`, and more.
+- [Text](/reference/stdlib/text): `getText`, `replaceText`, `splitText`, and more.
+- [Web](/reference/stdlib/web): `openURL`, `getContentsOfURL`, `searchWeb`, and more.
+- [Documents](/reference/stdlib/documents): `getFile`, `saveFile`, `createFolder`, and more.
+- [Calendar](/reference/stdlib/calendar): `addNewEvent`, `getUpcomingEvents`, and more.
+- [Media](/reference/stdlib/media): `takePicture`, `selectPhotos`, and more.
+- [Settings](/reference/stdlib/settings): `setVolume`, `setBrightness`, `setWiFi`, and more.
 
-Each action declaration specifies the parameter names, types, defaults, and the underlying Shortcuts action identifier. When you call a standard library function, the compiler emits the correct action with the correct parameter keys — no need to look up internal identifiers yourself.
+Each action declaration specifies the parameter names, types, defaults, and the underlying Shortcuts action identifier. When you call a standard library function, the compiler emits the correct action with the correct parameter keys. You don.t need to look up internal identifiers yourself.

@@ -12,7 +12,7 @@ enum Direction { north, south, east, west }
 
 ### Backing values
 
-Each case has a backing value — a string that's used at runtime. By default, the backing value is the case name:
+Each case has a backing value, which is a string that's used at runtime. By default, the backing value is the case name:
 
 ```text
 enum Direction { north, south, east, west }
@@ -58,7 +58,7 @@ Dot-name shorthand is a compile error if there's no contextual type to resolve a
 
 ### Enums in string interpolation
 
-You can interpolate an enum value into a string — it uses the backing value:
+You can interpolate an enum value into a string, it uses the backing value:
 
 ```text
 enum Color { red = "RED", blue = "BLUE" }
@@ -82,7 +82,7 @@ Construct a record by calling it like a function with labeled arguments:
 let p = Point(x: 10, y: 20);
 ```
 
-All fields are required, all must be labeled, and types must match:
+All fields are required. You must label all fields be labeled, and types must match:
 
 ```text
 Point(10, 20);          // error: arguments must be labeled
@@ -137,6 +137,6 @@ Records compile to dictionaries. `Point(x: 10, y: 20)` becomes a dictionary with
 
 ## Related
 
-- [Variables & Bindings](/reference/variables) — destructuring with `let { ... }`
-- [Types](/reference/types) — using enums and records as type annotations
-- [Functions](/reference/functions) — enums and records as parameter types
+- [Variables and bindings](/reference/variables): destructuring with `let { ... }`
+- [Types](/reference/types): using enums and records as type annotations
+- [Functions](/reference/functions): enums and records as parameter types

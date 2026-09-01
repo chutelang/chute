@@ -12,6 +12,6 @@ share(input: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The content to share. |
+| `input` | `Text` | None | The content to share. |
 
 Shortcuts action: `is.workflow.actions.share`

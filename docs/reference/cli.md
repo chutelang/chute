@@ -14,9 +14,9 @@ chute init [directory]
 
 If you omit `directory`, the command scaffolds in the current directory. The command creates the following files:
 
-- `chute.json` — project configuration.
-- `src/main.chute` — a starter shortcut with a "Hello World" alert.
-- `.gitignore` — ignores the `build/` directory.
+- `chute.json`: project configuration.
+- `src/main.chute`: a starter shortcut with a "Hello World" alert.
+- `.gitignore`: ignores the `build/` directory.
 
 If a `chute.json` file already exists in the target directory, the command exits with an error.
 
@@ -105,10 +105,10 @@ The following table describes each field:
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `name` | `string` | — | The project name. Required. |
-| `version` | `string` | — | The project version, in `MAJOR.MINOR.PATCH` format. |
+| `name` | `string` | None | The project name. Required. |
+| `version` | `string` | None | The project version, in `MAJOR.MINOR.PATCH` format. |
 | `sourceDir` | `string` | `"./src"` | Directory containing `.chute` source files. |
 | `outDir` | `string` | `"./build"` | Directory for compiled output files. |
 | `sign` | `boolean` | `true` | Whether to sign output files with the macOS Shortcuts CLI. |
-| `check.actionCountWarningThreshold` | `integer` | — | Warn when a shortcut exceeds this number of compiled actions. |
+| `check.actionCountWarningThreshold` | `integer` | None | Warn when a shortcut exceeds this number of compiled actions. |
 | `format.maxLineWidth` | `integer` | `120` | Soft maximum line width for the formatter. Minimum value is 40. |

@@ -47,7 +47,7 @@ func double(n: Number) -> Number {
 }
 ```
 
-If a function has a return type, every `return` statement must include a value of that type. If no return type is specified, the function doesn't return a value (and `return` without a value or simply reaching the end of the body are both valid).
+If a function has a return type, every `return` statement must include a value of that type. If no return type is specified, the function doesn't return a value (and `return` without a value or reaching the end of the body is valid).
 
 ## Calling functions
 
@@ -105,6 +105,6 @@ This means your functions are real, self-contained shortcuts that can be tested 
 
 ## Related
 
-- [Pipelines](/reference/pipelines) — chain function calls with `|>`
-- [Actions](/reference/actions) — built-in Shortcuts actions (similar to functions but map directly to Shortcuts actions)
-- [Variables & Bindings](/reference/variables) — binding function results to names
+- [Pipelines](/reference/pipelines): chain function calls with `|>`
+- [Actions](/reference/actions): built-in Shortcuts actions (similar to functions but map directly to Shortcuts actions)
+- [Variables and bindings](/reference/variables): binding function results to names

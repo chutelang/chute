@@ -2,7 +2,7 @@
 
 Actions for opening URLs, fetching web content, searching the web, and extracting links.
 
-## openURL
+## `openURL`
 
 Open a URL in the default browser.
 
@@ -12,11 +12,11 @@ openURL(url: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `url` | `Text` | — | The URL to open. |
+| `url` | `Text` | None | The URL to open. |
 
 Shortcuts action: `is.workflow.actions.openurl`
 
-## getContentsOfURL
+## `getContentsOfURL`
 
 Fetch the contents of a URL.
 
@@ -26,14 +26,14 @@ getContentsOfURL(url: Text, method: Text = "GET") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `url` | `Text` | — | The URL to fetch. |
+| `url` | `Text` | None | The URL to fetch. |
 | `method` | `Text` | `"GET"` | The HTTP method to use, for example `"POST"`. |
 
 Returns the response body as text.
 
 Shortcuts action: `is.workflow.actions.downloadurl`
 
-## searchWeb
+## `searchWeb`
 
 Search the web with a query.
 
@@ -43,11 +43,11 @@ searchWeb(query: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `query` | `Text` | — | The search query. |
+| `query` | `Text` | None | The search query. |
 
 Shortcuts action: `is.workflow.actions.searchweb`
 
-## showWebPage
+## `showWebPage`
 
 Display a web page inline.
 
@@ -57,11 +57,11 @@ showWebPage(url: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `url` | `Text` | — | The URL of the page to display. |
+| `url` | `Text` | None | The URL of the page to display. |
 
 Shortcuts action: `is.workflow.actions.showwebpage`
 
-## expandURL
+## `expandURL`
 
 Expand a shortened URL to its full form.
 
@@ -71,13 +71,13 @@ expandURL(url: Text) -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `url` | `Text` | — | The shortened URL to expand. |
+| `url` | `Text` | None | The shortened URL to expand. |
 
 Returns the expanded URL.
 
 Shortcuts action: `is.workflow.actions.url.expand`
 
-## getURLsFromInput
+## `getURLsFromInput`
 
 Extract URLs from a text value.
 
@@ -87,7 +87,7 @@ getURLsFromInput(input: Text) -> List<Text>
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The text to scan for URLs. |
+| `input` | `Text` | None | The text to scan for URLs. |
 
 Returns a list of detected URLs.
 

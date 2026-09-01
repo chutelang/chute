@@ -1,13 +1,13 @@
-# Share Clipboard
+# share clipboard
 
 A shortcut that reads your clipboard, lets you choose what to do with it, and acts on your choice.
 
 ## What you'll learn
 
-- [Variables and bindings](/reference/variables) — storing action results with `let`
-- [Control flow](/reference/control-flow) — presenting choices with `menu`
-- [String interpolation](/reference/expressions) — embedding values in text with `${}`
-- [Standard library actions](/reference/stdlib/scripting) — `getClipboard`, `setClipboard`, `share`, `showAlert`
+- [Variables and bindings](/reference/variables): storing action results with `let`
+- [Control flow](/reference/control-flow): presenting choices with `menu`
+- [String interpolation](/reference/expressions): embedding values in text with `${}`
+- [Standard library actions](/reference/stdlib/scripting): `getClipboard`, `setClipboard`, `share`, `showAlert`
 
 ## Source
 
@@ -36,7 +36,7 @@ menu "What do you want to do?" {
 
 ## How it works
 
-The shortcut starts by reading the clipboard into a `text` variable with `getClipboard()`. In the Shortcuts app, this is the "Get Clipboard" action, and `text` becomes its output — the equivalent of a magic variable.
+The shortcut starts by reading the clipboard into a `text` variable with `getClipboard()`. In the Shortcuts app, this is the "Get Clipboard" action, and `text` becomes its output, the equivalent of a magic variable.
 
 The `menu` block presents a "Choose from Menu" dialog with three options:
 

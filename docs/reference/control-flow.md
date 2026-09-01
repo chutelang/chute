@@ -1,6 +1,6 @@
-# Control Flow
+# Control flow
 
-Chute's control flow statements compile directly to their Shortcuts equivalents — `if` to an If action, `for` to Repeat with Each, `repeat` to Repeat, and `menu` to Choose from Menu.
+Chute's control flow statements compile directly to their Shortcuts equivalents: `if` to an If action, `for` to Repeat with Each, `repeat` to Repeat, and `menu` to Choose from Menu.
 
 ## `if` / `else if` / `else`
 
@@ -35,7 +35,7 @@ if x > 100 {
 }
 ```
 
-Variables declared inside an `if` or `else` block are scoped to that block — they're not visible outside it.
+Variables declared inside an `if` or `else` block are scoped to that block. They aren.t visible outside it.
 
 ### Conditions
 
@@ -156,6 +156,6 @@ func abs(n: Number) -> Number {
 
 ## Related
 
-- [Variables & Bindings](/reference/variables) — loop variables and scoping
-- [Expressions](/reference/expressions) — condition operators in detail
-- [Functions](/reference/functions) — `return` statements
+- [Variables and bindings](/reference/variables): loop variables and scoping
+- [Expressions](/reference/expressions): condition operators in detail
+- [Functions](/reference/functions): `return` statements
