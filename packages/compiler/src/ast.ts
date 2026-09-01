@@ -68,9 +68,10 @@ export interface MetadataDotName {
 
 export type Statement =
   | ExpressionStatement
+  | ConstDeclaration
+  | ConstDestructure
   | LetDeclaration
   | LetDestructure
-  | VarDeclaration
   | Assignment
   | IfStatement
   | ForStatement
@@ -116,6 +117,22 @@ export interface ExpressionStatement {
   expression: Expression;
 }
 
+export interface ConstDeclaration {
+  kind: "ConstDeclaration";
+  span: Span;
+  exported: boolean;
+  name: string;
+  typeAnnotation: TypeAnnotation | undefined;
+  initializer: Expression;
+}
+
+export interface ConstDestructure {
+  kind: "ConstDestructure";
+  span: Span;
+  names: string[];
+  initializer: Expression;
+}
+
 export interface LetDeclaration {
   kind: "LetDeclaration";
   span: Span;
@@ -129,14 +146,6 @@ export interface LetDestructure {
   kind: "LetDestructure";
   span: Span;
   names: string[];
-  initializer: Expression;
-}
-
-export interface VarDeclaration {
-  kind: "VarDeclaration";
-  span: Span;
-  name: string;
-  typeAnnotation: TypeAnnotation | undefined;
   initializer: Expression;
 }
 

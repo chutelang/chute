@@ -167,6 +167,7 @@ const KEYWORDS = [
   "and",
   "as",
   "case",
+  "const",
   "contains",
   "else",
   "enum",
@@ -191,7 +192,6 @@ const KEYWORDS = [
   "return",
   "shortcut",
   "true",
-  "var",
 ];
 
 export interface CompletionItem {

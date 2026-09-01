@@ -14,6 +14,8 @@ import type {
   CallExpression,
   CoalesceExpression,
   Condition,
+  ConstDeclaration,
+  ConstDestructure,
   DictionaryLiteral,
   EnumDeclaration,
   Expression,
@@ -39,7 +41,6 @@ import type {
   TernaryExpression,
   TypeAnnotation,
   UnaryExpression,
-  VarDeclaration,
 } from "./ast.ts";
 
 export type ChuteType =
@@ -419,8 +420,8 @@ function resolveImports(
         checkRecordDeclaration(stmt, libScope, context);
       } else if (stmt.kind === "ActionDeclaration") {
         checkActionDeclaration(stmt, libScope, context);
-      } else if (stmt.kind === "LetDeclaration") {
-        checkLetDeclaration(stmt, libScope, context);
+      } else if (stmt.kind === "ConstDeclaration") {
+        checkConstDeclaration(stmt, libScope, context);
       }
     }
 
@@ -458,7 +459,7 @@ function resolveImports(
           namespaceScope.defineType(stmt.name, typeDef);
           namespaceScope.define(stmt.name, typeDef, false);
         }
-      } else if (stmt.kind === "LetDeclaration") {
+      } else if (stmt.kind === "ConstDeclaration") {
         const binding = libScope.lookup(stmt.name);
         if (binding) {
           namespaceScope.define(stmt.name, binding.type, false);
@@ -481,17 +482,17 @@ function validateLibrary(ast: Program, importSpan: Span): void {
   }
 
   for (const stmt of ast.body) {
-    if (stmt.kind === "VarDeclaration") {
+    if (stmt.kind === "LetDeclaration" || stmt.kind === "LetDestructure") {
       throw new CheckError(
-        "libraries cannot contain var declarations",
+        "libraries cannot contain let declarations",
         stmt.span,
         DiagnosticCode.LibraryRestriction,
       );
     }
 
     const isDeclaration =
-      stmt.kind === "LetDeclaration" ||
-      stmt.kind === "LetDestructure" ||
+      stmt.kind === "ConstDeclaration" ||
+      stmt.kind === "ConstDestructure" ||
       stmt.kind === "FunctionDeclaration" ||
       stmt.kind === "ActionDeclaration" ||
       stmt.kind === "EnumDeclaration" ||
@@ -512,11 +513,11 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
     case "ExpressionStatement":
       checkExpressionStatement(stmt.expression, scope, context);
       return;
+    case "ConstDeclaration":
+      checkConstDeclaration(stmt, scope, context);
+      return;
     case "LetDeclaration":
       checkLetDeclaration(stmt, scope, context);
-      return;
-    case "VarDeclaration":
-      checkVarDeclaration(stmt, scope, context);
       return;
     case "Assignment":
       checkAssignment(stmt, scope, context);
@@ -532,6 +533,9 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
       return;
     case "MenuStatement":
       checkMenuStatement(stmt, scope, context);
+      return;
+    case "ConstDestructure":
+      checkConstDestructure(stmt, scope, context);
       return;
     case "LetDestructure":
       checkLetDestructure(stmt, scope, context);
@@ -577,7 +581,7 @@ function checkExpressionStatement(expr: Expression, scope: Scope, context: Check
   }
 }
 
-function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckContext): void {
+function checkConstDeclaration(decl: ConstDeclaration, scope: Scope, context: CheckContext): void {
   if (scope.hasOwn(decl.name)) {
     throw new CheckError(
       `variable '${decl.name}' is already declared in this scope`,
@@ -590,7 +594,7 @@ function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckC
   scope.define(decl.name, bindingType, false);
 }
 
-function checkVarDeclaration(decl: VarDeclaration, scope: Scope, context: CheckContext): void {
+function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckContext): void {
   if (scope.hasOwn(decl.name)) {
     throw new CheckError(
       `variable '${decl.name}' is already declared in this scope`,
@@ -604,7 +608,7 @@ function checkVarDeclaration(decl: VarDeclaration, scope: Scope, context: CheckC
 }
 
 function checkDeclarationInitializer(
-  decl: LetDeclaration | VarDeclaration,
+  decl: ConstDeclaration | LetDeclaration,
   scope: Scope,
   context: CheckContext,
 ): ChuteType {
@@ -636,10 +640,10 @@ function checkAssignment(assign: Assignment, scope: Scope, context: CheckContext
 
   if (!binding.mutable) {
     throw new CheckError(
-      `cannot assign to '${assign.place.root}' because it is a let binding`,
+      `cannot assign to '${assign.place.root}' because it is a const binding`,
       assign.span,
       DiagnosticCode.ImmutableAssignment,
-      "use 'var' instead of 'let' to make it mutable",
+      "use 'let' instead of 'const' to make it mutable",
     );
   }
 
@@ -1432,6 +1436,41 @@ function inferTernaryExpression(
   return { kind: "any" };
 }
 
+function checkConstDestructure(stmt: ConstDestructure, scope: Scope, context: CheckContext): void {
+  const initializerType = inferType(stmt.initializer, scope, context);
+
+  if (initializerType.kind !== "record" && initializerType.kind !== "any") {
+    throw new CheckError(
+      `const destructuring requires a record, got ${describeType(initializerType)}`,
+      stmt.span,
+    );
+  }
+
+  for (const name of stmt.names) {
+    if (scope.hasOwn(name)) {
+      throw new CheckError(
+        `variable '${name}' is already declared in this scope`,
+        stmt.span,
+        DiagnosticCode.DuplicateDeclaration,
+      );
+    }
+
+    if (initializerType.kind === "record") {
+      const fieldType = initializerType.fields.get(name);
+      if (!fieldType) {
+        throw new CheckError(
+          `record '${initializerType.name}' has no field '${name}'`,
+          stmt.span,
+          DiagnosticCode.UnknownMember,
+        );
+      }
+      scope.define(name, fieldType, false);
+    } else {
+      scope.define(name, { kind: "any" }, false);
+    }
+  }
+}
+
 function checkLetDestructure(stmt: LetDestructure, scope: Scope, context: CheckContext): void {
   const initializerType = inferType(stmt.initializer, scope, context);
 
@@ -1460,9 +1499,9 @@ function checkLetDestructure(stmt: LetDestructure, scope: Scope, context: CheckC
           DiagnosticCode.UnknownMember,
         );
       }
-      scope.define(name, fieldType, false);
+      scope.define(name, fieldType, true);
     } else {
-      scope.define(name, { kind: "any" }, false);
+      scope.define(name, { kind: "any" }, true);
     }
   }
 }

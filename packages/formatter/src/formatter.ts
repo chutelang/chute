@@ -120,6 +120,29 @@ class Printer {
         this.printExpression(stmt.expression);
         this.write(";");
         break;
+      case "ConstDeclaration":
+        this.writeIndent();
+        if (stmt.exported) {
+          this.write("export ");
+        }
+        this.write("const ");
+        this.write(stmt.name);
+        if (stmt.typeAnnotation) {
+          this.write(": ");
+          this.printTypeAnnotation(stmt.typeAnnotation);
+        }
+        this.write(" = ");
+        this.printExpression(stmt.initializer);
+        this.write(";");
+        break;
+      case "ConstDestructure":
+        this.writeIndent();
+        this.write("const {");
+        this.write(stmt.names.join(", "));
+        this.write("} = ");
+        this.printExpression(stmt.initializer);
+        this.write(";");
+        break;
       case "LetDeclaration":
         this.writeIndent();
         if (stmt.exported) {
@@ -140,18 +163,6 @@ class Printer {
         this.write("let {");
         this.write(stmt.names.join(", "));
         this.write("} = ");
-        this.printExpression(stmt.initializer);
-        this.write(";");
-        break;
-      case "VarDeclaration":
-        this.writeIndent();
-        this.write("var ");
-        this.write(stmt.name);
-        if (stmt.typeAnnotation) {
-          this.write(": ");
-          this.printTypeAnnotation(stmt.typeAnnotation);
-        }
-        this.write(" = ");
         this.printExpression(stmt.initializer);
         this.write(";");
         break;
