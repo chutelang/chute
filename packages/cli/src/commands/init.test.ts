@@ -35,7 +35,7 @@ describe("chute init", () => {
     const config = JSON.parse(raw) as Record<string, unknown>;
 
     expect(config).toMatchObject({
-      $schema: "https://chute-lang.dev/schema/chute.schema.json",
+      $schema: "https://chutelang.dev/schema/chute.schema.json",
       name: "__test_init__",
       version: "1.0.0",
       sourceDir: "./src",

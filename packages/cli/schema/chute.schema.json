@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://chute-lang.dev/schema/chute.schema.json",
+  "$id": "https://chutelang.dev/schema/chute.schema.json",
   "title": "chute.json",
   "description": "Configuration file for a Chute project.",
   "type": "object",

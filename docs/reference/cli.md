@@ -86,7 +86,7 @@ Every Chute project has a `chute.json` file at its root. The only required field
 
 ```json
 {
-  "$schema": "https://chute-lang.dev/schema/chute.schema.json",
+  "$schema": "https://chutelang.dev/schema/chute.schema.json",
   "name": "my-shortcut",
   "version": "1.0.0",
   "sourceDir": "./src",
