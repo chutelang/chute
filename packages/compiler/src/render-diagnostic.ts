@@ -37,7 +37,9 @@ const CYAN = "\x1b[36m";
 const RESET = "\x1b[0m";
 
 function colorize(text: string, codes: string, color: boolean): string {
-  if (!color) return text;
+  if (!color) {
+    return text;
+  }
   return `${codes}${text}${RESET}`;
 }
 
@@ -85,7 +87,9 @@ export function renderDiagnostics(
   diagnostics: Diagnostic[],
   options?: RenderOptions,
 ): string {
-  if (diagnostics.length === 0) return "";
+  if (diagnostics.length === 0) {
+    return "";
+  }
 
   const color = options?.color ?? false;
 

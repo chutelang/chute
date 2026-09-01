@@ -255,7 +255,9 @@ describe("findIdentifierAtOffset", () => {
     const source = "let x = 42;\nlet y = x;";
     const result = analyze(source);
     const ast = result.ast;
-    if (!ast) throw new Error("expected AST");
+    if (!ast) {
+      throw new Error("expected AST");
+    }
     const ident = findIdentifierAtOffset(ast, source.lastIndexOf("x"));
     expect(ident).toBeDefined();
     expect(ident?.name).toBe("x");
@@ -266,7 +268,9 @@ describe("findIdentifierAtOffset", () => {
     const source = "enum Color { red, green }\nlet c = Color.red;";
     const result = analyze(source);
     const ast = result.ast;
-    if (!ast) throw new Error("expected AST");
+    if (!ast) {
+      throw new Error("expected AST");
+    }
     const offset = source.lastIndexOf("red");
     const ident = findIdentifierAtOffset(ast, offset);
     expect(ident).toBeDefined();
@@ -277,7 +281,9 @@ describe("findIdentifierAtOffset", () => {
     const source = "let x = 42;";
     const result = analyze(source);
     const ast = result.ast;
-    if (!ast) throw new Error("expected AST");
+    if (!ast) {
+      throw new Error("expected AST");
+    }
     const ident = findIdentifierAtOffset(ast, 8);
     expect(ident).toBeUndefined();
   });

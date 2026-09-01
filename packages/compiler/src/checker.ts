@@ -159,7 +159,9 @@ export class Scope {
 
   lookupNamespace(name: string): Scope | undefined {
     const own = this.namespaces.get(name);
-    if (own) return own;
+    if (own) {
+      return own;
+    }
     return this.parent?.lookupNamespace(name);
   }
 
@@ -430,14 +432,20 @@ function resolveImports(
 
     const namespaceScope = new Scope(undefined);
     for (const stmt of libAst.body) {
-      if (!("exported" in stmt) || !stmt.exported) continue;
+      if (!("exported" in stmt) || !stmt.exported) {
+        continue;
+      }
 
       if (stmt.kind === "FunctionDeclaration") {
         const binding = libScope.lookup(stmt.name);
-        if (binding) namespaceScope.define(stmt.name, binding.type, false);
+        if (binding) {
+          namespaceScope.define(stmt.name, binding.type, false);
+        }
       } else if (stmt.kind === "ActionDeclaration") {
         const binding = libScope.lookup(stmt.name);
-        if (binding) namespaceScope.define(stmt.name, binding.type, false);
+        if (binding) {
+          namespaceScope.define(stmt.name, binding.type, false);
+        }
       } else if (stmt.kind === "EnumDeclaration") {
         const typeDef = libScope.lookupType(stmt.name);
         if (typeDef) {
@@ -452,7 +460,9 @@ function resolveImports(
         }
       } else if (stmt.kind === "LetDeclaration") {
         const binding = libScope.lookup(stmt.name);
-        if (binding) namespaceScope.define(stmt.name, binding.type, false);
+        if (binding) {
+          namespaceScope.define(stmt.name, binding.type, false);
+        }
       }
     }
 
@@ -801,10 +811,14 @@ function inferMemberExpression(
     const ns = scope.lookupNamespace(expr.object.name);
     if (ns) {
       const binding = ns.lookup(expr.property);
-      if (binding) return binding.type;
+      if (binding) {
+        return binding.type;
+      }
 
       const typeDef = ns.lookupType(expr.property);
-      if (typeDef) return typeDef;
+      if (typeDef) {
+        return typeDef;
+      }
 
       throw new CheckError(
         `'${expr.property}' is not exported from '${expr.object.name}'`,
@@ -1287,8 +1301,12 @@ interface NilNarrowing {
 }
 
 function extractNilNarrowing(cond: Condition, scope: Scope): NilNarrowing | undefined {
-  if (cond.kind !== "Comparison") return undefined;
-  if (cond.operator !== "==" && cond.operator !== "!=") return undefined;
+  if (cond.kind !== "Comparison") {
+    return undefined;
+  }
+  if (cond.operator !== "==" && cond.operator !== "!=") {
+    return undefined;
+  }
 
   let identName: string | undefined;
   let isNilRight = false;
@@ -1301,10 +1319,14 @@ function extractNilNarrowing(cond: Condition, scope: Scope): NilNarrowing | unde
     isNilRight = true;
   }
 
-  if (!identName || !isNilRight) return undefined;
+  if (!identName || !isNilRight) {
+    return undefined;
+  }
 
   const binding = scope.lookup(identName);
-  if (!binding || binding.type.kind !== "optional") return undefined;
+  if (!binding || binding.type.kind !== "optional") {
+    return undefined;
+  }
 
   const narrowedType = binding.type.inner;
   const mutable = binding.mutable;
@@ -1577,7 +1599,9 @@ function checkFunctionDeclaration(
   context: CheckContext,
 ): void {
   const binding = scope.lookup(decl.name);
-  if (!binding || binding.type.kind !== "function") return;
+  if (!binding || binding.type.kind !== "function") {
+    return;
+  }
 
   const funcType = binding.type;
 
@@ -1652,7 +1676,9 @@ function detectRecursiveCycles(context: CheckContext): void {
   const warned = new Set<string>();
 
   function dfs(node: string): void {
-    if (visited.has(node)) return;
+    if (visited.has(node)) {
+      return;
+    }
     visited.add(node);
     inStack.add(node);
 
@@ -1867,7 +1893,9 @@ function inferPipelineActionCall(
   context: CheckContext,
 ): ChuteType {
   for (const arg of stage.args) {
-    if (arg.value.kind === "PlaceholderExpression") continue;
+    if (arg.value.kind === "PlaceholderExpression") {
+      continue;
+    }
 
     if (arg.label) {
       const param = actionType.params.find((p) => p.label === arg.label);

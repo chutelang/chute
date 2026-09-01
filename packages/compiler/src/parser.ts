@@ -465,7 +465,9 @@ export class Parser {
 
     while (this.check(TokenKind.Comma)) {
       this.advance();
-      if (this.check(TokenKind.RightBrace)) break;
+      if (this.check(TokenKind.RightBrace)) {
+        break;
+      }
       cases.push(this.parseEnumCase());
     }
 
@@ -816,7 +818,9 @@ export class Parser {
     names.push(tokenValue(this.expect(TokenKind.Identifier)));
     while (this.check(TokenKind.Comma)) {
       this.advance();
-      if (this.check(TokenKind.RightBrace)) break;
+      if (this.check(TokenKind.RightBrace)) {
+        break;
+      }
       names.push(tokenValue(this.expect(TokenKind.Identifier)));
     }
     this.expect(TokenKind.RightBrace);
@@ -1382,11 +1386,21 @@ export class Parser {
     let pos = this.pos;
     while (pos < this.tokens.length) {
       const tok = this.tokens.at(pos);
-      if (!tok || tok.kind === TokenKind.Eof) break;
-      if (tok.kind === TokenKind.DotDotDot && depth === 0) return true;
-      if (tok.kind === TokenKind.LeftParen || tok.kind === TokenKind.LeftBracket) depth++;
-      if (tok.kind === TokenKind.RightParen || tok.kind === TokenKind.RightBracket) depth--;
-      if (tok.kind === TokenKind.Semicolon || tok.kind === TokenKind.LeftBrace) break;
+      if (!tok || tok.kind === TokenKind.Eof) {
+        break;
+      }
+      if (tok.kind === TokenKind.DotDotDot && depth === 0) {
+        return true;
+      }
+      if (tok.kind === TokenKind.LeftParen || tok.kind === TokenKind.LeftBracket) {
+        depth++;
+      }
+      if (tok.kind === TokenKind.RightParen || tok.kind === TokenKind.RightBracket) {
+        depth--;
+      }
+      if (tok.kind === TokenKind.Semicolon || tok.kind === TokenKind.LeftBrace) {
+        break;
+      }
       pos++;
     }
     return false;

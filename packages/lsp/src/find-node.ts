@@ -182,7 +182,9 @@ export function findIdentifierAtOffset(
 
   for (const stmt of program.body) {
     const result = findInStatement(stmt, offset);
-    if (result) return result;
+    if (result) {
+      return result;
+    }
   }
 
   return undefined;
@@ -193,7 +195,9 @@ function containsOffset(span: Span, offset: number): boolean {
 }
 
 function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | undefined {
-  if (!containsOffset(stmt.span, offset)) return undefined;
+  if (!containsOffset(stmt.span, offset)) {
+    return undefined;
+  }
 
   switch (stmt.kind) {
     case "ExpressionStatement":
@@ -215,7 +219,9 @@ function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | 
     case "FunctionDeclaration":
       return findInFunctionDeclaration(stmt, offset);
     case "ReturnStatement":
-      if (stmt.value) return findInExpression(stmt.value, offset);
+      if (stmt.value) {
+        return findInExpression(stmt.value, offset);
+      }
       return undefined;
     case "EnumDeclaration":
     case "RecordDeclaration":
@@ -231,18 +237,24 @@ function findInIfStatement(
   offset: number,
 ): IdentifierAtOffset | undefined {
   const condResult = findInCondition(stmt.condition, offset);
-  if (condResult) return condResult;
+  if (condResult) {
+    return condResult;
+  }
 
   for (const s of stmt.body) {
     const result = findInStatement(s, offset);
-    if (result) return result;
+    if (result) {
+      return result;
+    }
   }
 
   if (stmt.elseBody) {
     if (Array.isArray(stmt.elseBody)) {
       for (const s of stmt.elseBody) {
         const result = findInStatement(s, offset);
-        if (result) return result;
+        if (result) {
+          return result;
+        }
       }
     } else {
       return findInStatement(stmt.elseBody, offset);
@@ -257,11 +269,15 @@ function findInForStatement(
   offset: number,
 ): IdentifierAtOffset | undefined {
   const iterResult = findInExpression(stmt.iterable, offset);
-  if (iterResult) return iterResult;
+  if (iterResult) {
+    return iterResult;
+  }
 
   for (const s of stmt.body) {
     const result = findInStatement(s, offset);
-    if (result) return result;
+    if (result) {
+      return result;
+    }
   }
 
   return undefined;
@@ -272,11 +288,15 @@ function findInRepeatStatement(
   offset: number,
 ): IdentifierAtOffset | undefined {
   const countResult = findInExpression(stmt.count, offset);
-  if (countResult) return countResult;
+  if (countResult) {
+    return countResult;
+  }
 
   for (const s of stmt.body) {
     const result = findInStatement(s, offset);
-    if (result) return result;
+    if (result) {
+      return result;
+    }
   }
 
   return undefined;
@@ -287,12 +307,16 @@ function findInMenuStatement(
   offset: number,
 ): IdentifierAtOffset | undefined {
   const promptResult = findInExpression(stmt.prompt, offset);
-  if (promptResult) return promptResult;
+  if (promptResult) {
+    return promptResult;
+  }
 
   for (const c of stmt.cases) {
     for (const s of c.body) {
       const result = findInStatement(s, offset);
-      if (result) return result;
+      if (result) {
+        return result;
+      }
     }
   }
 
@@ -311,14 +335,18 @@ function findInFunctionDeclaration(
 
   for (const s of decl.body) {
     const result = findInStatement(s, offset);
-    if (result) return result;
+    if (result) {
+      return result;
+    }
   }
 
   return undefined;
 }
 
 function findInExpression(expr: Expression, offset: number): IdentifierAtOffset | undefined {
-  if (!containsOffset(expr.span, offset)) return undefined;
+  if (!containsOffset(expr.span, offset)) {
+    return undefined;
+  }
 
   switch (expr.kind) {
     case "Identifier":
@@ -329,7 +357,9 @@ function findInExpression(expr: Expression, offset: number): IdentifierAtOffset 
       };
     case "MemberExpression": {
       const objResult = findInExpression(expr.object, offset);
-      if (objResult) return objResult;
+      if (objResult) {
+        return objResult;
+      }
       if (expr.object.kind === "Identifier") {
         return {
           name: expr.property,
@@ -346,7 +376,9 @@ function findInExpression(expr: Expression, offset: number): IdentifierAtOffset 
     }
     case "OptionalMemberExpression": {
       const objResult = findInExpression(expr.object, offset);
-      if (objResult) return objResult;
+      if (objResult) {
+        return objResult;
+      }
       return {
         name: expr.property,
         span: expr.span,
@@ -356,62 +388,86 @@ function findInExpression(expr: Expression, offset: number): IdentifierAtOffset 
     case "CallExpression": {
       for (const arg of expr.args) {
         const argResult = findInExpression(arg.value, offset);
-        if (argResult) return argResult;
+        if (argResult) {
+          return argResult;
+        }
       }
       return findInExpression(expr.callee, offset);
     }
     case "BinaryExpression": {
       const leftResult = findInExpression(expr.left, offset);
-      if (leftResult) return leftResult;
+      if (leftResult) {
+        return leftResult;
+      }
       return findInExpression(expr.right, offset);
     }
     case "UnaryExpression":
       return findInExpression(expr.operand, offset);
     case "CoalesceExpression": {
       const leftResult = findInExpression(expr.left, offset);
-      if (leftResult) return leftResult;
+      if (leftResult) {
+        return leftResult;
+      }
       return findInExpression(expr.right, offset);
     }
     case "TernaryExpression": {
       const condResult = findInCondition(expr.condition, offset);
-      if (condResult) return condResult;
+      if (condResult) {
+        return condResult;
+      }
       const consResult = findInExpression(expr.consequent, offset);
-      if (consResult) return consResult;
+      if (consResult) {
+        return consResult;
+      }
       return findInExpression(expr.alternate, offset);
     }
     case "SubscriptExpression": {
       const objResult = findInExpression(expr.object, offset);
-      if (objResult) return objResult;
+      if (objResult) {
+        return objResult;
+      }
       return findInExpression(expr.index, offset);
     }
     case "InterpolatedString":
       for (const part of expr.parts) {
         if (part.kind === "ExpressionPart") {
           const result = findInExpression(part.expression, offset);
-          if (result) return result;
+          if (result) {
+            return result;
+          }
         }
       }
       return undefined;
     case "ListLiteral":
       for (const el of expr.elements) {
         const result = findInExpression(el, offset);
-        if (result) return result;
+        if (result) {
+          return result;
+        }
       }
       return undefined;
     case "DictionaryLiteral":
       for (const entry of expr.entries) {
         const keyResult = findInExpression(entry.key, offset);
-        if (keyResult) return keyResult;
+        if (keyResult) {
+          return keyResult;
+        }
         const valResult = findInExpression(entry.value, offset);
-        if (valResult) return valResult;
+        if (valResult) {
+          return valResult;
+        }
       }
       return undefined;
     case "PipelineExpression": {
       const inputResult = findInExpression(expr.input, offset);
-      if (inputResult) return inputResult;
+      if (inputResult) {
+        return inputResult;
+      }
       for (const stage of expr.stages) {
         const stageResult = findInPipelineStage(stage, offset);
-        if (stageResult) return stageResult;
+        if (stageResult) {
+          return stageResult;
+        }
       }
       return undefined;
     }
@@ -421,38 +477,54 @@ function findInExpression(expr: Expression, offset: number): IdentifierAtOffset 
 }
 
 function findInPipelineStage(stage: PipelineStage, offset: number): IdentifierAtOffset | undefined {
-  if (!containsOffset(stage.span, offset)) return undefined;
+  if (!containsOffset(stage.span, offset)) {
+    return undefined;
+  }
   const calleeResult = findInExpression(stage.callee, offset);
-  if (calleeResult) return calleeResult;
+  if (calleeResult) {
+    return calleeResult;
+  }
   for (const arg of stage.args) {
     const argResult = findInExpression(arg.value, offset);
-    if (argResult) return argResult;
+    if (argResult) {
+      return argResult;
+    }
   }
   return undefined;
 }
 
 function findInCondition(cond: Condition, offset: number): IdentifierAtOffset | undefined {
-  if (!containsOffset(cond.span, offset)) return undefined;
+  if (!containsOffset(cond.span, offset)) {
+    return undefined;
+  }
 
   switch (cond.kind) {
     case "OrCondition":
     case "AndCondition": {
       const leftResult = findInCondition(cond.left, offset);
-      if (leftResult) return leftResult;
+      if (leftResult) {
+        return leftResult;
+      }
       return findInCondition(cond.right, offset);
     }
     case "NotCondition":
       return findInCondition(cond.operand, offset);
     case "Comparison": {
       const leftResult = findInExpression(cond.left, offset);
-      if (leftResult) return leftResult;
+      if (leftResult) {
+        return leftResult;
+      }
       return findInExpression(cond.right, offset);
     }
     case "RangeTest": {
       const subjResult = findInExpression(cond.subject, offset);
-      if (subjResult) return subjResult;
+      if (subjResult) {
+        return subjResult;
+      }
       const lowResult = findInExpression(cond.low, offset);
-      if (lowResult) return lowResult;
+      if (lowResult) {
+        return lowResult;
+      }
       return findInExpression(cond.high, offset);
     }
     case "TypeTest":

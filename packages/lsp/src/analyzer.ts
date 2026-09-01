@@ -53,10 +53,14 @@ export function analyze(source: string): AnalysisResult {
 }
 
 export function resolveDefinition(result: AnalysisResult, offset: number): Span | undefined {
-  if (!result.ast) return undefined;
+  if (!result.ast) {
+    return undefined;
+  }
 
   const ident = findIdentifierAtOffset(result.ast, offset);
-  if (!ident) return undefined;
+  if (!ident) {
+    return undefined;
+  }
 
   return findDefinitionSpan(ident, result.definitions);
 }
@@ -71,7 +75,9 @@ function findDefinitionSpan(
 
   for (let i = definitions.length - 1; i >= 0; i--) {
     const def = definitions[i];
-    if (!def) continue;
+    if (!def) {
+      continue;
+    }
     if (def.name === ident.name) {
       return def.span;
     }
@@ -80,27 +86,39 @@ function findDefinitionSpan(
 }
 
 export function resolveHover(result: AnalysisResult, offset: number): string | undefined {
-  if (!result.ast || !result.scope) return undefined;
+  if (!result.ast || !result.scope) {
+    return undefined;
+  }
 
   const ident = findIdentifierAtOffset(result.ast, offset);
-  if (!ident) return undefined;
+  if (!ident) {
+    return undefined;
+  }
 
   if (ident.context === "namespace-member" && ident.namespaceName) {
     const ns = result.scope.lookupNamespace(ident.namespaceName);
     if (ns) {
       const binding = ns.lookup(ident.name);
-      if (binding) return formatTypeHover(ident.name, binding.type);
+      if (binding) {
+        return formatTypeHover(ident.name, binding.type);
+      }
       const typeDef = ns.lookupType(ident.name);
-      if (typeDef) return formatTypeHover(ident.name, typeDef);
+      if (typeDef) {
+        return formatTypeHover(ident.name, typeDef);
+      }
     }
     return undefined;
   }
 
   const binding = result.scope.lookup(ident.name);
-  if (binding) return formatTypeHover(ident.name, binding.type);
+  if (binding) {
+    return formatTypeHover(ident.name, binding.type);
+  }
 
   const typeDef = result.scope.lookupType(ident.name);
-  if (typeDef) return formatTypeHover(ident.name, typeDef);
+  if (typeDef) {
+    return formatTypeHover(ident.name, typeDef);
+  }
 
   return undefined;
 }
@@ -193,7 +211,9 @@ export function getCompletions(result: AnalysisResult): CompletionItem[] {
   }
 
   for (const def of result.definitions) {
-    if (def.kind === "enum-case" || def.kind === "field") continue;
+    if (def.kind === "enum-case" || def.kind === "field") {
+      continue;
+    }
     items.push({
       label: def.name,
       kind: def.kind === "parameter" ? "variable" : def.kind === "import" ? "variable" : def.kind,
@@ -210,7 +230,9 @@ export function getCompletions(result: AnalysisResult): CompletionItem[] {
 function addScopeCompletions(scope: Scope, items: CompletionItem[]): void {
   const seen = new Set(items.map((i) => i.label));
   for (const [name, binding] of scope.allBindings()) {
-    if (seen.has(name)) continue;
+    if (seen.has(name)) {
+      continue;
+    }
     seen.add(name);
     items.push({
       label: name,
@@ -229,7 +251,9 @@ function deduplicateCompletions(items: CompletionItem[]): CompletionItem[] {
   const seen = new Set<string>();
   const result: CompletionItem[] = [];
   for (const item of items) {
-    if (seen.has(item.label)) continue;
+    if (seen.has(item.label)) {
+      continue;
+    }
     seen.add(item.label);
     result.push(item);
   }
