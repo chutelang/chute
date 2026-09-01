@@ -63,12 +63,6 @@ importers:
         specifier: workspace:*
         version: link:../compiler
 
-  packages/linter:
-    dependencies:
-      '@chutelang/compiler':
-        specifier: workspace:*
-        version: link:../compiler
-
   packages/lsp:
     dependencies:
       '@chutelang/compiler':
