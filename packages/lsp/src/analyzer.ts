@@ -164,7 +164,6 @@ function formatRecordType(type: ChuteType & { kind: "record" }): string {
 
 const KEYWORDS = [
   "action",
-  "and",
   "as",
   "case",
   "const",
@@ -185,8 +184,6 @@ const KEYWORDS = [
   "let",
   "menu",
   "nil",
-  "not",
-  "or",
   "record",
   "repeat",
   "return",

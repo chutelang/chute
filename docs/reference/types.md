@@ -17,9 +17,9 @@ Chute is strongly typed. Every variable, parameter, and return value has a type 
 An ordered collection of values of type `T`.
 
 ```text
-let numbers: List<Number> = [1, 2, 3];
-let names: List<Text> = ["Alice", "Bob"];
-let empty: List<Number> = [];
+const numbers: List<Number> = [1, 2, 3];
+const names: List<Text> = ["Alice", "Bob"];
+const empty: List<Number> = [];
 ```
 
 ### `Dictionary`
@@ -27,15 +27,15 @@ let empty: List<Number> = [];
 A key-value collection. Keys are always strings.
 
 ```text
-let person = {"name": "Alice", "age": 30};
-let empty = {:};
+const person = {"name": "Alice", "age": 30};
+const empty = {:};
 ```
 
 Access dictionary values with dot notation or subscripts:
 
 ```text
-let name = person.name;
-let age = person["age"];
+const name = person.name;
+const age = person["age"];
 ```
 
 ## Optional types
@@ -43,8 +43,8 @@ let age = person["age"];
 Append `?` to any type to make it optional, meaning it can hold either a value of that type or `nil`.
 
 ```text
-let score: Number? = nil;
-let name: Text? = "Alice";
+const score: Number? = nil;
+const name: Text? = "Alice";
 ```
 
 ### `nil`
@@ -52,8 +52,8 @@ let name: Text? = "Alice";
 The `nil` literal represents the absence of a value. You can only assign it to optional types:
 
 ```text
-let x: Number? = nil;  // ok
-let y: Number = nil;   // compile error
+const x: Number? = nil;  // ok
+const y: Number = nil;   // compile error
 ```
 
 ### Nil coalescing (`??`)
@@ -61,8 +61,8 @@ let y: Number = nil;   // compile error
 Use `??` to unwrap an optional with a fallback value:
 
 ```text
-let score: Number? = nil;
-let display = score ?? 0; // display is Number, not Number?
+const score: Number? = nil;
+const display = score ?? 0; // display is Number, not Number?
 ```
 
 The left side must be optional, and the right side must match the inner type.
@@ -72,9 +72,9 @@ The left side must be optional, and the right side must match the inner type.
 Inside an `if` block that checks for `nil`, Chute narrows the type automatically:
 
 ```text
-let x: Number? = nil;
-if x != nil {
-  let y = x + 1; // x is Number here, not Number?
+const x: Number? = nil;
+if (x != nil) {
+  const y = x + 1; // x is Number here, not Number?
 }
 ```
 
@@ -85,9 +85,9 @@ This also works in the `else` branch of `== nil` checks.
 Chute has built-in quantity types for physical measurements. These map to Shortcuts measurement actions.
 
 ```text
-let duration: Quantity<seconds> = 30;
-let distance: Quantity<kilometers> = 5;
-let temp: Quantity<celsius> = 22;
+const duration: Quantity<seconds> = 30;
+const distance: Quantity<kilometers> = 5;
+const temp: Quantity<celsius> = 22;
 ```
 
 ### Supported units
@@ -106,10 +106,10 @@ let temp: Quantity<celsius> = 22;
 You don't always need to write type annotations. Chute infers the type from the value or expression:
 
 ```text
-let name = "Alice";          // inferred as Text
-let count = 42;              // inferred as Number
-let items = [1, 2, 3];      // inferred as List<Number>
-let result = ask(prompt: "?"); // inferred as Text (from ask's return type)
+const name = "Alice";          // inferred as Text
+const count = 42;              // inferred as Number
+const items = [1, 2, 3];      // inferred as List<Number>
+const result = ask(prompt: "?"); // inferred as Text (from ask's return type)
 ```
 
 Type annotations are required when:

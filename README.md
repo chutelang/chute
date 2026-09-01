@@ -15,7 +15,7 @@ npm install -g @chutelang/cli
 ## Features
 
 - Static types catch errors at compile time, not at runtime in the Shortcuts app
-- `let`, `if`/`else`, `for`, `repeat`, `menu`, functions, and the `|>` pipeline operator
+- `const`, `let`, `if`/`else`, `for`, `repeat`, `menu`, functions, and the `|>` pipeline operator
 - Every built-in Shortcuts action available as a typed function call
 - `chute fmt` formats your code
 - Language server with autocomplete, hover info, go-to-definition, and diagnostics

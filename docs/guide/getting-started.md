@@ -77,14 +77,14 @@ shortcut {
   description: "Asks for your name and greets you",
 }
 
-let name = ask(prompt: "What's your name?");
+const name = ask(prompt: "What's your name?");
 showAlert(text: "Hello, ${name}!");
 ```
 
 This introduces two concepts:
 
-- **Variables**: `let name = ...` binds the result of `ask()` to a variable. In Shortcuts, this is equivalent to setting a variable from the output of the "Ask for Input" action.
-- **String interpolation**: `"Hello, ${name}!"` embeds the value of `name` into the string. This compiles to the same thing as dragging a magic variable into a text field in Shortcuts.
+- **Variables** — `const name = ...` binds the result of `ask()` to a variable. In Shortcuts, this is equivalent to setting a variable from the output of the "Ask for Input" action.
+- **String interpolation** — `"Hello, ${name}!"` embeds the value of `name` into the string. This compiles to the same thing as dragging a magic variable into a text field in Shortcuts.
 
 Build and run it again:
 
@@ -104,14 +104,14 @@ shortcut {
   description: "Do something with your clipboard",
 }
 
-let text = getClipboard();
+const text = getClipboard();
 
 menu "What do you want to do?" {
   case "Share" {
     share(input: text);
   }
   case "Make Uppercase" {
-    let upper = changeCase(text: text, case: "UPPERCASE");
+    const upper = changeCase(text: text, case: "UPPERCASE");
     setClipboard(value: upper);
     showAlert(text: "Copied uppercase text!");
   }
@@ -124,7 +124,7 @@ In the Shortcuts app, `menu` compiles to a "Choose from Menu" action, but you ge
 
 Now that you've built and run your first shortcuts, explore the rest of the documentation:
 
-- [Core concepts](/guide/core-concepts): how Chute maps to Shortcuts under the hood
-- [Variables and bindings](/reference/variables): `let`, `var`, destructuring, and type annotations
-- [Functions](/reference/functions): define reusable logic that compiles to sub-shortcuts
-- [Standard library](/reference/stdlib/scripting): every built-in action available in Chute
+- [Core Concepts](/guide/core-concepts) — how Chute maps to Shortcuts under the hood
+- [Variables & Bindings](/reference/variables) — `const`, `let`, destructuring, and type annotations
+- [Functions](/reference/functions) — define reusable logic that compiles to sub-shortcuts
+- [Standard Library](/reference/stdlib/scripting) — every built-in action available in Chute

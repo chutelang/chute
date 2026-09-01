@@ -4,10 +4,10 @@ A shortcut that reads your clipboard, lets you choose what to do with it, and ac
 
 ## What you'll learn
 
-- [Variables and bindings](/reference/variables): storing action results with `let`
-- [Control flow](/reference/control-flow): presenting choices with `menu`
-- [String interpolation](/reference/expressions): embedding values in text with `${}`
-- [Standard library actions](/reference/stdlib/scripting): `getClipboard`, `setClipboard`, `share`, `showAlert`
+- [Variables and bindings](/reference/variables) — storing action results with `const` and `let`
+- [Control flow](/reference/control-flow) — presenting choices with `menu`
+- [String interpolation](/reference/expressions) — embedding values in text with `${}`
+- [Standard library actions](/reference/stdlib/scripting) — `getClipboard`, `setClipboard`, `share`, `showAlert`
 
 ## Source
 
@@ -17,14 +17,14 @@ shortcut {
   description: "Read clipboard and share or transform it",
 }
 
-let text = getClipboard();
+const text = getClipboard();
 
 menu "What do you want to do?" {
   case "Share" {
     share(input: text);
   }
   case "Copy Uppercase" {
-    let upper = changeCase(text: text, case: "UPPERCASE");
+    const upper = changeCase(text: text, case: "UPPERCASE");
     setClipboard(value: upper);
     showAlert(text: "Copied to clipboard!");
   }

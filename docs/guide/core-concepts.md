@@ -16,21 +16,21 @@ The output is the same plist XML that the Shortcuts app writes when you export a
 
 ## Variables are magic variables
 
-In Shortcuts, every action's output becomes a *magic variable* that later actions can reference. In Chute, you use `let` and `var` instead.
+In Shortcuts, every action's output becomes a *magic variable* that later actions can reference. In Chute, you use `const` and `let` instead.
 
 ```chute
 shortcut { name: "Variables" }
 
-let greeting = "Hello";
+const greeting = "Hello";
 showAlert(text: greeting);
 ```
 
-`let` creates an immutable binding. The compiler translates it into a "Set Variable" action, and any reference to `greeting` becomes a "Get Variable" action that retrieves the stored value.
+`const` creates an immutable binding. The compiler translates it into a "Set Variable" action, and any reference to `greeting` becomes a "Get Variable" action that retrieves the stored value.
 
-Use `var` when you need to reassign a variable:
+Use `let` when you need to reassign a variable:
 
 ```text
-var count = 0;
+let count = 0;
 count = count + 1;
 ```
 
@@ -47,7 +47,7 @@ func double(n: Number) -> Number {
   return n * 2;
 }
 
-let result = double(n: 5);
+const result = double(n: 5);
 showResult(text: "${result}");
 ```
 
@@ -93,7 +93,7 @@ Chute's control flow statements map directly to their Shortcuts equivalents:
 ```chute
 shortcut { name: "ControlFlow" }
 
-let items = ["apples", "bananas", "cherries"];
+const items = ["apples", "bananas", "cherries"];
 for item in items {
   showAlert(text: item);
 }
@@ -132,7 +132,7 @@ shortcut { name: "Pipelines" }
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 
-let x = 5 |> double |> triple;
+const x = 5 |> double |> triple;
 showResult(text: "${x}");
 ```
 
@@ -148,14 +148,14 @@ Shortcuts doesn't have a concept of custom types. In Chute, you can define enums
 
 ```text
 enum Color { red = "RED", blue = "BLUE", green = "GREEN" }
-let c: Color = .red;
+const c: Color = .red;
 ```
 
 **Records** are named groups of fields, similar to structs:
 
 ```text
 record Point { x: Number, y: Number }
-let p = Point(x: 10, y: 20);
+const p = Point(x: 10, y: 20);
 ```
 
 Records compile to dictionaries in the Shortcuts output. Each field becomes a key-value pair.
@@ -176,7 +176,7 @@ export func add(a: Number, b: Number) -> Number {
 ```text
 // In main.chute
 import "./math" as math;
-let sum = math.add(a: 3, b: 4);
+const sum = math.add(a: 3, b: 4);
 ```
 
 For more details, see [Imports & Modules](/reference/imports).
