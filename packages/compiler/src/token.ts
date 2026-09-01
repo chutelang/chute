@@ -18,6 +18,9 @@ export enum TokenKind {
   HashIndex,
   Underscore,
 
+  // Doc comments
+  DocComment,
+
   // Keywords
   Action,
   As,

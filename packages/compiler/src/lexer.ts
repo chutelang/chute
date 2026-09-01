@@ -58,7 +58,10 @@ export class Lexer {
   }
 
   private next(): Token {
-    this.skipWhitespaceAndComments();
+    const docToken = this.skipWhitespaceAndComments();
+    if (docToken) {
+      return docToken;
+    }
 
     if (this.pos >= this.source.length) {
       return this.makeToken(TokenKind.Eof, this.pos, this.pos);
@@ -82,7 +85,7 @@ export class Lexer {
     return this.scanPunctuation();
   }
 
-  private skipWhitespaceAndComments(): void {
+  private skipWhitespaceAndComments(): Token | undefined {
     while (this.pos < this.source.length) {
       const ch = this.source.charAt(this.pos);
 
@@ -98,13 +101,17 @@ export class Lexer {
           continue;
         }
         if (next === "*") {
-          this.skipBlockComment();
+          const doc = this.scanBlockComment();
+          if (doc) {
+            return this.makeToken(TokenKind.DocComment, doc.start, doc.end, doc.value);
+          }
           continue;
         }
       }
 
       break;
     }
+    return undefined;
   }
 
   private skipLineComment(): void {
@@ -114,13 +121,25 @@ export class Lexer {
     }
   }
 
-  private skipBlockComment(): void {
+  private scanBlockComment(): { value: string; start: number; end: number } | undefined {
     const start = this.pos;
-    this.pos += 2;
+    const isDoc =
+      this.pos + 2 < this.source.length &&
+      this.source.charAt(this.pos + 2) === "*" &&
+      (this.pos + 3 >= this.source.length || this.source.charAt(this.pos + 3) !== "/");
+    this.pos += isDoc ? 3 : 2;
+    const contentStart = this.pos;
     while (this.pos + 1 < this.source.length) {
       if (this.source.charAt(this.pos) === "*" && this.source.charAt(this.pos + 1) === "/") {
+        const contentEnd = this.pos;
         this.pos += 2;
-        return;
+        if (isDoc) {
+          const value = this.source.slice(contentStart, contentEnd);
+          if (value.trim().length > 0) {
+            return { value, start, end: this.pos };
+          }
+        }
+        return undefined;
       }
       this.pos++;
     }
