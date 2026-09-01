@@ -1,5 +1,5 @@
-import { Lexer, Parser, checkCollecting, CompileError, describeType } from "@chute-lang/compiler";
-import type { Program, Diagnostic, Span, ChuteType, Scope } from "@chute-lang/compiler";
+import { Lexer, Parser, checkCollecting, CompileError, describeType } from "@chutelang/compiler";
+import type { Program, Diagnostic, Span, ChuteType, Scope } from "@chutelang/compiler";
 import type { SymbolInfo, IdentifierAtOffset } from "./find-node.ts";
 import { collectDefinitions, findIdentifierAtOffset } from "./find-node.ts";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@chute-lang/compiler",
+  "name": "@chutelang/compiler",
   "version": "0.1.0",
   "files": [
     "src"

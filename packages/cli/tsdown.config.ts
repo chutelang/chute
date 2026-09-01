@@ -5,6 +5,6 @@ export default defineConfig({
   format: "esm",
   target: "node24",
   clean: true,
-  noExternal: [/^@chute-lang\//],
+  noExternal: [/^@chutelang\//],
   banner: { js: "#!/usr/bin/env node" },
 });

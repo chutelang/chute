@@ -1,4 +1,4 @@
-import type { Span } from "@chute-lang/compiler";
+import type { Span } from "@chutelang/compiler";
 
 export interface SourceComment {
   text: string;

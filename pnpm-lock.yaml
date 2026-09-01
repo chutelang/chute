@@ -29,7 +29,7 @@ importers:
 
   docs:
     dependencies:
-      '@chute-lang/compiler':
+      '@chutelang/compiler':
         specifier: workspace:*
         version: link:../packages/compiler
     devDependencies:
@@ -42,13 +42,13 @@ importers:
 
   packages/cli:
     dependencies:
-      '@chute-lang/compiler':
+      '@chutelang/compiler':
         specifier: workspace:*
         version: link:../compiler
-      '@chute-lang/formatter':
+      '@chutelang/formatter':
         specifier: workspace:*
         version: link:../formatter
-      '@chute-lang/lsp':
+      '@chutelang/lsp':
         specifier: workspace:*
         version: link:../lsp
       commander:
@@ -59,19 +59,19 @@ importers:
 
   packages/formatter:
     dependencies:
-      '@chute-lang/compiler':
+      '@chutelang/compiler':
         specifier: workspace:*
         version: link:../compiler
 
   packages/linter:
     dependencies:
-      '@chute-lang/compiler':
+      '@chutelang/compiler':
         specifier: workspace:*
         version: link:../compiler
 
   packages/lsp:
     dependencies:
-      '@chute-lang/compiler':
+      '@chutelang/compiler':
         specifier: workspace:*
         version: link:../compiler
       vscode-languageserver:
