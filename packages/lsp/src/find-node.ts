@@ -6,7 +6,7 @@ import type {
   Span,
   FunctionDeclaration,
   PipelineStage,
-} from "@chute-lang/compiler";
+} from "@chutelang/compiler";
 
 export interface SymbolInfo {
   name: string;
@@ -233,7 +233,7 @@ function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | 
 }
 
 function findInIfStatement(
-  stmt: import("@chute-lang/compiler").IfStatement,
+  stmt: import("@chutelang/compiler").IfStatement,
   offset: number,
 ): IdentifierAtOffset | undefined {
   const condResult = findInCondition(stmt.condition, offset);
@@ -265,7 +265,7 @@ function findInIfStatement(
 }
 
 function findInForStatement(
-  stmt: import("@chute-lang/compiler").ForStatement,
+  stmt: import("@chutelang/compiler").ForStatement,
   offset: number,
 ): IdentifierAtOffset | undefined {
   const iterResult = findInExpression(stmt.iterable, offset);
@@ -284,7 +284,7 @@ function findInForStatement(
 }
 
 function findInRepeatStatement(
-  stmt: import("@chute-lang/compiler").RepeatStatement,
+  stmt: import("@chutelang/compiler").RepeatStatement,
   offset: number,
 ): IdentifierAtOffset | undefined {
   const countResult = findInExpression(stmt.count, offset);
@@ -303,7 +303,7 @@ function findInRepeatStatement(
 }
 
 function findInMenuStatement(
-  stmt: import("@chute-lang/compiler").MenuStatement,
+  stmt: import("@chutelang/compiler").MenuStatement,
   offset: number,
 ): IdentifierAtOffset | undefined {
   const promptResult = findInExpression(stmt.prompt, offset);

@@ -1,5 +1,5 @@
 {
-  "name": "@chute-lang/docs",
+  "name": "@chutelang/docs",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vitepress preview"
   },
   "dependencies": {
-    "@chute-lang/compiler": "workspace:*"
+    "@chutelang/compiler": "workspace:*"
   },
   "devDependencies": {
     "vitepress": "^1.6.4",

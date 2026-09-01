@@ -28,7 +28,7 @@ import {
   type ShortcutMetadata,
   type Statement,
   type TypeAnnotation,
-} from "@chute-lang/compiler";
+} from "@chutelang/compiler";
 import { extractComments } from "./comment.ts";
 import type { SourceComment } from "./comment.ts";
 
@@ -413,7 +413,7 @@ class Printer {
     }
   }
 
-  private printInterpolatedString(expr: import("@chute-lang/compiler").InterpolatedString): void {
+  private printInterpolatedString(expr: import("@chutelang/compiler").InterpolatedString): void {
     this.write('"');
     for (const part of expr.parts) {
       if (part.kind === "TextPart") {
@@ -766,7 +766,7 @@ class Printer {
     this.write(";");
   }
 
-  private printActionParameter(param: import("@chute-lang/compiler").ActionParameter): void {
+  private printActionParameter(param: import("@chutelang/compiler").ActionParameter): void {
     this.write(param.label);
     if (param.name !== param.label) {
       this.write(" ");

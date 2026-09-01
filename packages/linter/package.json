@@ -1,5 +1,5 @@
 {
-  "name": "@chute-lang/linter",
+  "name": "@chutelang/linter",
   "version": "0.1.0",
   "files": [
     "src"
@@ -12,6 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chute-lang/compiler": "workspace:*"
+    "@chutelang/compiler": "workspace:*"
   }
 }

@@ -49,7 +49,7 @@ jobs:
           git push --follow-tags origin master
 
       - name: Build
-        run: pnpm --filter @chute-lang/cli build
+        run: pnpm --filter @chutelang/cli build
 
       - name: Publish packages
         run: |
