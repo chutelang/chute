@@ -77,7 +77,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/user/chute" },
+      { icon: "github", link: "https://github.com/chutelang/chute" },
     ],
   },
 });
