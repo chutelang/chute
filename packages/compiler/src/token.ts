@@ -20,7 +20,6 @@ export enum TokenKind {
 
   // Keywords
   Action,
-  And,
   As,
   Case,
   Const,
@@ -41,14 +40,11 @@ export enum TokenKind {
   Let,
   Menu,
   Nil,
-  Not,
-  Or,
   Record,
   Repeat,
   Return,
   Shortcut,
   True,
-  Var,
 
   // Delimiters
   LeftParen,
@@ -86,6 +82,9 @@ export enum TokenKind {
   Arrow,
   DotDotDot,
   BangContains,
+  AmpAmp,
+  PipePipe,
+  Bang,
 
   // End of file
   Eof,
@@ -99,7 +98,6 @@ export interface Token {
 
 const KEYWORDS: ReadonlyMap<string, TokenKind> = new Map([
   ["action", TokenKind.Action],
-  ["and", TokenKind.And],
   ["as", TokenKind.As],
   ["case", TokenKind.Case],
   ["const", TokenKind.Const],
@@ -120,8 +118,6 @@ const KEYWORDS: ReadonlyMap<string, TokenKind> = new Map([
   ["let", TokenKind.Let],
   ["menu", TokenKind.Menu],
   ["nil", TokenKind.Nil],
-  ["not", TokenKind.Not],
-  ["or", TokenKind.Or],
   ["record", TokenKind.Record],
   ["repeat", TokenKind.Repeat],
   ["return", TokenKind.Return],

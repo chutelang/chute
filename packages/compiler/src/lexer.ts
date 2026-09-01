@@ -418,7 +418,8 @@ export class Lexer {
             return this.makeToken(TokenKind.BangContains, start, this.pos);
           }
         }
-        throw new LexerError(`unexpected character: !`, start);
+        this.pos++;
+        return this.makeToken(TokenKind.Bang, start, this.pos);
 
       case "<":
         if (next === "=") {
@@ -457,7 +458,18 @@ export class Lexer {
           this.pos += 2;
           return this.makeToken(TokenKind.Pipe, start, this.pos);
         }
+        if (next === "|") {
+          this.pos += 2;
+          return this.makeToken(TokenKind.PipePipe, start, this.pos);
+        }
         throw new LexerError(`unexpected character: |`, start);
+
+      case "&":
+        if (next === "&") {
+          this.pos += 2;
+          return this.makeToken(TokenKind.AmpAmp, start, this.pos);
+        }
+        throw new LexerError(`unexpected character: &`, start);
 
       default:
         throw new LexerError(`unexpected character: ${ch}`, start);

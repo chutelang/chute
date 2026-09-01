@@ -476,16 +476,16 @@ class Printer {
         break;
       case "AndCondition":
         this.printCondition(cond.left);
-        this.write(" and ");
+        this.write(" && ");
         this.printCondition(cond.right);
         break;
       case "OrCondition":
         this.printCondition(cond.left);
-        this.write(" or ");
+        this.write(" || ");
         this.printCondition(cond.right);
         break;
       case "NotCondition":
-        this.write("not ");
+        this.write("!");
         this.printCondition(cond.operand);
         break;
       case "RangeTest":

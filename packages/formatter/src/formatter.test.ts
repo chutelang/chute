@@ -173,8 +173,8 @@ import "b" as B;
 
     it("should format compound conditions", () => {
       expectFormat(
-        "if x==1 and y==2{a();}",
-        `if x == 1 and y == 2 {
+        "if x==1 && y==2{a();}",
+        `if x == 1 && y == 2 {
   a();
 }
 `,
@@ -183,8 +183,8 @@ import "b" as B;
 
     it("should format not condition", () => {
       expectFormat(
-        "if not x{a();}",
-        `if not x {
+        "if !x{a();}",
+        `if !x {
   a();
 }
 `,
