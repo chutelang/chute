@@ -53,7 +53,6 @@ describe("Lexer", () => {
     it("should recognize all keywords", () => {
       const kws = [
         "action",
-        "and",
         "as",
         "case",
         "const",
@@ -74,8 +73,6 @@ describe("Lexer", () => {
         "let",
         "menu",
         "nil",
-        "not",
-        "or",
         "record",
         "repeat",
         "return",
@@ -92,6 +89,13 @@ describe("Lexer", () => {
     it("should not match keyword prefixes as keywords", () => {
       expect(kinds("actions")).toEqual([TokenKind.Identifier, TokenKind.Eof]);
       expect(values("actions")).toEqual(["actions"]);
+    });
+
+    it("should treat and/or/not as identifiers", () => {
+      for (const word of ["and", "or", "not", "var"]) {
+        expect(kinds(word)).toEqual([TokenKind.Identifier, TokenKind.Eof]);
+        expect(values(word)).toEqual([word]);
+      }
     });
   });
 
@@ -283,7 +287,7 @@ describe("Lexer", () => {
     });
 
     it("should tokenize multi-char operators", () => {
-      expect(kinds("== != <= >= ?? ?. |> |>? -> ...")).toEqual([
+      expect(kinds("== != <= >= ?? ?. |> |>? -> ... && ||")).toEqual([
         TokenKind.EqualEqual,
         TokenKind.BangEqual,
         TokenKind.LessEqual,
@@ -294,6 +298,8 @@ describe("Lexer", () => {
         TokenKind.PipeQuestion,
         TokenKind.Arrow,
         TokenKind.DotDotDot,
+        TokenKind.AmpAmp,
+        TokenKind.PipePipe,
         TokenKind.Eof,
       ]);
     });
@@ -303,7 +309,31 @@ describe("Lexer", () => {
     });
 
     it("should not match !containsX as !contains", () => {
-      expectDiagnosticCode(() => kinds("!containsX"), DiagnosticCode.UnexpectedCharacter);
+      expect(kinds("!containsX")).toEqual([TokenKind.Bang, TokenKind.Identifier, TokenKind.Eof]);
+    });
+
+    it("should tokenize standalone ! as Bang", () => {
+      expect(kinds("!")).toEqual([TokenKind.Bang, TokenKind.Eof]);
+    });
+
+    it("should tokenize !x as Bang followed by identifier", () => {
+      expect(kinds("!x")).toEqual([TokenKind.Bang, TokenKind.Identifier, TokenKind.Eof]);
+    });
+
+    it("should tokenize && as AmpAmp", () => {
+      expect(kinds("&&")).toEqual([TokenKind.AmpAmp, TokenKind.Eof]);
+    });
+
+    it("should tokenize || as PipePipe", () => {
+      expect(kinds("||")).toEqual([TokenKind.PipePipe, TokenKind.Eof]);
+    });
+
+    it("should error on standalone &", () => {
+      expectDiagnosticCode(() => kinds("&"), DiagnosticCode.UnexpectedCharacter);
+    });
+
+    it("should error on standalone |", () => {
+      expectDiagnosticCode(() => kinds("|"), DiagnosticCode.UnexpectedCharacter);
     });
   });
 
