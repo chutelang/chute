@@ -2,6 +2,8 @@ import { TokenKind } from "./token.ts";
 import type { Token, Span } from "./token.ts";
 import { DiagnosticCode, CompileError } from "./diagnostic.ts";
 import type { Diagnostic } from "./diagnostic.ts";
+import { parseDocComment } from "./doc-comment.ts";
+import type { DocComment } from "./doc-comment.ts";
 import type {
   ActionDeclaration,
   ActionParameter,
@@ -73,11 +75,26 @@ export class Parser {
   private tokens: Token[];
   private pos: number;
   private diagnostics: Diagnostic[];
+  private pendingDocComment: DocComment | undefined;
 
   constructor(tokens: Token[]) {
     this.tokens = tokens;
     this.pos = 0;
     this.diagnostics = [];
+    this.pendingDocComment = undefined;
+  }
+
+  private consumeDocComment(): void {
+    if (this.check(TokenKind.DocComment)) {
+      const tok = this.advance();
+      this.pendingDocComment = parseDocComment(tok.value ?? "", tok.span);
+    }
+  }
+
+  private takeDocComment(): DocComment | undefined {
+    const doc = this.pendingDocComment;
+    this.pendingDocComment = undefined;
+    return doc;
   }
 
   parse(): Program {
@@ -355,6 +372,8 @@ export class Parser {
   }
 
   private parseStatement(): Statement {
+    this.consumeDocComment();
+
     if (this.check(TokenKind.Export)) {
       return this.parseExportedDeclaration();
     }
@@ -391,6 +410,8 @@ export class Parser {
     if (this.check(TokenKind.Menu)) {
       return this.parseMenuStatement();
     }
+
+    this.takeDocComment();
 
     const expr = this.parseExpression();
 
@@ -447,6 +468,7 @@ export class Parser {
   }
 
   private parseEnumDeclaration(exported: boolean): EnumDeclaration {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Enum).span.start;
     const name = tokenValue(this.expect(TokenKind.Identifier));
 
@@ -509,6 +531,7 @@ export class Parser {
   }
 
   private parseRecordDeclaration(exported: boolean): RecordDeclaration {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Record).span.start;
     const name = tokenValue(this.expect(TokenKind.Identifier));
 
@@ -544,6 +567,7 @@ export class Parser {
   }
 
   private parseFunctionDeclaration(exported: boolean): FunctionDeclaration {
+    const docComment = this.takeDocComment();
     const start = this.expect(TokenKind.Func).span.start;
     const name = tokenValue(this.expect(TokenKind.Identifier));
     this.expect(TokenKind.LeftParen);
@@ -569,6 +593,7 @@ export class Parser {
       kind: "FunctionDeclaration",
       span: { start, end: block.end },
       exported,
+      docComment,
       name,
       params,
       returnType,
@@ -596,6 +621,7 @@ export class Parser {
   }
 
   private parseActionDeclaration(exported: boolean): ActionDeclaration {
+    const docComment = this.takeDocComment();
     const start = this.expect(TokenKind.Action).span.start;
     const name = tokenValue(this.expect(TokenKind.Identifier));
     this.expect(TokenKind.LeftParen);
@@ -630,6 +656,7 @@ export class Parser {
       kind: "ActionDeclaration",
       span: { start, end },
       exported,
+      docComment,
       name,
       params,
       returnType,
@@ -788,6 +815,7 @@ export class Parser {
   }
 
   private parseReturnStatement(): ReturnStatement {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Return).span.start;
 
     if (this.check(TokenKind.Semicolon)) {
@@ -825,6 +853,7 @@ export class Parser {
   }
 
   private parseConstDestructure(): ConstDestructure {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Const).span.start;
     this.expect(TokenKind.LeftBrace);
 
@@ -851,6 +880,7 @@ export class Parser {
   }
 
   private parseLetDestructure(): LetDestructure {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Let).span.start;
     this.expect(TokenKind.LeftBrace);
 
@@ -889,6 +919,7 @@ export class Parser {
   }
 
   private parseConstDeclaration(exported = false): ConstDeclaration {
+    const docComment = this.takeDocComment();
     const start = this.expect(TokenKind.Const).span.start;
     const name = this.expect(TokenKind.Identifier);
     const typeAnnotation = this.check(TokenKind.Colon)
@@ -901,6 +932,7 @@ export class Parser {
       kind: "ConstDeclaration",
       span: { start, end },
       exported,
+      docComment,
       name: tokenValue(name),
       typeAnnotation,
       initializer,
@@ -908,6 +940,7 @@ export class Parser {
   }
 
   private parseLetDeclaration(exported = false): LetDeclaration {
+    const docComment = this.takeDocComment();
     const start = this.expect(TokenKind.Let).span.start;
     const name = this.expect(TokenKind.Identifier);
     const typeAnnotation = this.check(TokenKind.Colon)
@@ -920,6 +953,7 @@ export class Parser {
       kind: "LetDeclaration",
       span: { start, end },
       exported,
+      docComment,
       name: tokenValue(name),
       typeAnnotation,
       initializer,
@@ -927,6 +961,7 @@ export class Parser {
   }
 
   private parseIfStatement(): IfStatement {
+    this.takeDocComment();
     const start = this.expect(TokenKind.If).span.start;
     this.expect(TokenKind.LeftParen);
     const condition = this.parseCondition();
@@ -958,6 +993,7 @@ export class Parser {
   }
 
   private parseForStatement(): ForStatement {
+    this.takeDocComment();
     const start = this.expect(TokenKind.For).span.start;
     const variable = tokenValue(this.expect(TokenKind.Identifier));
     this.expect(TokenKind.In);
@@ -973,6 +1009,7 @@ export class Parser {
   }
 
   private parseRepeatStatement(): RepeatStatement {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Repeat).span.start;
     const count = this.parsePostfix();
     const block = this.parseBlock();
@@ -985,6 +1022,7 @@ export class Parser {
   }
 
   private parseMenuStatement(): MenuStatement {
+    this.takeDocComment();
     const start = this.expect(TokenKind.Menu).span.start;
     const prompt = this.parseExpression();
 

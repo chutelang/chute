@@ -28,6 +28,9 @@ export type {
 
 export { getStdlibScope } from "./stdlib.ts";
 
+export { parseDocComment } from "./doc-comment.ts";
+export type { DocComment, DocCommentTag } from "./doc-comment.ts";
+
 export type {
   ActionDeclaration,
   ActionParameter,
