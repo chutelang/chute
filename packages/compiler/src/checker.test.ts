@@ -227,7 +227,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x = 5;
-          if x > 3 { showAlert(text: "big"); }
+          if (x > 3) { showAlert(text: "big"); }
         `),
       ).not.toThrow();
     });
@@ -236,7 +236,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x = 5;
-          if x > 3 { showAlert(text: "big"); } else { showAlert(text: "small"); }
+          if (x > 3) { showAlert(text: "big"); } else { showAlert(text: "small"); }
         `),
       ).not.toThrow();
     });
@@ -244,7 +244,7 @@ describe("checker", () => {
     it("should scope variables to if body", () => {
       expect(() =>
         checkSource(`
-          if true {
+          if (true) {
             const y = 1;
           }
           const z = y + 1;
@@ -255,7 +255,7 @@ describe("checker", () => {
     it("should scope variables to else body", () => {
       expect(() =>
         checkSource(`
-          if true {
+          if (true) {
             showAlert(text: "a");
           } else {
             const y = 1;
@@ -360,7 +360,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x: Number? = nil;
-          if x != nil {
+          if (x != nil) {
             const y = x + 1;
           }
         `),
@@ -371,7 +371,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x: Number? = nil;
-          if x == nil {
+          if (x == nil) {
             showAlert(text: "nil");
           } else {
             const y = x + 1;
@@ -384,7 +384,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           let x: Number? = nil;
-          if x != nil {
+          if (x != nil) {
             x = 42;
           }
         `),
@@ -850,7 +850,7 @@ describe("checker", () => {
     it("should emit warning for direct recursion", () => {
       const warnings = checkSourceWithWarnings(`
         func countdown(n: Number) {
-          if n > 0 {
+          if (n > 0) {
             countdown(n: n - 1);
           }
         }
@@ -870,10 +870,10 @@ describe("checker", () => {
     it("should emit warning for mutual recursion", () => {
       const warnings = checkSourceWithWarnings(`
         func ping(n: Number) {
-          if n > 0 { pong(n: n - 1); }
+          if (n > 0) { pong(n: n - 1); }
         }
         func pong(n: Number) {
-          if n > 0 { ping(n: n - 1); }
+          if (n > 0) { ping(n: n - 1); }
         }
       `);
       expect(warnings.length).toBeGreaterThanOrEqual(1);

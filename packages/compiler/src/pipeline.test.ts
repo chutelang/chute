@@ -77,7 +77,7 @@ showResult(text: "done");`;
 }
 
 const x = 5;
-if x > 3 {
+if (x > 3) {
   showAlert(text: "big");
 } else {
   showAlert(text: "small");
@@ -241,7 +241,7 @@ showResult(text: "\${y}");`;
 }
 
 func abs(n: Number) -> Number {
-  if n < 0 {
+  if (n < 0) {
     return -n;
   }
   return n;

@@ -686,7 +686,7 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("if statements", () => {
     it("should parse if with comparison condition", () => {
-      const ast = parse("if x > 5 { showAlert(text: x); }");
+      const ast = parse("if (x > 5) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       expect(stmt?.kind).toBe("IfStatement");
       if (stmt?.kind === "IfStatement") {
@@ -700,7 +700,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse if/else", () => {
-      const ast = parse("if x == 1 { showAlert(text: x); } else { showResult(text: x); }");
+      const ast = parse("if (x == 1) { showAlert(text: x); } else { showResult(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -717,9 +717,9 @@ showAlert(text: "Hello from Chute!");`;
 
     it("should parse if/else if/else chain", () => {
       const ast = parse(`
-        if x > 10 {
+        if (x > 10) {
           showAlert(text: x);
-        } else if x > 5 {
+        } else if (x > 5) {
           showResult(text: x);
         } else {
           showAlert(text: x);
@@ -737,7 +737,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse boolean reference condition", () => {
-      const ast = parse("if flag { showAlert(text: flag); }");
+      const ast = parse("if (flag) { showAlert(text: flag); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -747,7 +747,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse not condition", () => {
-      const ast = parse("if !flag { showAlert(text: flag); }");
+      const ast = parse("if (!flag) { showAlert(text: flag); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -762,7 +762,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse and/or conditions", () => {
-      const ast = parse("if x > 1 && y < 10 { showAlert(text: x); }");
+      const ast = parse("if (x > 1 && y < 10) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition.kind).toBe("AndCondition");
@@ -770,7 +770,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse or with lower precedence than and", () => {
-      const ast = parse("if a || b && c { showAlert(text: a); }");
+      const ast = parse("if (a || b && c) { showAlert(text: a); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition.kind).toBe("OrCondition");
@@ -786,7 +786,7 @@ showAlert(text: "Hello from Chute!");`;
     it("should parse all comparison operators", () => {
       const ops = ["==", "!=", ">", ">=", "<", "<="];
       for (const op of ops) {
-        const ast = parse(`if x ${op} 5 { showAlert(text: x); }`);
+        const ast = parse(`if (x ${op} 5) { showAlert(text: x); }`);
         const stmt = ast.body.at(0);
         if (stmt?.kind === "IfStatement") {
           expect(stmt.condition).toMatchObject({
@@ -802,8 +802,8 @@ showAlert(text: "Hello from Chute!");`;
       for (const op of ops) {
         const src =
           op === "!contains"
-            ? `if x !contains "y" { showAlert(text: x); }`
-            : `if x ${op} "y" { showAlert(text: x); }`;
+            ? `if (x !contains "y") { showAlert(text: x); }`
+            : `if (x ${op} "y") { showAlert(text: x); }`;
         const ast = parse(src);
         const stmt = ast.body.at(0);
         if (stmt?.kind === "IfStatement") {
@@ -816,7 +816,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse range test condition", () => {
-      const ast = parse("if x in 1...10 { showAlert(text: x); }");
+      const ast = parse("if (x in 1...10) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -831,7 +831,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse type test condition", () => {
-      const ast = parse("if x is Text { showAlert(text: x); }");
+      const ast = parse("if (x is Text) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -847,7 +847,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse nil comparison", () => {
-      const ast = parse("if x == nil { showAlert(text: x); }");
+      const ast = parse("if (x == nil) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -861,7 +861,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse boolean literal condition true", () => {
-      const ast = parse("if true { showAlert(text: x); }");
+      const ast = parse("if (true) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -872,7 +872,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse parenthesized condition", () => {
-      const ast = parse("if (x > 5) && y { showAlert(text: x); }");
+      const ast = parse("if ((x > 5) && y) { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition.kind).toBe("AndCondition");
