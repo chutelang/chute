@@ -928,7 +928,9 @@ export class Parser {
 
   private parseIfStatement(): IfStatement {
     const start = this.expect(TokenKind.If).span.start;
+    this.expect(TokenKind.LeftParen);
     const condition = this.parseCondition();
+    this.expect(TokenKind.RightParen);
     const block = this.parseBlock();
 
     let elseBody: Statement[] | IfStatement | undefined;

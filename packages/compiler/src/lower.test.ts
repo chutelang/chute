@@ -143,7 +143,7 @@ describe("lower", () => {
   describe("if statement", () => {
     it("should lower if to conditional start/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } const x = 5; if x > 3 { showAlert(text: "big"); }',
+        'shortcut { name: "Test" } const x = 5; if (x > 3) { showAlert(text: "big"); }',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -158,7 +158,7 @@ describe("lower", () => {
 
     it("should lower if/else to conditional start/otherwise/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } const x = 5; if x > 3 { showAlert(text: "big"); } else { showAlert(text: "small"); }',
+        'shortcut { name: "Test" } const x = 5; if (x > 3) { showAlert(text: "big"); } else { showAlert(text: "small"); }',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
