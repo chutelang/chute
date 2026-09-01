@@ -4,7 +4,7 @@ import * as path from "node:path";
 const CHUTE_JSON_TEMPLATE = (name: string): string =>
   JSON.stringify(
     {
-      $schema: "https://chute-lang.dev/schema/chute.schema.json",
+      $schema: "https://chutelang.dev/schema/chute.schema.json",
       name,
       version: "1.0.0",
       sourceDir: "./src",
