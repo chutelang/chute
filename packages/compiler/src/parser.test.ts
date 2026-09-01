@@ -1577,4 +1577,114 @@ showAlert(text: "Hello from Chute!");`;
       expect(ast.metadata).toBeDefined();
     });
   });
+
+  describe("doc comments", () => {
+    it("should attach a doc comment to a function declaration", () => {
+      const ast = parse(`
+        /** Greets someone. */
+        func greet(name: Text) {
+          showAlert(text: name);
+        }
+      `);
+      const fn = ast.body.at(0);
+      expect(fn?.kind).toBe("FunctionDeclaration");
+      if (fn?.kind === "FunctionDeclaration") {
+        expect(fn.docComment).toBeDefined();
+        expect(fn.docComment?.description).toBe("Greets someone.");
+      }
+    });
+
+    it("should attach a doc comment to an action declaration", () => {
+      const ast = parse(`
+        /** Shows an alert. */
+        action showAlert(text WFAlertActionTitle: Text) = "is.workflow.actions.alert";
+      `);
+      const act = ast.body.at(0);
+      expect(act?.kind).toBe("ActionDeclaration");
+      if (act?.kind === "ActionDeclaration") {
+        expect(act.docComment).toBeDefined();
+        expect(act.docComment?.description).toBe("Shows an alert.");
+      }
+    });
+
+    it("should attach a doc comment to a const declaration", () => {
+      const ast = parse(`
+        /** The greeting text. */
+        const greeting = "hello";
+      `);
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("ConstDeclaration");
+      if (decl?.kind === "ConstDeclaration") {
+        expect(decl.docComment?.description).toBe("The greeting text.");
+      }
+    });
+
+    it("should attach a doc comment to a let declaration", () => {
+      const ast = parse(`
+        /** A counter. */
+        let count = 0;
+      `);
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("LetDeclaration");
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.docComment?.description).toBe("A counter.");
+      }
+    });
+
+    it("should attach a doc comment to an exported function", () => {
+      const ast = parse(`
+        /** Adds two numbers. */
+        export func add(a: Number, b: Number) -> Number {
+          return a + b;
+        }
+      `);
+      const fn = ast.body.at(0);
+      expect(fn?.kind).toBe("FunctionDeclaration");
+      if (fn?.kind === "FunctionDeclaration") {
+        expect(fn.docComment?.description).toBe("Adds two numbers.");
+      }
+    });
+
+    it("should not attach a doc comment to an unsupported declaration", () => {
+      const ast = parse(`
+        /** Some comment. */
+        enum Color { Red, Green }
+      `);
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("EnumDeclaration");
+    });
+
+    it("should not attach a stale doc comment across other statements", () => {
+      const ast = parse(`
+        /** For the function. */
+        const x = 1;
+        func greet(name: Text) {
+          showAlert(text: name);
+        }
+      `);
+      const fn = ast.body.at(1);
+      expect(fn?.kind).toBe("FunctionDeclaration");
+      if (fn?.kind === "FunctionDeclaration") {
+        expect(fn.docComment).toBeUndefined();
+      }
+    });
+
+    it("should parse @param tags in a doc comment", () => {
+      const ast = parse(`
+        /**
+         * Greets someone.
+         * @param name The person's name
+         */
+        func greet(name: Text) {
+          showAlert(text: name);
+        }
+      `);
+      const fn = ast.body.at(0);
+      if (fn?.kind === "FunctionDeclaration") {
+        expect(fn.docComment?.tags).toHaveLength(1);
+        expect(fn.docComment?.tags.at(0)?.kind).toBe("param");
+        expect(fn.docComment?.tags.at(0)?.name).toBe("name");
+      }
+    });
+  });
 });
