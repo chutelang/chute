@@ -2,7 +2,7 @@
 
 Actions for alerts, input, clipboard, device info, encoding, and general shortcut control.
 
-## showAlert
+## `showAlert`
 
 Display an alert dialog with a message.
 
@@ -12,11 +12,11 @@ showAlert(text: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The message to display in the alert. |
+| `text` | `Text` | None | The message to display in the alert. |
 
 Shortcuts action: `is.workflow.actions.alert`
 
-## showResult
+## `showResult`
 
 Display a result to the user.
 
@@ -26,7 +26,7 @@ showResult(text: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to show. |
+| `text` | `Text` | None | The text to show. |
 
 Shortcuts action: `is.workflow.actions.showresult`
 
@@ -40,7 +40,7 @@ notification(body: Text, title: Text = "Notification")
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `body` | `Text` | — | The notification body text. |
+| `body` | `Text` | None | The notification body text. |
 | `title` | `Text` | `"Notification"` | The notification title. |
 
 Shortcuts action: `is.workflow.actions.notification`
@@ -65,7 +65,7 @@ comment(text: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The comment text. |
+| `text` | `Text` | None | The comment text. |
 
 Shortcuts action: `is.workflow.actions.comment`
 
@@ -79,7 +79,7 @@ ask(prompt: Text, defaultAnswer: Text = "") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `prompt` | `Text` | — | The question to display. |
+| `prompt` | `Text` | None | The question to display. |
 | `defaultAnswer` | `Text` | `""` | Pre-filled text in the input field. |
 
 Returns the text the user entered.
@@ -96,7 +96,7 @@ chooseFromList(list: List<Text>, prompt: Text = "Choose") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `list` | `List<Text>` | — | The options to choose from. |
+| `list` | `List<Text>` | None | The options to choose from. |
 | `prompt` | `Text` | `"Choose"` | The prompt displayed above the list. |
 
 Returns the selected item.
@@ -117,7 +117,7 @@ wait(seconds: Number = 1)
 
 Shortcuts action: `is.workflow.actions.delay`
 
-## exitShortcut
+## `exitShortcut`
 
 Stop the shortcut immediately.
 
@@ -127,7 +127,7 @@ exitShortcut()
 
 Shortcuts action: `is.workflow.actions.exit`
 
-## getClipboard
+## `getClipboard`
 
 Get the contents of the clipboard.
 
@@ -139,7 +139,7 @@ Returns the clipboard text.
 
 Shortcuts action: `is.workflow.actions.getclipboard`
 
-## setClipboard
+## `setClipboard`
 
 Copy a value to the clipboard.
 
@@ -149,11 +149,11 @@ setClipboard(value: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `value` | `Text` | — | The text to copy. |
+| `value` | `Text` | None | The text to copy. |
 
 Shortcuts action: `is.workflow.actions.setclipboard`
 
-## getBatteryLevel
+## `getBatteryLevel`
 
 Get the device's battery level as a number from 0 to 100.
 
@@ -165,7 +165,7 @@ Returns the battery percentage.
 
 Shortcuts action: `is.workflow.actions.getbatterylevel`
 
-## getCurrentDate
+## `getCurrentDate`
 
 Get the current date and time.
 
@@ -177,7 +177,7 @@ Returns the date as text.
 
 Shortcuts action: `is.workflow.actions.date`
 
-## getDeviceDetails
+## `getDeviceDetails`
 
 Get information about the device.
 
@@ -199,13 +199,13 @@ count(input: List<Text>) -> Number
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `List<Text>` | — | The list to count. |
+| `input` | `List<Text>` | None | The list to count. |
 
 Returns the number of items.
 
 Shortcuts action: `is.workflow.actions.count`
 
-## base64Encode
+## `base64Encode`
 
 Encode or decode text as Base64.
 
@@ -215,7 +215,7 @@ base64Encode(input: Text, mode: Text = "Encode") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The text to encode or decode. |
+| `input` | `Text` | None | The text to encode or decode. |
 | `mode` | `Text` | `"Encode"` | `"Encode"` or `"Decode"`. |
 
 Returns the encoded or decoded text.
@@ -232,14 +232,14 @@ hash(input: Text, type: Text = "MD5") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The text to hash. |
+| `input` | `Text` | None | The text to hash. |
 | `type` | `Text` | `"MD5"` | The hash algorithm, for example `"SHA256"`. |
 
 Returns the hash as text.
 
 Shortcuts action: `is.workflow.actions.hash`
 
-## generateUUID
+## `generateUUID`
 
 Generate a random UUID.
 
@@ -251,7 +251,7 @@ Returns a UUID string.
 
 Shortcuts action: `is.workflow.actions.uuid`
 
-## urlEncode
+## `urlEncode`
 
 URL-encode or decode text.
 
@@ -261,14 +261,14 @@ urlEncode(input: Text, mode: Text = "Encode") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The text to encode or decode. |
+| `input` | `Text` | None | The text to encode or decode. |
 | `mode` | `Text` | `"Encode"` | `"Encode"` or `"Decode"`. |
 
 Returns the encoded or decoded text.
 
 Shortcuts action: `is.workflow.actions.urlencode`
 
-## runShortcut
+## `runShortcut`
 
 Run another shortcut by name.
 
@@ -278,11 +278,11 @@ runShortcut(name: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `name` | `Text` | — | The name of the shortcut to run. |
+| `name` | `Text` | None | The name of the shortcut to run. |
 
 Shortcuts action: `is.workflow.actions.runworkflow`
 
-## openApp
+## `openApp`
 
 Open an app by its identifier.
 
@@ -292,6 +292,6 @@ openApp(app: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `app` | `Text` | — | The app's bundle identifier. |
+| `app` | `Text` | None | The app's bundle identifier. |
 
 Shortcuts action: `is.workflow.actions.openapp`

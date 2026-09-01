@@ -2,7 +2,7 @@
 
 Actions for creating, transforming, splitting, and combining text, plus speech input and output.
 
-## getText
+## `getText`
 
 Create a text value.
 
@@ -12,13 +12,13 @@ getText(text: Text) -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to produce. |
+| `text` | `Text` | None | The text to produce. |
 
 Returns the text value.
 
 Shortcuts action: `is.workflow.actions.gettext`
 
-## changeCase
+## `changeCase`
 
 Change the case of a text value.
 
@@ -28,14 +28,14 @@ changeCase(text: Text, case: Text = "UPPERCASE") -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to transform. |
+| `text` | `Text` | None | The text to transform. |
 | `case` | `Text` | `"UPPERCASE"` | The target case: `"UPPERCASE"`, `"lowercase"`, or `"Capitalize Every Word"`. |
 
 Returns the transformed text.
 
 Shortcuts action: `is.workflow.actions.text.changecase`
 
-## replaceText
+## `replaceText`
 
 Replace occurrences of a pattern in text.
 
@@ -45,15 +45,15 @@ replaceText(text: Text, find: Text, replace: Text) -> Text
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to search. |
-| `find` | `Text` | — | The substring or pattern to find. |
-| `replace` | `Text` | — | The replacement text. |
+| `text` | `Text` | None | The text to search. |
+| `find` | `Text` | None | The substring or pattern to find. |
+| `replace` | `Text` | None | The replacement text. |
 
 Returns the text with replacements applied.
 
 Shortcuts action: `is.workflow.actions.text.replace`
 
-## splitText
+## `splitText`
 
 Split text into a list using a separator.
 
@@ -63,14 +63,14 @@ splitText(text: Text, separator: Text = " ") -> List<Text>
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to split. |
+| `text` | `Text` | None | The text to split. |
 | `separator` | `Text` | `" "` | The delimiter to split on. |
 
 Returns a list of text segments.
 
 Shortcuts action: `is.workflow.actions.text.split`
 
-## combineText
+## `combineText`
 
 Join a list of text values into a single string.
 
@@ -80,12 +80,12 @@ combineText(list: List<Text>, separator: Text = " ")
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `list` | `List<Text>` | — | The list of text values to join. |
+| `list` | `List<Text>` | None | The list of text values to join. |
 | `separator` | `Text` | `" "` | The delimiter to place between items. |
 
 Shortcuts action: `is.workflow.actions.text.combine`
 
-## matchText
+## `matchText`
 
 Find matches for a regular expression pattern in text.
 
@@ -95,8 +95,8 @@ matchText(text: Text, pattern: Text) -> List<Text>
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to search. |
-| `pattern` | `Text` | — | The regular expression pattern. |
+| `text` | `Text` | None | The text to search. |
+| `pattern` | `Text` | None | The regular expression pattern. |
 
 Returns a list of matches.
 
@@ -112,12 +112,12 @@ speak(text: Text, rate: Number = 0)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `text` | `Text` | — | The text to speak. |
+| `text` | `Text` | None | The text to speak. |
 | `rate` | `Number` | `0` | The speech rate. |
 
 Shortcuts action: `is.workflow.actions.speaktext`
 
-## dictateText
+## `dictateText`
 
 Capture speech input and convert it to text.
 

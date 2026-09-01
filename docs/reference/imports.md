@@ -16,7 +16,7 @@ Then access its exported declarations through the alias:
 let result = H.formatName(first: "Alice", last: "Smith");
 ```
 
-The path is relative to the importing file. The `.chute` extension is inferred — you don't need to include it.
+The path is relative to the importing file. The `.chute` extension is inferred. You don't need to include it.
 
 ## Package imports
 
@@ -63,7 +63,7 @@ Declarations without `export` are private to the file.
 
 ## Namespaced access
 
-Imported declarations are always accessed through their alias — there are no unqualified imports:
+Imported declarations are always accessed through their alias. There are no unqualified imports:
 
 ```text
 import "./math" as math;
@@ -75,6 +75,6 @@ let c = math.Color.red;                 // enum member
 
 ## Related
 
-- [Functions](/reference/functions) — exporting and importing functions
-- [Enums & Records](/reference/enums-records) — exporting and importing types
-- [Actions](/reference/actions) — exporting and importing custom actions
+- [Functions](/reference/functions): exporting and importing functions
+- [Enums and records](/reference/enums-records): exporting and importing types
+- [Actions](/reference/actions): exporting and importing custom actions

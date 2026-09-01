@@ -2,7 +2,7 @@
 
 Actions for getting the device location, directions, and local business search.
 
-## getCurrentLocation
+## `getCurrentLocation`
 
 Get the device's current location.
 
@@ -14,7 +14,7 @@ Returns the location.
 
 Shortcuts action: `is.workflow.actions.getcurrentlocation`
 
-## getDirections
+## `getDirections`
 
 Open directions to an address.
 
@@ -24,12 +24,12 @@ getDirections(address: Text, mode: Text = "Driving")
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `address` | `Text` | — | The destination address. |
+| `address` | `Text` | None | The destination address. |
 | `mode` | `Text` | `"Driving"` | The travel mode: `"Driving"`, `"Walking"`, or `"Transit"`. |
 
 Shortcuts action: `is.workflow.actions.getdirections`
 
-## searchLocalBusiness
+## `searchLocalBusiness`
 
 Search for local businesses.
 
@@ -39,6 +39,6 @@ searchLocalBusiness(query: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `query` | `Text` | — | The search query. |
+| `query` | `Text` | None | The search query. |
 
 Shortcuts action: `is.workflow.actions.searchlocalbusinesses`

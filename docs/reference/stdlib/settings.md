@@ -2,7 +2,7 @@
 
 Actions for controlling device settings like volume, brightness, connectivity, and appearance.
 
-## setVolume
+## `setVolume`
 
 Set the device volume.
 
@@ -12,11 +12,11 @@ setVolume(level: Number)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `level` | `Number` | — | The volume level. |
+| `level` | `Number` | None | The volume level. |
 
 Shortcuts action: `is.workflow.actions.setvolume`
 
-## setBrightness
+## `setBrightness`
 
 Set the screen brightness.
 
@@ -26,11 +26,11 @@ setBrightness(level: Number)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `level` | `Number` | — | The brightness level. |
+| `level` | `Number` | None | The brightness level. |
 
 Shortcuts action: `is.workflow.actions.setbrightness`
 
-## setAirplaneMode
+## `setAirplaneMode`
 
 Turn airplane mode on or off.
 
@@ -40,11 +40,11 @@ setAirplaneMode(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.airplanemode.set`
 
-## setWiFi
+## `setWiFi`
 
 Turn Wi-Fi on or off.
 
@@ -54,11 +54,11 @@ setWiFi(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.wifi.set`
 
-## setBluetooth
+## `setBluetooth`
 
 Turn Bluetooth on or off.
 
@@ -68,11 +68,11 @@ setBluetooth(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.bluetooth.set`
 
-## setDoNotDisturb
+## `setDoNotDisturb`
 
 Turn Do Not Disturb on or off.
 
@@ -82,11 +82,11 @@ setDoNotDisturb(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.dnd.set`
 
-## setCellularData
+## `setCellularData`
 
 Turn cellular data on or off.
 
@@ -96,11 +96,11 @@ setCellularData(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.cellulardata.set`
 
-## setLowPowerMode
+## `setLowPowerMode`
 
 Turn Low Power Mode on or off.
 
@@ -110,11 +110,11 @@ setLowPowerMode(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.lowpowermode.set`
 
-## setAppearance
+## `setAppearance`
 
 Set the device appearance.
 
@@ -124,11 +124,11 @@ setAppearance(style: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `style` | `Text` | — | The appearance style, for example `"Dark"` or `"Light"`. |
+| `style` | `Text` | None | The appearance style, for example `"Dark"` or `"Light"`. |
 
 Shortcuts action: `is.workflow.actions.appearance`
 
-## setFlashlight
+## `setFlashlight`
 
 Turn the flashlight on or off.
 
@@ -138,6 +138,6 @@ setFlashlight(enabled: Boolean)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `enabled` | `Boolean` | — | `true` to enable, `false` to disable. |
+| `enabled` | `Boolean` | None | `true` to enable, `false` to disable. |
 
 Shortcuts action: `is.workflow.actions.flashlight`

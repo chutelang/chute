@@ -1,8 +1,8 @@
-# Variables & Bindings
+# Variables and bindings
 
 Chute has two kinds of variable bindings: immutable `let` and mutable `var`. Both are type-checked at compile time.
 
-## `let` — immutable bindings
+## `let`, immutable bindings
 
 Use `let` to bind a value that won't change. This is the default and most common way to create a variable.
 
@@ -19,7 +19,7 @@ let x = 1;
 x = 2; // compile error: cannot assign to immutable binding 'x'
 ```
 
-## `var` — mutable bindings
+## `var`, mutable bindings
 
 Use `var` when you need to reassign a variable later. The new value must match the original type.
 
@@ -67,12 +67,12 @@ let { x } = p; // only extract x
 
 ## How it maps to Shortcuts
 
-In the Shortcuts app, most variables are implicit "magic variables" — each action's output is automatically available by name to later actions. In Chute, `let` is closest to this: you bind a name to the result of an expression (often an action call), and that name is available to everything that follows.
+In the Shortcuts app, most variables are implicit "magic variables". Each action's output is automatically available by name to later actions. In Chute, `let` is closest to this: you bind a name to the result of an expression (often an action call), and that name is available to everything that follows.
 
-`var` is closer to the "Set Variable" action in Shortcuts — a named slot you can overwrite.
+`var` is closer to the "Set Variable" action in Shortcuts, a named slot you can overwrite.
 
 ## Related
 
-- [Types](/reference/types) — the type system for annotations
-- [Enums & Records](/reference/enums-records) — types that work with destructuring
-- [Expressions](/reference/expressions) — what you can put on the right side of `=`
+- [Types](/reference/types): the type system for annotations
+- [Enums and records](/reference/enums-records): types that work with destructuring
+- [Expressions](/reference/expressions): what you can put on the right side of `=`

@@ -40,7 +40,7 @@ let age = person["age"];
 
 ## Optional types
 
-Append `?` to any type to make it optional — meaning it can hold either a value of that type or `nil`.
+Append `?` to any type to make it optional, meaning it can hold either a value of that type or `nil`.
 
 ```text
 let score: Number? = nil;
@@ -118,6 +118,6 @@ Type annotations are required when:
 
 ## Related
 
-- [Variables & Bindings](/reference/variables) — using types in declarations
-- [Enums & Records](/reference/enums-records) — defining your own types
-- [Functions](/reference/functions) — typed parameters and return types
+- [Variables and bindings](/reference/variables): using types in declarations
+- [Enums and records](/reference/enums-records): defining your own types
+- [Functions](/reference/functions): typed parameters and return types

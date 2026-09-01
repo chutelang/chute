@@ -1,6 +1,6 @@
 # @chutelang/cli
 
-Command-line interface for [Chute](https://chutelang.dev), a strongly-typed language that compiles to Siri Shortcuts.
+Command-line interface for [Chute](https://chutelang.dev), a strongly typed language that compiles to Siri Shortcuts.
 
 ## Install
 
@@ -10,13 +10,13 @@ npm install -g @chutelang/cli
 
 ## Commands
 
-- `chute init` — scaffold a new project
-- `chute build` — compile to `.shortcut` files
-- `chute run` — compile and open in Shortcuts
-- `chute fmt` — format source files
-- `chute check` — lint source files
-- `chute lsp` — start the language server
+- `chute init` scaffolds a project.
+- `chute build` compiles `.shortcut` files.
+- `chute run` compiles a shortcut and opens it in Shortcuts.
+- `chute fmt` formats source files.
+- `chute check` lints source files.
+- `chute lsp` starts the language server.
 
-## Documentation
+## Read the documentation
 
-[chutelang.dev](https://chutelang.dev)
+[Chute documentation](https://chutelang.dev)

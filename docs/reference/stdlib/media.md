@@ -2,7 +2,7 @@
 
 Actions for capturing, selecting, and processing photos and media.
 
-## takePicture
+## `takePicture`
 
 Capture a photo with the camera.
 
@@ -12,7 +12,7 @@ takePicture()
 
 Shortcuts action: `is.workflow.actions.takephoto`
 
-## selectPhotos
+## `selectPhotos`
 
 Let the user select photos from the photo library.
 
@@ -28,7 +28,7 @@ Returns a list of selected photos.
 
 Shortcuts action: `is.workflow.actions.selectphoto`
 
-## getLatestPhotos
+## `getLatestPhotos`
 
 Get the most recent photos from the photo library.
 
@@ -44,7 +44,7 @@ Returns a list of photos.
 
 Shortcuts action: `is.workflow.actions.getlatestphotos`
 
-## saveToPhotoAlbum
+## `saveToPhotoAlbum`
 
 Save content to a photo album.
 
@@ -54,12 +54,12 @@ saveToPhotoAlbum(input: Text, album: Text = "Recents")
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The content to save. |
+| `input` | `Text` | None | The content to save. |
 | `album` | `Text` | `"Recents"` | The album to save to. |
 
 Shortcuts action: `is.workflow.actions.savetocameraroll`
 
-## encodeMedia
+## `encodeMedia`
 
 Encode media to a different format.
 
@@ -69,12 +69,12 @@ encodeMedia(input: Text, format: Text = "M4A")
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The media to encode. |
+| `input` | `Text` | None | The media to encode. |
 | `format` | `Text` | `"M4A"` | The target format. |
 
 Shortcuts action: `is.workflow.actions.encodemedia`
 
-## trimMedia
+## `trimMedia`
 
 Trim audio or video content.
 
@@ -84,6 +84,6 @@ trimMedia(input: Text)
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `input` | `Text` | — | The media to trim. |
+| `input` | `Text` | None | The media to trim. |
 
 Shortcuts action: `is.workflow.actions.trimmedia`

@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-A strongly-typed programming language that compiles to [Siri Shortcuts](https://support.apple.com/guide/shortcuts/intro-to-shortcuts-apdf22b0444c/ios).
+A strongly typed programming language that compiles to [Siri Shortcuts](https://support.apple.com/guide/shortcuts/intro-to-shortcuts-apdf22b0444c/ios).
 
 Chute lets you write shortcuts as code with variables, functions, control flow, and a type system instead of dragging blocks in the Shortcuts app.
 
@@ -20,9 +20,9 @@ npm install -g @chutelang/cli
 - `chute fmt` formats your code
 - Language server with autocomplete, hover info, go-to-definition, and diagnostics
 
-## Documentation
+## Read the documentation
 
-[chutelang.dev](https://chutelang.dev) has the getting started guide, language reference, and examples.
+[The Chute documentation](https://chutelang.dev) includes the getting started guide, language reference, and examples.
 
 ## License
 
