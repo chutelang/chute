@@ -166,6 +166,10 @@ describe("autocomplete", () => {
     expect(labels).toContain("enum");
     expect(labels).toContain("record");
     expect(labels).toContain("import");
+    expect(labels).not.toContain("and");
+    expect(labels).not.toContain("or");
+    expect(labels).not.toContain("not");
+    expect(labels).not.toContain("var");
   });
 
   it("should include stdlib actions", () => {

@@ -8,7 +8,7 @@ Pass a value into a function's first parameter:
 
 ```text
 func double(n: Number) -> Number { return n * 2; }
-let result = 5 |> double; // equivalent to double(n: 5)
+const result = 5 |> double; // equivalent to double(n: 5)
 ```
 
 ### Multi-stage pipelines
@@ -19,7 +19,7 @@ Chain multiple stages. The output of each stage feeds into the next:
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 
-let result = 5 |> double |> triple; // double(5) → 10, triple(10) → 30
+const result = 5 |> double |> triple; // double(5) → 10, triple(10) → 30
 ```
 
 ### Pipelines into actions
@@ -27,7 +27,7 @@ let result = 5 |> double |> triple; // double(5) → 10, triple(10) → 30
 You can pipe into a built-in action too:
 
 ```text
-let msg = "Hello from pipe";
+const msg = "Hello from pipe";
 msg |> showAlert;
 ```
 
@@ -37,7 +37,7 @@ When the target function takes multiple parameters, the piped value fills the fi
 
 ```text
 func add(a: Number, b: Number) -> Number { return a + b; }
-let result = 5 |> add(b: 10); // equivalent to add(a: 5, b: 10)
+const result = 5 |> add(b: 10); // equivalent to add(a: 5, b: 10)
 ```
 
 ## Placeholder `_`
@@ -46,7 +46,7 @@ If you want the piped value to go to a parameter other than the first, use `_` a
 
 ```text
 func add(a: Number, b: Number) -> Number { return a + b; }
-let result = 5 |> add(b: 10, a: _); // a gets the piped value (5)
+const result = 5 |> add(b: 10, a: _); // a gets the piped value (5)
 ```
 
 `_` is only valid inside pipeline stages. Using it outside a pipeline is a compile error.
@@ -58,8 +58,8 @@ Use `|>?` to pipe an optional value. If the value is `nil`, the entire pipeline 
 ```text
 func double(n: Number) -> Number { return n * 2; }
 
-let x: Number? = nil;
-let y = x |>? double; // y is Number?, which is nil here
+const x: Number? = nil;
+const y = x |>? double; // y is Number?, which is nil here
 ```
 
 The input to `|>?` must be an optional type. Using `|>?` with a non-optional value is a compile error.
@@ -72,8 +72,8 @@ After an initial `|>?`, subsequent stages can use regular `|>`. The optional wra
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 
-let x: Number? = nil;
-let y = x |>? double |> triple; // y is Number?
+const x: Number? = nil;
+const y = x |>? double |> triple; // y is Number?
 ```
 
 ## How it maps to Shortcuts

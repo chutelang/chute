@@ -31,8 +31,8 @@ func greet(name: Text = "World") -> Text {
   return name;
 }
 
-let msg = greet();            // uses default: "World"
-let msg2 = greet(name: "Jo"); // overrides default
+const msg = greet();            // uses default: "World"
+const msg2 = greet(name: "Jo"); // overrides default
 ```
 
 The default value must match the parameter's type.
@@ -54,13 +54,13 @@ If a function has a return type, every `return` statement must include a value o
 All arguments must be labeled:
 
 ```text
-let sum = add(a: 3, b: 4);
+const sum = add(a: 3, b: 4);
 ```
 
 Unlabeled arguments are a compile error:
 
 ```text
-let sum = add(3, 4); // compile error: arguments must be labeled
+const sum = add(3, 4); // compile error: arguments must be labeled
 ```
 
 ## Function composition
@@ -78,7 +78,7 @@ Chute supports recursive and mutually recursive functions, but emits a warning. 
 
 ```text
 func countdown(n: Number) {
-  if n > 0 {
+  if (n > 0) {
     showAlert(text: "${n}");
     countdown(n: n - 1); // warning: recursive call detected
   }

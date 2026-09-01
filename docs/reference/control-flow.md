@@ -7,8 +7,8 @@ Chute's control flow statements compile directly to their Shortcuts equivalents:
 Test a condition and run a block:
 
 ```text
-let x = 5;
-if x > 3 {
+const x = 5;
+if (x > 3) {
   showAlert(text: "big");
 }
 ```
@@ -16,7 +16,7 @@ if x > 3 {
 Add `else` for an alternative:
 
 ```text
-if x > 3 {
+if (x > 3) {
   showAlert(text: "big");
 } else {
   showAlert(text: "small");
@@ -26,9 +26,9 @@ if x > 3 {
 Chain multiple conditions with `else if`:
 
 ```text
-if x > 100 {
+if (x > 100) {
   showAlert(text: "huge");
-} else if x > 10 {
+} else if (x > 10) {
   showAlert(text: "medium");
 } else {
   showAlert(text: "small");
@@ -56,14 +56,14 @@ Conditions in `if` statements support:
 | `is` | Type test | `value is Number` |
 | `in` | Range test | `x in 1...10` |
 
-Combine conditions with `and`, `or`, and `not`:
+Combine conditions with `&&`, `||`, and `!`:
 
 ```text
-if x > 0 and x < 100 {
+if (x > 0 && x < 100) {
   showAlert(text: "in range");
 }
 
-if not (x == 0) {
+if (!(x == 0)) {
   showAlert(text: "nonzero");
 }
 ```
@@ -71,7 +71,7 @@ if not (x == 0) {
 Conditions can be grouped with parentheses:
 
 ```text
-if (x > 0 and x < 10) or x == 100 {
+if ((x > 0 && x < 10) || x == 100) {
   showAlert(text: "match");
 }
 ```
@@ -79,8 +79,8 @@ if (x > 0 and x < 10) or x == 100 {
 A boolean variable can be used directly as a condition:
 
 ```text
-let ready = true;
-if ready {
+const ready = true;
+if (ready) {
   showAlert(text: "go!");
 }
 ```
@@ -90,7 +90,7 @@ if ready {
 Iterate over a list:
 
 ```text
-let items = ["apple", "banana", "cherry"];
+const items = ["apple", "banana", "cherry"];
 for item in items {
   showAlert(text: item);
 }
@@ -145,7 +145,7 @@ Use `return` to exit a function early, optionally with a value:
 
 ```text
 func abs(n: Number) -> Number {
-  if n < 0 {
+  if (n < 0) {
     return -n;
   }
   return n;
