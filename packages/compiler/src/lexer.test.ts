@@ -56,6 +56,7 @@ describe("Lexer", () => {
         "and",
         "as",
         "case",
+        "const",
         "contains",
         "else",
         "enum",
@@ -80,7 +81,6 @@ describe("Lexer", () => {
         "return",
         "shortcut",
         "true",
-        "var",
       ];
       for (const kw of kws) {
         const toks = tokens(kw);

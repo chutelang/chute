@@ -10,6 +10,8 @@ import type {
   CallExpression,
   CoalesceExpression,
   Condition,
+  ConstDeclaration,
+  ConstDestructure,
   DictionaryLiteral,
   EnumDeclaration,
   Expression,
@@ -31,7 +33,6 @@ import type {
   SubscriptExpression,
   TernaryExpression,
   UnaryExpression,
-  VarDeclaration,
 } from "./ast.ts";
 import type {
   ActionIR,
@@ -252,10 +253,10 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
     case "ExpressionStatement":
       lowerExpressionStatement(stmt.expression, actions, ctx);
       return;
-    case "LetDeclaration":
+    case "ConstDeclaration":
       lowerDeclaration(stmt, actions, ctx);
       return;
-    case "VarDeclaration":
+    case "LetDeclaration":
       lowerDeclaration(stmt, actions, ctx);
       return;
     case "Assignment":
@@ -272,6 +273,9 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
       return;
     case "MenuStatement":
       lowerMenuStatement(stmt, actions, ctx);
+      return;
+    case "ConstDestructure":
+      lowerConstDestructure(stmt, actions, ctx);
       return;
     case "LetDestructure":
       lowerLetDestructure(stmt, actions, ctx);
@@ -301,7 +305,7 @@ function lowerExpressionStatement(expr: Expression, actions: ActionIR[], ctx: Lo
 }
 
 function lowerDeclaration(
-  decl: LetDeclaration | VarDeclaration,
+  decl: ConstDeclaration | LetDeclaration,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
@@ -1243,6 +1247,30 @@ function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): num
       return 2;
     case "hasSuffix":
       return 3;
+  }
+}
+
+function lowerConstDestructure(
+  stmt: ConstDestructure,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  lowerExpression(stmt.initializer, actions, ctx);
+  const sourceName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(sourceName, ctx));
+
+  for (const name of stmt.names) {
+    actions.push(makeGetVariableAction(sourceName, ctx));
+
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", name);
+    actions.push({
+      identifier: "is.workflow.actions.getvalueforkey",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+
+    actions.push(makeSetVariableAction(name, ctx));
   }
 }
 

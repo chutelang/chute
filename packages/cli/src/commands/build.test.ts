@@ -182,7 +182,7 @@ describe("chute build", () => {
     fs.writeFileSync(
       filePath,
       `shortcut { name: "Bad" }
-let x = foo;
+const x = foo;
 `,
     );
 

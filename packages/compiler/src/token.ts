@@ -23,6 +23,7 @@ export enum TokenKind {
   And,
   As,
   Case,
+  Const,
   Contains,
   Else,
   Enum,
@@ -101,6 +102,7 @@ const KEYWORDS: ReadonlyMap<string, TokenKind> = new Map([
   ["and", TokenKind.And],
   ["as", TokenKind.As],
   ["case", TokenKind.Case],
+  ["const", TokenKind.Const],
   ["contains", TokenKind.Contains],
   ["else", TokenKind.Else],
   ["enum", TokenKind.Enum],
@@ -125,7 +127,6 @@ const KEYWORDS: ReadonlyMap<string, TokenKind> = new Map([
   ["return", TokenKind.Return],
   ["shortcut", TokenKind.Shortcut],
   ["true", TokenKind.True],
-  ["var", TokenKind.Var],
 ]);
 
 export function keywordKind(word: string): TokenKind | undefined {

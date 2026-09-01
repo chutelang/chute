@@ -16,6 +16,8 @@ import type {
   CallExpression,
   ComparisonOperator,
   Condition,
+  ConstDeclaration,
+  ConstDestructure,
   DictionaryEntry,
   DictionaryLiteral,
   EnumCaseNode,
@@ -54,7 +56,6 @@ import type {
   SubscriptExpression,
   TernaryExpression,
   TypeAnnotation,
-  VarDeclaration,
 } from "./ast.ts";
 
 export class ParseError extends Error {
@@ -163,8 +164,8 @@ export class Parser {
         return;
       }
       if (
+        kind === TokenKind.Const ||
         kind === TokenKind.Let ||
-        kind === TokenKind.Var ||
         kind === TokenKind.If ||
         kind === TokenKind.For ||
         kind === TokenKind.Repeat ||
@@ -372,11 +373,11 @@ export class Parser {
     if (this.check(TokenKind.Return)) {
       return this.parseReturnStatement();
     }
+    if (this.check(TokenKind.Const)) {
+      return this.parseConstOrDestructure();
+    }
     if (this.check(TokenKind.Let)) {
       return this.parseLetOrDestructure();
-    }
-    if (this.check(TokenKind.Var)) {
-      return this.parseVarDeclaration();
     }
     if (this.check(TokenKind.If)) {
       return this.parseIfStatement();
@@ -428,6 +429,11 @@ export class Parser {
       decl.span.start = start;
       return decl;
     }
+    if (this.check(TokenKind.Const)) {
+      const decl = this.parseConstOrDestructure(true);
+      decl.span.start = start;
+      return decl;
+    }
     if (this.check(TokenKind.Let)) {
       const decl = this.parseLetOrDestructure(true);
       decl.span.start = start;
@@ -435,7 +441,7 @@ export class Parser {
     }
 
     throw this.error(
-      `expected 'enum', 'record', 'func', 'action', or 'let' after 'export', got ${tokenKindName(this.peek().kind)}`,
+      `expected 'enum', 'record', 'func', 'action', 'const', or 'let' after 'export', got ${tokenKindName(this.peek().kind)}`,
       this.peek().span,
     );
   }
@@ -802,12 +808,46 @@ export class Parser {
     };
   }
 
+  private parseConstOrDestructure(exported = false): ConstDeclaration | ConstDestructure {
+    const lookahead = this.tokens.at(this.pos + 1);
+    if (lookahead?.kind === TokenKind.LeftBrace) {
+      return this.parseConstDestructure();
+    }
+    return this.parseConstDeclaration(exported);
+  }
+
   private parseLetOrDestructure(exported = false): LetDeclaration | LetDestructure {
     const lookahead = this.tokens.at(this.pos + 1);
     if (lookahead?.kind === TokenKind.LeftBrace) {
       return this.parseLetDestructure();
     }
     return this.parseLetDeclaration(exported);
+  }
+
+  private parseConstDestructure(): ConstDestructure {
+    const start = this.expect(TokenKind.Const).span.start;
+    this.expect(TokenKind.LeftBrace);
+
+    const names: string[] = [];
+    names.push(tokenValue(this.expect(TokenKind.Identifier)));
+    while (this.check(TokenKind.Comma)) {
+      this.advance();
+      if (this.check(TokenKind.RightBrace)) {
+        break;
+      }
+      names.push(tokenValue(this.expect(TokenKind.Identifier)));
+    }
+    this.expect(TokenKind.RightBrace);
+
+    this.expect(TokenKind.Equal);
+    const initializer = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "ConstDestructure",
+      span: { start, end },
+      names,
+      initializer,
+    };
   }
 
   private parseLetDestructure(): LetDestructure {
@@ -848,6 +888,25 @@ export class Parser {
     };
   }
 
+  private parseConstDeclaration(exported = false): ConstDeclaration {
+    const start = this.expect(TokenKind.Const).span.start;
+    const name = this.expect(TokenKind.Identifier);
+    const typeAnnotation = this.check(TokenKind.Colon)
+      ? this.parseTypeAnnotationWithColon()
+      : undefined;
+    this.expect(TokenKind.Equal);
+    const initializer = this.parseExpression();
+    const end = this.expect(TokenKind.Semicolon).span.end;
+    return {
+      kind: "ConstDeclaration",
+      span: { start, end },
+      exported,
+      name: tokenValue(name),
+      typeAnnotation,
+      initializer,
+    };
+  }
+
   private parseLetDeclaration(exported = false): LetDeclaration {
     const start = this.expect(TokenKind.Let).span.start;
     const name = this.expect(TokenKind.Identifier);
@@ -861,24 +920,6 @@ export class Parser {
       kind: "LetDeclaration",
       span: { start, end },
       exported,
-      name: tokenValue(name),
-      typeAnnotation,
-      initializer,
-    };
-  }
-
-  private parseVarDeclaration(): VarDeclaration {
-    const start = this.expect(TokenKind.Var).span.start;
-    const name = this.expect(TokenKind.Identifier);
-    const typeAnnotation = this.check(TokenKind.Colon)
-      ? this.parseTypeAnnotationWithColon()
-      : undefined;
-    this.expect(TokenKind.Equal);
-    const initializer = this.parseExpression();
-    const end = this.expect(TokenKind.Semicolon).span.end;
-    return {
-      kind: "VarDeclaration",
-      span: { start, end },
       name: tokenValue(name),
       typeAnnotation,
       initializer,
@@ -1930,6 +1971,7 @@ const KEYWORD_TEXTS: ReadonlyMap<TokenKind, string> = new Map([
   [TokenKind.And, "and"],
   [TokenKind.As, "as"],
   [TokenKind.Case, "case"],
+  [TokenKind.Const, "const"],
   [TokenKind.Contains, "contains"],
   [TokenKind.Else, "else"],
   [TokenKind.Enum, "enum"],

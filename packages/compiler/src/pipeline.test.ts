@@ -24,12 +24,12 @@ showResult(text: "second");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
-  it("should compile let declaration with variable use", () => {
+  it("should compile const declaration with variable use", () => {
     const source = `shortcut {
   name: "Variables",
 }
 
-let greeting = "Hello";
+const greeting = "Hello";
 showAlert(text: greeting);`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -40,9 +40,9 @@ showAlert(text: greeting);`;
   name: "Math",
 }
 
-let a = 10;
-let b = 20;
-let c = a + b;
+const a = 10;
+const b = 20;
+const c = a + b;
 showResult(text: "done");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -53,7 +53,7 @@ showResult(text: "done");`;
   name: "Interpolation",
 }
 
-let name = "World";
+const name = "World";
 showAlert(text: "Hello \${name}!");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -64,8 +64,8 @@ showAlert(text: "Hello \${name}!");`;
   name: "Coalesce",
 }
 
-let x: Number? = nil;
-let y = x ?? 42;
+const x: Number? = nil;
+const y = x ?? 42;
 showResult(text: "done");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -76,7 +76,7 @@ showResult(text: "done");`;
   name: "IfElse",
 }
 
-let x = 5;
+const x = 5;
 if x > 3 {
   showAlert(text: "big");
 } else {
@@ -91,7 +91,7 @@ if x > 3 {
   name: "ForLoop",
 }
 
-let items = [1, 2, 3];
+const items = [1, 2, 3];
 for item in items {
   showAlert(text: "item");
 }`;
@@ -133,8 +133,8 @@ menu "Choose one" {
   name: "Ternary",
 }
 
-let x = 5;
-let result = x > 3 ? "big" : "small";
+const x = 5;
+const result = x > 3 ? "big" : "small";
 showAlert(text: result);`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -146,7 +146,7 @@ showAlert(text: result);`;
 }
 
 enum Color { red = "RED", blue = "BLUE" }
-let c = Color.red;
+const c = Color.red;
 showAlert(text: "\${c}");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -158,21 +158,21 @@ showAlert(text: "\${c}");`;
 }
 
 record Point { x: Number, y: Number }
-let p = Point(x: 10, y: 20);
-let sum = p.x + p.y;
+const p = Point(x: 10, y: 20);
+const sum = p.x + p.y;
 showAlert(text: "\${sum}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
-  it("should compile let destructuring", () => {
+  it("should compile const destructuring", () => {
     const source = `shortcut {
   name: "Destructure",
 }
 
 record Point { x: Number, y: Number }
-let p = Point(x: 5, y: 7);
-let { x, y } = p;
+const p = Point(x: 5, y: 7);
+const { x, y } = p;
 showAlert(text: "\${x}");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -184,7 +184,7 @@ showAlert(text: "\${x}");`;
 }
 
 enum Direction { north, south, east, west }
-let dir: Direction = .north;
+const dir: Direction = .north;
 showAlert(text: "\${dir}");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -196,7 +196,7 @@ showAlert(text: "\${dir}");`;
 }
 
 func greet(name: Text = "World") -> Text { return name; }
-let msg = greet();
+const msg = greet();
 showAlert(text: msg);`;
 
     const result = compile(source);
@@ -211,7 +211,7 @@ showAlert(text: msg);`;
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
-let x = add(a: 3, b: 4);
+const x = add(a: 3, b: 4);
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -226,8 +226,8 @@ showResult(text: "\${x}");`;
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 func double(n: Number) -> Number { return n * 2; }
-let x = add(a: 3, b: 4);
-let y = double(n: x);
+const x = add(a: 3, b: 4);
+const y = double(n: x);
 showResult(text: "\${y}");`;
 
     const result = compile(source);
@@ -246,7 +246,7 @@ func abs(n: Number) -> Number {
   }
   return n;
 }
-let x = abs(n: -5);
+const x = abs(n: -5);
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -262,7 +262,7 @@ showResult(text: "\${x}");`;
 
 func double(n: Number) -> Number { return n * 2; }
 func quadruple(n: Number) -> Number { return double(n: double(n: n)); }
-let x = quadruple(n: 3);
+const x = quadruple(n: 3);
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -280,7 +280,7 @@ record Shirt { size: Text, color: Color }
 func makeShirt(size: Text, color: Color) -> Shirt {
   return Shirt(size: size, color: color);
 }
-let s = makeShirt(size: "L", color: Color.red);
+const s = makeShirt(size: "L", color: Color.red);
 showAlert(text: s.size);`;
 
     const result = compile(source);
@@ -294,7 +294,7 @@ showAlert(text: s.size);`;
 }
 
 func double(n: Number) -> Number { return n * 2; }
-let x = 5 |> double;
+const x = 5 |> double;
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -309,7 +309,7 @@ showResult(text: "\${x}");`;
 
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
-let x = 5 |> double |> triple;
+const x = 5 |> double |> triple;
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -323,8 +323,8 @@ showResult(text: "\${x}");`;
 }
 
 func double(n: Number) -> Number { return n * 2; }
-let x: Number? = nil;
-let y = x |>? double;
+const x: Number? = nil;
+const y = x |>? double;
 showResult(text: "done");`;
 
     const result = compile(source);
@@ -338,7 +338,7 @@ showResult(text: "done");`;
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
-let x = 5 |> add(b: 10);
+const x = 5 |> add(b: 10);
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -352,7 +352,7 @@ showResult(text: "\${x}");`;
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
-let x = 5 |> add(b: 10, a: _);
+const x = 5 |> add(b: 10, a: _);
 showResult(text: "\${x}");`;
 
     const result = compile(source);
@@ -365,7 +365,7 @@ showResult(text: "\${x}");`;
   name: "PipeAction",
 }
 
-let msg = "Hello from pipe";
+const msg = "Hello from pipe";
 msg |> showAlert;`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -378,8 +378,8 @@ msg |> showAlert;`;
 
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
-let x: Number? = nil;
-let y = x |>? double |> triple;
+const x: Number? = nil;
+const y = x |>? double |> triple;
 showResult(text: "done");`;
 
     const result = compile(source);
@@ -404,7 +404,7 @@ sendMessage(to: "alice", body: "hello");`;
 }
 
 action search(in: Text, for: Text) -> List<Text> = "com.example.search";
-let results = search(in: "inbox", for: "urgent");
+const results = search(in: "inbox", for: "urgent");
 showResult(text: "done");`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -448,14 +448,14 @@ notification(body: "Task complete");`;
 
   it("should compile getClipboard and setClipboard", () => {
     const source = `shortcut { name: "Clipboard" }
-let text = getClipboard();
+const text = getClipboard();
 setClipboard(value: text);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile getCurrentDate", () => {
     const source = `shortcut { name: "Date" }
-let now = getCurrentDate();
+const now = getCurrentDate();
 showResult(text: now);`;
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -481,7 +481,7 @@ setBluetooth(enabled: true);`;
 
   it("should compile stdlib action in pipeline", () => {
     const source = `shortcut { name: "PipeStdlib" }
-let msg = "hello";
+const msg = "hello";
 msg |> showAlert;`;
     expect(compile(source).main).toMatchSnapshot();
   });
