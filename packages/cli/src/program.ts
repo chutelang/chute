@@ -4,14 +4,13 @@ import { fmt, type FmtOptions } from "./commands/fmt.ts";
 import { init } from "./commands/init.ts";
 import { run } from "./commands/run.ts";
 import { startServer } from "@chutelang/lsp";
-
-const VERSION = "0.1.0";
+import pkg from "../package.json" with { type: "json" };
 
 export function createProgram(): Command {
   const program = new Command()
     .name("chute")
     .description("A strongly-typed language that compiles to Siri Shortcuts.")
-    .version(VERSION, "-v, --version");
+    .version(pkg.version, "-v, --version");
 
   program
     .command("init")
