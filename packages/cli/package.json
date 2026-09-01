@@ -1,5 +1,5 @@
 {
-  "name": "@chute-lang/cli",
+  "name": "@chutelang/cli",
   "version": "0.1.0",
   "bin": {
     "chute": "dist/cli.js"
@@ -14,9 +14,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chute-lang/compiler": "workspace:*",
-    "@chute-lang/formatter": "workspace:*",
-    "@chute-lang/lsp": "workspace:*",
+    "@chutelang/compiler": "workspace:*",
+    "@chutelang/formatter": "workspace:*",
+    "@chutelang/lsp": "workspace:*",
     "commander": "^15.0.0"
   }
 }

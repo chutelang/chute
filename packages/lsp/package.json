@@ -1,5 +1,5 @@
 {
-  "name": "@chute-lang/lsp",
+  "name": "@chutelang/lsp",
   "version": "0.1.0",
   "files": [
     "src"
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chute-lang/compiler": "workspace:*",
+    "@chutelang/compiler": "workspace:*",
     "vscode-languageserver": "^10.1.1",
     "vscode-languageserver-textdocument": "^1.0.14"
   }

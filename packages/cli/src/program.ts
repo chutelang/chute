@@ -3,7 +3,7 @@ import { build, type BuildOptions } from "./commands/build.ts";
 import { fmt, type FmtOptions } from "./commands/fmt.ts";
 import { init } from "./commands/init.ts";
 import { run } from "./commands/run.ts";
-import { startServer } from "@chute-lang/lsp";
+import { startServer } from "@chutelang/lsp";
 
 const VERSION = "0.1.0";
 
