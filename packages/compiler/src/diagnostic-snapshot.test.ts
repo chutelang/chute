@@ -39,11 +39,11 @@ describe("diagnostic snapshots", () => {
 
   describe("parser errors", () => {
     it("should render missing semicolon", () => {
-      expect(renderErrors('shortcut { name: "Test" }\nlet x = 42')).toMatchSnapshot();
+      expect(renderErrors('shortcut { name: "Test" }\nconst x = 42')).toMatchSnapshot();
     });
 
     it("should render empty dictionary error", () => {
-      expect(renderErrors('shortcut { name: "T" }\nlet x = {};')).toMatchSnapshot();
+      expect(renderErrors('shortcut { name: "T" }\nconst x = {};')).toMatchSnapshot();
     });
   });
 
@@ -51,21 +51,21 @@ describe("diagnostic snapshots", () => {
     it("should render undefined variable", () => {
       expect(
         renderErrors(`shortcut { name: "T" }
-let x = foo;`),
+const x = foo;`),
       ).toMatchSnapshot();
     });
 
     it("should render type mismatch", () => {
       expect(
         renderErrors(`shortcut { name: "T" }
-let x: Number = "hello";`),
+const x: Number = "hello";`),
       ).toMatchSnapshot();
     });
 
     it("should render immutable assignment", () => {
       expect(
         renderErrors(`shortcut { name: "T" }
-let x = 1;
+const x = 1;
 x = 2;`),
       ).toMatchSnapshot();
     });
@@ -73,8 +73,8 @@ x = 2;`),
     it("should render multiple checker errors across statements", () => {
       expect(
         renderErrors(`shortcut { name: "T" }
-let x = foo;
-let y = bar;`),
+const x = foo;
+const y = bar;`),
       ).toMatchSnapshot();
     });
   });
@@ -82,8 +82,8 @@ let y = bar;`),
   describe("warnings with errors", () => {
     it("should render warnings alongside errors", () => {
       const source = `shortcut { name: "T" }
-let x: Quantity<parsecs> = 5;
-let y = badVar;`;
+const x: Quantity<parsecs> = 5;
+const y = badVar;`;
       expect(renderErrors(source)).toMatchSnapshot();
     });
   });
@@ -99,11 +99,11 @@ let y = badVar;`;
   describe("multi-line source context", () => {
     it("should show the correct source line for errors deep in the file", () => {
       const source = `shortcut { name: "T" }
-let a = 1;
-let b = 2;
-let c = 3;
-let d = 4;
-let e = foo;`;
+const a = 1;
+const b = 2;
+const c = 3;
+const d = 4;
+const e = foo;`;
       const output = renderErrors(source);
       expect(output).toContain("6:");
       expect(output).toMatchSnapshot();

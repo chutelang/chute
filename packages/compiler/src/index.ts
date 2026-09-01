@@ -49,6 +49,8 @@ export type {
   Comparison,
   ComparisonOperator,
   Condition,
+  ConstDeclaration,
+  ConstDestructure,
   DictionaryEntry,
   DictionaryLiteral,
   DotNameExpression,
@@ -110,7 +112,6 @@ export type {
   TypeAnnotation,
   TypeTest,
   UnaryExpression,
-  VarDeclaration,
   OrCondition,
 } from "./ast.ts";
 

@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`diagnostic snapshots > checker errors > should render immutable assignment 1`] = `
-"error[CHT205]: cannot assign to 'x' because it is a let binding
+"error[CHT205]: cannot assign to 'x' because it is a const binding
  --> test.chute:3:1
   |
  3 | x = 2;
   | ^^^^^^
-  | = help: use 'var' instead of 'let' to make it mutable
+  | = help: use 'let' instead of 'const' to make it mutable
   |
 1 error emitted
 "
@@ -14,16 +14,16 @@ exports[`diagnostic snapshots > checker errors > should render immutable assignm
 
 exports[`diagnostic snapshots > checker errors > should render multiple checker errors across statements 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> test.chute:2:9
+ --> test.chute:2:11
   |
- 2 | let x = foo;
-  |         ^^^
+ 2 | const x = foo;
+  |           ^^^
   |
 error[CHT201]: undefined variable 'bar'
- --> test.chute:3:9
+ --> test.chute:3:11
   |
- 3 | let y = bar;
-  |         ^^^
+ 3 | const y = bar;
+  |           ^^^
   |
 2 errors emitted
 "
@@ -33,8 +33,8 @@ exports[`diagnostic snapshots > checker errors > should render type mismatch 1`]
 "error[CHT200]: cannot assign Text to Number
  --> test.chute:2:1
   |
- 2 | let x: Number = "hello";
-  | ^^^^^^^^^^^^^^^^^^^^^^^^
+ 2 | const x: Number = "hello";
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^
   |
 1 error emitted
 "
@@ -42,10 +42,10 @@ exports[`diagnostic snapshots > checker errors > should render type mismatch 1`]
 
 exports[`diagnostic snapshots > checker errors > should render undefined variable 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> test.chute:2:9
+ --> test.chute:2:11
   |
- 2 | let x = foo;
-  |         ^^^
+ 2 | const x = foo;
+  |           ^^^
   |
 1 error emitted
 "
@@ -114,10 +114,10 @@ exports[`diagnostic snapshots > lexer errors > should render unterminated string
 
 exports[`diagnostic snapshots > multi-line source context > should show the correct source line for errors deep in the file 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> test.chute:6:9
+ --> test.chute:6:11
   |
- 6 | let e = foo;
-  |         ^^^
+ 6 | const e = foo;
+  |           ^^^
   |
 1 error emitted
 "
@@ -125,17 +125,17 @@ exports[`diagnostic snapshots > multi-line source context > should show the corr
 
 exports[`diagnostic snapshots > parser errors > should render empty dictionary error 1`] = `
 "error[CHT103]: empty dictionary must use {:} syntax
- --> test.chute:2:10
+ --> test.chute:2:12
   |
- 2 | let x = {};
-  |          ^
-  |          = help: use {:} instead of {}
+ 2 | const x = {};
+  |            ^
+  |            = help: use {:} instead of {}
   |
 error[CHT100]: expected expression, got ';'
- --> test.chute:2:11
+ --> test.chute:2:13
   |
- 2 | let x = {};
-  |           ^
+ 2 | const x = {};
+  |             ^
   |
 2 errors emitted
 "
@@ -143,10 +143,10 @@ error[CHT100]: expected expression, got ';'
 
 exports[`diagnostic snapshots > parser errors > should render missing semicolon 1`] = `
 "error[CHT100]: expected ';', got end of file
- --> test.chute:2:11
+ --> test.chute:2:13
   |
- 2 | let x = 42
-  |           ^
+ 2 | const x = 42
+  |             ^
   |
 1 error emitted
 "
@@ -154,16 +154,16 @@ exports[`diagnostic snapshots > parser errors > should render missing semicolon 
 
 exports[`diagnostic snapshots > warnings with errors > should render warnings alongside errors 1`] = `
 "error[CHT201]: undefined variable 'badVar'
- --> test.chute:3:9
+ --> test.chute:3:11
   |
- 3 | let y = badVar;
-  |         ^^^^^^
+ 3 | const y = badVar;
+  |           ^^^^^^
   |
 warning[CHT900]: unknown quantity unit 'parsecs'
- --> test.chute:2:8
+ --> test.chute:2:10
   |
- 2 | let x: Quantity<parsecs> = 5;
-  |        ^^^^^^^^^^^^^^^^^
+ 2 | const x: Quantity<parsecs> = 5;
+  |          ^^^^^^^^^^^^^^^^^
   |
 1 error, 1 warning emitted
 "

@@ -6,12 +6,12 @@ import { fmt } from "./fmt.ts";
 
 const TEST_DIR = path.join(import.meta.dirname, "__test_fmt__");
 
-const UNFORMATTED = `let   x  =  1 ;
-let   y  =  2 ;
+const UNFORMATTED = `const   x  =  1 ;
+const   y  =  2 ;
 `;
 
-const FORMATTED = `let x = 1;
-let y = 2;
+const FORMATTED = `const x = 1;
+const y = 2;
 `;
 
 interface FakeIOResult {
@@ -184,7 +184,7 @@ describe("chute fmt", () => {
 
   it("should handle parse errors gracefully", () => {
     const filePath = path.join(TEST_DIR, "bad.chute");
-    fs.writeFileSync(filePath, "let x = @@@;");
+    fs.writeFileSync(filePath, "const x = @@@;");
 
     const fake = createFakeIO();
     fmt([filePath], { check: false }, fake.io);

@@ -82,21 +82,29 @@ import "b" as B;
     });
   });
 
-  describe("let and var declarations", () => {
-    it("should format a let declaration", () => {
-      expectFormat("let  x  =  1 ;", "let x = 1;\n");
+  describe("const and let declarations", () => {
+    it("should format a const declaration", () => {
+      expectFormat("const  x  =  1 ;", "const x = 1;\n");
     });
 
-    it("should format a let with type annotation", () => {
-      expectFormat("let x:Number=1;", "let x: Number = 1;\n");
+    it("should format a const with type annotation", () => {
+      expectFormat("const x:Number=1;", "const x: Number = 1;\n");
+    });
+
+    it("should format an exported const", () => {
+      expectFormat("export  const  x = 1;", "export const x = 1;\n");
+    });
+
+    it("should format a let declaration", () => {
+      expectFormat("let  x  =  1 ;", "let x = 1;\n");
     });
 
     it("should format an exported let", () => {
       expectFormat("export  let  x = 1;", "export let x = 1;\n");
     });
 
-    it("should format a var declaration", () => {
-      expectFormat("var  x  =  1 ;", "var x = 1;\n");
+    it("should format a const destructure", () => {
+      expectFormat("const  { a , b } = getValues() ;", "const {a, b} = getValues();\n");
     });
 
     it("should format a let destructure", () => {
@@ -104,11 +112,11 @@ import "b" as B;
     });
 
     it("should format optional type annotation", () => {
-      expectFormat("let x:Number?=nil;", "let x: Number? = nil;\n");
+      expectFormat("const x:Number?=nil;", "const x: Number? = nil;\n");
     });
 
     it("should format list type annotation", () => {
-      expectFormat("let x:List<Number>  =  [];", "let x: List<Number> = [];\n");
+      expectFormat("const x:List<Number>  =  [];", "const x: List<Number> = [];\n");
     });
   });
 
@@ -445,7 +453,7 @@ import "b" as B;
     });
 
     it("should format empty dictionary", () => {
-      expectFormat("let x = {:};", "let x = {:};\n");
+      expectFormat("const x = {:};", "const x = {:};\n");
     });
 
     it("should format dot name expression", () => {
@@ -483,25 +491,25 @@ import "b" as B;
     it("should preserve a leading comment", () => {
       expectFormat(
         `// comment
-let x = 1;`,
+const x = 1;`,
         `// comment
-let x = 1;
+const x = 1;
 `,
       );
     });
 
     it("should preserve a trailing comment", () => {
-      expectFormat("let x = 1; // comment", "let x = 1; // comment\n");
+      expectFormat("const x = 1; // comment", "const x = 1; // comment\n");
     });
 
     it("should preserve comments between statements", () => {
       expectFormat(
-        `let x = 1;
+        `const x = 1;
 // between
-let y = 2;`,
-        `let x = 1;
+const y = 2;`,
+        `const x = 1;
 // between
-let y = 2;
+const y = 2;
 `,
       );
     });
@@ -509,18 +517,18 @@ let y = 2;
     it("should preserve block comments", () => {
       expectFormat(
         `/* block comment */
-let x = 1;`,
+const x = 1;`,
         `/* block comment */
-let x = 1;
+const x = 1;
 `,
       );
     });
 
     it("should preserve comment at end of file", () => {
       expectFormat(
-        `let x = 1;
+        `const x = 1;
 // end comment`,
-        `let x = 1;
+        `const x = 1;
 // end comment
 `,
       );
@@ -574,12 +582,12 @@ shortcut {
     it("should add blank line between metadata and body", () => {
       expectFormat(
         `shortcut{name:"T"}
-let x = 1;`,
+const x = 1;`,
         `shortcut {
   name: "T",
 }
 
-let x = 1;
+const x = 1;
 `,
       );
     });
@@ -609,8 +617,8 @@ shortcut {
 }
 
 // Global state
-let x: Number = 1;
-var y = "hello";
+const x: Number = 1;
+let y = "hello";
 
 enum Color {
   Red,
@@ -643,7 +651,7 @@ for item in list {
 
   describe("qualified types", () => {
     it("should format a qualified type annotation", () => {
-      expectFormat("let x: Math.Vector = v;", "let x: Math.Vector = v;\n");
+      expectFormat("const x: Math.Vector = v;", "const x: Math.Vector = v;\n");
     });
   });
 

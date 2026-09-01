@@ -176,17 +176,17 @@ describe("Parser", () => {
     });
   });
 
-  describe("let declarations", () => {
-    it("should parse a let declaration with string initializer", () => {
-      const ast = parse('let x = "hello";');
+  describe("const declarations", () => {
+    it("should parse a const declaration with string initializer", () => {
+      const ast = parse('const x = "hello";');
       expect(ast.body).toHaveLength(1);
       const decl = ast.body.at(0);
       expect(decl).toMatchObject({
-        kind: "LetDeclaration",
+        kind: "ConstDeclaration",
         name: "x",
         typeAnnotation: undefined,
       });
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "StringLiteral",
           value: "hello",
@@ -194,14 +194,14 @@ describe("Parser", () => {
       }
     });
 
-    it("should parse a let declaration with type annotation", () => {
-      const ast = parse('let x: Text = "hello";');
+    it("should parse a const declaration with type annotation", () => {
+      const ast = parse('const x: Text = "hello";');
       const decl = ast.body.at(0);
       expect(decl).toMatchObject({
-        kind: "LetDeclaration",
+        kind: "ConstDeclaration",
         name: "x",
       });
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.typeAnnotation).toMatchObject({
           kind: "TypeAnnotation",
           optional: false,
@@ -214,10 +214,10 @@ describe("Parser", () => {
       }
     });
 
-    it("should parse a let with optional type annotation", () => {
-      const ast = parse("let x: Number? = nil;");
+    it("should parse a const with optional type annotation", () => {
+      const ast = parse("const x: Number? = nil;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.typeAnnotation?.optional).toBe(true);
         expect(decl.typeAnnotation?.base).toMatchObject({
           kind: "NamedType",
@@ -226,10 +226,10 @@ describe("Parser", () => {
       }
     });
 
-    it("should parse a let with List type", () => {
-      const ast = parse("let xs: List<Number> = nil;");
+    it("should parse a const with List type", () => {
+      const ast = parse("const xs: List<Number> = nil;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.typeAnnotation?.base).toMatchObject({
           kind: "ListType",
         });
@@ -242,10 +242,10 @@ describe("Parser", () => {
       }
     });
 
-    it("should parse a let with Quantity type", () => {
-      const ast = parse("let d: Quantity<km> = nil;");
+    it("should parse a const with Quantity type", () => {
+      const ast = parse("const d: Quantity<km> = nil;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.typeAnnotation?.base).toMatchObject({
           kind: "QuantityType",
           unit: "km",
@@ -253,10 +253,10 @@ describe("Parser", () => {
       }
     });
 
-    it("should parse a let with qualified type", () => {
-      const ast = parse("let r: helpers.Receipt = nil;");
+    it("should parse a const with qualified type", () => {
+      const ast = parse("const r: helpers.Receipt = nil;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.typeAnnotation?.base).toMatchObject({
           kind: "NamedType",
           qualifier: "helpers",
@@ -266,22 +266,37 @@ describe("Parser", () => {
     });
   });
 
-  describe("var declarations", () => {
-    it("should parse a var declaration", () => {
-      const ast = parse("var count = 0;");
+  describe("let declarations", () => {
+    it("should parse a let declaration", () => {
+      const ast = parse("let count = 0;");
       expect(ast.body.at(0)).toMatchObject({
-        kind: "VarDeclaration",
+        kind: "LetDeclaration",
         name: "count",
       });
     });
 
-    it("should parse a var declaration with type annotation", () => {
-      const ast = parse("var count: Number = 0;");
+    it("should parse a let declaration with type annotation", () => {
+      const ast = parse("let count: Number = 0;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "VarDeclaration") {
+      if (decl?.kind === "LetDeclaration") {
         expect(decl.typeAnnotation).toMatchObject({
           kind: "TypeAnnotation",
           base: { kind: "NamedType", name: "Number" },
+        });
+      }
+    });
+  });
+
+  describe("let destructuring", () => {
+    it("should parse let destructure with two bindings", () => {
+      const ast = parse("let { x, y } = point;");
+      const stmt = ast.body.at(0);
+      expect(stmt?.kind).toBe("LetDestructure");
+      if (stmt?.kind === "LetDestructure") {
+        expect(stmt.names).toEqual(["x", "y"]);
+        expect(stmt.initializer).toMatchObject({
+          kind: "Identifier",
+          name: "point",
         });
       }
     });
@@ -368,9 +383,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("arithmetic expressions", () => {
     it("should parse addition", () => {
-      const ast = parse("let x = a + b;");
+      const ast = parse("const x = a + b;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "BinaryExpression",
           operator: "+",
@@ -379,9 +394,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse multiplication with higher precedence than addition", () => {
-      const ast = parse("let x = a + b * c;");
+      const ast = parse("const x = a + b * c;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         const expr = decl.initializer;
         expect(expr.kind).toBe("BinaryExpression");
         if (expr.kind === "BinaryExpression") {
@@ -396,9 +411,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse left-associative addition", () => {
-      const ast = parse("let x = a + b + c;");
+      const ast = parse("const x = a + b + c;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         const expr = decl.initializer;
         if (expr.kind === "BinaryExpression") {
           expect(expr.operator).toBe("+");
@@ -413,9 +428,9 @@ showAlert(text: "Hello from Chute!");`;
 
     it("should parse all arithmetic operators", () => {
       for (const op of ["+", "-", "*", "/", "%"]) {
-        const ast = parse(`let x = a ${op} b;`);
+        const ast = parse(`const x = a ${op} b;`);
         const decl = ast.body.at(0);
-        if (decl?.kind === "LetDeclaration") {
+        if (decl?.kind === "ConstDeclaration") {
           expect(decl.initializer).toMatchObject({
             kind: "BinaryExpression",
             operator: op,
@@ -425,9 +440,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse unary negation", () => {
-      const ast = parse("let x = -a;");
+      const ast = parse("const x = -a;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "UnaryExpression",
           operator: "-",
@@ -442,9 +457,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse unary negation of parenthesized expression", () => {
-      const ast = parse("let x = -(a + b);");
+      const ast = parse("const x = -(a + b);");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer.kind).toBe("UnaryExpression");
         if (decl.initializer.kind === "UnaryExpression") {
           expect(decl.initializer.operand.kind).toBe("BinaryExpression");
@@ -453,9 +468,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should give unary higher precedence than multiplication", () => {
-      const ast = parse("let x = -a * b;");
+      const ast = parse("const x = -a * b;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "BinaryExpression",
           operator: "*",
@@ -472,9 +487,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("nil coalescing", () => {
     it("should parse nil coalescing", () => {
-      const ast = parse("let x = a ?? b;");
+      const ast = parse("const x = a ?? b;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "CoalesceExpression",
         });
@@ -492,9 +507,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should give ?? lower precedence than +", () => {
-      const ast = parse("let x = a + b ?? c;");
+      const ast = parse("const x = a + b ?? c;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer.kind).toBe("CoalesceExpression");
         if (decl.initializer.kind === "CoalesceExpression") {
           expect(decl.initializer.left.kind).toBe("BinaryExpression");
@@ -505,9 +520,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("optional chaining", () => {
     it("should parse optional member access", () => {
-      const ast = parse("let x = a?.name;");
+      const ast = parse("const x = a?.name;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "OptionalMemberExpression",
           property: "name",
@@ -524,9 +539,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("subscript expressions", () => {
     it("should parse subscript access", () => {
-      const ast = parse("let x = xs[0];");
+      const ast = parse("const x = xs[0];");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "SubscriptExpression",
         });
@@ -546,9 +561,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("string interpolation", () => {
     it("should parse interpolated string with one expression", () => {
-      const ast = parse('let x = "hello ${name}";');
+      const ast = parse('const x = "hello ${name}";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer.kind).toBe("InterpolatedString");
         if (decl.initializer.kind === "InterpolatedString") {
           expect(decl.initializer.parts).toHaveLength(2);
@@ -564,9 +579,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse interpolated string with trailing text", () => {
-      const ast = parse('let x = "hello ${name} world";');
+      const ast = parse('const x = "hello ${name} world";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "InterpolatedString") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "InterpolatedString") {
         expect(decl.initializer.parts).toHaveLength(3);
         expect(decl.initializer.parts.at(2)).toMatchObject({
           kind: "TextPart",
@@ -576,9 +591,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse interpolated string with multiple expressions", () => {
-      const ast = parse('let x = "${a} and ${b}";');
+      const ast = parse('const x = "${a} and ${b}";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "InterpolatedString") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "InterpolatedString") {
         expect(decl.initializer.parts).toHaveLength(4);
         expect(decl.initializer.parts.at(0)?.kind).toBe("TextPart");
         expect(decl.initializer.parts.at(1)?.kind).toBe("ExpressionPart");
@@ -588,9 +603,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse complex expression inside interpolation", () => {
-      const ast = parse('let x = "result: ${a + b}";');
+      const ast = parse('const x = "result: ${a + b}";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "InterpolatedString") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "InterpolatedString") {
         const exprPart = decl.initializer.parts.at(1);
         if (exprPart?.kind === "ExpressionPart") {
           expect(exprPart.expression.kind).toBe("BinaryExpression");
@@ -601,9 +616,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("list literals", () => {
     it("should parse empty list", () => {
-      const ast = parse("let x = [];");
+      const ast = parse("const x = [];");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "ListLiteral",
           elements: [],
@@ -612,17 +627,17 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse list with elements", () => {
-      const ast = parse("let x = [1, 2, 3];");
+      const ast = parse("const x = [1, 2, 3];");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "ListLiteral") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "ListLiteral") {
         expect(decl.initializer.elements).toHaveLength(3);
       }
     });
 
     it("should parse list with trailing comma", () => {
-      const ast = parse("let x = [1, 2,];");
+      const ast = parse("const x = [1, 2,];");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "ListLiteral") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "ListLiteral") {
         expect(decl.initializer.elements).toHaveLength(2);
       }
     });
@@ -630,9 +645,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("dictionary literals", () => {
     it("should parse empty dictionary", () => {
-      const ast = parse("let x = {:};");
+      const ast = parse("const x = {:};");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "DictionaryLiteral",
           entries: [],
@@ -641,9 +656,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse dictionary with entries", () => {
-      const ast = parse('let x = {"name": "Alice", "age": 30};');
+      const ast = parse('const x = {"name": "Alice", "age": 30};');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "DictionaryLiteral") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "DictionaryLiteral") {
         expect(decl.initializer.entries).toHaveLength(2);
         expect(decl.initializer.entries.at(0)?.key).toMatchObject({
           kind: "StringLiteral",
@@ -657,15 +672,15 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse dictionary with trailing comma", () => {
-      const ast = parse('let x = {"a": 1,};');
+      const ast = parse('const x = {"a": 1,};');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "DictionaryLiteral") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "DictionaryLiteral") {
         expect(decl.initializer.entries).toHaveLength(1);
       }
     });
 
     it("should reject bare {} as empty dictionary", () => {
-      expect(() => parse("let x = {};")).toThrow(CompileError);
+      expect(() => parse("const x = {};")).toThrow(CompileError);
     });
   });
 
@@ -952,9 +967,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("ternary expressions", () => {
     it("should parse ternary with comparison condition", () => {
-      const ast = parse('let x = a > 5 ? "big" : "small";');
+      const ast = parse('const x = a > 5 ? "big" : "small";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer.kind).toBe("TernaryExpression");
         if (decl.initializer.kind === "TernaryExpression") {
           expect(decl.initializer.condition).toMatchObject({
@@ -974,9 +989,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse ternary with boolean reference condition", () => {
-      const ast = parse('let x = flag ? "yes" : "no";');
+      const ast = parse('const x = flag ? "yes" : "no";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "TernaryExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "TernaryExpression") {
         expect(decl.initializer.condition).toMatchObject({
           kind: "BooleanReference",
         });
@@ -984,9 +999,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse ternary with not condition", () => {
-      const ast = parse('let x = not flag ? "no" : "yes";');
+      const ast = parse('const x = not flag ? "no" : "yes";');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "TernaryExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "TernaryExpression") {
         expect(decl.initializer.condition.kind).toBe("NotCondition");
       }
     });
@@ -994,9 +1009,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("#index expression", () => {
     it("should parse #index in expression position", () => {
-      const ast = parse("let x = #index;");
+      const ast = parse("const x = #index;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({ kind: "HashIndexExpression" });
       }
     });
@@ -1125,9 +1140,9 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("dot-name expressions", () => {
     it("should parse dot-name in expression position", () => {
-      const ast = parse("let x = .north;");
+      const ast = parse("const x = .north;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer).toMatchObject({
           kind: "DotNameExpression",
           name: "north",
@@ -1136,12 +1151,12 @@ showAlert(text: "Hello from Chute!");`;
     });
   });
 
-  describe("let destructuring", () => {
-    it("should parse let destructure with two bindings", () => {
-      const ast = parse("let { x, y } = point;");
+  describe("const destructuring", () => {
+    it("should parse const destructure with two bindings", () => {
+      const ast = parse("const { x, y } = point;");
       const stmt = ast.body.at(0);
-      expect(stmt?.kind).toBe("LetDestructure");
-      if (stmt?.kind === "LetDestructure") {
+      expect(stmt?.kind).toBe("ConstDestructure");
+      if (stmt?.kind === "ConstDestructure") {
         expect(stmt.names).toEqual(["x", "y"]);
         expect(stmt.initializer).toMatchObject({
           kind: "Identifier",
@@ -1150,18 +1165,18 @@ showAlert(text: "Hello from Chute!");`;
       }
     });
 
-    it("should parse let destructure with trailing comma", () => {
-      const ast = parse("let { a, b, } = rec;");
+    it("should parse const destructure with trailing comma", () => {
+      const ast = parse("const { a, b, } = rec;");
       const stmt = ast.body.at(0);
-      if (stmt?.kind === "LetDestructure") {
+      if (stmt?.kind === "ConstDestructure") {
         expect(stmt.names).toEqual(["a", "b"]);
       }
     });
 
-    it("should parse let destructure with single binding", () => {
-      const ast = parse("let { name } = user;");
+    it("should parse const destructure with single binding", () => {
+      const ast = parse("const { name } = user;");
       const stmt = ast.body.at(0);
-      if (stmt?.kind === "LetDestructure") {
+      if (stmt?.kind === "ConstDestructure") {
         expect(stmt.names).toEqual(["name"]);
       }
     });
@@ -1238,10 +1253,10 @@ showAlert(text: "Hello from Chute!");`;
 
   describe("pipelines", () => {
     it("should parse a simple |> pipeline", () => {
-      const ast = parse("let x = a |> foo;");
+      const ast = parse("const x = a |> foo;");
       const decl = ast.body.at(0);
-      expect(decl?.kind).toBe("LetDeclaration");
-      if (decl?.kind === "LetDeclaration") {
+      expect(decl?.kind).toBe("ConstDeclaration");
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.initializer.kind).toBe("PipelineExpression");
         if (decl.initializer.kind === "PipelineExpression") {
           expect(decl.initializer.input.kind).toBe("Identifier");
@@ -1257,9 +1272,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse a multi-stage pipeline", () => {
-      const ast = parse("let x = a |> foo |> bar;");
+      const ast = parse("const x = a |> foo |> bar;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration") {
+      if (decl?.kind === "ConstDeclaration") {
         const pipe = decl.initializer;
         expect(pipe.kind).toBe("PipelineExpression");
         if (pipe.kind === "PipelineExpression") {
@@ -1273,18 +1288,18 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse |>? optional pipeline operator", () => {
-      const ast = parse("let x = a |>? foo |> bar;");
+      const ast = parse("const x = a |>? foo |> bar;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "PipelineExpression") {
         expect(decl.initializer.stages.at(0)?.operator).toBe("|>?");
         expect(decl.initializer.stages.at(1)?.operator).toBe("|>");
       }
     });
 
     it("should parse a stage with arguments", () => {
-      const ast = parse('let x = a |> foo(label: "hi");');
+      const ast = parse('const x = a |> foo(label: "hi");');
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "PipelineExpression") {
         const stage = decl.initializer.stages.at(0);
         expect(stage?.args).toHaveLength(1);
         expect(stage?.args.at(0)?.label).toBe("label");
@@ -1292,9 +1307,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse a stage with _ placeholder", () => {
-      const ast = parse("let x = a |> foo(_, label: b);");
+      const ast = parse("const x = a |> foo(_, label: b);");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "PipelineExpression") {
         const stage = decl.initializer.stages.at(0);
         expect(stage?.args).toHaveLength(2);
         expect(stage?.args.at(0)?.value.kind).toBe("PlaceholderExpression");
@@ -1302,9 +1317,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse a qualified stage name", () => {
-      const ast = parse("let x = a |> Scan.parse;");
+      const ast = parse("const x = a |> Scan.parse;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "PipelineExpression") {
         const stage = decl.initializer.stages.at(0);
         expect(stage?.callee.kind).toBe("MemberExpression");
         if (stage?.callee.kind === "MemberExpression") {
@@ -1318,9 +1333,9 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse a static member stage name", () => {
-      const ast = parse("let x = a |> helpers.Scan.parse;");
+      const ast = parse("const x = a |> helpers.Scan.parse;");
       const decl = ast.body.at(0);
-      if (decl?.kind === "LetDeclaration" && decl.initializer.kind === "PipelineExpression") {
+      if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "PipelineExpression") {
         const stage = decl.initializer.stages.at(0);
         expect(stage?.callee.kind).toBe("MemberExpression");
         if (stage?.callee.kind === "MemberExpression") {
@@ -1435,19 +1450,39 @@ showAlert(text: "Hello from Chute!");`;
     });
   });
 
-  describe("export let", () => {
-    it("should parse export let declaration", () => {
-      const ast = parse('export let greeting = "hello";');
+  describe("export const", () => {
+    it("should parse export const declaration", () => {
+      const ast = parse('export const greeting = "hello";');
       const decl = ast.body.at(0);
-      expect(decl?.kind).toBe("LetDeclaration");
-      if (decl?.kind === "LetDeclaration") {
+      expect(decl?.kind).toBe("ConstDeclaration");
+      if (decl?.kind === "ConstDeclaration") {
         expect(decl.exported).toBe(true);
         expect(decl.name).toBe("greeting");
       }
     });
 
+    it("should parse non-exported const with exported false", () => {
+      const ast = parse("const x = 42;");
+      const decl = ast.body.at(0);
+      if (decl?.kind === "ConstDeclaration") {
+        expect(decl.exported).toBe(false);
+      }
+    });
+  });
+
+  describe("export let", () => {
+    it("should parse export let declaration", () => {
+      const ast = parse("export let count = 0;");
+      const decl = ast.body.at(0);
+      expect(decl?.kind).toBe("LetDeclaration");
+      if (decl?.kind === "LetDeclaration") {
+        expect(decl.exported).toBe(true);
+        expect(decl.name).toBe("count");
+      }
+    });
+
     it("should parse non-exported let with exported false", () => {
-      const ast = parse("let x = 42;");
+      const ast = parse("let count = 0;");
       const decl = ast.body.at(0);
       if (decl?.kind === "LetDeclaration") {
         expect(decl.exported).toBe(false);

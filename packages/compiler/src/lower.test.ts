@@ -21,17 +21,17 @@ function lowerSource(source: string): ActionIR[] {
 }
 
 describe("lower", () => {
-  describe("let declarations", () => {
-    it("should lower let with string to text + setvariable", () => {
-      const actions = lowerSource('shortcut { name: "Test" } let x = "hello";');
+  describe("const declarations", () => {
+    it("should lower const with string to text + setvariable", () => {
+      const actions = lowerSource('shortcut { name: "Test" } const x = "hello";');
       expect(actions).toHaveLength(2);
       expect(actions.at(0)?.identifier).toBe("is.workflow.actions.gettext");
       expect(actions.at(1)?.identifier).toBe("is.workflow.actions.setvariable");
       expect(actions.at(1)?.parameters.get("WFVariableName")).toBe("x");
     });
 
-    it("should lower let with number to number + setvariable", () => {
-      const actions = lowerSource('shortcut { name: "Test" } let x = 42;');
+    it("should lower const with number to number + setvariable", () => {
+      const actions = lowerSource('shortcut { name: "Test" } const x = 42;');
       expect(actions.at(0)?.identifier).toBe("is.workflow.actions.number");
       expect(actions.at(0)?.parameters.get("WFNumberActionNumber")).toBe(42);
       expect(actions.at(1)?.identifier).toBe("is.workflow.actions.setvariable");
@@ -40,7 +40,7 @@ describe("lower", () => {
 
   describe("assignment", () => {
     it("should lower assignment to setvariable", () => {
-      const actions = lowerSource('shortcut { name: "Test" } var x = 1; x = 2;');
+      const actions = lowerSource('shortcut { name: "Test" } let x = 1; x = 2;');
       expect(actions).toHaveLength(4);
       expect(actions.at(3)?.identifier).toBe("is.workflow.actions.setvariable");
     });
@@ -48,7 +48,9 @@ describe("lower", () => {
 
   describe("arithmetic", () => {
     it("should lower addition to getvariable + math", () => {
-      const actions = lowerSource('shortcut { name: "Test" } let a = 1; let b = 2; let c = a + b;');
+      const actions = lowerSource(
+        'shortcut { name: "Test" } const a = 1; const b = 2; const c = a + b;',
+      );
       const mathActions = actions.filter((a) => a.identifier === "is.workflow.actions.math");
       expect(mathActions).toHaveLength(1);
       expect(mathActions.at(0)?.parameters.get("WFMathOperation")).toBe("+");
@@ -56,7 +58,7 @@ describe("lower", () => {
 
     it("should preserve the left operand across a compound right operand", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let a = 1; let b = 2; let c = 3; let d = a + b * c;',
+        'shortcut { name: "Test" } const a = 1; const b = 2; const c = 3; const d = a + b * c;',
       );
 
       const identifiers = actions.map((action) => action.identifier);
@@ -109,7 +111,7 @@ describe("lower", () => {
   describe("nil coalescing", () => {
     it("should lower ?? to conditional actions", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let a: Number? = nil; let b = a ?? 0;',
+        'shortcut { name: "Test" } const a: Number? = nil; const b = a ?? 0;',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -128,7 +130,7 @@ describe("lower", () => {
   describe("string interpolation", () => {
     it("should lower interpolated string to text action with attachments", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let name = "world"; let g = "hello ${name}";',
+        'shortcut { name: "Test" } const name = "world"; const g = "hello ${name}";',
       );
       const textActions = actions.filter((a) => a.identifier === "is.workflow.actions.gettext");
       expect(textActions.length).toBeGreaterThanOrEqual(1);
@@ -141,7 +143,7 @@ describe("lower", () => {
   describe("if statement", () => {
     it("should lower if to conditional start/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let x = 5; if x > 3 { showAlert(text: "big"); }',
+        'shortcut { name: "Test" } const x = 5; if x > 3 { showAlert(text: "big"); }',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -156,7 +158,7 @@ describe("lower", () => {
 
     it("should lower if/else to conditional start/otherwise/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let x = 5; if x > 3 { showAlert(text: "big"); } else { showAlert(text: "small"); }',
+        'shortcut { name: "Test" } const x = 5; if x > 3 { showAlert(text: "big"); } else { showAlert(text: "small"); }',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -171,7 +173,7 @@ describe("lower", () => {
   describe("for statement", () => {
     it("should lower for to repeat.each start/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let items = [1, 2]; for item in items { showAlert(text: "go"); }',
+        'shortcut { name: "Test" } const items = [1, 2]; for item in items { showAlert(text: "go"); }',
       );
       const repeats = actions.filter((a) => a.identifier === "is.workflow.actions.repeat.each");
       expect(repeats).toHaveLength(2);
@@ -184,7 +186,7 @@ describe("lower", () => {
 
     it("should emit setvariable for loop variable after repeat start", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let items = [1, 2]; for item in items { showAlert(text: "go"); }',
+        'shortcut { name: "Test" } const items = [1, 2]; for item in items { showAlert(text: "go"); }',
       );
       const repeatIdx = actions.findIndex(
         (a) => a.identifier === "is.workflow.actions.repeat.each",
@@ -229,7 +231,7 @@ describe("lower", () => {
   describe("ternary expression", () => {
     it("should lower ternary to conditional actions", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let x = 5; let y = x > 3 ? "big" : "small";',
+        'shortcut { name: "Test" } const x = 5; const y = x > 3 ? "big" : "small";',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -244,7 +246,7 @@ describe("lower", () => {
   describe("#index", () => {
     it("should lower #index to getvariable for Repeat Index", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } let items = [1, 2]; for item in items { let idx = #index; }',
+        'shortcut { name: "Test" } const items = [1, 2]; for item in items { const idx = #index; }',
       );
       const getVars = actions.filter((a) => a.identifier === "is.workflow.actions.getvariable");
       const indexRef = getVars.find((a) => {
@@ -271,7 +273,7 @@ describe("lower", () => {
 
     it("should lower enum member access to backing string", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" } let c = Color.red;',
+        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" } const c = Color.red;',
       );
       expect(actions.at(0)?.identifier).toBe("is.workflow.actions.gettext");
       expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("RED");
@@ -281,21 +283,21 @@ describe("lower", () => {
 
     it("should lower enum with implicit case values to case name", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } enum Dir { north, south } let d = Dir.north;',
+        'shortcut { name: "Test" } enum Dir { north, south } const d = Dir.north;',
       );
       expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("north");
     });
 
     it("should lower enum with default value to prefixed name", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } enum Status = "st" { active, done } let s = Status.active;',
+        'shortcut { name: "Test" } enum Status = "st" { active, done } const s = Status.active;',
       );
       expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("st.active");
     });
 
     it("should lower dot-name expression to backing string", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" } let c: Color = .red;',
+        'shortcut { name: "Test" } enum Color { red = "RED", blue = "BLUE" } const c: Color = .red;',
       );
       expect(actions.at(0)?.identifier).toBe("is.workflow.actions.gettext");
       expect(actions.at(0)?.parameters.get("WFTextActionText")).toBe("RED");
@@ -312,7 +314,7 @@ describe("lower", () => {
 
     it("should lower record construction to dictionary with field keys", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } record Point { x: Number, y: Number } let p = Point(x: 1, y: 2);',
+        'shortcut { name: "Test" } record Point { x: Number, y: Number } const p = Point(x: 1, y: 2);',
       );
 
       const dictAction = actions.find((a) => a.identifier === "is.workflow.actions.dictionary");
@@ -330,7 +332,7 @@ describe("lower", () => {
 
     it("should lower record field access to getvalueforkey", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } record Point { x: Number, y: Number } let p = Point(x: 1, y: 2); let a = p.x;',
+        'shortcut { name: "Test" } record Point { x: Number, y: Number } const p = Point(x: 1, y: 2); const a = p.x;',
       );
       const getKeyActions = actions.filter(
         (a) => a.identifier === "is.workflow.actions.getvalueforkey",
@@ -340,10 +342,10 @@ describe("lower", () => {
     });
   });
 
-  describe("let destructuring", () => {
-    it("should lower let destructure to getvalueforkey per binding", () => {
+  describe("const destructuring", () => {
+    it("should lower const destructure to getvalueforkey per binding", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } record Point { x: Number, y: Number } let p = Point(x: 1, y: 2); let { x, y } = p;',
+        'shortcut { name: "Test" } record Point { x: Number, y: Number } const p = Point(x: 1, y: 2); const { x, y } = p;',
       );
       const getKeyActions = actions.filter(
         (a) => a.identifier === "is.workflow.actions.getvalueforkey",
@@ -393,7 +395,7 @@ describe("lower", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }
         func add(a: Number, b: Number) -> Number { return a + b; }
-        let result = add(a: 1, b: 2);
+        const result = add(a: 1, b: 2);
       `);
       const runActions = result.main.actions.filter(
         (a) => a.identifier === "is.workflow.actions.runworkflow",
@@ -417,7 +419,7 @@ describe("lower", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }
         func greet(name: Text = "World") -> Text { return name; }
-        let msg = greet();
+        const msg = greet();
       `);
       const runActions = result.main.actions.filter(
         (a) => a.identifier === "is.workflow.actions.runworkflow",
@@ -496,7 +498,7 @@ describe("lower", () => {
     it("should lower a single-stage function pipeline", () => {
       const actions = lowerSource(`
         func double(n: Number) -> Number { return n * 2; }
-        let x = 5 |> double;
+        const x = 5 |> double;
       `);
 
       const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
@@ -507,7 +509,7 @@ describe("lower", () => {
       const actions = lowerSource(`
         func double(n: Number) -> Number { return n * 2; }
         func triple(n: Number) -> Number { return n * 3; }
-        let x = 5 |> double |> triple;
+        const x = 5 |> double |> triple;
       `);
 
       const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
@@ -517,8 +519,8 @@ describe("lower", () => {
     it("should lower |>? with a nil-check conditional", () => {
       const actions = lowerSource(`
         func double(n: Number) -> Number { return n * 2; }
-        let x: Number? = nil;
-        let y = x |>? double;
+        const x: Number? = nil;
+        const y = x |>? double;
       `);
 
       const conditionals = actions.filter(
@@ -529,7 +531,7 @@ describe("lower", () => {
 
     it("should lower pipeline as expression statement", () => {
       const actions = lowerSource(`
-        let x = "hello";
+        const x = "hello";
         x |> showAlert;
       `);
 
@@ -540,7 +542,7 @@ describe("lower", () => {
     it("should lower pipeline with _ placeholder in explicit position", () => {
       const actions = lowerSource(`
         func add(a: Number, b: Number) -> Number { return a + b; }
-        let x = 5 |> add(b: 10, a: _);
+        const x = 5 |> add(b: 10, a: _);
       `);
 
       const runWorkflow = actions.filter((a) => a.identifier === "is.workflow.actions.runworkflow");
@@ -551,8 +553,8 @@ describe("lower", () => {
       const actions = lowerSource(`
         func double(n: Number) -> Number { return n * 2; }
         func triple(n: Number) -> Number { return n * 3; }
-        let x: Number? = nil;
-        let y = x |>? double |> triple;
+        const x: Number? = nil;
+        const y = x |>? double |> triple;
       `);
 
       const conditionals = actions.filter(
@@ -618,7 +620,7 @@ describe("lower", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }
         action transform(mode: Text) -> Text = "com.example.transform";
-        let x = "hello" |> transform(mode: "upper");
+        const x = "hello" |> transform(mode: "upper");
       `);
       const action = result.find((a) => a.identifier === "com.example.transform");
       expect(action).toBeDefined();
@@ -629,7 +631,7 @@ describe("lower", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }
         action process() -> Text = "com.example.process";
-        let x = "hello" |> process;
+        const x = "hello" |> process;
       `);
       const action = result.find((a) => a.identifier === "com.example.process");
       expect(action).toBeDefined();
@@ -651,7 +653,7 @@ describe("lower", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }
         action transform(mode WFTransformMode: Text) -> Text = "com.example.transform";
-        let x = "hello" |> transform(mode: "upper");
+        const x = "hello" |> transform(mode: "upper");
       `);
       const action = result.find((a) => a.identifier === "com.example.transform");
       expect(action?.parameters.get("WFTransformMode")).toBe("upper");

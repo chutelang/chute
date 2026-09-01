@@ -34,41 +34,41 @@ describe("positions", () => {
 
 describe("diagnostics", () => {
   it("should report lexer errors", () => {
-    const result = analyze('let x = "unterminated');
+    const result = analyze('const x = "unterminated');
     expect(result.diagnostics.length).toBeGreaterThan(0);
     expect(result.diagnostics[0]?.message).toContain("unterminated");
   });
 
   it("should report parser errors", () => {
-    const result = analyze("let x =;");
+    const result = analyze("const x =;");
     expect(result.diagnostics.length).toBeGreaterThan(0);
   });
 
   it("should report type checker errors", () => {
-    const result = analyze("let x: Number = true;");
+    const result = analyze("const x: Number = true;");
     expect(result.diagnostics.length).toBeGreaterThan(0);
     expect(result.diagnostics[0]?.message).toContain("cannot assign");
   });
 
   it("should report warnings for unknown quantity units", () => {
-    const result = analyze("let x: Quantity<parsecs> = 5;");
+    const result = analyze("const x: Quantity<parsecs> = 5;");
     expect(result.diagnostics.some((d) => d.severity === "warning")).toBe(true);
     expect(result.diagnostics.some((d) => d.message.includes("parsecs"))).toBe(true);
   });
 
   it("should return empty diagnostics for valid source", () => {
-    const result = analyze('let x = "hello";');
+    const result = analyze('const x = "hello";');
     expect(result.diagnostics).toEqual([]);
   });
 
   it("should return AST and scope for valid source", () => {
-    const result = analyze('let x = "hello";');
+    const result = analyze('const x = "hello";');
     expect(result.ast).toBeDefined();
     expect(result.scope).toBeDefined();
   });
 
   it("should return AST and scope even with type errors", () => {
-    const result = analyze("let x: Number = true;\nlet y = 42;");
+    const result = analyze("const x: Number = true;\nconst y = 42;");
     expect(result.ast).toBeDefined();
     expect(result.scope).toBeDefined();
   });
@@ -76,7 +76,7 @@ describe("diagnostics", () => {
 
 describe("go-to-definition", () => {
   it("should resolve a variable reference to its declaration", () => {
-    const source = 'let greeting = "hello";\nshowAlert(text: greeting);';
+    const source = 'const greeting = "hello";\nshowAlert(text: greeting);';
     const result = analyze(source);
     const offset = source.indexOf("greeting);");
     const defSpan = resolveDefinition(result, offset);
@@ -86,7 +86,7 @@ describe("go-to-definition", () => {
 
   it("should resolve a function call to its declaration", () => {
     const source =
-      'func greet(name: Text) -> Text {\n  return "hi";\n}\nlet x = greet(name: "world");';
+      'func greet(name: Text) -> Text {\n  return "hi";\n}\nconst x = greet(name: "world");';
     const result = analyze(source);
     const offset = source.lastIndexOf("greet");
     const defSpan = resolveDefinition(result, offset);
@@ -95,14 +95,14 @@ describe("go-to-definition", () => {
   });
 
   it("should return undefined for unknown identifiers outside the AST", () => {
-    const source = "let x = 42;";
+    const source = "const x = 42;";
     const result = analyze(source);
     const defSpan = resolveDefinition(result, 100);
     expect(defSpan).toBeUndefined();
   });
 
   it("should resolve a reference to a variable used in an expression", () => {
-    const source = "let x = 1;\nlet y = x + 2;";
+    const source = "const x = 1;\nconst y = x + 2;";
     const result = analyze(source);
     const offset = source.lastIndexOf("x");
     const defSpan = resolveDefinition(result, offset);
@@ -113,7 +113,7 @@ describe("go-to-definition", () => {
 
 describe("hover", () => {
   it("should show type for a variable", () => {
-    const source = 'let greeting = "hello";\nshowAlert(text: greeting);';
+    const source = 'const greeting = "hello";\nshowAlert(text: greeting);';
     const result = analyze(source);
     const offset = source.indexOf("greeting);");
     const hover = resolveHover(result, offset);
@@ -122,7 +122,7 @@ describe("hover", () => {
 
   it("should show function signature", () => {
     const source =
-      'func greet(name: Text) -> Text {\n  return "hi";\n}\nlet x = greet(name: "world");';
+      'func greet(name: Text) -> Text {\n  return "hi";\n}\nconst x = greet(name: "world");';
     const result = analyze(source);
     const offset = source.lastIndexOf("greet");
     const hover = resolveHover(result, offset);
@@ -138,14 +138,14 @@ describe("hover", () => {
   });
 
   it("should return undefined for non-identifiers", () => {
-    const source = "let x = 42;";
+    const source = "const x = 42;";
     const result = analyze(source);
     const hover = resolveHover(result, 8);
     expect(hover).toBeUndefined();
   });
 
   it("should show number type for numeric variable", () => {
-    const source = "let count = 42;\nlet y = count;";
+    const source = "const count = 42;\nconst y = count;";
     const result = analyze(source);
     const offset = source.lastIndexOf("count");
     const hover = resolveHover(result, offset);
@@ -158,8 +158,8 @@ describe("autocomplete", () => {
     const result = analyze("");
     const items = getCompletions(result);
     const labels = items.map((i) => i.label);
+    expect(labels).toContain("const");
     expect(labels).toContain("let");
-    expect(labels).toContain("var");
     expect(labels).toContain("func");
     expect(labels).toContain("if");
     expect(labels).toContain("for");
@@ -178,7 +178,7 @@ describe("autocomplete", () => {
   });
 
   it("should include user-defined variables", () => {
-    const source = "let myVar = 42;";
+    const source = "const myVar = 42;";
     const result = analyze(source);
     const items = getCompletions(result);
     const labels = items.map((i) => i.label);
@@ -219,8 +219,8 @@ describe("autocomplete", () => {
 });
 
 describe("collectDefinitions", () => {
-  it("should collect let and var declarations", () => {
-    const result = analyze("let x = 1;\nvar y = 2;");
+  it("should collect const and let declarations", () => {
+    const result = analyze("const x = 1;\nlet y = 2;");
     const names = result.definitions.map((d) => d.name);
     expect(names).toContain("x");
     expect(names).toContain("y");
@@ -252,7 +252,7 @@ describe("collectDefinitions", () => {
 
 describe("findIdentifierAtOffset", () => {
   it("should find identifier references", () => {
-    const source = "let x = 42;\nlet y = x;";
+    const source = "const x = 42;\nconst y = x;";
     const result = analyze(source);
     const ast = result.ast;
     if (!ast) {
@@ -265,7 +265,7 @@ describe("findIdentifierAtOffset", () => {
   });
 
   it("should find member expressions on enum access", () => {
-    const source = "enum Color { red, green }\nlet c = Color.red;";
+    const source = "enum Color { red, green }\nconst c = Color.red;";
     const result = analyze(source);
     const ast = result.ast;
     if (!ast) {
@@ -278,7 +278,7 @@ describe("findIdentifierAtOffset", () => {
   });
 
   it("should return undefined for non-identifier positions", () => {
-    const source = "let x = 42;";
+    const source = "const x = 42;";
     const result = analyze(source);
     const ast = result.ast;
     if (!ast) {
@@ -291,8 +291,8 @@ describe("findIdentifierAtOffset", () => {
 
 describe("incremental analysis", () => {
   it("should produce independent results for different sources", () => {
-    const result1 = analyze("let x = 1;");
-    const result2 = analyze("let y = 2;");
+    const result1 = analyze("const x = 1;");
+    const result2 = analyze("const y = 2;");
     expect(result1.definitions.map((d) => d.name)).toContain("x");
     expect(result1.definitions.map((d) => d.name)).not.toContain("y");
     expect(result2.definitions.map((d) => d.name)).toContain("y");
@@ -300,10 +300,10 @@ describe("incremental analysis", () => {
   });
 
   it("should only re-analyze the changed source", () => {
-    const result1 = analyze("let x = 1;");
+    const result1 = analyze("const x = 1;");
     expect(result1.diagnostics).toEqual([]);
 
-    const result2 = analyze("let x: Number = true;");
+    const result2 = analyze("const x: Number = true;");
     expect(result2.diagnostics.length).toBeGreaterThan(0);
 
     expect(result1.diagnostics).toEqual([]);

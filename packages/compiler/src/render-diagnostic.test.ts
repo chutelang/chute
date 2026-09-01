@@ -5,59 +5,59 @@ import type { Diagnostic } from "./diagnostic.ts";
 
 describe("renderDiagnostic", () => {
   it("should render a single-line error with underline", () => {
-    const source = "let x = foo;";
+    const source = "const x = foo;";
     const d: Diagnostic = {
       code: DiagnosticCode.UndefinedVariable,
       severity: "error",
       message: "undefined variable 'foo'",
-      span: { start: 8, end: 11 },
+      span: { start: 10, end: 13 },
     };
     expect(renderDiagnostic(source, d, { color: false })).toMatchSnapshot();
   });
 
   it("should render a warning", () => {
-    const source = "let x = 5bananas;";
+    const source = "const x = 5bananas;";
     const d: Diagnostic = {
       code: DiagnosticCode.UnknownUnit,
       severity: "warning",
       message: "unknown quantity unit 'bananas'",
-      span: { start: 8, end: 17 },
+      span: { start: 10, end: 19 },
     };
     expect(renderDiagnostic(source, d, { color: false })).toMatchSnapshot();
   });
 
   it("should render an error with a suggestion", () => {
-    const source = "let d = {};";
+    const source = "const d = {};";
     const d: Diagnostic = {
       code: DiagnosticCode.InvalidDictionarySyntax,
       severity: "error",
       message: "empty dictionary must use {:} syntax",
-      span: { start: 8, end: 10 },
+      span: { start: 10, end: 12 },
       suggestion: "use {:} instead of {}",
     };
     expect(renderDiagnostic(source, d, { color: false })).toMatchSnapshot();
   });
 
   it("should render with correct line and column numbers", () => {
-    const source = "let a = 1;\nlet b = 2;\nlet c = foo;";
+    const source = "const a = 1;\nconst b = 2;\nconst c = foo;";
     const d: Diagnostic = {
       code: DiagnosticCode.UndefinedVariable,
       severity: "error",
       message: "undefined variable 'foo'",
-      span: { start: 30, end: 33 },
+      span: { start: 36, end: 39 },
     };
     const output = renderDiagnostic(source, d, { color: false });
-    expect(output).toContain("3:9");
+    expect(output).toContain("3:11");
     expect(output).toMatchSnapshot();
   });
 
   it("should render with a custom file name", () => {
-    const source = "let x = foo;";
+    const source = "const x = foo;";
     const d: Diagnostic = {
       code: DiagnosticCode.UndefinedVariable,
       severity: "error",
       message: "undefined variable 'foo'",
-      span: { start: 8, end: 11 },
+      span: { start: 10, end: 13 },
     };
     const output = renderDiagnostic(source, d, {
       color: false,
@@ -79,12 +79,12 @@ describe("renderDiagnostic", () => {
   });
 
   it("should handle single-character span", () => {
-    const source = "let x = !;";
+    const source = "const x = !;";
     const d: Diagnostic = {
       code: DiagnosticCode.UnexpectedCharacter,
       severity: "error",
       message: "unexpected character: !",
-      span: { start: 8, end: 8 },
+      span: { start: 10, end: 10 },
     };
     const output = renderDiagnostic(source, d, { color: false });
     expect(output).toContain("^");
@@ -92,12 +92,12 @@ describe("renderDiagnostic", () => {
   });
 
   it("should render with color when enabled", () => {
-    const source = "let x = foo;";
+    const source = "const x = foo;";
     const d: Diagnostic = {
       code: DiagnosticCode.UndefinedVariable,
       severity: "error",
       message: "undefined variable 'foo'",
-      span: { start: 8, end: 11 },
+      span: { start: 10, end: 13 },
     };
     const output = renderDiagnostic(source, d, { color: true });
     expect(output).toContain("\x1b[");
@@ -107,44 +107,44 @@ describe("renderDiagnostic", () => {
 
 describe("renderDiagnostics", () => {
   it("should render multiple diagnostics separated by blank lines", () => {
-    const source = "let x = foo;\nlet y = bar;";
+    const source = "const x = foo;\nconst y = bar;";
     const diagnostics: Diagnostic[] = [
       {
         code: DiagnosticCode.UndefinedVariable,
         severity: "error",
         message: "undefined variable 'foo'",
-        span: { start: 8, end: 11 },
+        span: { start: 10, end: 13 },
       },
       {
         code: DiagnosticCode.UndefinedVariable,
         severity: "error",
         message: "undefined variable 'bar'",
-        span: { start: 21, end: 24 },
+        span: { start: 25, end: 28 },
       },
     ];
     expect(renderDiagnostics(source, diagnostics, { color: false })).toMatchSnapshot();
   });
 
   it("should render a summary line", () => {
-    const source = 'let x = foo;\nvar y = 5;\ny = "hi";';
+    const source = 'const x = foo;\nlet y = 5;\ny = "hi";';
     const diagnostics: Diagnostic[] = [
       {
         code: DiagnosticCode.UndefinedVariable,
         severity: "error",
         message: "undefined variable 'foo'",
-        span: { start: 8, end: 11 },
+        span: { start: 10, end: 13 },
       },
       {
         code: DiagnosticCode.TypeMismatch,
         severity: "error",
         message: "cannot assign Text to Number",
-        span: { start: 27, end: 31 },
+        span: { start: 29, end: 33 },
       },
       {
         code: DiagnosticCode.UnknownUnit,
         severity: "warning",
         message: "unknown quantity unit 'bananas'",
-        span: { start: 14, end: 19 },
+        span: { start: 16, end: 21 },
       },
     ];
     const output = renderDiagnostics(source, diagnostics, { color: false });

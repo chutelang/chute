@@ -43,6 +43,13 @@ export function collectDefinitions(program: Program): SymbolInfo[] {
 
 function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void {
   switch (stmt.kind) {
+    case "ConstDeclaration":
+      defs.push({
+        name: stmt.name,
+        span: stmt.span,
+        kind: "variable",
+      });
+      break;
     case "LetDeclaration":
       defs.push({
         name: stmt.name,
@@ -50,12 +57,14 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         kind: "variable",
       });
       break;
-    case "VarDeclaration":
-      defs.push({
-        name: stmt.name,
-        span: stmt.span,
-        kind: "variable",
-      });
+    case "ConstDestructure":
+      for (const name of stmt.names) {
+        defs.push({
+          name,
+          span: stmt.span,
+          kind: "variable",
+        });
+      }
       break;
     case "LetDestructure":
       for (const name of stmt.names) {
@@ -202,8 +211,9 @@ function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | 
   switch (stmt.kind) {
     case "ExpressionStatement":
       return findInExpression(stmt.expression, offset);
+    case "ConstDeclaration":
     case "LetDeclaration":
-    case "VarDeclaration":
+    case "ConstDestructure":
     case "LetDestructure":
       return findInExpression(stmt.initializer, offset);
     case "Assignment":
