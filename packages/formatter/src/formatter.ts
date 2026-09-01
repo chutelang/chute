@@ -556,9 +556,9 @@ class Printer {
     if (!isElseIf) {
       this.writeIndent();
     }
-    this.write("if ");
+    this.write("if (");
     this.printCondition(stmt.condition);
-    this.write(" {");
+    this.write(") {");
     const blockEndPos = stmt.span.end;
     this.emitTrailingComment(this.findOpenBraceEnd(stmt));
     this.writeLine();

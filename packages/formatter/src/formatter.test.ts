@@ -137,8 +137,8 @@ import "b" as B;
   describe("if statements", () => {
     it("should format a simple if", () => {
       expectFormat(
-        'if x==1{showAlert(text:"yes");}',
-        `if x == 1 {
+        'if(x==1){showAlert(text:"yes");}',
+        `if (x == 1) {
   showAlert(text: "yes");
 }
 `,
@@ -147,8 +147,8 @@ import "b" as B;
 
     it("should format if-else", () => {
       expectFormat(
-        "if x==1{a();}else{b();}",
-        `if x == 1 {
+        "if(x==1){a();}else{b();}",
+        `if (x == 1) {
   a();
 } else {
   b();
@@ -159,10 +159,10 @@ import "b" as B;
 
     it("should format if-else if-else", () => {
       expectFormat(
-        "if x==1{a();}else if x==2{b();}else{c();}",
-        `if x == 1 {
+        "if(x==1){a();}else if(x==2){b();}else{c();}",
+        `if (x == 1) {
   a();
-} else if x == 2 {
+} else if (x == 2) {
   b();
 } else {
   c();
@@ -173,8 +173,8 @@ import "b" as B;
 
     it("should format compound conditions", () => {
       expectFormat(
-        "if x==1 && y==2{a();}",
-        `if x == 1 && y == 2 {
+        "if(x==1 && y==2){a();}",
+        `if (x == 1 && y == 2) {
   a();
 }
 `,
@@ -183,8 +183,8 @@ import "b" as B;
 
     it("should format not condition", () => {
       expectFormat(
-        "if !x{a();}",
-        `if !x {
+        "if(!x){a();}",
+        `if (!x) {
   a();
 }
 `,
@@ -193,8 +193,8 @@ import "b" as B;
 
     it("should format range test", () => {
       expectFormat(
-        "if x in 1...10{a();}",
-        `if x in 1...10 {
+        "if(x in 1...10){a();}",
+        `if (x in 1...10) {
   a();
 }
 `,
@@ -203,8 +203,8 @@ import "b" as B;
 
     it("should format type test", () => {
       expectFormat(
-        "if x is Number{a();}",
-        `if x is Number {
+        "if(x is Number){a();}",
+        `if (x is Number) {
   a();
 }
 `,
@@ -540,11 +540,11 @@ const x = 1;
 
     it("should preserve comment inside block", () => {
       expectFormat(
-        `if x == 1 {
+        `if (x == 1) {
   // inside
   a();
 }`,
-        `if x == 1 {
+        `if (x == 1) {
   // inside
   a();
 }
@@ -554,10 +554,10 @@ const x = 1;
 
     it("should preserve trailing comment on block", () => {
       expectFormat(
-        `if x == 1 { // condition
+        `if (x == 1) { // condition
   a();
 }`,
-        `if x == 1 { // condition
+        `if (x == 1) { // condition
   a();
 }
 `,
@@ -596,9 +596,9 @@ const x = 1;
   describe("indentation", () => {
     it("should indent nested blocks", () => {
       expectFormat(
-        "if x==1{if y==2{a();}}",
-        `if x == 1 {
-  if y == 2 {
+        "if(x==1){if(y==2){a();}}",
+        `if (x == 1) {
+  if (y == 2) {
     a();
   }
 }
@@ -635,7 +635,7 @@ func add(a: Number, b: Number) -> Number {
   return a + b;
 }
 
-if x == 1 {
+if (x == 1) {
   showAlert(text: "yes");
 } else {
   showAlert(text: "no");
@@ -657,15 +657,15 @@ for item in list {
 
   describe("comparison operators", () => {
     it("should format all comparison operators", () => {
-      expectFormat("if x != y {a();}", "if x != y {\n  a();\n}\n");
-      expectFormat("if x < y {a();}", "if x < y {\n  a();\n}\n");
-      expectFormat("if x <= y {a();}", "if x <= y {\n  a();\n}\n");
-      expectFormat("if x > y {a();}", "if x > y {\n  a();\n}\n");
-      expectFormat("if x >= y {a();}", "if x >= y {\n  a();\n}\n");
-      expectFormat("if x contains y {a();}", "if x contains y {\n  a();\n}\n");
-      expectFormat("if x !contains y {a();}", "if x !contains y {\n  a();\n}\n");
-      expectFormat("if x hasPrefix y {a();}", "if x hasPrefix y {\n  a();\n}\n");
-      expectFormat("if x hasSuffix y {a();}", "if x hasSuffix y {\n  a();\n}\n");
+      expectFormat("if(x != y){a();}", "if (x != y) {\n  a();\n}\n");
+      expectFormat("if(x < y){a();}", "if (x < y) {\n  a();\n}\n");
+      expectFormat("if(x <= y){a();}", "if (x <= y) {\n  a();\n}\n");
+      expectFormat("if(x > y){a();}", "if (x > y) {\n  a();\n}\n");
+      expectFormat("if(x >= y){a();}", "if (x >= y) {\n  a();\n}\n");
+      expectFormat("if(x contains y){a();}", "if (x contains y) {\n  a();\n}\n");
+      expectFormat("if(x !contains y){a();}", "if (x !contains y) {\n  a();\n}\n");
+      expectFormat("if(x hasPrefix y){a();}", "if (x hasPrefix y) {\n  a();\n}\n");
+      expectFormat("if(x hasSuffix y){a();}", "if (x hasSuffix y) {\n  a();\n}\n");
     });
   });
 });
