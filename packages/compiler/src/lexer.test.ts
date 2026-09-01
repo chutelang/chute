@@ -360,6 +360,49 @@ describe("Lexer", () => {
     });
   });
 
+  describe("doc comments", () => {
+    it("should emit a DocComment token for /** ... */", () => {
+      expect(kinds("/** hello */42")).toEqual([
+        TokenKind.DocComment,
+        TokenKind.Number,
+        TokenKind.Eof,
+      ]);
+    });
+
+    it("should capture the content between /** and */", () => {
+      const toks = tokens("/** hello */");
+      const doc = toks.at(0);
+      expect(doc?.kind).toBe(TokenKind.DocComment);
+      expect(doc?.value).toBe(" hello ");
+    });
+
+    it("should handle multi-line doc comments", () => {
+      const source = `/**
+ * Line one
+ * Line two
+ */`;
+      const toks = tokens(source);
+      expect(toks.at(0)?.kind).toBe(TokenKind.DocComment);
+      expect(toks.at(0)?.value).toContain("Line one");
+      expect(toks.at(0)?.value).toContain("Line two");
+    });
+
+    it("should treat empty doc comment as a regular block comment", () => {
+      expect(kinds("/** */42")).toEqual([TokenKind.Number, TokenKind.Eof]);
+    });
+
+    it("should still skip regular block comments", () => {
+      expect(kinds("/* hello */42")).toEqual([TokenKind.Number, TokenKind.Eof]);
+    });
+
+    it("should track the full span of a doc comment", () => {
+      const toks = tokens("/** hello */");
+      const doc = toks.at(0);
+      expect(doc?.span.start).toBe(0);
+      expect(doc?.span.end).toBe(12);
+    });
+  });
+
   describe("full programs", () => {
     it("should tokenize hello world shortcut", () => {
       const source = `shortcut {
