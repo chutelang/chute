@@ -359,7 +359,7 @@ export interface PlaceholderExpression {
   span: Span;
 }
 
-// Conditions (not value expressions — only appear in if, ternary, for guards)
+// Conditions appear only in `if` statements, ternary expressions, and `for` guards.
 
 export type Condition =
   | OrCondition

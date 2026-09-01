@@ -196,8 +196,8 @@ function deriveFunctionShortcutName(decl: FunctionDeclaration): string {
 }
 
 /**
- * Recursively removes `span` fields from an object so that content hashes
- * derived from it are independent of source position.
+ * Removes `span` fields recursively so that source positions don.t affect
+ * content hashes.
  */
 function stripSpans(obj: unknown): unknown {
   if (obj === null || obj === undefined || typeof obj !== "object") {
@@ -639,10 +639,10 @@ function lowerSubscriptExpression(
 }
 
 /**
- * Lowers an operand expression to a ParameterValue while preserving the
- * caller's current magic variable across the process.
+ * Lowers an operand expression to a `ParameterValue` while preserving the
+ * caller.s current magic variable.
  *
- * lowerToParamValue may emit actions for a complex operand (e.g. a nested
+ * `lowerToParamValue` can emit actions for a complex operand, such as a nested
  * binary expression), and those actions overwrite the magic variable. If the
  * caller still needs the magic variable it was holding before this operand
  * was lowered (e.g. the left side of `a + b * c`), that value must be saved
@@ -668,8 +668,8 @@ function lowerOperandPreservingMagicVariable(
 }
 
 /**
- * True when lowering this expression via lowerToParamValue cannot emit any
- * actions, and therefore cannot clobber the current magic variable.
+ * Returns `true` if `lowerToParamValue` can.t emit actions or overwrite the
+ * current magic variable.
  */
 function isSideEffectFreeValue(expr: Expression): boolean {
   switch (expr.kind) {

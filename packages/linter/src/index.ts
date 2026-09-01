@@ -1,1 +1,1 @@
-// Linter implementation will go here.
+// Linter entry point.
