@@ -90,7 +90,7 @@ Attributes use the `@name` or `@name(key: value, ...)` syntax and appear after t
 
 ## Calling actions
 
-Call an action the same way you call a function — with labeled arguments:
+Call an action the same way you call a function, with labeled arguments:
 
 ```text
 showAlert(text: "Hello!");
@@ -124,6 +124,6 @@ export action fetchData(url WFURL: Text) -> Text = "is.workflow.actions.download
 
 ## Related
 
-- [Standard Library](/reference/stdlib/scripting) — built-in actions available in every Chute file
-- [Functions](/reference/functions) — user-defined logic (compiles to sub-shortcuts, not Shortcuts actions)
-- [Pipelines](/reference/pipelines) — chaining actions with `|>`
+- [Standard library](/reference/stdlib/scripting): built-in actions available in every Chute file
+- [Functions](/reference/functions): user-defined logic (compiles to sub-shortcuts, not Shortcuts actions)
+- [Pipelines](/reference/pipelines): chaining actions with `|>`

@@ -13,7 +13,7 @@ let result = 5 |> double; // equivalent to double(n: 5)
 
 ### Multi-stage pipelines
 
-Chain multiple stages — the output of each stage feeds into the next:
+Chain multiple stages. The output of each stage feeds into the next:
 
 ```text
 func double(n: Number) -> Number { return n * 2; }
@@ -66,7 +66,7 @@ The input to `|>?` must be an optional type. Using `|>?` with a non-optional val
 
 ### Mixing `|>?` and `|>`
 
-After an initial `|>?`, subsequent stages can use regular `|>` — the optional wrapping is preserved:
+After an initial `|>?`, subsequent stages can use regular `|>`. The optional wrapping is preserved:
 
 ```text
 func double(n: Number) -> Number { return n * 2; }
@@ -78,10 +78,10 @@ let y = x |>? double |> triple; // y is Number?
 
 ## How it maps to Shortcuts
 
-Pipelines don't introduce any new Shortcuts actions. They're a syntactic convenience — `5 |> double |> triple` compiles to the same sequence of "Run Shortcut" actions as calling `triple(n: double(n: 5))`. The pipeline just makes the data flow easier to read.
+Pipelines don't introduce any new Shortcuts actions. They're a syntactic convenience, `5 |> double |> triple` compiles to the same sequence of "Run Shortcut" actions as calling `triple(n: double(n: 5))`. The pipeline just makes the data flow easier to read.
 
 ## Related
 
-- [Functions](/reference/functions) — defining functions to use in pipelines
-- [Actions](/reference/actions) — piping into built-in actions
-- [Types](/reference/types) — optional types and `|>?`
+- [Functions](/reference/functions): defining functions to use in pipelines
+- [Actions](/reference/actions): piping into built-in actions
+- [Types](/reference/types): optional types and `|>?`

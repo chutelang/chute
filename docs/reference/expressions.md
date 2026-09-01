@@ -1,6 +1,6 @@
 # Expressions
 
-This page covers Chute's expression syntax — everything you can write on the right side of an `=`, pass as an argument, or use in a pipeline.
+This page covers Chute's expression syntax, everything you can write on the right side of an `=`, pass as an argument, or use in a pipeline.
 
 ## Arithmetic
 
@@ -96,7 +96,7 @@ let x = point.x;
 Use `?.` to safely access a member of an optional value. If the value is `nil`, the result is `nil` instead of an error:
 
 ```text
-let name = maybePerson?.name; // Text? — nil if maybePerson is nil
+let name = maybePerson?.name; // Text?, nil if maybePerson is nil
 ```
 
 Optional chaining is only valid on optional types. Using `?.` on a non-optional is a compile error.
@@ -118,11 +118,11 @@ A compact conditional expression:
 let label = x > 0 ? "positive" : "non-positive";
 ```
 
-The condition uses the same syntax as `if` conditions (see [Control Flow](/reference/control-flow)). Both branches must produce the same type.
+The condition uses the same syntax as `if` conditions (see [Control flow](/reference/control-flow)). Both branches must produce the same type.
 
 ## Conditions
 
-Conditions are a separate category from value expressions — they appear in `if` statements, `else if`, and ternary expressions, but not as standalone values.
+Conditions are a separate category from value expressions. They appear in `if` statements, `else if`, and ternary expressions, but not as standalone values.
 
 ### Comparison operators
 
@@ -195,7 +195,7 @@ When the expected type is an enum, you can use `.caseName` instead of `EnumName.
 let dir: Direction = .north;
 ```
 
-See [Enums & Records](/reference/enums-records) for details.
+See [Enums and records](/reference/enums-records) for details.
 
 ## `#index`
 
@@ -222,7 +222,7 @@ Comments are ignored by the compiler and don't appear in the compiled output.
 
 ## Related
 
-- [Variables & Bindings](/reference/variables) — using expressions in declarations
-- [Control Flow](/reference/control-flow) — conditions in `if` and `for`
-- [Pipelines](/reference/pipelines) — chaining expressions with `|>`
-- [Types](/reference/types) — optional chaining, nil coalescing
+- [Variables and bindings](/reference/variables): using expressions in declarations
+- [Control flow](/reference/control-flow): conditions in `if` and `for`
+- [Pipelines](/reference/pipelines): chaining expressions with `|>`
+- [Types](/reference/types): optional chaining, nil coalescing

@@ -1,13 +1,13 @@
-# Quick Timer
+# quick timer
 
 A shortcut that lets you choose a timer duration, waits, and then sends a notification.
 
 ## What you'll learn
 
-- [Control flow](/reference/control-flow) — presenting choices with `menu`
-- [Variables and bindings](/reference/variables) — storing values with `let`
-- [String interpolation](/reference/expressions) — embedding values in text with `${}`
-- [Standard library actions](/reference/stdlib/scripting) — `wait`, `notification`, `showAlert`
+- [Control flow](/reference/control-flow): presenting choices with `menu`
+- [Variables and bindings](/reference/variables): storing values with `let`
+- [String interpolation](/reference/expressions): embedding values in text with `${}`
+- [Standard library actions](/reference/stdlib/scripting): `wait`, `notification`, `showAlert`
 
 ## Source
 
@@ -43,4 +43,4 @@ The shortcut uses `menu` to present a "Choose from Menu" dialog with three prese
 
 The `label` variable is defined once and reused across all three cases as the notification title. In the compiled shortcut, this becomes a magic variable that each "Show Notification" action references.
 
-The `showAlert` at the end runs after the menu selection — in Shortcuts, it appears after the "End Menu" action.
+The `showAlert` at the end runs after the menu selection, in Shortcuts, it appears after the "End Menu" action.
