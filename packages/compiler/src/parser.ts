@@ -1054,7 +1054,7 @@ export class Parser {
 
   private parseCondition(): Condition {
     let left = this.parseConjunction();
-    while (this.check(TokenKind.Or)) {
+    while (this.check(TokenKind.PipePipe)) {
       this.advance();
       const right = this.parseConjunction();
       left = {
@@ -1069,7 +1069,7 @@ export class Parser {
 
   private parseConjunction(): Condition {
     let left = this.parseConditionAtom();
-    while (this.check(TokenKind.And)) {
+    while (this.check(TokenKind.AmpAmp)) {
       this.advance();
       const right = this.parseConditionAtom();
       left = {
@@ -1083,7 +1083,7 @@ export class Parser {
   }
 
   private parseConditionAtom(): Condition {
-    if (this.check(TokenKind.Not)) {
+    if (this.check(TokenKind.Bang)) {
       const start = this.advance().span.start;
       const operand = this.parseConditionAtom();
       return {
@@ -1268,7 +1268,7 @@ export class Parser {
   }
 
   private parseExpression(): Expression {
-    if (this.check(TokenKind.Not)) {
+    if (this.check(TokenKind.Bang)) {
       return this.parseTernaryWithConditionStart();
     }
     return this.parsePipelineOrTernary();
@@ -1385,7 +1385,7 @@ export class Parser {
 
   private finishConditionChaining(cond: Condition): Condition {
     let result = cond;
-    while (this.check(TokenKind.And)) {
+    while (this.check(TokenKind.AmpAmp)) {
       this.advance();
       const right = this.parseConditionAtom();
       result = {
@@ -1395,7 +1395,7 @@ export class Parser {
         right,
       };
     }
-    while (this.check(TokenKind.Or)) {
+    while (this.check(TokenKind.PipePipe)) {
       this.advance();
       const right = this.parseConjunction();
       result = {
@@ -1963,12 +1963,11 @@ function tokenValue(tok: Token): string {
 }
 
 function isKeyword(kind: TokenKind): boolean {
-  return kind >= TokenKind.Action && kind <= TokenKind.Var;
+  return kind >= TokenKind.Action && kind <= TokenKind.True;
 }
 
 const KEYWORD_TEXTS: ReadonlyMap<TokenKind, string> = new Map([
   [TokenKind.Action, "action"],
-  [TokenKind.And, "and"],
   [TokenKind.As, "as"],
   [TokenKind.Case, "case"],
   [TokenKind.Const, "const"],
@@ -1989,14 +1988,11 @@ const KEYWORD_TEXTS: ReadonlyMap<TokenKind, string> = new Map([
   [TokenKind.Let, "let"],
   [TokenKind.Menu, "menu"],
   [TokenKind.Nil, "nil"],
-  [TokenKind.Not, "not"],
-  [TokenKind.Or, "or"],
   [TokenKind.Record, "record"],
   [TokenKind.Repeat, "repeat"],
   [TokenKind.Return, "return"],
   [TokenKind.Shortcut, "shortcut"],
   [TokenKind.True, "true"],
-  [TokenKind.Var, "var"],
 ]);
 
 function keywordText(kind: TokenKind): string {
@@ -2046,6 +2042,9 @@ function tokenKindName(kind: TokenKind): string {
     [TokenKind.Arrow]: "'->'",
     [TokenKind.DotDotDot]: "'...'",
     [TokenKind.BangContains]: "'!contains'",
+    [TokenKind.AmpAmp]: "'&&'",
+    [TokenKind.PipePipe]: "'||'",
+    [TokenKind.Bang]: "'!'",
     [TokenKind.Eof]: "end of file",
   };
   return names[kind] ?? `keyword '${(TokenKind[kind] ?? "unknown").toLowerCase()}'`;

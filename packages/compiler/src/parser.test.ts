@@ -747,7 +747,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse not condition", () => {
-      const ast = parse("if not flag { showAlert(text: flag); }");
+      const ast = parse("if !flag { showAlert(text: flag); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition).toMatchObject({
@@ -762,7 +762,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse and/or conditions", () => {
-      const ast = parse("if x > 1 and y < 10 { showAlert(text: x); }");
+      const ast = parse("if x > 1 && y < 10 { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition.kind).toBe("AndCondition");
@@ -770,7 +770,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse or with lower precedence than and", () => {
-      const ast = parse("if a or b and c { showAlert(text: a); }");
+      const ast = parse("if a || b && c { showAlert(text: a); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition.kind).toBe("OrCondition");
@@ -872,7 +872,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse parenthesized condition", () => {
-      const ast = parse("if (x > 5) and y { showAlert(text: x); }");
+      const ast = parse("if (x > 5) && y { showAlert(text: x); }");
       const stmt = ast.body.at(0);
       if (stmt?.kind === "IfStatement") {
         expect(stmt.condition.kind).toBe("AndCondition");
@@ -999,7 +999,7 @@ showAlert(text: "Hello from Chute!");`;
     });
 
     it("should parse ternary with not condition", () => {
-      const ast = parse('const x = not flag ? "no" : "yes";');
+      const ast = parse('const x = !flag ? "no" : "yes";');
       const decl = ast.body.at(0);
       if (decl?.kind === "ConstDeclaration" && decl.initializer.kind === "TernaryExpression") {
         expect(decl.initializer.condition.kind).toBe("NotCondition");
