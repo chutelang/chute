@@ -6,6 +6,7 @@ import type {
   Span,
   FunctionDeclaration,
   PipelineStage,
+  DocComment,
 } from "@chutelang/compiler";
 
 export interface SymbolInfo {
@@ -21,6 +22,7 @@ export interface SymbolInfo {
     | "parameter"
     | "field"
     | "enum-case";
+  docComment?: DocComment | undefined;
 }
 
 export function collectDefinitions(program: Program): SymbolInfo[] {
@@ -48,6 +50,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.name,
         span: stmt.span,
         kind: "variable",
+        docComment: stmt.docComment,
       });
       break;
     case "LetDeclaration":
@@ -55,6 +58,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.name,
         span: stmt.span,
         kind: "variable",
+        docComment: stmt.docComment,
       });
       break;
     case "ConstDestructure":
@@ -80,6 +84,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.name,
         span: stmt.span,
         kind: "function",
+        docComment: stmt.docComment,
       });
       for (const param of stmt.params) {
         defs.push({
@@ -97,6 +102,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.name,
         span: stmt.span,
         kind: "action",
+        docComment: stmt.docComment,
       });
       break;
     case "EnumDeclaration":
