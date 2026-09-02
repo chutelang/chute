@@ -41,6 +41,9 @@ export enum DiagnosticCode {
   // Warnings (CHT900-CHT999)
   UnknownUnit = "CHT900",
   RecursiveCall = "CHT901",
+  DocParamNotFound = "CHT902",
+  DocParamDuplicate = "CHT903",
+  DocParamOnVariable = "CHT904",
 }
 
 export interface Diagnostic {

@@ -1468,4 +1468,83 @@ describe("checker", () => {
       expect(warnings.at(0)?.message).toContain("parsecs");
     });
   });
+
+  describe("doc comment validation", () => {
+    it("should accept valid @param tags", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param name The name
+         */
+        func greet(name: Text) {
+          showAlert(text: name);
+        }
+      `);
+      expect(warnings.filter((w) => w.message.includes("@param"))).toHaveLength(0);
+    });
+
+    it("should warn on @param for a nonexistent parameter", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param nonexistent Does not exist
+         */
+        func greet(name: Text) {
+          showAlert(text: name);
+        }
+      `);
+      expect(warnings.some((w) => w.message.includes("nonexistent"))).toBe(true);
+    });
+
+    it("should warn on duplicate @param for the same name", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param name First
+         * @param name Second
+         */
+        func greet(name: Text) {
+          showAlert(text: name);
+        }
+      `);
+      expect(warnings.filter((w) => w.message.includes("duplicate"))).toHaveLength(1);
+    });
+
+    it("should warn on @param used on a const declaration", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param x Not valid
+         */
+        const greeting = "hello";
+      `);
+      expect(warnings.some((w) => w.message.includes("@param"))).toBe(true);
+    });
+
+    it("should warn on @param used on a let declaration", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param x Not valid
+         */
+        let count = 0;
+      `);
+      expect(warnings.some((w) => w.message.includes("@param"))).toBe(true);
+    });
+
+    it("should validate @param against action parameter labels", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param text The text
+         */
+        action showAlert(text WFAlertActionTitle: Text) = "is.workflow.actions.alert";
+      `);
+      expect(warnings.filter((w) => w.message.includes("@param"))).toHaveLength(0);
+    });
+
+    it("should warn on @param for a nonexistent action parameter", () => {
+      const warnings = checkSourceWithWarnings(`
+        /**
+         * @param nonexistent Does not exist
+         */
+        action showAlert(text WFAlertActionTitle: Text) = "is.workflow.actions.alert";
+      `);
+      expect(warnings.some((w) => w.message.includes("nonexistent"))).toBe(true);
+    });
+  });
 });
