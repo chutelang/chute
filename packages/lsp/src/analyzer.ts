@@ -161,7 +161,9 @@ function formatDocCommentMarkdown(doc: DocComment): string {
   if (params.length > 0) {
     result += "\n";
     for (const param of params) {
-      result += `**@param** \`${param.name}\` — ${param.body}\n\n`;
+      if (param.name) {
+        result += `**@param** \`${param.name}\` — ${param.body}\n\n`;
+      }
     }
   }
 
