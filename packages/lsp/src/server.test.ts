@@ -153,6 +153,38 @@ describe("hover", () => {
   });
 });
 
+describe("doc comment hover", () => {
+  it("should show doc comment in function hover", () => {
+    const source = `
+      /**
+       * Greets someone.
+       * @param name The person's name
+       */
+      func greet(name: Text) {
+        showAlert(text: name);
+      }
+      greet(name: "World");
+    `;
+    const result = analyze(source);
+    const offset = source.lastIndexOf("greet");
+    const hover = resolveHover(result, offset);
+    expect(hover).toContain("Greets someone.");
+    expect(hover).toContain("name");
+  });
+
+  it("should show doc comment in variable hover", () => {
+    const source = `
+      /** The base URL. */
+      const baseUrl = "https://example.com";
+      showAlert(text: baseUrl);
+    `;
+    const result = analyze(source);
+    const offset = source.lastIndexOf("baseUrl");
+    const hover = resolveHover(result, offset);
+    expect(hover).toContain("The base URL.");
+  });
+});
+
 describe("autocomplete", () => {
   it("should include keywords", () => {
     const result = analyze("");
