@@ -1,5 +1,6 @@
 import {
   Lexer,
+  parseDocComment,
   Parser,
   type ActionDeclaration,
   type Argument,
@@ -9,6 +10,7 @@ import {
   type BaseType,
   type Condition,
   type DictionaryEntry,
+  type DocComment,
   type EnumCaseNode,
   type EnumDeclaration,
   type Expression,
@@ -836,8 +838,12 @@ class Printer {
       if (!comment || comment.span.start >= beforePos) {
         break;
       }
-      this.writeIndent();
-      this.writeComment(comment);
+      if (comment.isDoc) {
+        this.writeDocComment(comment);
+      } else {
+        this.writeIndent();
+        this.writeComment(comment);
+      }
       this.writeLine();
       this.commentIndex++;
     }
@@ -900,6 +906,66 @@ class Printer {
       this.write("//");
       this.write(comment.text);
     }
+  }
+
+  private writeDocComment(comment: SourceComment): void {
+    const doc = parseDocComment(comment.text, comment.span);
+    const parts = this.buildDocCommentLines(doc);
+
+    if (doc.tags.length === 0 && parts.length === 1) {
+      this.writeIndent();
+      this.write(`/** ${parts.at(0) ?? ""} */`);
+      return;
+    }
+
+    this.writeIndent();
+    this.write("/**");
+    this.writeLine();
+    for (const part of parts) {
+      this.writeIndent();
+      this.write(part.length > 0 ? ` * ${part}` : " *");
+      this.writeLine();
+    }
+    this.writeIndent();
+    this.write(" */");
+  }
+
+  private buildDocCommentLines(doc: DocComment): string[] {
+    const parts: string[] = [];
+
+    if (doc.description.length > 0) {
+      for (const line of doc.description.split("\n")) {
+        parts.push(line.trim());
+      }
+    }
+
+    for (const tag of doc.tags) {
+      let tagLine = `@${tag.tagName}`;
+      if (tag.name) {
+        tagLine += ` ${tag.name}`;
+      }
+
+      if (tag.body.length === 0) {
+        parts.push(tagLine);
+        continue;
+      }
+
+      const bodyLines = tag.body.split("\n");
+      if (tag.kind === "example") {
+        parts.push(tagLine);
+        for (const bodyLine of bodyLines) {
+          parts.push(bodyLine);
+        }
+      } else {
+        tagLine += ` ${bodyLines.at(0) ?? ""}`;
+        parts.push(tagLine);
+        for (let i = 1; i < bodyLines.length; i++) {
+          parts.push(`  ${bodyLines.at(i) ?? ""}`);
+        }
+      }
+    }
+
+    return parts;
   }
 
   private isOnSameLine(posA: number, posB: number): boolean {

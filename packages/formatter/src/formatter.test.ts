@@ -668,4 +668,97 @@ for item in list {
       expectFormat("if(x hasSuffix y){a();}", "if (x hasSuffix y) {\n  a();\n}\n");
     });
   });
+
+  describe("doc comments", () => {
+    it("should format a doc comment on a function", () => {
+      expectFormat(
+        `/** Greets someone. */
+func greet(name: Text) {
+  showAlert(text: name);
+}`,
+        `/** Greets someone. */
+func greet(name: Text) {
+  showAlert(text: name);
+}
+`,
+      );
+    });
+
+    it("should normalize multi-line doc comments", () => {
+      expectFormat(
+        `/**
+ *    Greets someone.
+ *     @param name    The person's name
+ */
+func greet(name: Text) {
+  showAlert(text: name);
+}`,
+        `/**
+ * Greets someone.
+ * @param name The person's name
+ */
+func greet(name: Text) {
+  showAlert(text: name);
+}
+`,
+      );
+    });
+
+    it("should format a doc comment on a const", () => {
+      expectFormat(
+        `/**  The greeting text. */
+const greeting = "hello";`,
+        `/** The greeting text. */
+const greeting = "hello";
+`,
+      );
+    });
+
+    it("should format doc comments with @example", () => {
+      expectFormat(
+        `/**
+ * Does a thing.
+ * @example
+ * doThing()
+ */
+func doThing() {
+  showAlert(text: "done");
+}`,
+        `/**
+ * Does a thing.
+ * @example
+ * doThing()
+ */
+func doThing() {
+  showAlert(text: "done");
+}
+`,
+      );
+    });
+
+    it("should be idempotent for doc comments", () => {
+      expectIdempotent(`/**
+ * Greets someone.
+ * @param name The person's name
+ */
+func greet(name: Text) {
+  showAlert(text: name);
+}
+`);
+    });
+
+    it("should preserve doc comments on exported functions", () => {
+      expectFormat(
+        `/** Adds numbers. */
+export func add(a: Number, b: Number) -> Number {
+  return a + b;
+}`,
+        `/** Adds numbers. */
+export func add(a: Number, b: Number) -> Number {
+  return a + b;
+}
+`,
+      );
+    });
+  });
 });
