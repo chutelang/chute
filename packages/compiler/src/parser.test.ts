@@ -1576,6 +1576,19 @@ showAlert(text: "Hello from Chute!");`;
       expect(ast.imports).toHaveLength(1);
       expect(ast.metadata).toBeDefined();
     });
+
+    it("should reject imports after shortcut metadata", () => {
+      expect(() => parse('shortcut { name: "Test" } import Notification;')).toThrow(CompileError);
+    });
+
+    it("should reject imports after declarations", () => {
+      expect(() =>
+        parse(`
+          action myAction() = "com.example.myaction";
+          import Notification;
+        `),
+      ).toThrow(CompileError);
+    });
   });
 
   describe("doc comments", () => {
