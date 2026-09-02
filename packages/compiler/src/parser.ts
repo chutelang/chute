@@ -132,7 +132,15 @@ export class Parser {
     const body: Statement[] = [];
     while (!this.check(TokenKind.Eof)) {
       try {
-        body.push(this.parseStatement());
+        if (this.check(TokenKind.Import)) {
+          const tok = this.peek();
+          this.recordError(
+            new ParseError("imports must appear at the top of the file", tok.span),
+          );
+          this.synchronize();
+        } else {
+          body.push(this.parseStatement());
+        }
       } catch (e) {
         if (e instanceof ParseError) {
           this.recordError(e);
@@ -192,8 +200,7 @@ export class Parser {
         kind === TokenKind.Enum ||
         kind === TokenKind.Record ||
         kind === TokenKind.Return ||
-        kind === TokenKind.Export ||
-        kind === TokenKind.Import
+        kind === TokenKind.Export
       ) {
         return;
       }
