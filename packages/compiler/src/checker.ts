@@ -5,6 +5,7 @@ import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
 import { getStdlibScope, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
+import type { DocComment } from "./doc-comment.ts";
 import type {
   ImportDeclaration,
   ActionDeclaration,
@@ -592,6 +593,7 @@ function checkConstDeclaration(decl: ConstDeclaration, scope: Scope, context: Ch
 
   const bindingType = checkDeclarationInitializer(decl, scope, context);
   scope.define(decl.name, bindingType, false);
+  checkDocComment(decl.docComment, undefined, context.warnings);
 }
 
 function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckContext): void {
@@ -605,6 +607,61 @@ function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckC
 
   const bindingType = checkDeclarationInitializer(decl, scope, context);
   scope.define(decl.name, bindingType, true);
+  checkDocComment(decl.docComment, undefined, context.warnings);
+}
+
+function checkDocComment(
+  docComment: DocComment | undefined,
+  paramNames: string[] | undefined,
+  warnings: CheckWarning[],
+): void {
+  if (!docComment) {
+    return;
+  }
+
+  const seenParams = new Set<string>();
+
+  for (const tag of docComment.tags) {
+    if (tag.kind !== "param") {
+      continue;
+    }
+
+    if (!paramNames) {
+      warnings.push(
+        new CheckWarning(
+          "@param is not valid on a variable declaration",
+          tag.span,
+          DiagnosticCode.DocParamOnVariable,
+        ),
+      );
+      continue;
+    }
+
+    if (tag.name && seenParams.has(tag.name)) {
+      warnings.push(
+        new CheckWarning(
+          `duplicate @param '${tag.name}'`,
+          tag.nameSpan ?? tag.span,
+          DiagnosticCode.DocParamDuplicate,
+        ),
+      );
+      continue;
+    }
+
+    if (tag.name) {
+      seenParams.add(tag.name);
+    }
+
+    if (tag.name && !paramNames.includes(tag.name)) {
+      warnings.push(
+        new CheckWarning(
+          `@param '${tag.name}' does not match any parameter`,
+          tag.nameSpan ?? tag.span,
+          DiagnosticCode.DocParamNotFound,
+        ),
+      );
+    }
+  }
 }
 
 function checkDeclarationInitializer(
@@ -1637,6 +1694,12 @@ function checkFunctionDeclaration(
   scope: Scope,
   context: CheckContext,
 ): void {
+  checkDocComment(
+    decl.docComment,
+    decl.params.map((p) => p.name),
+    context.warnings,
+  );
+
   const binding = scope.lookup(decl.name);
   if (!binding || binding.type.kind !== "function") {
     return;
@@ -2018,6 +2081,11 @@ export function checkActionDeclaration(
   };
 
   scope.define(decl.name, actionType, false);
+  checkDocComment(
+    decl.docComment,
+    decl.params.map((p) => p.label),
+    context.warnings,
+  );
 }
 
 function checkActionCall(
