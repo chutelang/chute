@@ -40,8 +40,9 @@ export function parseDocComment(raw: string, span: Span): DocComment {
         const paramMatch = /^(\w+)\s*(.*)$/.exec(rest);
         const paramName = paramMatch?.at(1);
         const paramDesc = (paramMatch?.at(2) ?? "").trim();
+        const atIdx = line.text.indexOf("@");
         const nameStartInLine = paramName
-          ? line.text.indexOf(paramName, line.text.indexOf("@"))
+          ? line.text.indexOf(paramName, atIdx + tagName.length + 2)
           : -1;
         currentTag = {
           kind: "param",

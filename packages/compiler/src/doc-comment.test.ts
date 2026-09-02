@@ -115,6 +115,18 @@ describe("parseDocComment", () => {
     expect(tag?.nameSpan).toBeDefined();
   });
 
+  it("should not match param name inside the @param keyword", () => {
+    const raw = `* @param a The first value`;
+    const result = parseDocComment(raw, { start: 3, end: 30 });
+    const tag = result.tags.at(0);
+    expect(tag?.name).toBe("a");
+    // nameSpan should point at the actual "a" after "@param ", not the "a" in "param"
+    if (tag?.nameSpan) {
+      const nameStart = tag.nameSpan.start - 3; // relative to content start
+      expect(nameStart).toBeGreaterThan(7); // must be past "@param "
+    }
+  });
+
   it("should preserve the original tag name for unknown tags", () => {
     const raw = `*
  * @deprecated Use newThing instead
