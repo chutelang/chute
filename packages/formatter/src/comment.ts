@@ -4,6 +4,7 @@ export interface SourceComment {
   text: string;
   span: Span;
   isBlock: boolean;
+  isDoc: boolean;
 }
 
 export function extractComments(source: string): SourceComment[] {
@@ -40,6 +41,7 @@ export function extractComments(source: string): SourceComment[] {
           text: source.slice(start + 2, pos),
           span: { start, end: pos },
           isBlock: false,
+          isDoc: false,
         });
         continue;
       }
@@ -47,6 +49,10 @@ export function extractComments(source: string): SourceComment[] {
       if (next === "*") {
         const start = pos;
         pos += 2;
+        const isDocStart =
+          pos < source.length &&
+          source.charAt(pos) === "*" &&
+          (pos + 1 >= source.length || source.charAt(pos + 1) !== "/");
         while (pos + 1 < source.length) {
           if (source.charAt(pos) === "*" && source.charAt(pos + 1) === "/") {
             pos += 2;
@@ -54,10 +60,13 @@ export function extractComments(source: string): SourceComment[] {
           }
           pos++;
         }
+        const text = source.slice(start + 2, pos - 2);
+        const hasContent = isDocStart && text.slice(1).trim().length > 0;
         comments.push({
-          text: source.slice(start + 2, pos - 2),
+          text,
           span: { start, end: pos },
           isBlock: true,
+          isDoc: hasContent,
         });
         continue;
       }
