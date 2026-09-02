@@ -42,7 +42,7 @@ import type {
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
-import { getStdlibActions } from "./stdlib.ts";
+import { getStdlibActions, getStdlibModule } from "./stdlib.ts";
 
 export class LowerError extends Error {
   constructor(
@@ -54,6 +54,11 @@ export class LowerError extends Error {
   }
 }
 
+interface NamespaceAction {
+  runtimeIdentifier: string;
+  paramKeys: Map<string, string>;
+}
+
 interface LowerContext {
   uuidCounter: number;
   tempCounter: number;
@@ -61,6 +66,7 @@ interface LowerContext {
   records: Set<string>;
   functions: Map<string, FunctionDeclaration>;
   actions: Map<string, ActionDeclaration>;
+  namespaceActions: Map<string, Map<string, NamespaceAction>>;
   subShortcuts: ShortcutIR[];
 }
 
@@ -87,6 +93,27 @@ export function lower(program: Program): CompilationResult {
 
   const subShortcuts: ShortcutIR[] = [];
 
+  const namespaceActions = new Map<string, Map<string, NamespaceAction>>();
+  for (const imp of program.imports) {
+    if (!imp.isPackage) continue;
+    const moduleScope = getStdlibModule(imp.path);
+    if (!moduleScope) continue;
+    const moduleActions = new Map<string, NamespaceAction>();
+    for (const [name, binding] of moduleScope.allBindings()) {
+      if (binding.type.kind === "action") {
+        const paramKeys = new Map<string, string>();
+        for (const p of binding.type.params) {
+          paramKeys.set(p.label, p.label);
+        }
+        moduleActions.set(name, {
+          runtimeIdentifier: binding.type.runtimeIdentifier,
+          paramKeys,
+        });
+      }
+    }
+    namespaceActions.set(imp.alias, moduleActions);
+  }
+
   const ctx: LowerContext = {
     uuidCounter: 0,
     tempCounter: 0,
@@ -94,6 +121,7 @@ export function lower(program: Program): CompilationResult {
     records,
     functions,
     actions: actionDecls,
+    namespaceActions,
     subShortcuts,
   };
 
@@ -411,7 +439,35 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
   }
 }
 
+function lowerNamespaceActionCall(
+  expr: CallExpression,
+  nsAction: NamespaceAction,
+  parentActions: ActionIR[],
+  ctx: LowerContext,
+): ActionIR {
+  const parameters = new Map<string, ParameterValue>();
+  for (const arg of expr.args) {
+    if (!arg.label) continue;
+    const plistKey = nsAction.paramKeys.get(arg.label);
+    if (!plistKey) continue;
+    parameters.set(plistKey, lowerToParamValue(arg.value, parentActions, ctx));
+  }
+  return {
+    identifier: nsAction.runtimeIdentifier,
+    uuid: nextUuid(ctx),
+    parameters,
+  };
+}
+
 function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext): ActionIR {
+  if (expr.callee.kind === "MemberExpression" && expr.callee.object.kind === "Identifier") {
+    const nsActions = ctx.namespaceActions.get(expr.callee.object.name);
+    const nsAction = nsActions?.get(expr.callee.property);
+    if (nsAction) {
+      return lowerNamespaceActionCall(expr, nsAction, actions, ctx);
+    }
+  }
+
   if (expr.callee.kind !== "Identifier") {
     throw new LowerError("only direct action calls are supported in this subset", expr.callee.span);
   }
@@ -1392,6 +1448,18 @@ function lowerPipelineExpression(
 }
 
 function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
+  if (
+    stage.callee.kind === "MemberExpression" &&
+    stage.callee.object.kind === "Identifier"
+  ) {
+    const nsActions = ctx.namespaceActions.get(stage.callee.object.name);
+    const nsAction = nsActions?.get(stage.callee.property);
+    if (nsAction) {
+      lowerPipelineNamespaceActionStage(stage, nsAction, actions, ctx);
+      return;
+    }
+  }
+
   const calleeName = resolveStageCalleeName(stage.callee);
   const funcDecl = calleeName ? ctx.functions.get(calleeName) : undefined;
 
@@ -1512,6 +1580,28 @@ function lowerPipelineFunctionStage(
     identifier: "is.workflow.actions.runworkflow",
     uuid: nextUuid(ctx),
     parameters: runParams,
+  });
+}
+
+function lowerPipelineNamespaceActionStage(
+  stage: PipelineStage,
+  nsAction: NamespaceAction,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const parameters = new Map<string, ParameterValue>();
+
+  for (const arg of stage.args) {
+    if (arg.value.kind === "PlaceholderExpression" || !arg.label) continue;
+    const plistKey = nsAction.paramKeys.get(arg.label);
+    if (!plistKey) continue;
+    parameters.set(plistKey, lowerToParamValue(arg.value, actions, ctx));
+  }
+
+  actions.push({
+    identifier: nsAction.runtimeIdentifier,
+    uuid: nextUuid(ctx),
+    parameters,
   });
 }
 

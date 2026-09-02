@@ -143,7 +143,7 @@ describe("lower", () => {
   describe("if statement", () => {
     it("should lower if to conditional start/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } const x = 5; if (x > 3) { showAlert(text: "big"); }',
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; const x = 5; if (x > 3) { alert(text: "big"); }',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -158,7 +158,7 @@ describe("lower", () => {
 
     it("should lower if/else to conditional start/otherwise/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } const x = 5; if (x > 3) { showAlert(text: "big"); } else { showAlert(text: "small"); }',
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; const x = 5; if (x > 3) { alert(text: "big"); } else { alert(text: "small"); }',
       );
       const conditionals = actions.filter(
         (a) => a.identifier === "is.workflow.actions.conditional",
@@ -173,7 +173,7 @@ describe("lower", () => {
   describe("for statement", () => {
     it("should lower for to repeat.each start/end", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } const items = [1, 2]; for item in items { showAlert(text: "go"); }',
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; const items = [1, 2]; for item in items { alert(text: "go"); }',
       );
       const repeats = actions.filter((a) => a.identifier === "is.workflow.actions.repeat.each");
       expect(repeats).toHaveLength(2);
@@ -186,7 +186,7 @@ describe("lower", () => {
 
     it("should emit setvariable for loop variable after repeat start", () => {
       const actions = lowerSource(
-        'shortcut { name: "Test" } const items = [1, 2]; for item in items { showAlert(text: "go"); }',
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; const items = [1, 2]; for item in items { alert(text: "go"); }',
       );
       const repeatIdx = actions.findIndex(
         (a) => a.identifier === "is.workflow.actions.repeat.each",
@@ -199,7 +199,7 @@ describe("lower", () => {
 
   describe("repeat statement", () => {
     it("should lower repeat to repeat.count start/end", () => {
-      const actions = lowerSource('shortcut { name: "Test" } repeat 5 { showAlert(text: "go"); }');
+      const actions = lowerSource('shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; repeat 5 { alert(text: "go"); }');
       const repeats = actions.filter((a) => a.identifier === "is.workflow.actions.repeat.count");
       expect(repeats).toHaveLength(2);
       expect(repeats.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
@@ -212,9 +212,10 @@ describe("lower", () => {
     it("should lower menu to choosefrommenu start/cases/end", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
         menu "Pick" {
-          case "A" { showAlert(text: "a"); }
-          case "B" { showAlert(text: "b"); }
+          case "A" { alert(text: "a"); }
+          case "B" { alert(text: "b"); }
         }
       `);
       const menus = actions.filter((a) => a.identifier === "is.workflow.actions.choosefrommenu");
@@ -366,14 +367,14 @@ describe("lower", () => {
   describe("function declarations", () => {
     it("should emit no actions in main for function declaration", () => {
       const result = lowerSourceResult(
-        'shortcut { name: "Test" } func greet() { showAlert(text: "hi"); }',
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; func greet() { alert(text: "hi"); }',
       );
       expect(result.main.actions).toHaveLength(0);
     });
 
     it("should produce a sub-shortcut for each function", () => {
       const result = lowerSourceResult(
-        'shortcut { name: "Test" } func greet() { showAlert(text: "hi"); }',
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; func greet() { alert(text: "hi"); }',
       );
       expect(result.subShortcuts).toHaveLength(1);
       expect(result.subShortcuts.at(0)?.name).toContain("greet");
@@ -382,7 +383,8 @@ describe("lower", () => {
     it("should lower function call to runworkflow action", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }
-        func greet() { showAlert(text: "hi"); }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        func greet() { alert(text: "hi"); }
         greet();
       `);
       const runActions = result.main.actions.filter(
@@ -430,7 +432,8 @@ describe("lower", () => {
     it("should derive sub-shortcut name from function name plus content hash", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }
-        func greet() { showAlert(text: "hi"); }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        func greet() { alert(text: "hi"); }
       `);
       const subName = result.subShortcuts.at(0)?.name;
       expect(subName).toMatch(/^greet_[a-f0-9]+$/);
@@ -531,8 +534,9 @@ describe("lower", () => {
 
     it("should lower pipeline as expression statement", () => {
       const actions = lowerSource(`
+        action alert(text: Text) = "is.workflow.actions.alert";
         const x = "hello";
-        x |> showAlert;
+        x |> alert;
       `);
 
       const alert = actions.find((a) => a.identifier === "is.workflow.actions.alert");
@@ -662,9 +666,10 @@ describe("lower", () => {
   });
 
   describe("stdlib integration", () => {
-    it("should lower showAlert using stdlib declaration with correct plist key", () => {
+    it("should lower showAlert using inline declaration with correct plist key", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }
+        action showAlert(text WFAlertActionTitle: Text) = "is.workflow.actions.alert";
         showAlert(text: "hello");
       `);
       const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
@@ -672,9 +677,10 @@ describe("lower", () => {
       expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
     });
 
-    it("should lower showResult using stdlib declaration", () => {
+    it("should lower showResult using inline declaration", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }
+        action showResult(text Text: Text) = "is.workflow.actions.showresult";
         showResult(text: "done");
       `);
       const action = result.find((a) => a.identifier === "is.workflow.actions.showresult");
@@ -691,6 +697,38 @@ describe("lower", () => {
       const action = result.find((a) => a.identifier === "custom.alert");
       expect(action).toBeDefined();
       expect(action?.parameters.get("msg")).toBe("hello");
+    });
+
+    it("should lower namespace-qualified action call from stdlib module", () => {
+      const result = lowerSource(`
+        import Notification;
+        shortcut { name: "Test" }
+        Notification.showAlert(WFAlertActionTitle: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
+    });
+
+    it("should lower aliased namespace-qualified action call", () => {
+      const result = lowerSource(`
+        import Notification as N;
+        shortcut { name: "Test" }
+        N.showAlert(WFAlertActionTitle: "hello");
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
+      expect(action).toBeDefined();
+      expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
+    });
+
+    it("should lower namespace-qualified action in pipeline", () => {
+      const result = lowerSource(`
+        import Notification;
+        shortcut { name: "Test" }
+        "hello" |> Notification.showAlert(WFAlertActionTitle: _);
+      `);
+      const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
+      expect(action).toBeDefined();
     });
   });
 });
