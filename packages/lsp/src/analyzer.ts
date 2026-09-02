@@ -1,5 +1,5 @@
 import { Lexer, Parser, checkCollecting, CompileError, describeType } from "@chutelang/compiler";
-import type { Program, Diagnostic, Span, ChuteType, Scope } from "@chutelang/compiler";
+import type { Program, Diagnostic, Span, ChuteType, Scope, DocComment } from "@chutelang/compiler";
 import type { SymbolInfo, IdentifierAtOffset } from "./find-node.ts";
 import { collectDefinitions, findIdentifierAtOffset } from "./find-node.ts";
 
@@ -95,32 +95,84 @@ export function resolveHover(result: AnalysisResult, offset: number): string | u
     return undefined;
   }
 
+  let hoverText: string | undefined;
+
   if (ident.context === "namespace-member" && ident.namespaceName) {
     const ns = result.scope.lookupNamespace(ident.namespaceName);
     if (ns) {
       const binding = ns.lookup(ident.name);
       if (binding) {
-        return formatTypeHover(ident.name, binding.type);
-      }
-      const typeDef = ns.lookupType(ident.name);
-      if (typeDef) {
-        return formatTypeHover(ident.name, typeDef);
+        hoverText = formatTypeHover(ident.name, binding.type);
+      } else {
+        const typeDef = ns.lookupType(ident.name);
+        if (typeDef) {
+          hoverText = formatTypeHover(ident.name, typeDef);
+        }
       }
     }
+  } else {
+    const binding = result.scope.lookup(ident.name);
+    if (binding) {
+      hoverText = formatTypeHover(ident.name, binding.type);
+    } else {
+      const typeDef = result.scope.lookupType(ident.name);
+      if (typeDef) {
+        hoverText = formatTypeHover(ident.name, typeDef);
+      }
+    }
+  }
+
+  if (!hoverText) {
     return undefined;
   }
 
-  const binding = result.scope.lookup(ident.name);
-  if (binding) {
-    return formatTypeHover(ident.name, binding.type);
+  const docComment = findDocComment(ident, result.definitions);
+  if (docComment) {
+    hoverText += formatDocCommentMarkdown(docComment);
   }
 
-  const typeDef = result.scope.lookupType(ident.name);
-  if (typeDef) {
-    return formatTypeHover(ident.name, typeDef);
-  }
+  return hoverText;
+}
 
+function findDocComment(
+  ident: IdentifierAtOffset,
+  definitions: SymbolInfo[],
+): DocComment | undefined {
+  for (let i = definitions.length - 1; i >= 0; i--) {
+    const def = definitions[i];
+    if (!def) {
+      continue;
+    }
+    if (def.name === ident.name && def.docComment) {
+      return def.docComment;
+    }
+  }
   return undefined;
+}
+
+function formatDocCommentMarkdown(doc: DocComment): string {
+  let result = "\n\n---\n\n";
+
+  if (doc.description.length > 0) {
+    result += doc.description + "\n";
+  }
+
+  const params = doc.tags.filter((t) => t.kind === "param");
+  if (params.length > 0) {
+    result += "\n";
+    for (const param of params) {
+      result += `**@param** \`${param.name}\` — ${param.body}\n\n`;
+    }
+  }
+
+  const examples = doc.tags.filter((t) => t.kind === "example");
+  if (examples.length > 0) {
+    for (const example of examples) {
+      result += "\n**@example**\n```chute\n" + example.body + "\n```\n";
+    }
+  }
+
+  return result;
 }
 
 function formatTypeHover(name: string, type: ChuteType): string {
