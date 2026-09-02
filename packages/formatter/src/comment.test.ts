@@ -13,6 +13,7 @@ describe("extractComments", () => {
         text: " hello",
         span: { start: 0, end: 8 },
         isBlock: false,
+        isDoc: false,
       },
     ]);
   });
@@ -24,6 +25,7 @@ describe("extractComments", () => {
         text: " hello ",
         span: { start: 0, end: 11 },
         isBlock: true,
+        isDoc: false,
       },
     ]);
   });
@@ -82,6 +84,26 @@ line 3 */`;
     expect(comments).toHaveLength(1);
     expect(comments[0]?.text).toBe(` line 1\nline 2\nline 3 `);
     expect(comments[0]?.isBlock).toBe(true);
+  });
+
+  it("should mark a doc comment as isDoc", () => {
+    const comments = extractComments("/** hello */");
+    expect(comments[0]?.isDoc).toBe(true);
+  });
+
+  it("should not mark a regular block comment as isDoc", () => {
+    const comments = extractComments("/* hello */");
+    expect(comments[0]?.isDoc).toBe(false);
+  });
+
+  it("should not mark an empty doc-style comment as isDoc", () => {
+    const comments = extractComments("/** */");
+    expect(comments[0]?.isDoc).toBe(false);
+  });
+
+  it("should not mark a line comment as isDoc", () => {
+    const comments = extractComments("// hello");
+    expect(comments[0]?.isDoc).toBe(false);
   });
 
   it("should track correct spans", () => {
