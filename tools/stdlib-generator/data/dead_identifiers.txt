@@ -1,0 +1,25 @@
+# Identifier strings present in the WorkflowKit/ActionKit binaries but NOT
+# registered by WFActionDefinitionRegistry at runtime. These are legacy /
+# migration-only references, not real actions. Do not generate stdlib entries.
+is.workflow.actions.alarm.create
+is.workflow.actions.alarm.toggle
+is.workflow.actions.appendnote
+is.workflow.actions.cellular.rat.set
+is.workflow.actions.currentdate
+is.workflow.actions.detect.dicionary
+is.workflow.actions.dropbox.append
+is.workflow.actions.dropbox.delete
+is.workflow.actions.dropbox.delete2
+is.workflow.actions.dropbox.getlink
+is.workflow.actions.dropbox.pick
+is.workflow.actions.dropbox.save
+is.workflow.actions.filter.media
+is.workflow.actions.filter.notes
+is.workflow.actions.folder
+is.workflow.actions.getenddate
+is.workflow.actions.getstartdate
+is.workflow.actions.openworkflow
+is.workflow.actions.properties.media
+is.workflow.actions.runscene
+is.workflow.actions.shownote
+is.workflow.actions.trigger-input
