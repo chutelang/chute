@@ -2,14 +2,14 @@
   "name": "@chutelang/lsp",
   "version": "0.0.1",
   "description": "Language server for the Chute programming language",
+  "homepage": "https://chutelang.dev",
+  "bugs": "https://github.com/chutelang/chute/issues",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chutelang/chute.git",
     "directory": "packages/lsp"
   },
-  "homepage": "https://chutelang.dev",
-  "bugs": "https://github.com/chutelang/chute/issues",
-  "license": "Apache-2.0",
   "files": [
     "src"
   ],

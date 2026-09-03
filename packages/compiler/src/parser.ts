@@ -134,9 +134,7 @@ export class Parser {
       try {
         if (this.check(TokenKind.Import)) {
           const tok = this.peek();
-          this.recordError(
-            new ParseError("imports must appear at the top of the file", tok.span),
-          );
+          this.recordError(new ParseError("imports must appear at the top of the file", tok.span));
           this.synchronize();
         } else {
           body.push(this.parseStatement());

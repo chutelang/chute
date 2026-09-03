@@ -26,7 +26,6 @@ import type {
   PipelineExpression,
   PipelineStage,
   Program,
-  RecordDeclaration,
   RepeatStatement,
   ReturnStatement,
   Statement,
@@ -42,7 +41,7 @@ import type {
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
-import { getStdlibActions, getStdlibModule } from "./stdlib.ts";
+import { getStdlibModule } from "./stdlib.ts";
 
 export class LowerError extends Error {
   constructor(
@@ -76,7 +75,7 @@ export function lower(program: Program): CompilationResult {
   const enums = new Map<string, Map<string, string>>();
   const records = new Set<string>();
   const functions = new Map<string, FunctionDeclaration>();
-  const actionDecls = new Map<string, ActionDeclaration>(getStdlibActions());
+  const actionDecls = new Map<string, ActionDeclaration>();
   const collectedErrors: Diagnostic[] = [];
 
   for (const stmt of program.body) {
@@ -95,9 +94,13 @@ export function lower(program: Program): CompilationResult {
 
   const namespaceActions = new Map<string, Map<string, NamespaceAction>>();
   for (const imp of program.imports) {
-    if (!imp.isPackage) continue;
+    if (!imp.isPackage) {
+      continue;
+    }
     const moduleScope = getStdlibModule(imp.path);
-    if (!moduleScope) continue;
+    if (!moduleScope) {
+      continue;
+    }
     const moduleActions = new Map<string, NamespaceAction>();
     for (const [name, binding] of moduleScope.allBindings()) {
       if (binding.type.kind === "action") {
@@ -177,6 +180,7 @@ function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext
     records: ctx.records,
     functions: ctx.functions,
     actions: ctx.actions,
+    namespaceActions: ctx.namespaceActions,
     subShortcuts: ctx.subShortcuts,
   };
 
@@ -447,9 +451,13 @@ function lowerNamespaceActionCall(
 ): ActionIR {
   const parameters = new Map<string, ParameterValue>();
   for (const arg of expr.args) {
-    if (!arg.label) continue;
+    if (!arg.label) {
+      continue;
+    }
     const plistKey = nsAction.paramKeys.get(arg.label);
-    if (!plistKey) continue;
+    if (!plistKey) {
+      continue;
+    }
     parameters.set(plistKey, lowerToParamValue(arg.value, parentActions, ctx));
   }
   return {
@@ -766,16 +774,16 @@ function lowerToParamValue(
       };
     case "InterpolatedString":
       return buildInterpolatedText(expr, actions, ctx);
-    default: {
+    default:
       lowerExpression(expr, actions, ctx);
-      const tempName = nextTempName(ctx);
-      actions.push(makeSetVariableAction(tempName, ctx));
-      return {
-        kind: "VariableRef",
-        name: tempName,
-      };
-    }
+      break;
   }
+  const tempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(tempName, ctx));
+  return {
+    kind: "VariableRef",
+    name: tempName,
+  };
 }
 
 function buildInterpolatedText(
@@ -1448,10 +1456,7 @@ function lowerPipelineExpression(
 }
 
 function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
-  if (
-    stage.callee.kind === "MemberExpression" &&
-    stage.callee.object.kind === "Identifier"
-  ) {
+  if (stage.callee.kind === "MemberExpression" && stage.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(stage.callee.object.name);
     const nsAction = nsActions?.get(stage.callee.property);
     if (nsAction) {
@@ -1592,9 +1597,13 @@ function lowerPipelineNamespaceActionStage(
   const parameters = new Map<string, ParameterValue>();
 
   for (const arg of stage.args) {
-    if (arg.value.kind === "PlaceholderExpression" || !arg.label) continue;
+    if (arg.value.kind === "PlaceholderExpression" || !arg.label) {
+      continue;
+    }
     const plistKey = nsAction.paramKeys.get(arg.label);
-    if (!plistKey) continue;
+    if (!plistKey) {
+      continue;
+    }
     parameters.set(plistKey, lowerToParamValue(arg.value, actions, ctx));
   }
 

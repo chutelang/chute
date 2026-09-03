@@ -3,125 +3,135 @@ import { compile } from "./pipeline.ts";
 
 describe("compile", () => {
   it("should compile hello world to a valid plist", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Hello World",
   description: "A shortcut created with Chute",
 }
 
-showAlert(text: "Hello from Chute!");`;
+Notification.showAlert(WFAlertActionTitle: "Hello from Chute!");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile multiple actions", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Multi",
 }
 
-showAlert(text: "first");
-showResult(text: "second");`;
+Notification.showAlert(WFAlertActionTitle: "first");
+Notification.showContent(Text: "second");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile const declaration with variable use", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Variables",
 }
 
 const greeting = "Hello";
-showAlert(text: greeting);`;
+Notification.showAlert(WFAlertActionTitle: greeting);`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile arithmetic expression", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Math",
 }
 
 const a = 10;
 const b = 20;
 const c = a + b;
-showResult(text: "done");`;
+Notification.showContent(Text: "done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile string interpolation", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Interpolation",
 }
 
 const name = "World";
-showAlert(text: "Hello \${name}!");`;
+Notification.showAlert(WFAlertActionTitle: "Hello \${name}!");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile nil coalescing", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Coalesce",
 }
 
 const x: Number? = nil;
 const y = x ?? 42;
-showResult(text: "done");`;
+Notification.showContent(Text: "done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile if/else statement", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "IfElse",
 }
 
 const x = 5;
 if (x > 3) {
-  showAlert(text: "big");
+  Notification.showAlert(WFAlertActionTitle: "big");
 } else {
-  showAlert(text: "small");
+  Notification.showAlert(WFAlertActionTitle: "small");
 }`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile for loop", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "ForLoop",
 }
 
 const items = [1, 2, 3];
 for item in items {
-  showAlert(text: "item");
+  Notification.showAlert(WFAlertActionTitle: "item");
 }`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile repeat loop", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Repeat",
 }
 
 repeat 3 {
-  showAlert(text: "again");
+  Notification.showAlert(WFAlertActionTitle: "again");
 }`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile menu statement", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Menu",
 }
 
 menu "Choose one" {
   case "Option A" {
-    showAlert(text: "A");
+    Notification.showAlert(WFAlertActionTitle: "A");
   }
   case "Option B" {
-    showAlert(text: "B");
+    Notification.showAlert(WFAlertActionTitle: "B");
   }
 }`;
 
@@ -129,75 +139,81 @@ menu "Choose one" {
   });
 
   it("should compile ternary expression", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Ternary",
 }
 
 const x = 5;
 const result = x > 3 ? "big" : "small";
-showAlert(text: result);`;
+Notification.showAlert(WFAlertActionTitle: result);`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile enum declaration and member access", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Enum",
 }
 
 enum Color { red = "RED", blue = "BLUE" }
 const c = Color.red;
-showAlert(text: "\${c}");`;
+Notification.showAlert(WFAlertActionTitle: "\${c}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile record construction and field access", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Record",
 }
 
 record Point { x: Number, y: Number }
 const p = Point(x: 10, y: 20);
 const sum = p.x + p.y;
-showAlert(text: "\${sum}");`;
+Notification.showAlert(WFAlertActionTitle: "\${sum}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile const destructuring", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Destructure",
 }
 
 record Point { x: Number, y: Number }
 const p = Point(x: 5, y: 7);
 const { x, y } = p;
-showAlert(text: "\${x}");`;
+Notification.showAlert(WFAlertActionTitle: "\${x}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile enum dot-name shorthand with type annotation", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "DotName",
 }
 
 enum Direction { north, south, east, west }
 const dir: Direction = .north;
-showAlert(text: "\${dir}");`;
+Notification.showAlert(WFAlertActionTitle: "\${dir}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile function declaration and call", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Functions",
 }
 
 func greet(name: Text = "World") -> Text { return name; }
 const msg = greet();
-showAlert(text: msg);`;
+Notification.showAlert(WFAlertActionTitle: msg);`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -206,13 +222,14 @@ showAlert(text: msg);`;
   });
 
   it("should compile a multi-parameter function's sub-shortcut", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "AddTwo",
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 const x = add(a: 3, b: 4);
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.subShortcuts).toHaveLength(1);
@@ -220,7 +237,8 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile multiple functions", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "MultiFunctions",
 }
 
@@ -228,7 +246,7 @@ func add(a: Number, b: Number) -> Number { return a + b; }
 func double(n: Number) -> Number { return n * 2; }
 const x = add(a: 3, b: 4);
 const y = double(n: x);
-showResult(text: "\${y}");`;
+Notification.showContent(Text: "\${y}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -236,7 +254,8 @@ showResult(text: "\${y}");`;
   });
 
   it("should compile function with conditional return", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Conditional",
 }
 
@@ -247,7 +266,7 @@ func abs(n: Number) -> Number {
   return n;
 }
 const x = abs(n: -5);
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -256,14 +275,15 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile function calling another function", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Compose",
 }
 
 func double(n: Number) -> Number { return n * 2; }
 func quadruple(n: Number) -> Number { return double(n: double(n: n)); }
 const x = quadruple(n: 3);
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -271,7 +291,8 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile function using enums and records", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "TypedFunc",
 }
 
@@ -281,7 +302,7 @@ func makeShirt(size: Text, color: Color) -> Shirt {
   return Shirt(size: size, color: color);
 }
 const s = makeShirt(size: "L", color: Color.red);
-showAlert(text: s.size);`;
+Notification.showAlert(WFAlertActionTitle: s.size);`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -289,13 +310,14 @@ showAlert(text: s.size);`;
   });
 
   it("should compile a single-stage pipeline", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Pipe",
 }
 
 func double(n: Number) -> Number { return n * 2; }
 const x = 5 |> double;
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -303,14 +325,15 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile a multi-stage pipeline", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "MultiPipe",
 }
 
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 const x = 5 |> double |> triple;
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -318,14 +341,15 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile an optional pipeline with |>?", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "OptionalPipe",
 }
 
 func double(n: Number) -> Number { return n * 2; }
 const x: Number? = nil;
 const y = x |>? double;
-showResult(text: "done");`;
+Notification.showContent(Text: "done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -333,13 +357,14 @@ showResult(text: "done");`;
   });
 
   it("should compile a pipeline with explicit arguments", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "PipeArgs",
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 const x = 5 |> add(b: 10);
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -347,13 +372,14 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile a pipeline with _ placeholder", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "PipePlaceholder",
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 const x = 5 |> add(b: 10, a: _);
-showResult(text: "\${x}");`;
+Notification.showContent(Text: "\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -361,18 +387,20 @@ showResult(text: "\${x}");`;
   });
 
   it("should compile a pipeline ending in an action call", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "PipeAction",
 }
 
 const msg = "Hello from pipe";
-msg |> showAlert;`;
+msg |> Notification.showAlert;`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile |>? followed by |> stages", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "MixedPipe",
 }
 
@@ -380,7 +408,7 @@ func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 const x: Number? = nil;
 const y = x |>? double |> triple;
-showResult(text: "done");`;
+Notification.showContent(Text: "done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -399,13 +427,14 @@ sendMessage(to: "alice", body: "hello");`;
   });
 
   it("should compile action with keyword parameter labels", () => {
-    const source = `shortcut {
+    const source = `import Notification;
+shortcut {
   name: "Keywords",
 }
 
 action search(in: Text, for: Text) -> List<Text> = "com.example.search";
 const results = search(in: "inbox", for: "urgent");
-showResult(text: "done");`;
+Notification.showContent(Text: "done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -435,54 +464,63 @@ doThing();`;
 
 describe("stdlib smoke tests", () => {
   it("should compile showAlert from stdlib", () => {
-    const source = `shortcut { name: "StdlibAlert" }
-showAlert(text: "Hello from stdlib!");`;
+    const source = `import Notification;
+shortcut { name: "StdlibAlert" }
+Notification.showAlert(WFAlertActionTitle: "Hello from stdlib!");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile notification with default title", () => {
-    const source = `shortcut { name: "StdlibNotify" }
-notification(body: "Task complete");`;
+    const source = `import Notification;
+shortcut { name: "StdlibNotify" }
+Notification.showNotification(WFNotificationActionBody: "Task complete");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
-  it("should compile getClipboard and setClipboard", () => {
-    const source = `shortcut { name: "Clipboard" }
-const text = getClipboard();
-setClipboard(value: text);`;
+  it("should compile getClipboard and copyToClipboard", () => {
+    const source = `import Device;
+shortcut { name: "Clipboard" }
+const text = Device.getClipboard();
+Device.copyToClipboard(WFInput: text);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
-  it("should compile getCurrentDate", () => {
-    const source = `shortcut { name: "Date" }
-const now = getCurrentDate();
-showResult(text: now);`;
+  it("should compile date action", () => {
+    const source = `import Scripting;
+import Notification;
+shortcut { name: "Date" }
+const now = Scripting.date();
+Notification.showContent(Text: now);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
-  it("should compile openURL", () => {
-    const source = `shortcut { name: "OpenURL" }
-openURL(url: "https://example.com");`;
+  it("should compile openUrls", () => {
+    const source = `import Web;
+shortcut { name: "OpenURL" }
+Web.openUrls(WFInput: "https://example.com");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile wait action", () => {
-    const source = `shortcut { name: "Wait" }
-wait(seconds: 5);`;
+    const source = `import Scripting;
+shortcut { name: "Wait" }
+Scripting.wait(WFDelayTime: 5);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile settings toggle actions", () => {
-    const source = `shortcut { name: "Settings" }
-setWiFi(enabled: false);
-setBluetooth(enabled: true);`;
+    const source = `import Settings;
+shortcut { name: "Settings" }
+Settings.setWiFi(OnValue: false);
+Settings.setBluetooth(OnValue: true);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile stdlib action in pipeline", () => {
-    const source = `shortcut { name: "PipeStdlib" }
+    const source = `import Notification;
+shortcut { name: "PipeStdlib" }
 const msg = "hello";
-msg |> showAlert;`;
+msg |> Notification.showAlert;`;
     expect(compile(source).main).toMatchSnapshot();
   });
 

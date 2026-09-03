@@ -130,9 +130,9 @@ describe("hover", () => {
   });
 
   it("should show action signature for stdlib actions", () => {
-    const source = 'showAlert(text: "hello");';
+    const source = 'import Notification;\nNotification.showAlert(WFAlertActionTitle: "hello");';
     const result = analyze(source);
-    const offset = source.indexOf("showAlert");
+    const offset = source.lastIndexOf("showAlert");
     const hover = resolveHover(result, offset);
     expect(hover).toContain("action showAlert");
   });
@@ -204,13 +204,11 @@ describe("autocomplete", () => {
     expect(labels).not.toContain("var");
   });
 
-  it("should include stdlib actions", () => {
-    const result = analyze("");
+  it("should include imported module alias in completions", () => {
+    const result = analyze("import Notification;");
     const items = getCompletions(result);
     const labels = items.map((i) => i.label);
-    expect(labels).toContain("showAlert");
-    expect(labels).toContain("showResult");
-    expect(labels).toContain("getClipboard");
+    expect(labels).toContain("Notification");
   });
 
   it("should include user-defined variables", () => {
