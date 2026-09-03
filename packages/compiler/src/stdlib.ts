@@ -71,6 +71,59 @@ const INTENT_TYPE_MAP: Record<string, ChuteType> = {
   DateComponents: { kind: "text" },
 };
 
+const CONTENT_TYPE_MAP: Record<string, ChuteType> = {
+  NSString: { kind: "text" },
+  WFStringContentItem: { kind: "text" },
+  NSAttributedString: { kind: "text" },
+  NSURL: { kind: "text" },
+  WFURLContentItem: { kind: "text" },
+  WFEmailAddress: { kind: "text" },
+  WFEmailAddressContentItem: { kind: "text" },
+  WFPhoneNumber: { kind: "text" },
+  WFPhoneNumberContentItem: { kind: "text" },
+  WFStreetAddress: { kind: "text" },
+  NSDecimalNumber: { kind: "number" },
+  NSNumber: { kind: "number" },
+  WFNumberContentItem: { kind: "number" },
+  NSMeasurement: { kind: "number" },
+  WFBooleanContentItem: { kind: "boolean" },
+  NSDictionary: { kind: "dictionary" },
+  WFDictionaryContentItem: { kind: "dictionary" },
+  NSDate: { kind: "text" },
+  NSDateComponents: { kind: "text" },
+  WFDateContentItem: { kind: "text" },
+};
+
+function inferReturnType(output: StdlibJsonAction["output"]): ChuteType | undefined {
+  const types = output?.Types;
+  if (!types || types.length === 0) {
+    return undefined;
+  }
+
+  if (types.length === 1) {
+    const ft = types[0];
+    if (!ft) {
+      return { kind: "any" };
+    }
+    return CONTENT_TYPE_MAP[ft] ?? { kind: "any" };
+  }
+
+  const mapped = types.map((t) => CONTENT_TYPE_MAP[t]).filter(Boolean);
+  if (mapped.length === 0) {
+    return { kind: "any" };
+  }
+
+  const first = mapped[0];
+  if (!first) {
+    return { kind: "any" };
+  }
+  if (mapped.every((t) => t?.kind === first.kind)) {
+    return first;
+  }
+
+  return { kind: "any" };
+}
+
 function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
   const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
 
@@ -100,14 +153,14 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
     }
   }
 
-  const hasOutput = action.output?.Types && action.output.Types.length > 0;
+  const returnType = inferReturnType(action.output);
 
   return {
     kind: "action",
     name: action.name,
     runtimeIdentifier: action.identifier,
     params,
-    returnType: hasOutput ? { kind: "any" } : undefined,
+    returnType,
   };
 }
 

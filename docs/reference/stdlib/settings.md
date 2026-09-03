@@ -11,7 +11,7 @@ import Settings;
 Returns the password of your Personal Hotspot.
 
 ```chute
-getHotspotPassword()
+getHotspotPassword() -> Text
 ```
 
 Shortcuts action: `is.workflow.actions.personalhotspot.password.get`

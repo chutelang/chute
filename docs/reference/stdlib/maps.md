@@ -19,7 +19,7 @@ Shortcuts action: `is.workflow.actions.filter.locations`
 Finds nearby places using Maps, and returns the results.
 
 ```chute
-findPlaces(WFInput: Text, WFSearchQuery: Text, WFSearchRadius: Number, WFSearchSortOrder: Text)
+findPlaces(WFInput: Text, WFSearchQuery: Text, WFSearchRadius: Number, WFSearchSortOrder: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -36,7 +36,7 @@ Shortcuts action: `is.workflow.actions.searchlocalbusinesses`
 Gets the current location of the device.
 
 ```chute
-getCurrentLocation(Accuracy: Text)
+getCurrentLocation(Accuracy: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -50,7 +50,7 @@ Shortcuts action: `is.workflow.actions.getcurrentlocation`
 Gets the current weather conditions at the specified location.
 
 ```chute
-getCurrentWeather(WFWeatherCustomLocation: Text)
+getCurrentWeather(WFWeatherCustomLocation: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -96,7 +96,7 @@ Shortcuts action: `is.workflow.actions.properties.weather.conditions`
 Calculates the distance to the location passed into this action.
 
 ```chute
-getDistance(WFGetDirectionsCustomLocation: Text, WFGetDistanceDestination: Text, WFGetDirectionsActionMode: Text, WFDistanceUnit: Text, Accuracy: Text)
+getDistance(WFGetDirectionsCustomLocation: Text, WFGetDistanceDestination: Text, WFGetDirectionsActionMode: Text, WFDistanceUnit: Text, Accuracy: Text) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -114,7 +114,7 @@ Shortcuts action: `is.workflow.actions.getdistance`
 Gets the halfway point between two locations.
 
 ```chute
-getHalfwayPoint(WFGetHalfwayPointFirstLocation: Text, WFGetHalfwayPointSecondLocation: Text)
+getHalfwayPoint(WFGetHalfwayPointFirstLocation: Text, WFGetHalfwayPointSecondLocation: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -129,7 +129,7 @@ Shortcuts action: `is.workflow.actions.gethalfwaypoint`
 Creates a URL to search for the location, place, or text that was passed into the action in a separate maps app.
 
 ```chute
-getMapsUrl(WFInput: Text)
+getMapsUrl(WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -143,7 +143,7 @@ Shortcuts action: `is.workflow.actions.getmapslink`
 Fetches the details of your Parked Car, as stored in the Maps app.
 
 ```chute
-getParkedCarLocation()
+getParkedCarLocation() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.getparkedcarlocation`
@@ -153,7 +153,7 @@ Shortcuts action: `is.workflow.actions.getparkedcarlocation`
 Estimates the amount of time it will take to travel to the location passed into this action.
 
 ```chute
-getTravelTime(WFGetDirectionsCustomLocation: Text, WFDestination: Text, WFGetDirectionsActionMode: Text)
+getTravelTime(WFGetDirectionsCustomLocation: Text, WFDestination: Text, WFGetDirectionsActionMode: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -171,7 +171,7 @@ Shortcuts action: `is.workflow.actions.gettraveltime`
 Gets an hourly or daily weather forecast at the specified location.
 
 ```chute
-getWeatherForecast(WFWeatherCustomLocation: Text, WFWeatherForecastType: Text)
+getWeatherForecast(WFWeatherCustomLocation: Text, WFWeatherForecastType: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -186,7 +186,7 @@ Shortcuts action: `is.workflow.actions.weather.forecast`
 Passes the specified location to the next action.
 
 ```chute
-location(WFLocation: Text)
+location(WFLocation: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -232,7 +232,7 @@ Shortcuts action: `is.workflow.actions.searchmaps`
 Requests a ride from the specified pickup location to a specified drop off location.
 
 ```chute
-requestRide(IntentAppDefinition: Text, PickupLocation: Text, DropOffLocation: Text, RideOption: Text, PaymentMethod: Text, PartySize: Number)
+requestRide(IntentAppDefinition: Text, PickupLocation: Text, DropOffLocation: Text, RideOption: Text, PaymentMethod: Text, PartySize: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -251,7 +251,7 @@ Shortcuts action: `is.workflow.actions.ride.requestride`
 Saves details of your Parked Car in the Maps app.
 
 ```chute
-setParkedCar(WFLocation: Text, WFSetParkedCarNotes: Text, WFImage: Any)
+setParkedCar(WFLocation: Text, WFSetParkedCarNotes: Text, WFImage: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -267,7 +267,7 @@ Shortcuts action: `is.workflow.actions.setparkedcar`
 Passes the specified address to the next action.
 
 ```chute
-streetAddress(WFAddressLine1: Text, WFAddressLine2: Text, WFCity: Text, WFState: Text, WFPostalCode: Text, WFCountry: Text)
+streetAddress(WFAddressLine1: Text, WFAddressLine2: Text, WFCity: Text, WFState: Text, WFPostalCode: Text, WFCountry: Text) -> Text
 ```
 
 | Parameter | Type | Default |
