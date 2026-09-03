@@ -1,130 +1,235 @@
 # Text
 
-Actions for creating, transforming, splitting, and combining text, plus speech input and output.
+Text manipulation, formatting, regex, and speech.
 
-## `getText`
-
-Create a text value.
-
-```text
-getText(text: Text) -> Text
+```chute
+import Text;
 ```
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `Text` | None | The text to produce. |
-
-Returns the text value.
-
-Shortcuts action: `is.workflow.actions.gettext`
 
 ## `changeCase`
 
-Change the case of a text value.
+Changes the case of the text passed into the action to UPPERCASE, lowercase, or Title Case.
 
-```text
-changeCase(text: Text, case: Text = "UPPERCASE") -> Text
+```chute
+changeCase()
 ```
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `Text` | None | The text to transform. |
-| `case` | `Text` | `"UPPERCASE"` | The target case: `"UPPERCASE"`, `"lowercase"`, or `"Capitalize Every Word"`. |
-
-Returns the transformed text.
 
 Shortcuts action: `is.workflow.actions.text.changecase`
 
-## `replaceText`
-
-Replace occurrences of a pattern in text.
-
-```text
-replaceText(text: Text, find: Text, replace: Text) -> Text
-```
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `Text` | None | The text to search. |
-| `find` | `Text` | None | The substring or pattern to find. |
-| `replace` | `Text` | None | The replacement text. |
-
-Returns the text with replacements applied.
-
-Shortcuts action: `is.workflow.actions.text.replace`
-
-## `splitText`
-
-Split text into a list using a separator.
-
-```text
-splitText(text: Text, separator: Text = " ") -> List<Text>
-```
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `Text` | None | The text to split. |
-| `separator` | `Text` | `" "` | The delimiter to split on. |
-
-Returns a list of text segments.
-
-Shortcuts action: `is.workflow.actions.text.split`
-
 ## `combineText`
 
-Join a list of text values into a single string.
+Joins the text together, inserting the separator between each join.
 
-```text
-combineText(list: List<Text>, separator: Text = " ")
+```chute
+combineText()
 ```
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `list` | `List<Text>` | None | The list of text values to join. |
-| `separator` | `Text` | `" "` | The delimiter to place between items. |
 
 Shortcuts action: `is.workflow.actions.text.combine`
 
-## `matchText`
+## `correctSpelling`
 
-Find matches for a regular expression pattern in text.
+Autocorrects the spelling of text passed into the action.
 
-```text
-matchText(text: Text, pattern: Text) -> List<Text>
+```chute
+correctSpelling()
 ```
 
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `Text` | None | The text to search. |
-| `pattern` | `Text` | None | The regular expression pattern. |
+Shortcuts action: `is.workflow.actions.correctspelling`
 
-Returns a list of matches.
+## `detectLanguage`
 
-Shortcuts action: `is.workflow.actions.text.match`
+Detects the language of the text provided as input.
 
-## speak
-
-Read text aloud using text-to-speech.
-
-```text
-speak(text: Text, rate: Number = 0)
+```chute
+detectLanguage(WFInput: Text)
 ```
 
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `Text` | None | The text to speak. |
-| `rate` | `Number` | `0` | The speech rate. |
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFInput` | `Text` | — |
 
-Shortcuts action: `is.workflow.actions.speaktext`
+Shortcuts action: `is.workflow.actions.detectlanguage`
 
 ## `dictateText`
 
-Capture speech input and convert it to text.
+Transcribes what you say aloud into text and passes the result to the next action.
 
-```text
-dictateText() -> Text
+```chute
+dictateText(WFSpeechLanguage: Text, WFDictateTextStopListening: Text)
 ```
 
-Returns the transcribed text.
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFSpeechLanguage` | `Text` | — |
+| `WFDictateTextStopListening` | `Text` | `"After Pause"` |
 
 Shortcuts action: `is.workflow.actions.dictatetext`
+
+## `extractTextFromImage`
+
+Uses OCR to extract text from an image.
+
+```chute
+extractTextFromImage(WFImage: Any)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFImage` | `Any` | — |
+
+Shortcuts action: `is.workflow.actions.extracttextfromimage`
+
+## `getGroupFromMatchedText`
+
+Gets the text that matched a particular capture group or all of the capture groups from the output of a Match Text action.
+
+```chute
+getGroupFromMatchedText()
+```
+
+Shortcuts action: `is.workflow.actions.text.match.getgroup`
+
+## `getNameOfEmoji`
+
+Gets the names of emoji passed into the action.
+
+```chute
+getNameOfEmoji(WFInput: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFInput` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.getnameofemoji`
+
+## `makeSpokenAudioFromText`
+
+Creates an audio file from text, using text-to-speech.
+
+```chute
+makeSpokenAudioFromText(WFInput: Text, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFInput` | `Text` | — |
+| `WFSpeakTextRate` | `Number` | 0.5 |
+| `WFSpeakTextPitch` | `Number` | 1 |
+| `WFSpeakTextLanguage` | `Text` | `"Default"` |
+| `WFSpeakTextVoice` | `Text` | `"Default"` |
+
+Shortcuts action: `is.workflow.actions.makespokenaudiofromtext`
+
+## `matchText`
+
+```chute
+matchText()
+```
+
+Shortcuts action: `is.workflow.actions.text.match`
+
+## `replaceText`
+
+Replaces all occurrences of the given text with other text.
+
+```chute
+replaceText(WFReplaceTextFind: Text, WFReplaceTextReplace: Text, WFReplaceTextCaseSensitive: Boolean, WFReplaceTextRegularExpression: Boolean, WFInput: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFReplaceTextFind` | `Text` | — |
+| `WFReplaceTextReplace` | `Text` | — |
+| `WFReplaceTextCaseSensitive` | `Boolean` | true |
+| `WFReplaceTextRegularExpression` | `Boolean` | false |
+| `WFInput` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.text.replace`
+
+## `showDefinition`
+
+Shows the definition of the word passed into the action.
+
+```chute
+showDefinition(Word: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `Word` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.showdefinition`
+
+## `speakText`
+
+Speaks the inputted text aloud.
+
+```chute
+speakText(WFSpeakTextWait: Boolean, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text, WFText: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFSpeakTextWait` | `Boolean` | true |
+| `WFSpeakTextRate` | `Number` | 0.5 |
+| `WFSpeakTextPitch` | `Number` | 1 |
+| `WFSpeakTextLanguage` | `Text` | `"Default"` |
+| `WFSpeakTextVoice` | `Text` | `"Default"` |
+| `WFText` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.speaktext`
+
+## `splitText`
+
+Separates text passed into the action into a list.
+
+```chute
+splitText()
+```
+
+Shortcuts action: `is.workflow.actions.text.split`
+
+## `text`
+
+Passes the specified text to the next action.
+
+```chute
+text(WFTextActionText: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFTextActionText` | `Text` | `""` |
+
+Shortcuts action: `is.workflow.actions.gettext`
+
+## `translateText`
+
+Translates the text passed into the action into another language.
+
+```chute
+translateText(WFSelectedFromLanguage: Text, WFSelectedLanguage: Text, WFInputText: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFSelectedFromLanguage` | `Text` | — |
+| `WFSelectedLanguage` | `Text` | — |
+| `WFInputText` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.text.translate`
+
+## `trimWhitespace`
+
+Removes whitespace and newlines from both ends of the text passed into the action.
+
+```chute
+trimWhitespace(WFInput: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFInput` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.text.trimwhitespace`

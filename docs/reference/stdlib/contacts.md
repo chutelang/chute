@@ -1,44 +1,159 @@
 # Contacts
 
-Actions for selecting, creating, and calling contacts.
+Contacts, phone calls, and FaceTime.
 
-## `selectContact`
-
-Open the contact picker and let the user choose a contact.
-
-```text
-selectContact() -> Text
+```chute
+import Contacts;
 ```
 
-Returns the selected contact.
+## `call`
 
-Shortcuts action: `is.workflow.actions.selectcontact`
+Calls the phone number passed in as input.
 
-## `addNewContact`
-
-Create a new contact.
-
-```text
-addNewContact(firstName: Text, lastName: Text)
+```chute
+call(IntentAppDefinition: Text, WFCallContact: Text)
 ```
 
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `firstName` | `Text` | None | The contact's first name. |
-| `lastName` | `Text` | None | The contact's last name. |
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `IntentAppDefinition` | `Text` | [object Object] |
+| `WFCallContact` | `Text` | — |
+
+Shortcuts action: `com.apple.mobilephone.call`
+
+## `contacts`
+
+Passes the specified contacts to the next action.
+
+```chute
+contacts(WFContact: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContact` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.contacts`
+
+## `editContact`
+
+```chute
+editContact()
+```
+
+Shortcuts action: `is.workflow.actions.setters.contacts`
+
+## `emailAddress`
+
+Passes the specified email addresses to the next action.
+
+```chute
+emailAddress(WFEmailAddress: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFEmailAddress` | `Text` | — |
+
+Shortcuts action: `is.workflow.actions.email`
+
+## `facetime`
+
+Calls the contact passed in as input using FaceTime.
+
+```chute
+facetime(IntentAppDefinition: Text, WFFaceTimeType: Text, WFFaceTimeContact: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `IntentAppDefinition` | `Text` | [object Object] |
+| `WFFaceTimeType` | `Text` | `"Video"` |
+| `WFFaceTimeContact` | `Text` | — |
+
+Shortcuts action: `com.apple.facetime.facetime`
+
+## `findContacts`
+
+```chute
+findContacts()
+```
+
+Shortcuts action: `is.workflow.actions.filter.contacts`
+
+## `getDetailsOfContacts`
+
+```chute
+getDetailsOfContacts()
+```
+
+Shortcuts action: `is.workflow.actions.properties.contacts`
+
+## `newContact`
+
+Creates a new contact.
+
+```chute
+newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Any, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContactFirstName` | `Text` | — |
+| `WFContactLastName` | `Text` | — |
+| `WFContactCompany` | `Text` | — |
+| `WFContactPhoto` | `Any` | — |
+| `WFContactPhoneNumbers` | `Text` | — |
+| `WFContactEmails` | `Text` | — |
+| `WFContactNotes` | `Text` | — |
+| `ShowWhenRun` | `Boolean` | true |
 
 Shortcuts action: `is.workflow.actions.addnewcontact`
 
-## phone
+## `phoneNumber`
 
-Start a phone call.
+Passes the specified phone numbers to the next action.
 
-```text
-phone(number: Text)
+```chute
+phoneNumber(WFPhoneNumber: Text)
 ```
 
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `number` | `Text` | None | The phone number to call. |
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFPhoneNumber` | `Text` | — |
 
-Shortcuts action: `is.workflow.actions.phonecall`
+Shortcuts action: `is.workflow.actions.phonenumber`
+
+## `selectContact`
+
+Prompts to pick a person from your contacts and passes the selection to the next action.
+
+```chute
+selectContact(WFSelectMultiple: Boolean)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFSelectMultiple` | `Boolean` | — |
+
+Shortcuts action: `is.workflow.actions.selectcontacts`
+
+## `selectEmailAddress`
+
+Prompts to pick an email address from your contacts and passes the selection to the next action.
+
+```chute
+selectEmailAddress()
+```
+
+Shortcuts action: `is.workflow.actions.selectemail`
+
+## `selectPhoneNumber`
+
+Prompts to pick a phone number from your contacts and passes the selection to the next action.
+
+```chute
+selectPhoneNumber()
+```
+
+Shortcuts action: `is.workflow.actions.selectphone`
