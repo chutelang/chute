@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Spawn } from "./io.ts";
+import type { IO, Spawn } from "./io.ts";
 import { isSigningAvailable, signShortcut } from "./sign.ts";
 
 function fakeSpawn(status: number): Spawn {
@@ -45,10 +45,37 @@ describe("isSigningAvailable", () => {
   });
 });
 
+function fakeIO(spawn: Spawn): {
+  io: IO;
+  writes: Array<{ path: string; data: string }>;
+  removals: string[];
+} {
+  const writes: Array<{ path: string; data: string }> = [];
+  const removals: string[] = [];
+  const io = {
+    writeFile: (p: string, data: string) => {
+      writes.push({
+        path: p,
+        data,
+      });
+    },
+    removeFile: (p: string) => {
+      removals.push(p);
+    },
+    spawn,
+  } as unknown as IO;
+
+  return {
+    io,
+    writes,
+    removals,
+  };
+}
+
 describe("signShortcut", () => {
-  it("should call spawn with correct arguments", () => {
+  it("should stage plist as .unsigned.shortcut and sign it", () => {
     const calls: Array<{ command: string; args: string[] }> = [];
-    const spawn: Spawn = (command, args) => {
+    const fake = fakeIO((command, args) => {
       calls.push({
         command,
         args,
@@ -57,10 +84,16 @@ describe("signShortcut", () => {
         status: 0,
         stderr: Buffer.from(""),
       };
-    };
+    });
 
-    signShortcut(spawn, "/tmp/test.plist", "/tmp/test.shortcut");
+    signShortcut(fake.io, "<plist/>", "/tmp/test.shortcut");
 
+    expect(fake.writes).toEqual([
+      {
+        path: "/tmp/test.unsigned.shortcut",
+        data: "<plist/>",
+      },
+    ]);
     expect(calls).toEqual([
       {
         command: "shortcuts",
@@ -69,22 +102,24 @@ describe("signShortcut", () => {
           "--mode",
           "anyone",
           "--input",
-          "/tmp/test.plist",
+          "/tmp/test.unsigned.shortcut",
           "--output",
           "/tmp/test.shortcut",
         ],
       },
     ]);
+    expect(fake.removals).toEqual(["/tmp/test.unsigned.shortcut"]);
   });
 
-  it("should throw when shortcuts sign fails", () => {
-    const spawn: Spawn = () => ({
+  it("should throw and clean up staged file when signing fails", () => {
+    const fake = fakeIO(() => ({
       status: 1,
       stderr: Buffer.from("signing failed"),
-    });
+    }));
 
-    expect(() => signShortcut(spawn, "/tmp/test.plist", "/tmp/test.shortcut")).toThrow(
+    expect(() => signShortcut(fake.io, "<plist/>", "/tmp/test.shortcut")).toThrow(
       "shortcuts sign failed (exit 1): signing failed",
     );
+    expect(fake.removals).toEqual(["/tmp/test.unsigned.shortcut"]);
   });
 });
