@@ -11,7 +11,7 @@ import Math;
 Performs a number operation on the input and returns the result.
 
 ```chute
-calculate(WFInput: Number, WFMathOperation: Text, WFScientificMathOperation: Text, WFMathOperand: Number, WFScientificMathOperand: Number)
+calculate(WFInput: Number, WFMathOperation: Text, WFScientificMathOperation: Text, WFMathOperand: Number, WFScientificMathOperand: Number) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -39,7 +39,7 @@ $8 USD in euros
 7 feet in meters
 
 ```chute
-calculateExpression(Input: Text)
+calculateExpression(Input: Text) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -53,7 +53,7 @@ Shortcuts action: `is.workflow.actions.calculateexpression`
 Calculates statistics on the numbers that are provided as input.
 
 ```chute
-calculateStatistics(WFStatisticsOperation: Text, Input: Any)
+calculateStatistics(WFStatisticsOperation: Text, Input: Any) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -68,7 +68,7 @@ Shortcuts action: `is.workflow.actions.statistics`
 Converts the measurements passed into the action to the specified unit.
 
 ```chute
-convertMeasurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Text, WFInput: Any)
+convertMeasurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Text, WFInput: Any) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -84,7 +84,7 @@ Shortcuts action: `is.workflow.actions.measurement.convert`
 Passes the specified measurement (including number and unit) to the next action.
 
 ```chute
-measurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Number)
+measurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Number) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -99,7 +99,7 @@ Shortcuts action: `is.workflow.actions.measurement.create`
 Passes a number to the next action.
 
 ```chute
-number(WFNumberActionNumber: Number)
+number(WFNumberActionNumber: Number) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -113,7 +113,7 @@ Shortcuts action: `is.workflow.actions.number`
 Passes a random number between the given minimum and maximum to the next action. The minimum and maximum numbers are included as possible results.
 
 ```chute
-randomNumber(WFRandomNumberMinimum: Number, WFRandomNumberMaximum: Number)
+randomNumber(WFRandomNumberMinimum: Number, WFRandomNumberMaximum: Number) -> Number
 ```
 
 | Parameter | Type | Default |
@@ -128,7 +128,7 @@ Shortcuts action: `is.workflow.actions.number.random`
 Rounds the number(s) passed into the action.
 
 ```chute
-roundNumber(WFInput: Number, WFRoundTo: Text, WFRoundMode: Text, TenToThePowerOf: Number)
+roundNumber(WFInput: Number, WFRoundTo: Text, WFRoundMode: Text, TenToThePowerOf: Number) -> Number
 ```
 
 | Parameter | Type | Default |

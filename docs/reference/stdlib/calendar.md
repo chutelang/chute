@@ -11,7 +11,7 @@ import Calendar;
 Creates a new calendar.
 
 ```chute
-addNewCalendar(CalendarName: Text)
+addNewCalendar(CalendarName: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -89,7 +89,7 @@ Shortcuts action: `is.workflow.actions.properties.reminders`
 Gets upcoming calendar events, ordered from nearest to farthest away in time.
 
 ```chute
-getUpcomingEvents(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number, WFDateSpecifier: Text, WFSpecifiedDate: Text)
+getUpcomingEvents(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number, WFDateSpecifier: Text, WFSpecifiedDate: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -106,7 +106,7 @@ Shortcuts action: `is.workflow.actions.getupcomingevents`
 Gets upcoming reminders, ordered from nearest to farthest away due date.
 
 ```chute
-getUpcomingReminders(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number)
+getUpcomingReminders(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -121,7 +121,7 @@ Shortcuts action: `is.workflow.actions.getupcomingreminders`
 Creates a new event and adds it to the selected calendar.
 
 ```chute
-newEvent(WFCalendarItemTitle: Text, WFCalendarItemLocation: Text, WFCalendarDescriptor: Text, WFCalendarItemStartDate: Text, WFCalendarItemEndDate: Text, WFCalendarItemAllDay: Boolean, WFAlertTime: Text, WFAlertCustomTime: Text, WFCalendarItemNotes: Text, ShowWhenRun: Boolean)
+newEvent(WFCalendarItemTitle: Text, WFCalendarItemLocation: Text, WFCalendarDescriptor: Text, WFCalendarItemStartDate: Text, WFCalendarItemEndDate: Text, WFCalendarItemAllDay: Boolean, WFAlertTime: Text, WFAlertCustomTime: Text, WFCalendarItemNotes: Text, ShowWhenRun: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -144,7 +144,7 @@ Shortcuts action: `is.workflow.actions.addnewevent`
 Creates a new reminder and adds it to the selected list of reminders.
 
 ```chute
-newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Text, WFAlertCondition: Text, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Text, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Any, WFParentTask: Any, WFTags: Text, WFCalendarItemNotes: Text)
+newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Text, WFAlertCondition: Text, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Text, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Any, WFParentTask: Any, WFTags: Text, WFCalendarItemNotes: Text) -> Any
 ```
 
 | Parameter | Type | Default |

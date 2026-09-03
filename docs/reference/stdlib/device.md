@@ -11,7 +11,7 @@ import Device;
 Connects your computer to the specified file servers on the network. For example, you can connect to SMB/CIFS, NFS, FTP (read-only), or WebDAV servers.
 
 ```chute
-connectToServers(WFInput: Text)
+connectToServers(WFInput: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -71,7 +71,7 @@ Shortcuts action: `is.workflow.actions.filter.windows`
 Gets all of your Lock Screen wallpapers, and returns them as output so you can use them with other actions.
 
 ```chute
-getAllWallpapers(WFPosterType: Text)
+getAllWallpapers(WFPosterType: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -85,7 +85,7 @@ Shortcuts action: `is.workflow.actions.posters.get`
 Returns information about the battery and any charger connected to the device.
 
 ```chute
-getBatteryStatus(Subject: Text)
+getBatteryStatus(Subject: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -101,7 +101,7 @@ Shortcuts action: `is.workflow.actions.getbatterylevel`
 Passes the contents of the clipboard to the next action.
 
 ```chute
-getClipboard()
+getClipboard() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.getclipboard`
@@ -111,7 +111,7 @@ Shortcuts action: `is.workflow.actions.getclipboard`
 Gets the current visible app.
 
 ```chute
-getCurrentApp(WFVisibleAppScope: Text)
+getCurrentApp(WFVisibleAppScope: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -125,7 +125,7 @@ Shortcuts action: `is.workflow.actions.getcurrentapp`
 Returns the currently active Focus.
 
 ```chute
-getCurrentFocus()
+getCurrentFocus() -> Any
 ```
 
 > This action returns nothing if no Focus is active.
@@ -137,7 +137,7 @@ Shortcuts action: `is.workflow.actions.dnd.getfocus`
 Returns the local or external IP address of the device.
 
 ```chute
-getCurrentIpAddress(WFIPAddressSourceOption: Text, WFIPAddressTypeOption: Text)
+getCurrentIpAddress(WFIPAddressSourceOption: Text, WFIPAddressTypeOption: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -160,7 +160,7 @@ Shortcuts action: `is.workflow.actions.properties.appearance`
 Gets information about the current device.
 
 ```chute
-getDeviceDetails(WFDeviceDetail: Text)
+getDeviceDetails(WFDeviceDetail: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -174,7 +174,7 @@ Shortcuts action: `is.workflow.actions.getdevicedetails`
 Gets information about the currently connected networks.
 
 ```chute
-getNetworkDetails(WFNetworkDetailsNetwork: Text, WFWiFiDetail: Text, WFCellularDetail: Text)
+getNetworkDetails(WFNetworkDetailsNetwork: Text, WFWiFiDetail: Text, WFCellularDetail: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -190,7 +190,7 @@ Shortcuts action: `is.workflow.actions.getwifi`
 Gets the current content on screen, if available.
 
 ```chute
-getWhat’sOnScreen()
+getWhat’sOnScreen() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.getonscreencontent`
@@ -349,7 +349,7 @@ Shortcuts action: `is.workflow.actions.resizewindow`
 Searches for content in the system that matches the specified text.
 
 ```chute
-search(WFInputText: Text, WFSpotlightSearchResultType: Text, WFSpotlightSearchLimit: Number)
+search(WFInputText: Text, WFSpotlightSearchResultType: Text, WFSpotlightSearchLimit: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -398,7 +398,7 @@ Shortcuts action: `is.workflow.actions.dnd.set`
 Sets the wallpaper to the specified image.
 
 ```chute
-setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Text, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean)
+setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Text, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -499,7 +499,7 @@ Shortcuts action: `is.workflow.actions.posters.switch`
 Take a screenshot of the device's screen.
 
 ```chute
-takeScreenshot(WFTakeScreenshotScreenshotType: Text, WFTakeScreenshotActionInteractiveSelectionType: Text, WFTakeScreenshotMainMonitorOnly: Boolean, WFTakeScreenshotIgnoreContextualAssistanceLayers: Boolean)
+takeScreenshot(WFTakeScreenshotScreenshotType: Text, WFTakeScreenshotActionInteractiveSelectionType: Text, WFTakeScreenshotMainMonitorOnly: Boolean, WFTakeScreenshotIgnoreContextualAssistanceLayers: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |

@@ -26,7 +26,7 @@ Shortcuts action: `com.apple.mobilephone.call`
 Passes the specified contacts to the next action.
 
 ```chute
-contacts(WFContact: Text)
+contacts(WFContact: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -48,7 +48,7 @@ Shortcuts action: `is.workflow.actions.setters.contacts`
 Passes the specified email addresses to the next action.
 
 ```chute
-emailAddress(WFEmailAddress: Text)
+emailAddress(WFEmailAddress: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -94,7 +94,7 @@ Shortcuts action: `is.workflow.actions.properties.contacts`
 Creates a new contact.
 
 ```chute
-newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Any, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean)
+newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Any, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -115,7 +115,7 @@ Shortcuts action: `is.workflow.actions.addnewcontact`
 Passes the specified phone numbers to the next action.
 
 ```chute
-phoneNumber(WFPhoneNumber: Text)
+phoneNumber(WFPhoneNumber: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -129,7 +129,7 @@ Shortcuts action: `is.workflow.actions.phonenumber`
 Prompts to pick a person from your contacts and passes the selection to the next action.
 
 ```chute
-selectContact(WFSelectMultiple: Boolean)
+selectContact(WFSelectMultiple: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -143,7 +143,7 @@ Shortcuts action: `is.workflow.actions.selectcontacts`
 Prompts to pick an email address from your contacts and passes the selection to the next action.
 
 ```chute
-selectEmailAddress()
+selectEmailAddress() -> Text
 ```
 
 Shortcuts action: `is.workflow.actions.selectemail`
@@ -153,7 +153,7 @@ Shortcuts action: `is.workflow.actions.selectemail`
 Prompts to pick a phone number from your contacts and passes the selection to the next action.
 
 ```chute
-selectPhoneNumber()
+selectPhoneNumber() -> Text
 ```
 
 Shortcuts action: `is.workflow.actions.selectphone`
