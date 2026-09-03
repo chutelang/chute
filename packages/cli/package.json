@@ -2,14 +2,14 @@
   "name": "@chutelang/cli",
   "version": "0.0.1",
   "description": "CLI for the Chute programming language",
+  "homepage": "https://chutelang.dev",
+  "bugs": "https://github.com/chutelang/chute/issues",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chutelang/chute.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://chutelang.dev",
-  "bugs": "https://github.com/chutelang/chute/issues",
-  "license": "Apache-2.0",
   "bin": {
     "chute": "dist/cli.js"
   },

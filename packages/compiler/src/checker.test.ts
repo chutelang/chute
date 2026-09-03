@@ -1426,20 +1426,43 @@ describe("checker", () => {
     });
   });
 
-  describe("stdlib", () => {
-    it("should accept stdlib action call without explicit declaration", () => {
-      expect(() => checkSource('showAlert(text: "hello");')).not.toThrow();
+  describe("stdlib modules", () => {
+    it("should resolve a package import and allow qualified action call", () => {
+      expect(() =>
+        checkSource(`
+          import Notification;
+          Notification.showAlert(WFAlertActionTitle: "hello");
+        `),
+      ).not.toThrow();
     });
 
-    it("should type-check stdlib action arguments", () => {
-      expect(() => checkSource("showAlert(text: 42);")).toThrow(CompileError);
+    it("should type-check stdlib action arguments via module import", () => {
+      expect(() =>
+        checkSource(`
+          import Notification;
+          Notification.showAlert(WFAlertActionTitle: 42);
+        `),
+      ).toThrow(CompileError);
     });
 
-    it("should reject unknown parameter on stdlib action", () => {
-      expect(() => checkSource('showAlert(title: "hello");')).toThrow(CompileError);
+    it("should reject unknown parameter on imported stdlib action", () => {
+      expect(() =>
+        checkSource(`
+          import Notification;
+          Notification.showAlert(badParam: "hello");
+        `),
+      ).toThrow(CompileError);
     });
 
-    it("should allow user declaration to shadow stdlib name", () => {
+    it("should reject unknown module", () => {
+      expect(() =>
+        checkSource(`
+          import FakeModule;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should allow user declaration to shadow imported action name", () => {
       expect(() =>
         checkSource(`
           action showAlert(message: Text) = "custom.alert";
@@ -1448,12 +1471,15 @@ describe("checker", () => {
       ).not.toThrow();
     });
 
-    it("should accept notification with default title", () => {
-      expect(() => checkSource('notification(body: "Task complete");')).not.toThrow();
-    });
-
-    it("should accept getClipboard return type as Text", () => {
-      expect(() => checkSource("const clip: Text = getClipboard();")).not.toThrow();
+    it("should allow importing multiple modules", () => {
+      expect(() =>
+        checkSource(`
+          import Notification;
+          import Scripting;
+          Notification.showAlert(WFAlertActionTitle: "hello");
+          Scripting.nothing();
+        `),
+      ).not.toThrow();
     });
   });
 
