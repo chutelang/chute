@@ -11,6 +11,12 @@ export default defineConfig({
     },
   },
 
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
+  },
+
   themeConfig: {
     nav: [
       { text: "Guide", link: "/guide/getting-started" },
@@ -83,8 +89,6 @@ export default defineConfig({
       ],
     },
 
-    socialLinks: [
-      { icon: "github", link: "https://github.com/chutelang/chute" },
-    ],
+    socialLinks: [{ icon: "github", link: "https://github.com/chutelang/chute" }],
   },
 });
