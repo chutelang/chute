@@ -1,4 +1,5 @@
-import type { Spawn } from "./io.ts";
+import * as path from "node:path";
+import type { IO, Spawn } from "./io.ts";
 
 export function isSigningAvailable(spawn: Spawn): boolean {
   try {
@@ -12,18 +13,29 @@ export function isSigningAvailable(spawn: Spawn): boolean {
   }
 }
 
-export function signShortcut(spawn: Spawn, plistPath: string, outputPath: string): void {
-  const result = spawn(
-    "shortcuts",
-    ["sign", "--mode", "anyone", "--input", plistPath, "--output", outputPath],
-    {
-      stdio: "pipe",
-      timeout: 30000,
-    },
+export function signShortcut(io: IO, plist: string, outputPath: string): void {
+  const stagedPath = path.join(
+    path.dirname(outputPath),
+    `${path.basename(outputPath, ".shortcut")}.unsigned.shortcut`,
   );
 
-  if (result.status !== 0) {
-    const stderr = result.stderr?.toString().trim() ?? "";
-    throw new Error(`shortcuts sign failed (exit ${result.status}): ${stderr}`);
+  io.writeFile(stagedPath, plist);
+
+  try {
+    const result = io.spawn(
+      "shortcuts",
+      ["sign", "--mode", "anyone", "--input", stagedPath, "--output", outputPath],
+      {
+        stdio: "pipe",
+        timeout: 30000,
+      },
+    );
+
+    if (result.status !== 0) {
+      const stderr = result.stderr?.toString().trim() ?? "";
+      throw new Error(`shortcuts sign failed (exit ${result.status}): ${stderr}`);
+    }
+  } finally {
+    io.removeFile(stagedPath);
   }
 }

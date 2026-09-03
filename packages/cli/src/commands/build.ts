@@ -87,43 +87,37 @@ function buildFile(file: string, sign: boolean, io: IO): void {
 
   const outDir = path.dirname(resolved);
   const baseName = path.basename(resolved, ".chute");
-  const plistPath = path.join(outDir, `${baseName}.plist`);
-
-  io.writeFile(plistPath, result.main);
 
   if (sign) {
     const shortcutPath = path.join(outDir, `${baseName}.shortcut`);
     try {
-      signShortcut(io.spawn, plistPath, shortcutPath);
+      signShortcut(io, result.main, shortcutPath);
     } catch (err) {
-      io.removeFile(plistPath);
       io.stderr(
         `chute build: signing failed for ${file}: ${err instanceof Error ? err.message : err}\n`,
       );
       io.setExitCode(1);
       return;
     }
-    io.removeFile(plistPath);
 
     for (const sub of result.subShortcuts) {
-      const subPlistPath = path.join(outDir, `${sub.name}.plist`);
       const subShortcutPath = path.join(outDir, `${sub.name}.shortcut`);
-      io.writeFile(subPlistPath, sub.plist);
       try {
-        signShortcut(io.spawn, subPlistPath, subShortcutPath);
+        signShortcut(io, sub.plist, subShortcutPath);
       } catch (err) {
-        io.removeFile(subPlistPath);
         io.stderr(
           `chute build: signing failed for sub-shortcut ${sub.name}: ${err instanceof Error ? err.message : err}\n`,
         );
         io.setExitCode(1);
         return;
       }
-      io.removeFile(subPlistPath);
     }
 
     io.stdout(`${shortcutPath}\n`);
   } else {
+    const plistPath = path.join(outDir, `${baseName}.plist`);
+    io.writeFile(plistPath, result.main);
+
     for (const sub of result.subShortcuts) {
       const subPath = path.join(outDir, `${sub.name}.plist`);
       io.writeFile(subPath, sub.plist);

@@ -17,12 +17,8 @@ export function run(file: string, io: IO = realIO): void {
 
   const outDir = path.dirname(resolved);
   const baseName = path.basename(resolved, ".chute");
-  const plistPath = path.join(outDir, `${baseName}.plist`);
-
-  io.writeFile(plistPath, compileResult.main);
 
   if (!isSigningAvailable(io.spawn)) {
-    io.removeFile(plistPath);
     io.stderr(
       "\n" +
         "  ⚠ WARNING: `shortcuts sign` is not available.\n" +
@@ -35,30 +31,24 @@ export function run(file: string, io: IO = realIO): void {
 
   const shortcutPath = path.join(outDir, `${baseName}.shortcut`);
   try {
-    signShortcut(io.spawn, plistPath, shortcutPath);
+    signShortcut(io, compileResult.main, shortcutPath);
   } catch (err) {
-    io.removeFile(plistPath);
     io.stderr(`chute run: signing failed: ${err instanceof Error ? err.message : err}\n`);
     io.setExitCode(1);
     return;
   }
-  io.removeFile(plistPath);
 
   for (const sub of compileResult.subShortcuts) {
-    const subPlistPath = path.join(outDir, `${sub.name}.plist`);
     const subShortcutPath = path.join(outDir, `${sub.name}.shortcut`);
-    io.writeFile(subPlistPath, sub.plist);
     try {
-      signShortcut(io.spawn, subPlistPath, subShortcutPath);
+      signShortcut(io, sub.plist, subShortcutPath);
     } catch (err) {
-      io.removeFile(subPlistPath);
       io.stderr(
         `chute run: signing failed for sub-shortcut ${sub.name}: ${err instanceof Error ? err.message : err}\n`,
       );
       io.setExitCode(1);
       return;
     }
-    io.removeFile(subPlistPath);
   }
 
   const result = io.spawn("open", [shortcutPath], {
