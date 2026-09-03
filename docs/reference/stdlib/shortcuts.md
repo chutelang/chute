@@ -19,7 +19,7 @@ Shortcuts action: `is.workflow.actions.properties.workflow`
 Gets the shortcuts stored on this device.
 
 ```chute
-getMyShortcuts(Folder: Text)
+getMyShortcuts(Folder: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -33,7 +33,7 @@ Shortcuts action: `is.workflow.actions.getmyworkflows`
 Runs a shortcut from your shortcut.
 
 ```chute
-runShortcut(WFWorkflow: Text, WFInput: Any)
+runShortcut(WFWorkflow: Text, WFInput: Any) -> Any
 ```
 
 | Parameter | Type | Default |

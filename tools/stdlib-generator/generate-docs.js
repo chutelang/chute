@@ -52,6 +52,39 @@ function formatType(chuteType) {
   return chuteType || "Any";
 }
 
+const CONTENT_TYPE_MAP = {
+  NSString: "Text",
+  WFStringContentItem: "Text",
+  NSAttributedString: "Text",
+  NSURL: "Text",
+  WFURLContentItem: "Text",
+  WFEmailAddress: "Text",
+  WFEmailAddressContentItem: "Text",
+  WFPhoneNumber: "Text",
+  WFPhoneNumberContentItem: "Text",
+  WFStreetAddress: "Text",
+  NSDecimalNumber: "Number",
+  NSNumber: "Number",
+  WFNumberContentItem: "Number",
+  NSMeasurement: "Number",
+  WFBooleanContentItem: "Boolean",
+  NSDictionary: "Dictionary",
+  WFDictionaryContentItem: "Dictionary",
+  NSDate: "Text",
+  NSDateComponents: "Text",
+  WFDateContentItem: "Text",
+};
+
+function inferReturnType(output) {
+  const types = output?.Types;
+  if (!types || types.length === 0) return null;
+  if (types.length === 1) return CONTENT_TYPE_MAP[types[0]] ?? "Any";
+  const mapped = types.map((t) => CONTENT_TYPE_MAP[t]).filter(Boolean);
+  if (mapped.length === 0) return "Any";
+  if (new Set(mapped).size === 1) return mapped[0];
+  return "Any";
+}
+
 function formatDefault(value) {
   if (value === null || value === undefined) return "—";
   if (typeof value === "boolean") return String(value);
@@ -72,9 +105,11 @@ function generateActionDoc(action) {
   }
 
   const params = action.parameters.filter((p) => p.key);
+  const returnType = inferReturnType(action.output);
+  const returnSuffix = returnType ? ` -> ${returnType}` : "";
   const signature = params.length > 0
-    ? `${action.name}(${params.map((p) => `${p.key}: ${formatType(p.chuteType)}`).join(", ")})`
-    : `${action.name}()`;
+    ? `${action.name}(${params.map((p) => `${p.key}: ${formatType(p.chuteType)}`).join(", ")})${returnSuffix}`
+    : `${action.name}()${returnSuffix}`;
 
   lines.push("```chute");
   lines.push(signature);

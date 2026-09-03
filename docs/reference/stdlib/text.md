@@ -41,7 +41,7 @@ Shortcuts action: `is.workflow.actions.correctspelling`
 Detects the language of the text provided as input.
 
 ```chute
-detectLanguage(WFInput: Text)
+detectLanguage(WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -55,7 +55,7 @@ Shortcuts action: `is.workflow.actions.detectlanguage`
 Transcribes what you say aloud into text and passes the result to the next action.
 
 ```chute
-dictateText(WFSpeechLanguage: Text, WFDictateTextStopListening: Text)
+dictateText(WFSpeechLanguage: Text, WFDictateTextStopListening: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -70,7 +70,7 @@ Shortcuts action: `is.workflow.actions.dictatetext`
 Uses OCR to extract text from an image.
 
 ```chute
-extractTextFromImage(WFImage: Any)
+extractTextFromImage(WFImage: Any) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -94,7 +94,7 @@ Shortcuts action: `is.workflow.actions.text.match.getgroup`
 Gets the names of emoji passed into the action.
 
 ```chute
-getNameOfEmoji(WFInput: Text)
+getNameOfEmoji(WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -108,7 +108,7 @@ Shortcuts action: `is.workflow.actions.getnameofemoji`
 Creates an audio file from text, using text-to-speech.
 
 ```chute
-makeSpokenAudioFromText(WFInput: Text, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text)
+makeSpokenAudioFromText(WFInput: Text, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -134,7 +134,7 @@ Shortcuts action: `is.workflow.actions.text.match`
 Replaces all occurrences of the given text with other text.
 
 ```chute
-replaceText(WFReplaceTextFind: Text, WFReplaceTextReplace: Text, WFReplaceTextCaseSensitive: Boolean, WFReplaceTextRegularExpression: Boolean, WFInput: Text)
+replaceText(WFReplaceTextFind: Text, WFReplaceTextReplace: Text, WFReplaceTextCaseSensitive: Boolean, WFReplaceTextRegularExpression: Boolean, WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -195,7 +195,7 @@ Shortcuts action: `is.workflow.actions.text.split`
 Passes the specified text to the next action.
 
 ```chute
-text(WFTextActionText: Text)
+text(WFTextActionText: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -209,7 +209,7 @@ Shortcuts action: `is.workflow.actions.gettext`
 Translates the text passed into the action into another language.
 
 ```chute
-translateText(WFSelectedFromLanguage: Text, WFSelectedLanguage: Text, WFInputText: Text)
+translateText(WFSelectedFromLanguage: Text, WFSelectedLanguage: Text, WFInputText: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -225,7 +225,7 @@ Shortcuts action: `is.workflow.actions.text.translate`
 Removes whitespace and newlines from both ends of the text passed into the action.
 
 ```chute
-trimWhitespace(WFInput: Text)
+trimWhitespace(WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |

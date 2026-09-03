@@ -158,7 +158,7 @@ Shortcuts action: `is.workflow.actions.tweet`
 Uploads the input to Imgur.
 
 ```chute
-uploadToImgur(WFInput: Any, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolean, WFImgurAlbum: Boolean, WFImgurAlbumLayout: Text, WFImgurAlbumPrivacy: Text, WFImgurTitle: Text, WFImgurDescription: Text)
+uploadToImgur(WFInput: Any, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolean, WFImgurAlbum: Boolean, WFImgurAlbumLayout: Text, WFImgurAlbumPrivacy: Text, WFImgurTitle: Text, WFImgurDescription: Text) -> Text
 ```
 
 | Parameter | Type | Default |
