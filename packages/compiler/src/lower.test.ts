@@ -199,7 +199,9 @@ describe("lower", () => {
 
   describe("repeat statement", () => {
     it("should lower repeat to repeat.count start/end", () => {
-      const actions = lowerSource('shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; repeat 5 { alert(text: "go"); }');
+      const actions = lowerSource(
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; repeat 5 { alert(text: "go"); }',
+      );
       const repeats = actions.filter((a) => a.identifier === "is.workflow.actions.repeat.count");
       expect(repeats).toHaveLength(2);
       expect(repeats.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);

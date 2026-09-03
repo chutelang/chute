@@ -3,7 +3,7 @@ import { DiagnosticCode, CompileError } from "./diagnostic.ts";
 import type { Diagnostic } from "./diagnostic.ts";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
-import { getStdlibScope, getStdlibModule, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
+import { getStdlibModule, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type { DocComment } from "./doc-comment.ts";
 import type {
@@ -207,7 +207,7 @@ function checkCore(
   warnings: CheckWarning[];
   scope: Scope;
 } {
-  const scope = new Scope(getStdlibScope());
+  const scope = new Scope(undefined);
   const context: CheckContext = {
     expectedReturnType: undefined,
     currentFunction: undefined,
@@ -357,11 +357,7 @@ function resolveImport(
   if (imp.isPackage) {
     const moduleScope = getStdlibModule(imp.path);
     if (!moduleScope) {
-      throw new CheckError(
-        `unknown module '${imp.path}'`,
-        imp.span,
-        DiagnosticCode.ImportError,
-      );
+      throw new CheckError(`unknown module '${imp.path}'`, imp.span, DiagnosticCode.ImportError);
     }
     scope.defineNamespace(imp.alias, moduleScope);
     return;

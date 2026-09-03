@@ -6,11 +6,12 @@ import { run } from "./run.ts";
 
 const TEST_DIR = path.join(import.meta.dirname, "__test_run__");
 
-const SAMPLE_SOURCE = `shortcut {
+const SAMPLE_SOURCE = `import Notification;
+shortcut {
   name: "Test",
 }
 
-showAlert(text: "hello");
+Notification.showAlert(WFAlertActionTitle: "hello");
 `;
 
 interface FakeIOResult {
