@@ -49,6 +49,7 @@ export type {
   BooleanReference,
   CallExpression,
   CoalesceExpression,
+  CoercionExpression,
   Comparison,
   ComparisonOperator,
   Condition,
