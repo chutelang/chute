@@ -1575,6 +1575,15 @@ export class Parser {
         expr = this.parseOptionalMemberAccess(expr);
       } else if (this.check(TokenKind.LeftBracket)) {
         expr = this.parseSubscript(expr);
+      } else if (this.check(TokenKind.As)) {
+        this.advance();
+        const typeTok = this.expect(TokenKind.Identifier);
+        expr = {
+          kind: "CoercionExpression",
+          span: { start: expr.span.start, end: typeTok.span.end },
+          expression: expr,
+          targetType: tokenValue(typeTok),
+        };
       } else {
         break;
       }
