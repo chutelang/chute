@@ -489,8 +489,8 @@ Device.copyToClipboard(WFInput: text);`;
     const source = `import Scripting;
 import Notification;
 shortcut { name: "Date" }
-const now = Scripting.date();
-Notification.showContent(Text: now);`;
+const now: Date = Scripting.date();
+Notification.showAlert(WFAlertActionTitle: "Reminder");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 

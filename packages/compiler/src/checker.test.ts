@@ -1597,4 +1597,24 @@ describe("checker", () => {
       ).not.toThrow();
     });
   });
+
+  describe("stdlib opaque return types", () => {
+    it("should infer Date return type from date action", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          const d: Date = Scripting.date();
+        `),
+      ).not.toThrow();
+    });
+
+    it("should infer URL return type from url action", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          const u: URL = Scripting.getUrlsFromInput(WFInput: input);
+        `),
+      ).not.toThrow();
+    });
+  });
 });
