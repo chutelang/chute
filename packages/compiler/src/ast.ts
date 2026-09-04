@@ -190,6 +190,7 @@ export type Expression =
   | CoalesceExpression
   | TernaryExpression
   | PipelineExpression
+  | CoercionExpression
   | Identifier
   | StringLiteral
   | NumberLiteral
@@ -369,6 +370,13 @@ export interface PipelineExpression {
 export interface PlaceholderExpression {
   kind: "PlaceholderExpression";
   span: Span;
+}
+
+export interface CoercionExpression {
+  kind: "CoercionExpression";
+  span: Span;
+  expression: Expression;
+  targetType: string;
 }
 
 // Conditions appear only in `if` statements, ternary expressions, and `for` guards.

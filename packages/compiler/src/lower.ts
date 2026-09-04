@@ -429,6 +429,9 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
     case "PipelineExpression":
       lowerPipelineExpression(expr, actions, ctx);
       return;
+    case "CoercionExpression":
+      lowerExpression(expr.expression, actions, ctx);
+      return;
     case "PlaceholderExpression":
       throw new LowerError(
         "'_' placeholder cannot appear outside a pipeline stage",

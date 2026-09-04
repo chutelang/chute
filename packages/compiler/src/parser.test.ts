@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
 import { CompileError } from "./diagnostic.ts";
-import type { Program } from "./ast.ts";
+import type { ConstDeclaration, Program } from "./ast.ts";
 
 function parse(source: string): Program {
   const tokens = new Lexer(source).tokenize();
@@ -1698,6 +1698,67 @@ showAlert(text: "Hello from Chute!");`;
         expect(fn.docComment?.tags.at(0)?.kind).toBe("param");
         expect(fn.docComment?.tags.at(0)?.name).toBe("name");
       }
+    });
+  });
+
+  describe("coercion expressions", () => {
+    it("should parse x as Type", () => {
+      const ast = parse("const x = input as Number;");
+      const decl = ast.body.at(0) as ConstDeclaration;
+      expect(decl.initializer).toMatchObject({
+        kind: "CoercionExpression",
+        targetType: "Number",
+        expression: { kind: "Identifier", name: "input" },
+      });
+    });
+
+    it("should parse coercion in postfix position after member access", () => {
+      const ast = parse("const x = a.b as Text;");
+      const decl = ast.body.at(0) as ConstDeclaration;
+      expect(decl.initializer).toMatchObject({
+        kind: "CoercionExpression",
+        targetType: "Text",
+        expression: {
+          kind: "MemberExpression",
+          property: "b",
+        },
+      });
+    });
+
+    it("should parse parenthesized expression coercion", () => {
+      const ast = parse("const x = (a + b) as Number;");
+      const decl = ast.body.at(0) as ConstDeclaration;
+      expect(decl.initializer).toMatchObject({
+        kind: "CoercionExpression",
+        targetType: "Number",
+        expression: { kind: "BinaryExpression" },
+      });
+    });
+
+    it("should bind tighter than binary operators", () => {
+      const ast = parse("const x = a + b as Number;");
+      const decl = ast.body.at(0) as ConstDeclaration;
+      expect(decl.initializer).toMatchObject({
+        kind: "BinaryExpression",
+        operator: "+",
+        right: {
+          kind: "CoercionExpression",
+          targetType: "Number",
+        },
+      });
+    });
+
+    it("should allow chaining coercions", () => {
+      const ast = parse("const x = input as Text as Number;");
+      const decl = ast.body.at(0) as ConstDeclaration;
+      expect(decl.initializer).toMatchObject({
+        kind: "CoercionExpression",
+        targetType: "Number",
+        expression: {
+          kind: "CoercionExpression",
+          targetType: "Text",
+        },
+      });
     });
   });
 });

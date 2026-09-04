@@ -790,6 +790,9 @@ function inferType(expr: Expression, scope: Scope, context: CheckContext): Chute
       return inferTernaryExpression(expr, scope, context);
     case "PipelineExpression":
       return inferPipelineExpression(expr, scope, context);
+    case "CoercionExpression":
+      inferType(expr.expression, scope, context);
+      return { kind: "any" };
     case "PlaceholderExpression":
       throw new CheckError(
         `'_' placeholder can only be used in pipeline stage arguments`,
