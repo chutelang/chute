@@ -1573,4 +1573,28 @@ describe("checker", () => {
       expect(warnings.some((w) => w.message.includes("nonexistent"))).toBe(true);
     });
   });
+
+  describe("opaque types", () => {
+    it("should accept opaque type in annotation", () => {
+      expect(() => checkSource("const d: Date = input;")).not.toThrow();
+    });
+
+    it("should reject assigning opaque to different opaque", () => {
+      expect(() =>
+        checkSource(`
+          const d: Date = input;
+          const u: URL = d;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should accept assigning opaque to same opaque", () => {
+      expect(() =>
+        checkSource(`
+          const d: Date = input;
+          const d2: Date = d;
+        `),
+      ).not.toThrow();
+    });
+  });
 });

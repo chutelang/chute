@@ -68,6 +68,7 @@ export type ChuteType =
       params: Array<{ label: string; type: ChuteType; hasDefault: boolean }>;
       returnType: ChuteType | undefined;
     }
+  | { kind: "opaque"; name: string }
   | { kind: "any" };
 
 export class CheckWarning {
@@ -1251,6 +1252,15 @@ function namedTypeFromAnnotation(named: NamedType, scope: Scope): ChuteType {
       return { kind: "boolean" };
     case "Dictionary":
       return { kind: "dictionary" };
+    case "Date":
+    case "URL":
+    case "Image":
+    case "Email":
+    case "Phone":
+    case "Contact":
+    case "Location":
+    case "Article":
+      return { kind: "opaque", name: named.name };
     default: {
       const typeDef = scope.lookupType(named.name);
       if (typeDef) {
@@ -1305,6 +1315,10 @@ function isAssignable(source: ChuteType, target: ChuteType): boolean {
     return source.name === target.name;
   }
 
+  if (source.kind === "opaque" && target.kind === "opaque") {
+    return source.name === target.name;
+  }
+
   return true;
 }
 
@@ -1334,6 +1348,8 @@ export function describeType(type: ChuteType): string {
       return `func ${type.name}`;
     case "action":
       return `action ${type.name}`;
+    case "opaque":
+      return type.name;
     case "any":
       return "any";
     default:
