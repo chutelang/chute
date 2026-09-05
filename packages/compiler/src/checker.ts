@@ -5,8 +5,10 @@ import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
 import { getStdlibModule, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
+import { canCoerce, getCoercionAction, getValidTargets } from "./coercion.ts";
 import type { DocComment } from "./doc-comment.ts";
 import type {
+  CoercionExpression,
   ImportDeclaration,
   ActionDeclaration,
   Assignment,
@@ -792,8 +794,7 @@ function inferType(expr: Expression, scope: Scope, context: CheckContext): Chute
     case "PipelineExpression":
       return inferPipelineExpression(expr, scope, context);
     case "CoercionExpression":
-      inferType(expr.expression, scope, context);
-      return { kind: "any" };
+      return inferCoercionExpression(expr, scope, context);
     case "PlaceholderExpression":
       throw new CheckError(
         `'_' placeholder can only be used in pipeline stage arguments`,
@@ -811,6 +812,64 @@ function inferType(expr: Expression, scope: Scope, context: CheckContext): Chute
     default:
       return assertNever(expr);
   }
+}
+
+function inferCoercionExpression(
+  expr: CoercionExpression,
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  const sourceType = inferType(expr.expression, scope, context);
+  const targetName = expr.targetType;
+
+  const actionId = getCoercionAction(targetName);
+  if (!actionId) {
+    throw new CheckError(
+      `cannot coerce to '${targetName}': no coercion action exists for this type`,
+      expr.span,
+      DiagnosticCode.TypeMismatch,
+    );
+  }
+
+  const targetType = namedTypeFromAnnotation(
+    {
+      kind: "NamedType",
+      span: expr.span,
+      qualifier: undefined,
+      name: targetName,
+    },
+    scope,
+  );
+
+  const innerSource = sourceType.kind === "optional" ? sourceType.inner : sourceType;
+
+  if (innerSource.kind !== "any") {
+    if (isAssignable(innerSource, targetType)) {
+      context.warnings.push(
+        new CheckWarning(
+          `unnecessary coercion: expression is already ${describeType(innerSource)}`,
+          expr.span,
+          DiagnosticCode.UnknownUnit,
+        ),
+      );
+    } else if (!canCoerce(sourceType, targetName)) {
+      const validTargets = getValidTargets(sourceType);
+      const hint =
+        validTargets.length > 0
+          ? `. ${describeType(innerSource)} can be coerced to: ${validTargets.join(", ")}`
+          : "";
+      throw new CheckError(
+        `cannot coerce ${describeType(innerSource)} to ${targetName}${hint}`,
+        expr.span,
+        DiagnosticCode.TypeMismatch,
+      );
+    }
+  }
+
+  return {
+    kind: "optional",
+    inner: targetType,
+  };
 }
 
 function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
