@@ -1617,4 +1617,84 @@ describe("checker", () => {
       ).not.toThrow();
     });
   });
+
+  describe("coercion expressions", () => {
+    it("should accept valid coercion and return optional type", () => {
+      expect(() =>
+        checkSource(`
+          const t: Text = "123";
+          const n: Number? = t as Number;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject coercion to non-optional binding", () => {
+      expect(() =>
+        checkSource(`
+          const t: Text = "123";
+          const n: Number = t as Number;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject invalid source-target pair", () => {
+      expect(() =>
+        checkSource(`
+          const b: Boolean = true;
+          const n: Number? = b as Number;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject coercion to type without backing action", () => {
+      expect(() =>
+        checkSource(`
+          const t: Text = "hello";
+          const b: Boolean? = t as Boolean;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should allow coercion from any without pair validation", () => {
+      expect(() => checkSource("const n: Number? = input as Number;")).not.toThrow();
+    });
+
+    it("should allow coercion from optional source", () => {
+      expect(() =>
+        checkSource(`
+          const t: Text? = nil;
+          const n: Number? = t as Number;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should warn on redundant coercion", () => {
+      const warnings = checkSourceWithWarnings(`
+        const t: Text = "hello";
+        const t2: Text? = t as Text;
+      `);
+      expect(warnings.some((w) => w.message.includes("unnecessary"))).toBe(true);
+    });
+
+    it("should allow chained coercion", () => {
+      expect(() => checkSource("const n: Number? = input as Text as Number;")).not.toThrow();
+    });
+
+    it("should allow coercion on literals", () => {
+      expect(() => checkSource('const n: Number? = "123" as Number;')).not.toThrow();
+    });
+
+    it("should list valid targets in error message", () => {
+      expect.assertions(1);
+      try {
+        checkSource(`
+          const b: Boolean = true;
+          const n: Number? = b as Number;
+        `);
+      } catch (error) {
+        const diagnostics = error instanceof CompileError ? error.diagnostics : [];
+        expect(diagnostics.some((d) => /can be coerced to/.test(d.message))).toBe(true);
+      }
+    });
+  });
 });
