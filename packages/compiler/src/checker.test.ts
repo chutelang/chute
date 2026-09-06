@@ -1716,5 +1716,22 @@ describe("checker", () => {
         `),
       ).toThrow(CompileError);
     });
+
+    it("should warn on redundant pipeline coercion", () => {
+      const warnings = checkSourceWithWarnings(`
+        const t: Text = "hello";
+        const t2: Text? = t |> _ as Text;
+      `);
+      expect(warnings.some((w) => w.message.includes("unnecessary"))).toBe(true);
+    });
+
+    it("should allow coercion in optional pipeline", () => {
+      expect(() =>
+        checkSource(`
+          const t: Text? = nil;
+          const n: Number? = t |>? _ as Number;
+        `),
+      ).not.toThrow();
+    });
   });
 });

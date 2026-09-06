@@ -1374,6 +1374,10 @@ showAlert(text: "Hello from Chute!");`;
         ],
       });
     });
+
+    it("should reject bare _ without as in pipeline stage", () => {
+      expect(() => parse("const x = input |> _;")).toThrow();
+    });
   });
 
   describe("action declarations", () => {
