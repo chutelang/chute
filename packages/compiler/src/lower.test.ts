@@ -733,4 +733,41 @@ describe("lower", () => {
       expect(action).toBeDefined();
     });
   });
+
+  describe("coercion expressions", () => {
+    it("should lower text as Number to detect.number action", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        const t: Text = "123";
+        const n: Number? = t as Number;
+      `);
+      const detectAction = actions.find(
+        (a) => a.identifier === "is.workflow.actions.detect.number",
+      );
+      expect(detectAction).toBeDefined();
+    });
+
+    it("should lower text as Date to detect.date action", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        const t: Text = "2025-01-01";
+        const d: Date? = t as Date;
+      `);
+      const detectAction = actions.find((a) => a.identifier === "is.workflow.actions.detect.date");
+      expect(detectAction).toBeDefined();
+    });
+
+    it("should lower chained coercion to two detect actions", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        const n: Number? = input as Text as Number;
+      `);
+      const detectText = actions.find((a) => a.identifier === "is.workflow.actions.detect.text");
+      const detectNumber = actions.find(
+        (a) => a.identifier === "is.workflow.actions.detect.number",
+      );
+      expect(detectText).toBeDefined();
+      expect(detectNumber).toBeDefined();
+    });
+  });
 });
