@@ -9,6 +9,7 @@ import type {
   BinaryOperator,
   CallExpression,
   CoalesceExpression,
+  CoercionExpression,
   Condition,
   ConstDeclaration,
   ConstDestructure,
@@ -41,6 +42,7 @@ import type {
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
+import { getCoercionAction } from "./coercion.ts";
 import { getStdlibModule } from "./stdlib.ts";
 
 export class LowerError extends Error {
@@ -430,7 +432,7 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       lowerPipelineExpression(expr, actions, ctx);
       return;
     case "CoercionExpression":
-      lowerExpression(expr.expression, actions, ctx);
+      lowerCoercionExpression(expr, actions, ctx);
       return;
     case "PlaceholderExpression":
       throw new LowerError(
@@ -1090,6 +1092,25 @@ function lowerTernaryExpression(
 
 function lowerHashIndexExpression(actions: ActionIR[], ctx: LowerContext): void {
   actions.push(makeGetVariableAction("Repeat Index", ctx));
+}
+
+function lowerCoercionExpression(
+  expr: CoercionExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  lowerExpression(expr.expression, actions, ctx);
+
+  const actionId = getCoercionAction(expr.targetType);
+  if (!actionId) {
+    throw new LowerError(`no coercion action for type '${expr.targetType}'`, expr.span);
+  }
+
+  actions.push({
+    identifier: actionId,
+    uuid: nextUuid(ctx),
+    parameters: new Map(),
+  });
 }
 
 function emitConditionBlock(
