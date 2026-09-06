@@ -1697,4 +1697,24 @@ describe("checker", () => {
       }
     });
   });
+
+  describe("pipeline coercion", () => {
+    it("should type-check pipeline with coercion stage", () => {
+      expect(() =>
+        checkSource(`
+          const t: Text = "123";
+          const n: Number? = t |> _ as Number;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject invalid pipeline coercion pair", () => {
+      expect(() =>
+        checkSource(`
+          const b: Boolean = true;
+          const n: Number? = b |> _ as Number;
+        `),
+      ).toThrow(CompileError);
+    });
+  });
 });

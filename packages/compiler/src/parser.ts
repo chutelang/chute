@@ -1385,6 +1385,30 @@ export class Parser {
   }
 
   private parsePipelineStage(operator: PipelineOperator, opStart: number): PipelineStage {
+    if (this.check(TokenKind.Underscore)) {
+      const uTok = this.advance();
+      let callee: Expression = { kind: "PlaceholderExpression", span: uTok.span };
+
+      if (this.check(TokenKind.As)) {
+        this.advance();
+        const typeTok = this.expect(TokenKind.Identifier);
+        callee = {
+          kind: "CoercionExpression",
+          span: { start: uTok.span.start, end: typeTok.span.end },
+          expression: callee,
+          targetType: tokenValue(typeTok),
+        };
+      }
+
+      return {
+        kind: "PipelineStage",
+        span: { start: opStart, end: callee.span.end },
+        operator,
+        callee,
+        args: [],
+      };
+    }
+
     const callee = this.parseQualifiedName();
 
     let args: Argument[] = [];

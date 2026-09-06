@@ -1480,6 +1480,19 @@ function lowerPipelineExpression(
 }
 
 function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
+  if (stage.callee.kind === "CoercionExpression") {
+    const actionId = getCoercionAction(stage.callee.targetType);
+    if (!actionId) {
+      throw new LowerError(`no coercion action for type '${stage.callee.targetType}'`, stage.span);
+    }
+    actions.push({
+      identifier: actionId,
+      uuid: nextUuid(ctx),
+      parameters: new Map(),
+    });
+    return;
+  }
+
   if (stage.callee.kind === "MemberExpression" && stage.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(stage.callee.object.name);
     const nsAction = nsActions?.get(stage.callee.property);

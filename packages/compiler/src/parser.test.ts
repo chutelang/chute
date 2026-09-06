@@ -1355,6 +1355,27 @@ showAlert(text: "Hello from Chute!");`;
     });
   });
 
+  describe("pipeline coercion stages", () => {
+    it("should parse _ as Type in pipeline stage", () => {
+      const ast = parse("const x = input |> _ as Number;");
+      const decl = ast.body.at(0) as ConstDeclaration;
+      expect(decl.initializer).toMatchObject({
+        kind: "PipelineExpression",
+        stages: [
+          {
+            kind: "PipelineStage",
+            callee: {
+              kind: "CoercionExpression",
+              targetType: "Number",
+              expression: { kind: "PlaceholderExpression" },
+            },
+            args: [],
+          },
+        ],
+      });
+    });
+  });
+
   describe("action declarations", () => {
     it("should parse action with no parameters", () => {
       const ast = parse('action doThing() = "com.example.dothing";');
