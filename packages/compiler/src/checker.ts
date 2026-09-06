@@ -820,56 +820,73 @@ function inferCoercionExpression(
   context: CheckContext,
 ): ChuteType {
   const sourceType = inferType(expr.expression, scope, context);
-  const targetName = expr.targetType;
+  const targetType = resolveCoercionTargetType(expr.targetType, expr.span, scope);
 
-  const actionId = getCoercionAction(targetName);
-  if (!actionId) {
-    throw new CheckError(
-      `cannot coerce to '${targetName}': no coercion action exists for this type`,
-      expr.span,
-      DiagnosticCode.TypeMismatch,
-    );
-  }
-
-  const targetType = namedTypeFromAnnotation(
-    {
-      kind: "NamedType",
-      span: expr.span,
-      qualifier: undefined,
-      name: targetName,
-    },
-    scope,
-  );
-
-  const innerSource = sourceType.kind === "optional" ? sourceType.inner : sourceType;
-
-  if (innerSource.kind !== "any") {
-    if (isAssignable(innerSource, targetType)) {
-      context.warnings.push(
-        new CheckWarning(
-          `unnecessary coercion: expression is already ${describeType(innerSource)}`,
-          expr.span,
-          DiagnosticCode.UnknownUnit,
-        ),
-      );
-    } else if (!canCoerce(sourceType, targetName)) {
-      const validTargets = getValidTargets(sourceType);
-      const hint =
-        validTargets.length > 0
-          ? `. ${describeType(innerSource)} can be coerced to: ${validTargets.join(", ")}`
-          : "";
-      throw new CheckError(
-        `cannot coerce ${describeType(innerSource)} to ${targetName}${hint}`,
-        expr.span,
-        DiagnosticCode.TypeMismatch,
-      );
-    }
-  }
+  checkCoercionValidity(sourceType, expr.targetType, targetType, expr.span, context);
 
   return {
     kind: "optional",
     inner: targetType,
   };
+}
+
+function resolveCoercionTargetType(targetName: string, span: Span, scope: Scope): ChuteType {
+  const actionId = getCoercionAction(targetName);
+  if (!actionId) {
+    throw new CheckError(
+      `cannot coerce to '${targetName}': no coercion action exists for this type`,
+      span,
+      DiagnosticCode.TypeMismatch,
+    );
+  }
+
+  return namedTypeFromAnnotation(
+    {
+      kind: "NamedType",
+      span,
+      qualifier: undefined,
+      name: targetName,
+    },
+    scope,
+  );
+}
+
+function checkCoercionValidity(
+  sourceType: ChuteType,
+  targetName: string,
+  targetType: ChuteType,
+  span: Span,
+  context: CheckContext,
+): void {
+  const innerSource = sourceType.kind === "optional" ? sourceType.inner : sourceType;
+
+  if (innerSource.kind === "any") {
+    return;
+  }
+
+  if (isAssignable(innerSource, targetType)) {
+    context.warnings.push(
+      new CheckWarning(
+        `unnecessary coercion: expression is already ${describeType(innerSource)}`,
+        span,
+        DiagnosticCode.UnknownUnit,
+      ),
+    );
+    return;
+  }
+
+  if (!canCoerce(sourceType, targetName)) {
+    const validTargets = getValidTargets(sourceType);
+    const hint =
+      validTargets.length > 0
+        ? `. ${describeType(innerSource)} can be coerced to: ${validTargets.join(", ")}`
+        : "";
+    throw new CheckError(
+      `cannot coerce ${describeType(innerSource)} to ${targetName}${hint}`,
+      span,
+      DiagnosticCode.TypeMismatch,
+    );
+  }
 }
 
 function inferIdentifier(expr: Identifier, scope: Scope): ChuteType {
@@ -1928,6 +1945,9 @@ function inferPipelineExpression(
   }
 
   if (isOptionalPipeline) {
+    if (currentType.kind === "optional") {
+      return currentType;
+    }
     return {
       kind: "optional",
       inner: currentType,
@@ -1946,37 +1966,9 @@ function inferStageType(
     const coercion = stage.callee;
     const sourceType = inputType;
 
-    const actionId = getCoercionAction(coercion.targetType);
-    if (!actionId) {
-      throw new CheckError(
-        `cannot coerce to '${coercion.targetType}': no coercion action exists for this type`,
-        stage.span,
-        DiagnosticCode.TypeMismatch,
-      );
-    }
+    const targetType = resolveCoercionTargetType(coercion.targetType, stage.span, scope);
 
-    if (sourceType.kind !== "any" && !canCoerce(sourceType, coercion.targetType)) {
-      const validTargets = getValidTargets(sourceType);
-      const hint =
-        validTargets.length > 0
-          ? `. ${describeType(sourceType)} can be coerced to: ${validTargets.join(", ")}`
-          : "";
-      throw new CheckError(
-        `cannot coerce ${describeType(sourceType)} to ${coercion.targetType}${hint}`,
-        stage.span,
-        DiagnosticCode.TypeMismatch,
-      );
-    }
-
-    const targetType = namedTypeFromAnnotation(
-      {
-        kind: "NamedType",
-        span: stage.span,
-        qualifier: undefined,
-        name: coercion.targetType,
-      },
-      scope,
-    );
+    checkCoercionValidity(sourceType, coercion.targetType, targetType, stage.span, context);
 
     return {
       kind: "optional",
