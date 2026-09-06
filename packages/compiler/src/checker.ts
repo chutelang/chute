@@ -1942,6 +1942,48 @@ function inferStageType(
   scope: Scope,
   context: CheckContext,
 ): ChuteType {
+  if (stage.callee.kind === "CoercionExpression") {
+    const coercion = stage.callee;
+    const sourceType = inputType;
+
+    const actionId = getCoercionAction(coercion.targetType);
+    if (!actionId) {
+      throw new CheckError(
+        `cannot coerce to '${coercion.targetType}': no coercion action exists for this type`,
+        stage.span,
+        DiagnosticCode.TypeMismatch,
+      );
+    }
+
+    if (sourceType.kind !== "any" && !canCoerce(sourceType, coercion.targetType)) {
+      const validTargets = getValidTargets(sourceType);
+      const hint =
+        validTargets.length > 0
+          ? `. ${describeType(sourceType)} can be coerced to: ${validTargets.join(", ")}`
+          : "";
+      throw new CheckError(
+        `cannot coerce ${describeType(sourceType)} to ${coercion.targetType}${hint}`,
+        stage.span,
+        DiagnosticCode.TypeMismatch,
+      );
+    }
+
+    const targetType = namedTypeFromAnnotation(
+      {
+        kind: "NamedType",
+        span: stage.span,
+        qualifier: undefined,
+        name: coercion.targetType,
+      },
+      scope,
+    );
+
+    return {
+      kind: "optional",
+      inner: targetType,
+    };
+  }
+
   const calleeName = resolveStageCalleeName(stage.callee);
   if (!calleeName) {
     for (const arg of stage.args) {

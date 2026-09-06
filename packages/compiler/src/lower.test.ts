@@ -770,4 +770,18 @@ describe("lower", () => {
       expect(detectNumber).toBeDefined();
     });
   });
+
+  describe("pipeline coercion", () => {
+    it("should lower pipeline with coercion stage to detect action", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        const t: Text = "123";
+        const n: Number? = t |> _ as Number;
+      `);
+      const detectAction = actions.find(
+        (a) => a.identifier === "is.workflow.actions.detect.number",
+      );
+      expect(detectAction).toBeDefined();
+    });
+  });
 });
