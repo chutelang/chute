@@ -52,5 +52,81 @@ describe("coercion", () => {
       const targets = getValidTargets(source);
       expect(targets.length).toBeGreaterThan(0);
     });
+
+    it("should list only the measured targets for an opaque source", () => {
+      const source: ChuteType = { kind: "opaque", name: "Email" };
+      expect(getValidTargets(source).sort()).toEqual(["Email", "Image", "Text", "URL"]);
+    });
+  });
+
+  describe("empirical pairs", () => {
+    const opaque = (name: string): ChuteType => ({ kind: "opaque", name });
+
+    it("should allow every source to reach Text", () => {
+      for (const source of [
+        { kind: "number" } as const,
+        { kind: "boolean" } as const,
+        { kind: "dictionary" } as const,
+        opaque("Date"),
+        opaque("Location"),
+      ]) {
+        expect(canCoerce(source, "Text")).toBe(true);
+      }
+    });
+
+    it("should distinguish opaque sources rather than treating them alike", () => {
+      // A Date yields epoch seconds; other opaque types return a Boolean.
+      expect(canCoerce(opaque("Date"), "Number")).toBe(true);
+      expect(canCoerce(opaque("URL"), "Number")).toBe(false);
+      expect(canCoerce(opaque("Email"), "Number")).toBe(false);
+    });
+
+    it("should reject non-numeric sources for Number", () => {
+      expect(canCoerce({ kind: "dictionary" }, "Number")).toBe(false);
+      expect(canCoerce({ kind: "boolean" }, "Number")).toBe(false);
+    });
+
+    it("should reject Date from a number at any magnitude", () => {
+      expect(canCoerce({ kind: "number" }, "Date")).toBe(false);
+      expect(canCoerce({ kind: "text" }, "Date")).toBe(true);
+    });
+
+    it("should render most sources to Image, but not a URL", () => {
+      expect(canCoerce({ kind: "number" }, "Image")).toBe(true);
+      expect(canCoerce({ kind: "dictionary" }, "Image")).toBe(true);
+      expect(canCoerce(opaque("Location"), "Image")).toBe(true);
+      expect(canCoerce(opaque("URL"), "Image")).toBe(false);
+    });
+
+    it("should not reach Contact from anything but a Contact", () => {
+      expect(canCoerce({ kind: "text" }, "Contact")).toBe(false);
+      expect(canCoerce({ kind: "dictionary" }, "Contact")).toBe(false);
+      expect(canCoerce(opaque("Email"), "Contact")).toBe(false);
+      expect(canCoerce(opaque("Contact"), "Contact")).toBe(true);
+    });
+
+    it("should derive links and handles from a Contact", () => {
+      expect(canCoerce(opaque("Contact"), "URL")).toBe(true);
+      expect(canCoerce(opaque("Contact"), "Email")).toBe(true);
+      expect(canCoerce(opaque("Contact"), "Phone")).toBe(true);
+      expect(canCoerce(opaque("Contact"), "Location")).toBe(true);
+    });
+
+    it("should build mailto and tel links from Email and Phone", () => {
+      expect(canCoerce(opaque("Email"), "URL")).toBe(true);
+      expect(canCoerce(opaque("Phone"), "URL")).toBe(true);
+      expect(canCoerce(opaque("Date"), "URL")).toBe(false);
+    });
+
+    it("should stay permissive for opaque types that were never measured", () => {
+      expect(canCoerce(opaque("Article"), "Number")).toBe(true);
+      expect(canCoerce(opaque("Article"), "Contact")).toBe(true);
+    });
+
+    it("should look through an optional source", () => {
+      expect(canCoerce({ kind: "optional", inner: opaque("Date") }, "Number")).toBe(true);
+      expect(canCoerce({ kind: "optional", inner: opaque("URL") }, "Number")).toBe(false);
+      expect(canCoerce({ kind: "optional", inner: { kind: "any" } }, "Contact")).toBe(true);
+    });
   });
 });
