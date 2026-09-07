@@ -42,7 +42,7 @@ import type {
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
-import { getCoercionAction } from "./coercion.ts";
+import { getCoercionAction, getCoercionInputSlot } from "./coercion.ts";
 import { getStdlibModule } from "./stdlib.ts";
 
 export class LowerError extends Error {
@@ -1094,6 +1094,16 @@ function lowerHashIndexExpression(actions: ActionIR[], ctx: LowerContext): void 
   actions.push(makeGetVariableAction("Repeat Index", ctx));
 }
 
+function makeCoercionInputRef(tempName: string, targetType: string): ParameterValue {
+  if (getCoercionInputSlot(targetType) === "field") {
+    return {
+      kind: "InterpolatedText",
+      parts: [{ kind: "variable", name: tempName }],
+    };
+  }
+  return { kind: "VariableRef", name: tempName };
+}
+
 function lowerCoercionExpression(
   expr: CoercionExpression,
   actions: ActionIR[],
@@ -1106,10 +1116,15 @@ function lowerCoercionExpression(
     throw new LowerError(`no coercion action for type '${expr.targetType}'`, expr.span);
   }
 
+  const tempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(tempName, ctx));
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFInput", makeCoercionInputRef(tempName, expr.targetType));
   actions.push({
     identifier: actionId,
     uuid: nextUuid(ctx),
-    parameters: new Map(),
+    parameters,
   });
 }
 
@@ -1481,14 +1496,19 @@ function lowerPipelineExpression(
 
 function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
   if (stage.callee.kind === "CoercionExpression") {
-    const actionId = getCoercionAction(stage.callee.targetType);
+    const targetType = stage.callee.targetType;
+    const actionId = getCoercionAction(targetType);
     if (!actionId) {
-      throw new LowerError(`no coercion action for type '${stage.callee.targetType}'`, stage.span);
+      throw new LowerError(`no coercion action for type '${targetType}'`, stage.span);
     }
+    const tempName = nextTempName(ctx);
+    actions.push(makeSetVariableAction(tempName, ctx));
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFInput", makeCoercionInputRef(tempName, targetType));
     actions.push({
       identifier: actionId,
       uuid: nextUuid(ctx),
-      parameters: new Map(),
+      parameters,
     });
     return;
   }

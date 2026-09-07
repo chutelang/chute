@@ -735,7 +735,7 @@ describe("lower", () => {
   });
 
   describe("coercion expressions", () => {
-    it("should lower text as Number to detect.number action", () => {
+    it("should lower text as Number to detect.number with WFInput", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const t: Text = "123";
@@ -745,19 +745,34 @@ describe("lower", () => {
         (a) => a.identifier === "is.workflow.actions.detect.number",
       );
       expect(detectAction).toBeDefined();
+      expect(detectAction?.parameters.has("WFInput")).toBe(true);
     });
 
-    it("should lower text as Date to detect.date action", () => {
+    it("should use VariableRef for picker-slot targets", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const t: Text = "2025-01-01";
         const d: Date? = t as Date;
       `);
       const detectAction = actions.find((a) => a.identifier === "is.workflow.actions.detect.date");
-      expect(detectAction).toBeDefined();
+      const input = detectAction?.parameters.get("WFInput");
+      expect(input).toMatchObject({ kind: "VariableRef" });
     });
 
-    it("should lower chained coercion to two detect actions", () => {
+    it("should use InterpolatedText for field-slot targets", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        const t: Text = "123";
+        const n: Number? = t as Number;
+      `);
+      const detectAction = actions.find(
+        (a) => a.identifier === "is.workflow.actions.detect.number",
+      );
+      const input = detectAction?.parameters.get("WFInput");
+      expect(input).toMatchObject({ kind: "InterpolatedText" });
+    });
+
+    it("should lower chained coercion to two detect actions with WFInput", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const n: Number? = input as Text as Number;
@@ -766,13 +781,13 @@ describe("lower", () => {
       const detectNumber = actions.find(
         (a) => a.identifier === "is.workflow.actions.detect.number",
       );
-      expect(detectText).toBeDefined();
-      expect(detectNumber).toBeDefined();
+      expect(detectText?.parameters.has("WFInput")).toBe(true);
+      expect(detectNumber?.parameters.has("WFInput")).toBe(true);
     });
   });
 
   describe("pipeline coercion", () => {
-    it("should lower pipeline with coercion stage to detect action", () => {
+    it("should lower pipeline with coercion stage to detect action with WFInput", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const t: Text = "123";
@@ -782,6 +797,7 @@ describe("lower", () => {
         (a) => a.identifier === "is.workflow.actions.detect.number",
       );
       expect(detectAction).toBeDefined();
+      expect(detectAction?.parameters.has("WFInput")).toBe(true);
     });
   });
 });
