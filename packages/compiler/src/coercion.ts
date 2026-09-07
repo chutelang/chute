@@ -1,7 +1,10 @@
 import type { ChuteType } from "./checker.ts";
 
+export type InputSlot = "picker" | "field";
+
 interface CoercionTarget {
   actionIdentifier: string;
+  inputSlot: InputSlot;
   validSourceKinds: ReadonlySet<string>;
   validOpaqueSources: ReadonlySet<string>;
 }
@@ -24,6 +27,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Text",
     {
       actionIdentifier: "is.workflow.actions.detect.text",
+      inputSlot: "picker",
       validSourceKinds: new Set(["text", "number", "boolean", "dictionary"]),
       validOpaqueSources: new Set([
         "Date",
@@ -40,6 +44,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Number",
     {
       actionIdentifier: "is.workflow.actions.detect.number",
+      inputSlot: "field",
       // Date yields epoch seconds. Other opaque types return a Boolean, not a Number.
       validSourceKinds: new Set(["text", "number"]),
       validOpaqueSources: new Set(["Date"]),
@@ -49,6 +54,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Dictionary",
     {
       actionIdentifier: "is.workflow.actions.detect.dictionary",
+      inputSlot: "picker",
       // Image/Contact/Location yield metadata dictionaries.
       validSourceKinds: new Set(["text", "dictionary"]),
       validOpaqueSources: new Set(["Image", "Contact", "Location"]),
@@ -58,6 +64,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Date",
     {
       actionIdentifier: "is.workflow.actions.detect.date",
+      inputSlot: "picker",
       // Numbers don't parse as dates at any magnitude.
       validSourceKinds: new Set(["text"]),
       validOpaqueSources: new Set(["Date"]),
@@ -67,6 +74,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "URL",
     {
       actionIdentifier: "is.workflow.actions.detect.link",
+      inputSlot: "field",
       // Email/Phone produce mailto:/tel: links. Location produces a Maps link.
       validSourceKinds: new Set(["text"]),
       validOpaqueSources: new Set(["URL", "Email", "Phone", "Contact", "Location"]),
@@ -76,6 +84,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Image",
     {
       actionIdentifier: "is.workflow.actions.detect.images",
+      inputSlot: "picker",
       // Almost everything renders to an image. URL is the exception.
       validSourceKinds: new Set(["text", "number", "boolean", "dictionary"]),
       validOpaqueSources: new Set(["Date", "Image", "Email", "Phone", "Contact", "Location"]),
@@ -85,6 +94,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Email",
     {
       actionIdentifier: "is.workflow.actions.detect.emailaddress",
+      inputSlot: "field",
       validSourceKinds: new Set(["text"]),
       validOpaqueSources: new Set(["Email", "Contact"]),
     },
@@ -93,6 +103,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Phone",
     {
       actionIdentifier: "is.workflow.actions.detect.phonenumber",
+      inputSlot: "field",
       validSourceKinds: new Set(["text"]),
       validOpaqueSources: new Set(["Phone", "Contact"]),
     },
@@ -101,6 +112,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Contact",
     {
       actionIdentifier: "is.workflow.actions.detect.contacts",
+      inputSlot: "picker",
       // Nothing coerces to Contact. Not a permissions issue.
       validSourceKinds: new Set(),
       validOpaqueSources: new Set(["Contact"]),
@@ -110,6 +122,7 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
     "Location",
     {
       actionIdentifier: "is.workflow.actions.detect.address",
+      inputSlot: "picker",
       validSourceKinds: new Set(["text"]),
       validOpaqueSources: new Set(["Contact", "Location"]),
     },
@@ -118,6 +131,10 @@ const COERCION_TARGETS: ReadonlyMap<string, CoercionTarget> = new Map([
 
 export function getCoercionAction(targetName: string): string | undefined {
   return COERCION_TARGETS.get(targetName)?.actionIdentifier;
+}
+
+export function getCoercionInputSlot(targetName: string): InputSlot | undefined {
+  return COERCION_TARGETS.get(targetName)?.inputSlot;
 }
 
 function acceptsSource(target: CoercionTarget, source: ChuteType): boolean {
