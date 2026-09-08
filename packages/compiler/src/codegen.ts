@@ -1,4 +1,6 @@
 import type { ActionIR, InterpolatedText, ParameterValue, ShortcutIR, VariableRef } from "./ir.ts";
+import type { InputSlot } from "./coercion.ts";
+import { getParameterSlot } from "./stdlib.ts";
 
 const OBJECT_REPLACEMENT_CHAR = "￼";
 const OBJECT_REPLACEMENT_ENTITY = "&#xFFFC;";
@@ -70,7 +72,7 @@ function emitAction(lines: string[], depth: number, action: ActionIR): void {
     emitKey(lines, depth + 1, "WFWorkflowActionParameters");
     emitIndent(lines, depth + 1, "<dict>");
     for (const [key, value] of action.parameters) {
-      emitKeyValue(lines, depth + 2, key, value);
+      emitKeyValue(lines, depth + 2, key, value, action.identifier);
     }
     if (action.groupingIdentifier !== undefined) {
       emitKeyString(lines, depth + 2, "GroupingIdentifier", action.groupingIdentifier);
@@ -81,7 +83,13 @@ function emitAction(lines: string[], depth: number, action: ActionIR): void {
   emitIndent(lines, depth, "</dict>");
 }
 
-function emitKeyValue(lines: string[], depth: number, key: string, value: ParameterValue): void {
+function emitKeyValue(
+  lines: string[],
+  depth: number,
+  key: string,
+  value: ParameterValue,
+  actionIdentifier: string,
+): void {
   if (typeof value === "string") {
     emitKeyString(lines, depth, key, value);
     return;
@@ -105,23 +113,41 @@ function emitKeyValue(lines: string[], depth: number, key: string, value: Parame
 
   emitKey(lines, depth, key);
   if (value.kind === "VariableRef") {
-    emitVariableRef(lines, depth, value);
+    emitVariableRef(lines, depth, value, getParameterSlot(actionIdentifier, key));
   } else {
     emitInterpolatedText(lines, depth, value);
   }
 }
 
-function emitVariableRef(lines: string[], depth: number, ref: VariableRef): void {
+/**
+ * A variable reference is serialized differently depending on the parameter it
+ * fills. A variable picker takes a bare WFTextTokenAttachment whose Value is the
+ * attachment itself; a text or number field takes a WFTextTokenString holding
+ * the variable in attachmentsByRange. Emitting one shape in the other slot binds
+ * nothing, and the action silently runs on empty input.
+ */
+function emitVariableRef(lines: string[], depth: number, ref: VariableRef, slot: InputSlot): void {
   emitIndent(lines, depth, "<dict>");
-  emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");
-  emitKey(lines, depth + 1, "Value");
-  emitIndent(lines, depth + 1, "<dict>");
-  emitKeyRawString(lines, depth + 2, "string", OBJECT_REPLACEMENT_ENTITY);
-  emitKey(lines, depth + 2, "attachmentsByRange");
-  emitIndent(lines, depth + 2, "<dict>");
-  emitAttachmentEntry(lines, depth + 3, 0, ref.name);
-  emitIndent(lines, depth + 2, "</dict>");
-  emitIndent(lines, depth + 1, "</dict>");
+
+  if (slot === "picker") {
+    emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");
+    emitKey(lines, depth + 1, "Value");
+    emitIndent(lines, depth + 1, "<dict>");
+    emitKeyString(lines, depth + 2, "Type", "Variable");
+    emitKeyString(lines, depth + 2, "VariableName", ref.name);
+    emitIndent(lines, depth + 1, "</dict>");
+  } else {
+    emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenString");
+    emitKey(lines, depth + 1, "Value");
+    emitIndent(lines, depth + 1, "<dict>");
+    emitKeyRawString(lines, depth + 2, "string", OBJECT_REPLACEMENT_ENTITY);
+    emitKey(lines, depth + 2, "attachmentsByRange");
+    emitIndent(lines, depth + 2, "<dict>");
+    emitAttachmentEntry(lines, depth + 3, 0, ref.name);
+    emitIndent(lines, depth + 2, "</dict>");
+    emitIndent(lines, depth + 1, "</dict>");
+  }
+
   emitIndent(lines, depth, "</dict>");
 }
 

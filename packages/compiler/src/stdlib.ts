@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 import { Scope } from "./checker.ts";
+import type { InputSlot } from "./coercion.ts";
 import type { ChuteType } from "./checker.ts";
 
 export const KNOWN_QUANTITY_UNITS: ReadonlySet<string> = new Set([
@@ -39,6 +40,7 @@ interface StdlibJsonAction {
   category: string | null;
   parameters: Array<{
     key: string | null;
+    class?: string;
     chuteType: string;
     required: boolean;
     defaultValue: unknown;
@@ -169,16 +171,24 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
 }
 
 let cachedModules: Map<string, Scope> | undefined;
+let cachedJson: { actions: Record<string, StdlibJsonAction> } | undefined;
+
+function loadStdlibJson(): { actions: Record<string, StdlibJsonAction> } {
+  if (!cachedJson) {
+    const url = new URL("../data/stdlib.json", import.meta.url);
+    cachedJson = JSON.parse(fs.readFileSync(url, "utf-8")) as {
+      actions: Record<string, StdlibJsonAction>;
+    };
+  }
+  return cachedJson;
+}
 
 function ensureModules(): Map<string, Scope> {
   if (cachedModules) {
     return cachedModules;
   }
 
-  const url = new URL("../data/stdlib.json", import.meta.url);
-  const raw = JSON.parse(fs.readFileSync(url, "utf-8")) as {
-    actions: Record<string, StdlibJsonAction>;
-  };
+  const raw = loadStdlibJson();
 
   const byCategory = new Map<string, StdlibJsonAction[]>();
   for (const action of Object.values(raw.actions)) {
@@ -209,4 +219,36 @@ export function getStdlibModule(name: string): Scope | undefined {
 
 export function getStdlibModuleNames(): string[] {
   return [...ensureModules().keys()];
+}
+
+let cachedParameterSlots: Map<string, Map<string, InputSlot>> | undefined;
+
+function ensureParameterSlots(): Map<string, Map<string, InputSlot>> {
+  if (cachedParameterSlots) {
+    return cachedParameterSlots;
+  }
+
+  cachedParameterSlots = new Map();
+  for (const action of Object.values(loadStdlibJson().actions)) {
+    const slots = new Map<string, InputSlot>();
+    for (const p of action.parameters ?? []) {
+      if (!p.key) {
+        continue;
+      }
+      slots.set(p.key, p.class === "WFVariablePickerParameter" ? "picker" : "field");
+    }
+    cachedParameterSlots.set(action.identifier, slots);
+  }
+  return cachedParameterSlots;
+}
+
+/**
+ * How a variable reference must be serialized for this action parameter. A
+ * variable picker takes a bare WFTextTokenAttachment; every other slot is a
+ * field that takes a WFTextTokenString carrying the variable as an attachment.
+ * Unknown parameters -- custom action declarations naming a key the stdlib does
+ * not describe -- default to a field, which is by far the more common slot.
+ */
+export function getParameterSlot(actionIdentifier: string, parameterKey: string): InputSlot {
+  return ensureParameterSlots().get(actionIdentifier)?.get(parameterKey) ?? "field";
 }

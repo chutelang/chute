@@ -531,3 +531,38 @@ showAlert(message: "custom");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 });
+
+// A variable reference is serialized differently per parameter slot. Getting
+// this wrong binds nothing and the action silently runs on empty input, which
+// no type check catches -- so assert both shapes directly rather than relying
+// only on the plist snapshots.
+describe("variable reference slot encoding", () => {
+  function paramBlock(plist: string, key: string): string {
+    const start = plist.indexOf(`<key>${key}</key>`);
+    expect(start).toBeGreaterThan(-1);
+    return plist.slice(start, start + 600);
+  }
+
+  it("should encode a variable-picker slot as a bare attachment", () => {
+    const source = `import Notification;
+shortcut { name: "Test" }
+const x: Text = "hi";
+Notification.showAlert(WFAlertActionTitle: "\${x}");
+const y = x;`;
+    const block = paramBlock(compile(source).main, "WFVariable");
+    expect(block).toContain("<string>WFTextTokenAttachment</string>");
+    expect(block).toContain("<key>VariableName</key>");
+    // The attachment is the Value itself, not a token string wrapping one.
+    expect(block).not.toContain("attachmentsByRange");
+  });
+
+  it("should encode a text-field slot as a token string", () => {
+    const source = `import Text;
+shortcut { name: "Test" }
+const raw: Text = "  padded  ";
+const trimmed = Text.trimWhitespace(WFInput: raw);`;
+    const block = paramBlock(compile(source).main, "WFInput");
+    expect(block).toContain("<string>WFTextTokenString</string>");
+    expect(block).toContain("attachmentsByRange");
+  });
+});
