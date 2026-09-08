@@ -11,7 +11,8 @@
     "directory": "packages/compiler"
   },
   "files": [
-    "src"
+    "src",
+    "data"
   ],
   "type": "module",
   "exports": {
