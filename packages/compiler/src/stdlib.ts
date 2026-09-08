@@ -1,4 +1,4 @@
-import * as fs from "node:fs";
+import stdlibData from "../data/stdlib.json" with { type: "json" };
 import { Scope } from "./checker.ts";
 import type { InputSlot } from "./coercion.ts";
 import type { ChuteType } from "./checker.ts";
@@ -170,25 +170,16 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
   };
 }
 
-let cachedModules: Map<string, Scope> | undefined;
-let cachedJson: { actions: Record<string, StdlibJsonAction> } | undefined;
+const stdlibJson = stdlibData as { actions: Record<string, StdlibJsonAction> };
 
-function loadStdlibJson(): { actions: Record<string, StdlibJsonAction> } {
-  if (!cachedJson) {
-    const url = new URL("../data/stdlib.json", import.meta.url);
-    cachedJson = JSON.parse(fs.readFileSync(url, "utf-8")) as {
-      actions: Record<string, StdlibJsonAction>;
-    };
-  }
-  return cachedJson;
-}
+let cachedModules: Map<string, Scope> | undefined;
 
 function ensureModules(): Map<string, Scope> {
   if (cachedModules) {
     return cachedModules;
   }
 
-  const raw = loadStdlibJson();
+  const raw = stdlibJson;
 
   const byCategory = new Map<string, StdlibJsonAction[]>();
   for (const action of Object.values(raw.actions)) {
@@ -229,7 +220,7 @@ function ensureParameterSlots(): Map<string, Map<string, InputSlot>> {
   }
 
   cachedParameterSlots = new Map();
-  for (const action of Object.values(loadStdlibJson().actions)) {
+  for (const action of Object.values(stdlibJson.actions)) {
     const slots = new Map<string, InputSlot>();
     for (const p of action.parameters ?? []) {
       if (!p.key) {
