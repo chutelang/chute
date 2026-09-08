@@ -65,18 +65,10 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>x</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>x</string>
 					</dict>
 				</dict>
 			</dict>
@@ -125,7 +117,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -184,7 +176,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -322,18 +314,10 @@ exports[`compile > should compile a multi-parameter function's sub-shortcut 1`] 
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>Shortcut Input</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>Shortcut Input</string>
 					</dict>
 				</dict>
 			</dict>
@@ -362,18 +346,10 @@ exports[`compile > should compile a multi-parameter function's sub-shortcut 1`] 
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -413,18 +389,10 @@ exports[`compile > should compile a multi-parameter function's sub-shortcut 1`] 
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -464,18 +432,10 @@ exports[`compile > should compile a multi-parameter function's sub-shortcut 1`] 
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>a</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>a</string>
 					</dict>
 				</dict>
 			</dict>
@@ -492,7 +452,7 @@ exports[`compile > should compile a multi-parameter function's sub-shortcut 1`] 
 				<key>WFMathOperand</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -598,7 +558,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -657,7 +617,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -803,18 +763,10 @@ exports[`compile > should compile a pipeline ending in an action call 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>msg</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>msg</string>
 					</dict>
 				</dict>
 			</dict>
@@ -919,7 +871,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1070,7 +1022,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1234,7 +1186,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1606,18 +1558,10 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>x</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>x</string>
 					</dict>
 				</dict>
 			</dict>
@@ -1666,7 +1610,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1848,18 +1792,10 @@ exports[`compile > should compile arithmetic expression 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>a</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>a</string>
 					</dict>
 				</dict>
 			</dict>
@@ -1876,7 +1812,7 @@ exports[`compile > should compile arithmetic expression 1`] = `
 				<key>WFMathOperand</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -1990,7 +1926,7 @@ exports[`compile > should compile const declaration with variable use 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -2106,18 +2042,10 @@ exports[`compile > should compile const destructuring 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>p</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>p</string>
 					</dict>
 				</dict>
 			</dict>
@@ -2146,18 +2074,10 @@ exports[`compile > should compile const destructuring 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -2197,18 +2117,10 @@ exports[`compile > should compile const destructuring 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -2552,18 +2464,10 @@ exports[`compile > should compile for loop 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>items</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>items</string>
 					</dict>
 				</dict>
 			</dict>
@@ -2819,7 +2723,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -2892,18 +2796,10 @@ exports[`compile > should compile function declaration and call 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>Shortcut Input</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>Shortcut Input</string>
 					</dict>
 				</dict>
 			</dict>
@@ -2932,18 +2828,10 @@ exports[`compile > should compile function declaration and call 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -2983,18 +2871,10 @@ exports[`compile > should compile function declaration and call 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>name</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>name</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3099,7 +2979,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -3153,18 +3033,10 @@ exports[`compile > should compile function using enums and records 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>s</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>s</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3201,7 +3073,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -3314,7 +3186,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -3438,18 +3310,10 @@ exports[`compile > should compile function with conditional return 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>Shortcut Input</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>Shortcut Input</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3478,18 +3342,10 @@ exports[`compile > should compile function with conditional return 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3529,18 +3385,10 @@ exports[`compile > should compile function with conditional return 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>n</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>n</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3575,18 +3423,10 @@ exports[`compile > should compile function with conditional return 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>n</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>n</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3636,18 +3476,10 @@ exports[`compile > should compile function with conditional return 2`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>n</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>n</string>
 					</dict>
 				</dict>
 			</dict>
@@ -3786,18 +3618,10 @@ exports[`compile > should compile if/else statement 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>x</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>x</string>
 					</dict>
 				</dict>
 			</dict>
@@ -4167,7 +3991,7 @@ exports[`compile > should compile multiple functions 1`] = `
 				<key>WFDictionaryValue</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -4308,18 +4132,10 @@ exports[`compile > should compile nil coalescing 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>x</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>x</string>
 					</dict>
 				</dict>
 			</dict>
@@ -4352,18 +4168,10 @@ exports[`compile > should compile nil coalescing 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>x</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>x</string>
 					</dict>
 				</dict>
 			</dict>
@@ -4524,18 +4332,10 @@ exports[`compile > should compile record construction and field access 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>p</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>p</string>
 					</dict>
 				</dict>
 			</dict>
@@ -4575,18 +4375,10 @@ exports[`compile > should compile record construction and field access 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>p</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>p</string>
 					</dict>
 				</dict>
 			</dict>
@@ -4626,18 +4418,10 @@ exports[`compile > should compile record construction and field access 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>__chute_tmp_0</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>__chute_tmp_0</string>
 					</dict>
 				</dict>
 			</dict>
@@ -4654,7 +4438,7 @@ exports[`compile > should compile record construction and field access 1`] = `
 				<key>WFMathOperand</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -4961,18 +4745,10 @@ exports[`compile > should compile ternary expression 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>x</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>x</string>
 					</dict>
 				</dict>
 			</dict>
@@ -5063,7 +4839,7 @@ exports[`compile > should compile ternary expression 1`] = `
 				<key>WFAlertActionTitle</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
 						<key>string</key>
@@ -5222,18 +4998,10 @@ exports[`stdlib smoke tests > should compile getClipboard and copyToClipboard 1`
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>text</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>text</string>
 					</dict>
 				</dict>
 			</dict>
@@ -5533,18 +5301,10 @@ exports[`stdlib smoke tests > should compile stdlib action in pipeline 1`] = `
 					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>msg</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>msg</string>
 					</dict>
 				</dict>
 			</dict>

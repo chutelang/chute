@@ -1,0 +1,19 @@
+import Text;
+import Notification;
+
+shortcut {
+  name: "What's My IP",
+  description: "Looks up your public IP address from icanhazip.com",
+}
+
+// The stdlib's Web.getContentsOfUrl is typed Any, which would force a coercion
+// at every call site. icanhazip always answers with plain text, so bind the same
+// Shortcuts action with a Text return type instead.
+action fetchText(url WFURL: Text) -> Text = "is.workflow.actions.downloadurl";
+
+const response = fetchText(url: "https://icanhazip.com");
+
+// The response carries a trailing newline that would otherwise show in the result.
+const ip = Text.trimWhitespace(WFInput: response);
+
+Notification.showContent(Text: "Your public IP address is ${ip}");
