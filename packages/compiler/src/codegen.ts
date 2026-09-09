@@ -1,4 +1,11 @@
-import type { ActionIR, InterpolatedText, ParameterValue, ShortcutIR, VariableRef } from "./ir.ts";
+import type {
+  ActionIR,
+  Aggrandizement,
+  InterpolatedText,
+  ParameterValue,
+  ShortcutIR,
+  VariableRef,
+} from "./ir.ts";
 import type { InputSlot } from "./coercion.ts";
 import { getParameterSlot } from "./stdlib.ts";
 
@@ -135,6 +142,9 @@ function emitVariableRef(lines: string[], depth: number, ref: VariableRef, slot:
     emitIndent(lines, depth + 1, "<dict>");
     emitKeyString(lines, depth + 2, "Type", "Variable");
     emitKeyString(lines, depth + 2, "VariableName", ref.name);
+    if (ref.aggrandizements && ref.aggrandizements.length > 0) {
+      emitAggrandizements(lines, depth + 2, ref.aggrandizements);
+    }
     emitIndent(lines, depth + 1, "</dict>");
   } else {
     emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenString");
@@ -143,7 +153,7 @@ function emitVariableRef(lines: string[], depth: number, ref: VariableRef, slot:
     emitKeyRawString(lines, depth + 2, "string", OBJECT_REPLACEMENT_ENTITY);
     emitKey(lines, depth + 2, "attachmentsByRange");
     emitIndent(lines, depth + 2, "<dict>");
-    emitAttachmentEntry(lines, depth + 3, 0, ref.name);
+    emitAttachmentEntry(lines, depth + 3, 0, ref.name, ref.aggrandizements);
     emitIndent(lines, depth + 2, "</dict>");
     emitIndent(lines, depth + 1, "</dict>");
   }
@@ -162,24 +172,56 @@ function emitInterpolatedText(lines: string[], depth: number, text: Interpolated
   emitKey(lines, depth + 2, "attachmentsByRange");
   emitIndent(lines, depth + 2, "<dict>");
   for (const range of ranges) {
-    emitAttachmentEntry(lines, depth + 3, range.offset, range.name);
+    emitAttachmentEntry(lines, depth + 3, range.offset, range.name, range.aggrandizements);
   }
   emitIndent(lines, depth + 2, "</dict>");
   emitIndent(lines, depth + 1, "</dict>");
   emitIndent(lines, depth, "</dict>");
 }
 
-function emitAttachmentEntry(lines: string[], depth: number, offset: number, name: string): void {
+function emitAttachmentEntry(
+  lines: string[],
+  depth: number,
+  offset: number,
+  name: string,
+  aggrandizements?: Aggrandizement[],
+): void {
   emitKey(lines, depth, `{${offset}, 1}`);
   emitIndent(lines, depth, "<dict>");
   emitKeyString(lines, depth + 1, "Type", "Variable");
   emitKeyString(lines, depth + 1, "VariableName", name);
+  if (aggrandizements && aggrandizements.length > 0) {
+    emitAggrandizements(lines, depth + 1, aggrandizements);
+  }
   emitIndent(lines, depth, "</dict>");
+}
+
+function emitAggrandizements(
+  lines: string[],
+  depth: number,
+  aggrandizements: Aggrandizement[],
+): void {
+  emitKey(lines, depth, "Aggrandizements");
+  emitIndent(lines, depth, "<array>");
+  for (const agg of aggrandizements) {
+    emitIndent(lines, depth + 1, "<dict>");
+    if (agg.kind === "coercion") {
+      emitKeyString(lines, depth + 2, "Type", "WFCoercionVariableAggrandizement");
+      emitKeyString(lines, depth + 2, "CoercionItemClass", agg.itemClass);
+    } else {
+      emitKeyString(lines, depth + 2, "Type", "WFPropertyVariableAggrandizement");
+      emitKeyString(lines, depth + 2, "PropertyName", agg.name);
+      emitKeyInteger(lines, depth + 2, "PropertyUserInfo", agg.userInfo);
+    }
+    emitIndent(lines, depth + 1, "</dict>");
+  }
+  emitIndent(lines, depth, "</array>");
 }
 
 interface AttachmentRange {
   offset: number;
   name: string;
+  aggrandizements?: Aggrandizement[];
 }
 
 function buildCombinedText(text: InterpolatedText): {
@@ -196,6 +238,7 @@ function buildCombinedText(text: InterpolatedText): {
       ranges.push({
         offset: combined.length,
         name: part.name,
+        ...(part.aggrandizements !== undefined ? { aggrandizements: part.aggrandizements } : {}),
       });
       combined += OBJECT_REPLACEMENT_CHAR;
     }

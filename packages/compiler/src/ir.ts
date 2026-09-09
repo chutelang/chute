@@ -17,9 +17,14 @@ export interface ActionIR {
 
 export type ParameterValue = string | number | boolean | VariableRef | InterpolatedText;
 
+export type Aggrandizement =
+  | { kind: "coercion"; itemClass: string }
+  | { kind: "property"; name: string; userInfo: number };
+
 export interface VariableRef {
   kind: "VariableRef";
   name: string;
+  aggrandizements?: Aggrandizement[];
 }
 
 export interface InterpolatedText {
@@ -29,4 +34,4 @@ export interface InterpolatedText {
 
 export type InterpolatedTextPart =
   | { kind: "text"; value: string }
-  | { kind: "variable"; name: string };
+  | { kind: "variable"; name: string; aggrandizements?: Aggrandizement[] };
