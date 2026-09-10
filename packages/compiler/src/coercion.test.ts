@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getCoercionAction, canCoerce, getValidTargets } from "./coercion.ts";
+import { getCoercionAction, canCoerce, getValidTargets, getContentItemClass } from "./coercion.ts";
 import type { ChuteType } from "./checker.ts";
 
 describe("coercion", () => {
@@ -56,6 +56,28 @@ describe("coercion", () => {
     it("should list only the measured targets for an opaque source", () => {
       const source: ChuteType = { kind: "opaque", name: "Email" };
       expect(getValidTargets(source).sort()).toEqual(["Email", "Image", "Text", "URL"]);
+    });
+  });
+
+  describe("getContentItemClass", () => {
+    it("should return content item class for Date", () => {
+      expect(getContentItemClass("Date")).toBe("WFDateContentItem");
+    });
+
+    it("should return content item class for Number", () => {
+      expect(getContentItemClass("Number")).toBe("WFNumberContentItem");
+    });
+
+    it("should return content item class for Text", () => {
+      expect(getContentItemClass("Text")).toBe("WFStringContentItem");
+    });
+
+    it("should return content item class for URL", () => {
+      expect(getContentItemClass("URL")).toBe("WFURLContentItem");
+    });
+
+    it("should return undefined for non-coercion type", () => {
+      expect(getContentItemClass("Boolean")).toBeUndefined();
     });
   });
 
