@@ -42,7 +42,7 @@ import type {
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
-import { getCoercionAction, getCoercionInputSlot } from "./coercion.ts";
+import { getContentItemClass } from "./coercion.ts";
 import { getStdlibModule } from "./stdlib.ts";
 
 export class LowerError extends Error {
@@ -755,6 +755,8 @@ function isSideEffectFreeValue(expr: Expression): boolean {
       return expr.parts.every(
         (part) => part.kind === "TextPart" || part.expression.kind === "Identifier",
       );
+    case "CoercionExpression":
+      return expr.expression.kind === "Identifier";
     default:
       return false;
   }
@@ -779,6 +781,23 @@ function lowerToParamValue(
       };
     case "InterpolatedString":
       return buildInterpolatedText(expr, actions, ctx);
+    case "CoercionExpression": {
+      const innerName = resolveVariableName(expr.expression, actions, ctx);
+      const itemClass = getContentItemClass(expr.targetType);
+      if (!itemClass) {
+        throw new LowerError(`no content item class for type '${expr.targetType}'`, expr.span);
+      }
+      return {
+        kind: "VariableRef",
+        name: innerName,
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass,
+          },
+        ],
+      };
+    }
     default:
       lowerExpression(expr, actions, ctx);
       break;
@@ -1094,35 +1113,30 @@ function lowerHashIndexExpression(actions: ActionIR[], ctx: LowerContext): void 
   actions.push(makeGetVariableAction("Repeat Index", ctx));
 }
 
-function makeCoercionInputRef(tempName: string, targetType: string): ParameterValue {
-  if (getCoercionInputSlot(targetType) === "field") {
-    return {
-      kind: "InterpolatedText",
-      parts: [{ kind: "variable", name: tempName }],
-    };
-  }
-  return { kind: "VariableRef", name: tempName };
-}
-
 function lowerCoercionExpression(
   expr: CoercionExpression,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
-  lowerExpression(expr.expression, actions, ctx);
-
-  const actionId = getCoercionAction(expr.targetType);
-  if (!actionId) {
-    throw new LowerError(`no coercion action for type '${expr.targetType}'`, expr.span);
+  const objectName = resolveVariableName(expr.expression, actions, ctx);
+  const itemClass = getContentItemClass(expr.targetType);
+  if (!itemClass) {
+    throw new LowerError(`no content item class for type '${expr.targetType}'`, expr.span);
   }
 
-  const tempName = nextTempName(ctx);
-  actions.push(makeSetVariableAction(tempName, ctx));
-
   const parameters = new Map<string, ParameterValue>();
-  parameters.set("WFInput", makeCoercionInputRef(tempName, expr.targetType));
+  parameters.set("WFVariable", {
+    kind: "VariableRef",
+    name: objectName,
+    aggrandizements: [
+      {
+        kind: "coercion",
+        itemClass,
+      },
+    ],
+  });
   actions.push({
-    identifier: actionId,
+    identifier: "is.workflow.actions.getvariable",
     uuid: nextUuid(ctx),
     parameters,
   });
@@ -1497,16 +1511,25 @@ function lowerPipelineExpression(
 function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: LowerContext): void {
   if (stage.callee.kind === "CoercionExpression") {
     const targetType = stage.callee.targetType;
-    const actionId = getCoercionAction(targetType);
-    if (!actionId) {
-      throw new LowerError(`no coercion action for type '${targetType}'`, stage.span);
+    const itemClass = getContentItemClass(targetType);
+    if (!itemClass) {
+      throw new LowerError(`no content item class for type '${targetType}'`, stage.span);
     }
     const tempName = nextTempName(ctx);
     actions.push(makeSetVariableAction(tempName, ctx));
     const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFInput", makeCoercionInputRef(tempName, targetType));
+    parameters.set("WFVariable", {
+      kind: "VariableRef",
+      name: tempName,
+      aggrandizements: [
+        {
+          kind: "coercion",
+          itemClass,
+        },
+      ],
+    });
     actions.push({
-      identifier: actionId,
+      identifier: "is.workflow.actions.getvariable",
       uuid: nextUuid(ctx),
       parameters,
     });
