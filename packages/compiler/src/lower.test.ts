@@ -735,69 +735,143 @@ describe("lower", () => {
   });
 
   describe("coercion expressions", () => {
-    it("should lower text as Number to detect.number with WFInput", () => {
+    it("should lower text as Number to getvariable with coercion aggrandizement", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const t: Text = "123";
         const n: Number? = t as Number;
       `);
-      const detectAction = actions.find(
-        (a) => a.identifier === "is.workflow.actions.detect.number",
+      const getVarAction = actions.find((a) => a.identifier === "is.workflow.actions.getvariable");
+      expect(getVarAction).toBeDefined();
+      const wfVariable = getVarAction?.parameters.get("WFVariable");
+      expect(wfVariable).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass: "WFNumberContentItem",
+          },
+        ],
+      });
+      const detectAction = actions.find((a) =>
+        a.identifier.startsWith("is.workflow.actions.detect."),
       );
-      expect(detectAction).toBeDefined();
-      expect(detectAction?.parameters.has("WFInput")).toBe(true);
+      expect(detectAction).toBeUndefined();
     });
 
-    it("should use VariableRef for picker-slot targets", () => {
+    it("should lower text as Date to getvariable with coercion aggrandizement", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const t: Text = "2025-01-01";
         const d: Date? = t as Date;
       `);
-      const detectAction = actions.find((a) => a.identifier === "is.workflow.actions.detect.date");
-      const input = detectAction?.parameters.get("WFInput");
-      expect(input).toMatchObject({ kind: "VariableRef" });
+      const getVarAction = actions.find((a) => a.identifier === "is.workflow.actions.getvariable");
+      expect(getVarAction).toBeDefined();
+      const wfVariable = getVarAction?.parameters.get("WFVariable");
+      expect(wfVariable).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass: "WFDateContentItem",
+          },
+        ],
+      });
+      const detectAction = actions.find((a) =>
+        a.identifier.startsWith("is.workflow.actions.detect."),
+      );
+      expect(detectAction).toBeUndefined();
     });
 
-    it("should use InterpolatedText for field-slot targets", () => {
+    it("should lower text as URL to getvariable with coercion aggrandizement", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
-        const t: Text = "123";
-        const n: Number? = t as Number;
+        const t: Text = "https://example.com";
+        const u: URL? = t as URL;
       `);
-      const detectAction = actions.find(
-        (a) => a.identifier === "is.workflow.actions.detect.number",
+      const getVarAction = actions.find((a) => a.identifier === "is.workflow.actions.getvariable");
+      expect(getVarAction).toBeDefined();
+      const wfVariable = getVarAction?.parameters.get("WFVariable");
+      expect(wfVariable).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass: "WFURLContentItem",
+          },
+        ],
+      });
+      const detectAction = actions.find((a) =>
+        a.identifier.startsWith("is.workflow.actions.detect."),
       );
-      const input = detectAction?.parameters.get("WFInput");
-      expect(input).toMatchObject({ kind: "InterpolatedText" });
+      expect(detectAction).toBeUndefined();
     });
 
-    it("should lower chained coercion to two detect actions with WFInput", () => {
+    it("should lower chained coercion to two getvariable actions with coercion aggrandizements", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const n: Number? = input as Text as Number;
       `);
-      const detectText = actions.find((a) => a.identifier === "is.workflow.actions.detect.text");
-      const detectNumber = actions.find(
-        (a) => a.identifier === "is.workflow.actions.detect.number",
+      const getVarActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvariable",
       );
-      expect(detectText?.parameters.has("WFInput")).toBe(true);
-      expect(detectNumber?.parameters.has("WFInput")).toBe(true);
+      expect(getVarActions.length).toBe(2);
+      expect(getVarActions[0]?.parameters.get("WFVariable")).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass: "WFStringContentItem",
+          },
+        ],
+      });
+      expect(getVarActions[1]?.parameters.get("WFVariable")).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass: "WFNumberContentItem",
+          },
+        ],
+      });
+      const detectAction = actions.find((a) =>
+        a.identifier.startsWith("is.workflow.actions.detect."),
+      );
+      expect(detectAction).toBeUndefined();
     });
   });
 
   describe("pipeline coercion", () => {
-    it("should lower pipeline with coercion stage to detect action with WFInput", () => {
+    it("should lower pipeline with coercion stage to getvariable with coercion aggrandizement", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const t: Text = "123";
         const n: Number? = t |> _ as Number;
       `);
-      const detectAction = actions.find(
-        (a) => a.identifier === "is.workflow.actions.detect.number",
+      const getVarActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvariable",
       );
-      expect(detectAction).toBeDefined();
-      expect(detectAction?.parameters.has("WFInput")).toBe(true);
+      const coercionAction = getVarActions.find((a) => {
+        const wfVariable = a.parameters.get("WFVariable");
+        return (
+          typeof wfVariable === "object" && wfVariable !== null && "aggrandizements" in wfVariable
+        );
+      });
+      expect(coercionAction).toBeDefined();
+      const wfVariable = coercionAction?.parameters.get("WFVariable");
+      expect(wfVariable).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "coercion",
+            itemClass: "WFNumberContentItem",
+          },
+        ],
+      });
+      const detectAction = actions.find((a) =>
+        a.identifier.startsWith("is.workflow.actions.detect."),
+      );
+      expect(detectAction).toBeUndefined();
     });
   });
 });
