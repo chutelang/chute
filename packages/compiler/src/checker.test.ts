@@ -1788,4 +1788,24 @@ describe("checker", () => {
       ).not.toThrow();
     });
   });
+
+  describe("pipeline property stages", () => {
+    it("should type-check pipeline property access on opaque type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let y = Scripting.date() |> _.year;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject unknown property in pipeline stage", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let y = Scripting.date() |> _.foo;
+        `),
+      ).toThrow(CompileError);
+    });
+  });
 });

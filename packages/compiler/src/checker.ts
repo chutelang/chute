@@ -2026,6 +2026,31 @@ function inferStageType(
     };
   }
 
+  if (
+    stage.callee.kind === "MemberExpression" &&
+    stage.callee.object.kind === "PlaceholderExpression"
+  ) {
+    const memberExpr = stage.callee;
+    if (inputType.kind === "opaque") {
+      const prop = getProperty(inputType.name, memberExpr.property);
+      if (!prop) {
+        const validNames = getPropertyNames(inputType.name);
+        const hint = validNames.length > 0 ? `. Valid properties: ${validNames.join(", ")}` : "";
+        throw new CheckError(
+          `'${inputType.name}' has no property '${memberExpr.property}'${hint}`,
+          memberExpr.span,
+          DiagnosticCode.UnknownMember,
+        );
+      }
+      memberExpr.resolvedProperty = {
+        shortcutsName: prop.shortcutsName,
+        userInfo: prop.userInfo,
+      };
+      return prop.returnType;
+    }
+    return { kind: "any" };
+  }
+
   const calleeName = resolveStageCalleeName(stage.callee);
   if (!calleeName) {
     for (const arg of stage.args) {
