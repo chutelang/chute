@@ -1380,6 +1380,27 @@ showAlert(text: "Hello from Chute!");`;
     });
   });
 
+  describe("pipeline property stages", () => {
+    it("should parse |> _.year as member access on placeholder", () => {
+      const ast = parse("x |> _.year;");
+      const pipeline = ast.body[0];
+      expect(pipeline).toMatchObject({
+        kind: "ExpressionStatement",
+        expression: {
+          kind: "PipelineExpression",
+        },
+      });
+      const stage = (pipeline as any).expression.stages[0];
+      expect(stage.callee).toMatchObject({
+        kind: "MemberExpression",
+        object: {
+          kind: "PlaceholderExpression",
+        },
+        property: "year",
+      });
+    });
+  });
+
   describe("action declarations", () => {
     it("should parse action with no parameters", () => {
       const ast = parse('action doThing() = "com.example.dothing";');
