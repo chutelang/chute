@@ -215,6 +215,10 @@ export interface MemberExpression {
   span: Span;
   object: Expression;
   property: string;
+  resolvedProperty?: {
+    shortcutsName: string;
+    userInfo: number;
+  };
 }
 
 export interface OptionalMemberExpression {
@@ -222,6 +226,10 @@ export interface OptionalMemberExpression {
   span: Span;
   object: Expression;
   property: string;
+  resolvedProperty?: {
+    shortcutsName: string;
+    userInfo: number;
+  };
 }
 
 export interface SubscriptExpression {

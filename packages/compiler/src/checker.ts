@@ -6,6 +6,7 @@ import { Parser } from "./parser.ts";
 import { getStdlibModule, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import { canCoerce, getCoercionAction, getValidTargets } from "./coercion.ts";
+import { getProperty, getPropertyNames } from "./properties.ts";
 import type { DocComment } from "./doc-comment.ts";
 import type {
   CoercionExpression,
@@ -1008,6 +1009,32 @@ function inferMemberExpression(
     return fieldType;
   }
 
+  if (objectType.kind === "opaque") {
+    const prop = getProperty(objectType.name, expr.property);
+    if (!prop) {
+      const validNames = getPropertyNames(objectType.name);
+      const hint = validNames.length > 0 ? `. Valid properties: ${validNames.join(", ")}` : "";
+      throw new CheckError(
+        `'${objectType.name}' has no property '${expr.property}'${hint}`,
+        expr.span,
+        DiagnosticCode.UnknownMember,
+      );
+    }
+    expr.resolvedProperty = {
+      shortcutsName: prop.shortcutsName,
+      userInfo: prop.userInfo,
+    };
+    return prop.returnType;
+  }
+
+  if (objectType.kind === "optional" && objectType.inner.kind === "opaque") {
+    throw new CheckError(
+      `cannot access property '${expr.property}' on optional type '${objectType.inner.name}?', use '?.' instead`,
+      expr.span,
+      DiagnosticCode.InvalidOperand,
+    );
+  }
+
   return { kind: "any" };
 }
 
@@ -1024,6 +1051,29 @@ function inferOptionalMemberExpression(
       expr.object.span,
       DiagnosticCode.InvalidOperand,
     );
+  }
+
+  const inner = objectType.kind === "optional" ? objectType.inner : objectType;
+
+  if (inner.kind === "opaque") {
+    const prop = getProperty(inner.name, expr.property);
+    if (!prop) {
+      const validNames = getPropertyNames(inner.name);
+      const hint = validNames.length > 0 ? `. Valid properties: ${validNames.join(", ")}` : "";
+      throw new CheckError(
+        `'${inner.name}' has no property '${expr.property}'${hint}`,
+        expr.span,
+        DiagnosticCode.UnknownMember,
+      );
+    }
+    expr.resolvedProperty = {
+      shortcutsName: prop.shortcutsName,
+      userInfo: prop.userInfo,
+    };
+    return {
+      kind: "optional",
+      inner: prop.returnType,
+    };
   }
 
   return {

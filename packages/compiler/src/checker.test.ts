@@ -1598,6 +1598,60 @@ describe("checker", () => {
     });
   });
 
+  describe("opaque property access", () => {
+    it("should accept valid property on opaque type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let d = Scripting.date();
+          let y = d.year;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject unknown property on opaque type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let d = Scripting.date();
+          let x = d.foo;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should accept optional chaining on optional opaque type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let d = Scripting.date();
+          let od = d as Date;
+          let y = od?.year;
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject non-optional chaining on optional opaque type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let d = Scripting.date();
+          let od = d as Date;
+          let y = od.year;
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should allow any property on any type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let x: any = Scripting.date();
+          let y = x.whatever;
+        `),
+      ).not.toThrow();
+    });
+  });
+
   describe("stdlib opaque return types", () => {
     it("should infer Date return type from date action", () => {
       expect(() =>
