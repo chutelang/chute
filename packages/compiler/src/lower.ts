@@ -23,7 +23,9 @@ import type {
   LetDeclaration,
   LetDestructure,
   ListLiteral,
+  MemberExpression,
   MenuStatement,
+  OptionalMemberExpression,
   PipelineExpression,
   PipelineStage,
   Program,
@@ -414,9 +416,17 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
         lowerEnumMemberAccess(expr.object.name, expr.property, expr.span, actions, ctx);
         return;
       }
+      if (expr.resolvedProperty) {
+        lowerOpaquePropertyAccess(expr, actions, ctx);
+        return;
+      }
       lowerKeyedAccess(expr.object, expr.property, actions, ctx);
       return;
     case "OptionalMemberExpression":
+      if (expr.resolvedProperty) {
+        lowerOpaquePropertyAccess(expr, actions, ctx);
+        return;
+      }
       lowerKeyedAccess(expr.object, expr.property, actions, ctx);
       return;
     case "SubscriptExpression":
@@ -688,6 +698,36 @@ function lowerKeyedAccess(
 
   actions.push({
     identifier: "is.workflow.actions.getvalueforkey",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
+}
+
+function lowerOpaquePropertyAccess(
+  expr: MemberExpression | OptionalMemberExpression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const objectName = resolveVariableName(expr.object, actions, ctx);
+  const resolved = expr.resolvedProperty;
+  if (!resolved) {
+    throw new LowerError(`missing resolved property for '${expr.property}'`, expr.span);
+  }
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFVariable", {
+    kind: "VariableRef",
+    name: objectName,
+    aggrandizements: [
+      {
+        kind: "property",
+        name: resolved.shortcutsName,
+        userInfo: resolved.userInfo,
+      },
+    ],
+  });
+  actions.push({
+    identifier: "is.workflow.actions.getvariable",
     uuid: nextUuid(ctx),
     parameters,
   });

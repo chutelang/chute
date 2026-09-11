@@ -874,4 +874,64 @@ describe("lower", () => {
       expect(detectAction).toBeUndefined();
     });
   });
+
+  describe("property aggrandizements", () => {
+    it("should emit property aggrandizement for opaque member access", () => {
+      const actions = lowerSource(`
+        import Scripting;
+        shortcut { name: "Test" }
+        let d = Scripting.date();
+        let y = d.year;
+      `);
+      const getVarAction = actions.find(
+        (a) => a.identifier === "is.workflow.actions.getvariable" && a.parameters.has("WFVariable"),
+      );
+      expect(getVarAction).toBeDefined();
+      const wfVariable = getVarAction?.parameters.get("WFVariable");
+      expect(wfVariable).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "property",
+            name: "Year",
+            userInfo: 4,
+          },
+        ],
+      });
+    });
+
+    it("should emit property aggrandizement for optional member access", () => {
+      const actions = lowerSource(`
+        import Scripting;
+        shortcut { name: "Test" }
+        let d = Scripting.date();
+        let od = d as Date;
+        let y = od?.year;
+      `);
+      const getVarActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvariable" && a.parameters.has("WFVariable"),
+      );
+      const propAction = getVarActions.find((a) => {
+        const ref = a.parameters.get("WFVariable");
+        return (
+          typeof ref === "object" &&
+          ref !== null &&
+          "aggrandizements" in ref &&
+          ref.aggrandizements?.some((ag) => ag.kind === "property")
+        );
+      });
+      expect(propAction).toBeDefined();
+    });
+
+    it("should not emit getvalueforkey for opaque property access", () => {
+      const actions = lowerSource(`
+        import Scripting;
+        shortcut { name: "Test" }
+        let d = Scripting.date();
+        let y = d.year;
+      `);
+      const keyAction = actions.find((a) => a.identifier === "is.workflow.actions.getvalueforkey");
+      expect(keyAction).toBeUndefined();
+    });
+  });
 });
