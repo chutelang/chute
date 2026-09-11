@@ -1389,22 +1389,45 @@ export class Parser {
       const uTok = this.advance();
       const placeholder: Expression = { kind: "PlaceholderExpression", span: uTok.span };
 
-      this.expect(TokenKind.As);
-      const typeTok = this.expect(TokenKind.Identifier);
-      const callee: Expression = {
-        kind: "CoercionExpression",
-        span: { start: uTok.span.start, end: typeTok.span.end },
-        expression: placeholder,
-        targetType: tokenValue(typeTok),
-      };
+      if (this.check(TokenKind.As)) {
+        this.advance();
+        const typeTok = this.expect(TokenKind.Identifier);
+        const callee: Expression = {
+          kind: "CoercionExpression",
+          span: { start: uTok.span.start, end: typeTok.span.end },
+          expression: placeholder,
+          targetType: tokenValue(typeTok),
+        };
 
-      return {
-        kind: "PipelineStage",
-        span: { start: opStart, end: callee.span.end },
-        operator,
-        callee,
-        args: [],
-      };
+        return {
+          kind: "PipelineStage",
+          span: { start: opStart, end: callee.span.end },
+          operator,
+          callee,
+          args: [],
+        };
+      }
+
+      if (this.check(TokenKind.Dot)) {
+        this.advance();
+        const propTok = this.expect(TokenKind.Identifier);
+        const callee: Expression = {
+          kind: "MemberExpression",
+          span: { start: uTok.span.start, end: propTok.span.end },
+          object: placeholder,
+          property: tokenValue(propTok),
+        };
+
+        return {
+          kind: "PipelineStage",
+          span: { start: opStart, end: callee.span.end },
+          operator,
+          callee,
+          args: [],
+        };
+      }
+
+      throw this.error("expected 'as' or '.' after '_' in pipeline stage", this.peek().span);
     }
 
     const callee = this.parseQualifiedName();
