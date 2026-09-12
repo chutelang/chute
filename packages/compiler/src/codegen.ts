@@ -208,10 +208,20 @@ function emitAggrandizements(
     if (agg.kind === "coercion") {
       emitKeyString(lines, depth + 2, "Type", "WFCoercionVariableAggrandizement");
       emitKeyString(lines, depth + 2, "CoercionItemClass", agg.itemClass);
+    } else if (agg.kind === "dateFormat") {
+      emitKeyString(lines, depth + 2, "Type", "WFDateFormatVariableAggrandizement");
+      emitKeyString(lines, depth + 2, "WFDateFormatStyle", "Custom");
+      emitKeyString(lines, depth + 2, "WFDateFormat", agg.format);
+      emitKey(lines, depth + 2, "WFISO8601IncludeTime");
+      emitBool(lines, depth + 2, false);
     } else {
       emitKeyString(lines, depth + 2, "Type", "WFPropertyVariableAggrandizement");
       emitKeyString(lines, depth + 2, "PropertyName", agg.name);
-      emitKeyInteger(lines, depth + 2, "PropertyUserInfo", agg.userInfo);
+      if (typeof agg.userInfo === "number") {
+        emitKeyInteger(lines, depth + 2, "PropertyUserInfo", agg.userInfo);
+      } else if (typeof agg.userInfo === "string") {
+        emitKeyString(lines, depth + 2, "PropertyUserInfo", agg.userInfo);
+      }
     }
     emitIndent(lines, depth + 1, "</dict>");
   }

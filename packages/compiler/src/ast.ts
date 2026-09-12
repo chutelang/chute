@@ -210,15 +210,17 @@ export interface CallExpression {
   args: Argument[];
 }
 
+export type ResolvedProperty =
+  | { kind: "property"; shortcutsName: string; userInfo?: number | string }
+  | { kind: "dateFormat"; format: string }
+  | { kind: "urlComponent"; component: string };
+
 export interface MemberExpression {
   kind: "MemberExpression";
   span: Span;
   object: Expression;
   property: string;
-  resolvedProperty?: {
-    shortcutsName: string;
-    userInfo: number;
-  };
+  resolvedProperty?: ResolvedProperty;
 }
 
 export interface OptionalMemberExpression {
@@ -226,10 +228,7 @@ export interface OptionalMemberExpression {
   span: Span;
   object: Expression;
   property: string;
-  resolvedProperty?: {
-    shortcutsName: string;
-    userInfo: number;
-  };
+  resolvedProperty?: ResolvedProperty;
 }
 
 export interface SubscriptExpression {

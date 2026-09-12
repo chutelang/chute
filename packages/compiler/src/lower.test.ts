@@ -876,31 +876,20 @@ describe("lower", () => {
   });
 
   describe("property aggrandizements", () => {
-    it("should emit property aggrandizement for opaque member access", () => {
+    it("should emit format.date action for Date member access", () => {
       const actions = lowerSource(`
         import Scripting;
         shortcut { name: "Test" }
         let d = Scripting.date();
         let y = d.year;
       `);
-      const getVarAction = actions.find(
-        (a) => a.identifier === "is.workflow.actions.getvariable" && a.parameters.has("WFVariable"),
-      );
-      expect(getVarAction).toBeDefined();
-      const wfVariable = getVarAction?.parameters.get("WFVariable");
-      expect(wfVariable).toMatchObject({
-        kind: "VariableRef",
-        aggrandizements: [
-          {
-            kind: "property",
-            name: "Year",
-            userInfo: 4,
-          },
-        ],
-      });
+      const fmtAction = actions.find((a) => a.identifier === "is.workflow.actions.format.date");
+      expect(fmtAction).toBeDefined();
+      expect(fmtAction?.parameters.get("WFDateFormatStyle")).toBe("Custom");
+      expect(fmtAction?.parameters.get("WFDateFormat")).toBe("yyyy");
     });
 
-    it("should emit property aggrandizement for optional member access", () => {
+    it("should emit format.date action for optional member access", () => {
       const actions = lowerSource(`
         import Scripting;
         shortcut { name: "Test" }
@@ -908,19 +897,23 @@ describe("lower", () => {
         let od = d as Date;
         let y = od?.year;
       `);
-      const getVarActions = actions.filter(
-        (a) => a.identifier === "is.workflow.actions.getvariable" && a.parameters.has("WFVariable"),
+      const fmtAction = actions.find((a) => a.identifier === "is.workflow.actions.format.date");
+      expect(fmtAction).toBeDefined();
+      expect(fmtAction?.parameters.get("WFDateFormat")).toBe("yyyy");
+    });
+
+    it("should emit geturlcomponent for URL member access", () => {
+      const actions = lowerSource(`
+        import Web;
+        shortcut { name: "Test" }
+        let u = Web.url(WFURLActionURL: "https://example.com");
+        let s = u.scheme;
+      `);
+      const compAction = actions.find(
+        (a) => a.identifier === "is.workflow.actions.geturlcomponent",
       );
-      const propAction = getVarActions.find((a) => {
-        const ref = a.parameters.get("WFVariable");
-        return (
-          typeof ref === "object" &&
-          ref !== null &&
-          "aggrandizements" in ref &&
-          ref.aggrandizements?.some((ag) => ag.kind === "property")
-        );
-      });
-      expect(propAction).toBeDefined();
+      expect(compAction).toBeDefined();
+      expect(compAction?.parameters.get("WFURLComponent")).toBe("Scheme");
     });
 
     it("should not emit getvalueforkey for opaque property access", () => {
@@ -936,27 +929,16 @@ describe("lower", () => {
   });
 
   describe("pipeline property stages", () => {
-    it("should lower pipeline property access to aggrandizement", () => {
+    it("should lower pipeline property access on Date to format.date", () => {
       const actions = lowerSource(`
         import Scripting;
         shortcut { name: "Test" }
         Scripting.date() |> _.year;
       `);
-      const getVarAction = actions.find(
-        (a) => a.identifier === "is.workflow.actions.getvariable" && a.parameters.has("WFVariable"),
-      );
-      expect(getVarAction).toBeDefined();
-      const wfVariable = getVarAction?.parameters.get("WFVariable");
-      expect(wfVariable).toMatchObject({
-        kind: "VariableRef",
-        aggrandizements: [
-          {
-            kind: "property",
-            name: "Year",
-            userInfo: 4,
-          },
-        ],
-      });
+      const fmtAction = actions.find((a) => a.identifier === "is.workflow.actions.format.date");
+      expect(fmtAction).toBeDefined();
+      expect(fmtAction?.parameters.get("WFDateFormatStyle")).toBe("Custom");
+      expect(fmtAction?.parameters.get("WFDateFormat")).toBe("yyyy");
     });
 
     it("should lower pipeline property access on any type to getvalueforkey", () => {

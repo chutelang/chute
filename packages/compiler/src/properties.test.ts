@@ -7,13 +7,15 @@ describe("properties", () => {
       const prop = getProperty("Date", "year");
       expect(prop).toBeDefined();
       expect(prop?.shortcutsName).toBe("Year");
-      expect(prop?.returnType).toEqual({ kind: "number" });
+      expect(prop?.lowering).toEqual({ kind: "dateFormat", format: "yyyy" });
+      expect(prop?.returnType).toEqual({ kind: "text" });
     });
 
     it("should return property definition for URL.host", () => {
       const prop = getProperty("URL", "host");
       expect(prop).toBeDefined();
       expect(prop?.shortcutsName).toBe("Host");
+      expect(prop?.lowering).toEqual({ kind: "urlComponent", component: "Host" });
       expect(prop?.returnType).toEqual({ kind: "text" });
     });
 
