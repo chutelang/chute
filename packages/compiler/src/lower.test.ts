@@ -958,5 +958,17 @@ describe("lower", () => {
         ],
       });
     });
+
+    it("should lower pipeline property access on any type to getvalueforkey", () => {
+      const actions = lowerSource(`
+        import Scripting;
+        shortcut { name: "Test" }
+        let x: any = Scripting.date();
+        x |> _.whatever;
+      `);
+      const keyAction = actions.find((a) => a.identifier === "is.workflow.actions.getvalueforkey");
+      expect(keyAction).toBeDefined();
+      expect(keyAction?.parameters.get("WFDictionaryKey")).toBe("whatever");
+    });
   });
 });
