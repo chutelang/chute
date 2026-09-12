@@ -1807,5 +1807,15 @@ describe("checker", () => {
         `),
       ).toThrow(CompileError);
     });
+
+    it("should accept pipeline property access on any type", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          let x: any = Scripting.date();
+          x |> _.whatever;
+        `),
+      ).not.toThrow();
+    });
   });
 });

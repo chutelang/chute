@@ -1604,6 +1604,24 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
     return;
   }
 
+  if (
+    stage.callee.kind === "MemberExpression" &&
+    stage.callee.object.kind === "PlaceholderExpression" &&
+    !stage.callee.resolvedProperty
+  ) {
+    const tempName = nextTempName(ctx);
+    actions.push(makeSetVariableAction(tempName, ctx));
+    actions.push(makeGetVariableAction(tempName, ctx));
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDictionaryKey", stage.callee.property);
+    actions.push({
+      identifier: "is.workflow.actions.getvalueforkey",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+    return;
+  }
+
   if (stage.callee.kind === "MemberExpression" && stage.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(stage.callee.object.name);
     const nsAction = nsActions?.get(stage.callee.property);
