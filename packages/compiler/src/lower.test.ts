@@ -934,4 +934,29 @@ describe("lower", () => {
       expect(keyAction).toBeUndefined();
     });
   });
+
+  describe("pipeline property stages", () => {
+    it("should lower pipeline property access to aggrandizement", () => {
+      const actions = lowerSource(`
+        import Scripting;
+        shortcut { name: "Test" }
+        Scripting.date() |> _.year;
+      `);
+      const getVarAction = actions.find(
+        (a) => a.identifier === "is.workflow.actions.getvariable" && a.parameters.has("WFVariable"),
+      );
+      expect(getVarAction).toBeDefined();
+      const wfVariable = getVarAction?.parameters.get("WFVariable");
+      expect(wfVariable).toMatchObject({
+        kind: "VariableRef",
+        aggrandizements: [
+          {
+            kind: "property",
+            name: "Year",
+            userInfo: 4,
+          },
+        ],
+      });
+    });
+  });
 });
