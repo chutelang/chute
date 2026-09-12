@@ -1,14 +1,17 @@
 import type { ChuteType } from "./checker.ts";
 
+export type LoweringStrategy =
+  | { kind: "property"; userInfo?: number | string }
+  | { kind: "dateFormat"; format: string }
+  | { kind: "urlComponent"; component: string };
+
 export interface PropertyDefinition {
   chuteName: string;
   shortcutsName: string;
-  userInfo: number;
+  lowering: LoweringStrategy;
   returnType: ChuteType;
 }
 
-// Values are placeholders pending empirical testing on-device.
-// The structure is stable; the userInfo numbers may need correction.
 const PROPERTY_REGISTRY: ReadonlyMap<string, readonly PropertyDefinition[]> = new Map([
   [
     "Date",
@@ -16,44 +19,44 @@ const PROPERTY_REGISTRY: ReadonlyMap<string, readonly PropertyDefinition[]> = ne
       {
         chuteName: "year",
         shortcutsName: "Year",
-        userInfo: 4,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "yyyy" },
+        returnType: { kind: "text" },
       },
       {
         chuteName: "month",
         shortcutsName: "Month",
-        userInfo: 5,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "MM" },
+        returnType: { kind: "text" },
       },
       {
         chuteName: "day",
         shortcutsName: "Day of Month",
-        userInfo: 6,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "dd" },
+        returnType: { kind: "text" },
       },
       {
         chuteName: "hour",
         shortcutsName: "Hour",
-        userInfo: 7,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "HH" },
+        returnType: { kind: "text" },
       },
       {
         chuteName: "minute",
         shortcutsName: "Minute",
-        userInfo: 8,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "mm" },
+        returnType: { kind: "text" },
       },
       {
         chuteName: "second",
         shortcutsName: "Second",
-        userInfo: 9,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "ss" },
+        returnType: { kind: "text" },
       },
       {
         chuteName: "weekday",
         shortcutsName: "Day of Week",
-        userInfo: 10,
-        returnType: { kind: "number" },
+        lowering: { kind: "dateFormat", format: "EEEE" },
+        returnType: { kind: "text" },
       },
     ],
   ],
@@ -63,31 +66,31 @@ const PROPERTY_REGISTRY: ReadonlyMap<string, readonly PropertyDefinition[]> = ne
       {
         chuteName: "scheme",
         shortcutsName: "Scheme",
-        userInfo: 4,
+        lowering: { kind: "urlComponent", component: "Scheme" },
         returnType: { kind: "text" },
       },
       {
         chuteName: "host",
         shortcutsName: "Host",
-        userInfo: 5,
+        lowering: { kind: "urlComponent", component: "Host" },
         returnType: { kind: "text" },
       },
       {
         chuteName: "path",
         shortcutsName: "Path",
-        userInfo: 6,
+        lowering: { kind: "urlComponent", component: "Path" },
         returnType: { kind: "text" },
       },
       {
         chuteName: "query",
         shortcutsName: "Query",
-        userInfo: 7,
+        lowering: { kind: "urlComponent", component: "Query" },
         returnType: { kind: "text" },
       },
       {
         chuteName: "fragment",
         shortcutsName: "Fragment",
-        userInfo: 8,
+        lowering: { kind: "urlComponent", component: "Fragment" },
         returnType: { kind: "text" },
       },
     ],

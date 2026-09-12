@@ -19,7 +19,8 @@ export type ParameterValue = string | number | boolean | VariableRef | Interpola
 
 export type Aggrandizement =
   | { kind: "coercion"; itemClass: string }
-  | { kind: "property"; name: string; userInfo: number };
+  | { kind: "property"; name: string; userInfo?: number | string }
+  | { kind: "dateFormat"; format: string };
 
 export interface VariableRef {
   kind: "VariableRef";

@@ -38,12 +38,14 @@ import type {
 } from "./ast.ts";
 import type {
   ActionIR,
+  Aggrandizement,
   CompilationResult,
   InterpolatedText,
   InterpolatedTextPart,
   ParameterValue,
   ShortcutIR,
 } from "./ir.ts";
+import type { ResolvedProperty } from "./ast.ts";
 import { getContentItemClass } from "./coercion.ts";
 import { getStdlibModule } from "./stdlib.ts";
 
@@ -703,6 +705,21 @@ function lowerKeyedAccess(
   });
 }
 
+function aggrandizementFromResolved(resolved: ResolvedProperty): Aggrandizement {
+  switch (resolved.kind) {
+    case "property":
+      return {
+        kind: "property",
+        name: resolved.shortcutsName,
+        ...(resolved.userInfo !== undefined ? { userInfo: resolved.userInfo } : {}),
+      };
+    case "dateFormat":
+      return { kind: "dateFormat", format: resolved.format };
+    case "urlComponent":
+      throw new Error("urlComponent properties do not use aggrandizements");
+  }
+}
+
 function lowerOpaquePropertyAccess(
   expr: MemberExpression | OptionalMemberExpression,
   actions: ActionIR[],
@@ -714,17 +731,39 @@ function lowerOpaquePropertyAccess(
     throw new LowerError(`missing resolved property for '${expr.property}'`, expr.span);
   }
 
+  if (resolved.kind === "urlComponent") {
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFURL", {
+      kind: "VariableRef",
+      name: objectName,
+    });
+    parameters.set("WFURLComponent", resolved.component);
+    actions.push({
+      identifier: "is.workflow.actions.geturlcomponent",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+    return;
+  }
+
+  if (resolved.kind === "dateFormat") {
+    actions.push(makeGetVariableAction(objectName, ctx));
+    const parameters = new Map<string, ParameterValue>();
+    parameters.set("WFDateFormatStyle", "Custom");
+    parameters.set("WFDateFormat", resolved.format);
+    actions.push({
+      identifier: "is.workflow.actions.format.date",
+      uuid: nextUuid(ctx),
+      parameters,
+    });
+    return;
+  }
+
   const parameters = new Map<string, ParameterValue>();
   parameters.set("WFVariable", {
     kind: "VariableRef",
     name: objectName,
-    aggrandizements: [
-      {
-        kind: "property",
-        name: resolved.shortcutsName,
-        userInfo: resolved.userInfo,
-      },
-    ],
+    aggrandizements: [aggrandizementFromResolved(resolved)],
   });
   actions.push({
     identifier: "is.workflow.actions.getvariable",
@@ -1584,23 +1623,42 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
     const resolved = stage.callee.resolvedProperty;
     const tempName = nextTempName(ctx);
     actions.push(makeSetVariableAction(tempName, ctx));
-    const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFVariable", {
-      kind: "VariableRef",
-      name: tempName,
-      aggrandizements: [
-        {
-          kind: "property",
-          name: resolved.shortcutsName,
-          userInfo: resolved.userInfo,
-        },
-      ],
-    });
-    actions.push({
-      identifier: "is.workflow.actions.getvariable",
-      uuid: nextUuid(ctx),
-      parameters,
-    });
+
+    if (resolved.kind === "urlComponent") {
+      const parameters = new Map<string, ParameterValue>();
+      parameters.set("WFURL", {
+        kind: "VariableRef",
+        name: tempName,
+      });
+      parameters.set("WFURLComponent", resolved.component);
+      actions.push({
+        identifier: "is.workflow.actions.geturlcomponent",
+        uuid: nextUuid(ctx),
+        parameters,
+      });
+    } else if (resolved.kind === "dateFormat") {
+      actions.push(makeGetVariableAction(tempName, ctx));
+      const parameters = new Map<string, ParameterValue>();
+      parameters.set("WFDateFormatStyle", "Custom");
+      parameters.set("WFDateFormat", resolved.format);
+      actions.push({
+        identifier: "is.workflow.actions.format.date",
+        uuid: nextUuid(ctx),
+        parameters,
+      });
+    } else {
+      const parameters = new Map<string, ParameterValue>();
+      parameters.set("WFVariable", {
+        kind: "VariableRef",
+        name: tempName,
+        aggrandizements: [aggrandizementFromResolved(resolved)],
+      });
+      actions.push({
+        identifier: "is.workflow.actions.getvariable",
+        uuid: nextUuid(ctx),
+        parameters,
+      });
+    }
     return;
   }
 

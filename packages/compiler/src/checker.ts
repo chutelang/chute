@@ -7,6 +7,8 @@ import { getStdlibModule, KNOWN_QUANTITY_UNITS } from "./stdlib.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import { canCoerce, getCoercionAction, getValidTargets } from "./coercion.ts";
 import { getProperty, getPropertyNames } from "./properties.ts";
+import type { PropertyDefinition } from "./properties.ts";
+import type { ResolvedProperty } from "./ast.ts";
 import type { DocComment } from "./doc-comment.ts";
 import type {
   CoercionExpression,
@@ -1020,10 +1022,7 @@ function inferMemberExpression(
         DiagnosticCode.UnknownMember,
       );
     }
-    expr.resolvedProperty = {
-      shortcutsName: prop.shortcutsName,
-      userInfo: prop.userInfo,
-    };
+    expr.resolvedProperty = resolvedPropertyFromDefinition(prop);
     return prop.returnType;
   }
 
@@ -1066,10 +1065,7 @@ function inferOptionalMemberExpression(
         DiagnosticCode.UnknownMember,
       );
     }
-    expr.resolvedProperty = {
-      shortcutsName: prop.shortcutsName,
-      userInfo: prop.userInfo,
-    };
+    expr.resolvedProperty = resolvedPropertyFromDefinition(prop);
     return {
       kind: "optional",
       inner: prop.returnType,
@@ -2042,10 +2038,7 @@ function inferStageType(
           DiagnosticCode.UnknownMember,
         );
       }
-      memberExpr.resolvedProperty = {
-        shortcutsName: prop.shortcutsName,
-        userInfo: prop.userInfo,
-      };
+      memberExpr.resolvedProperty = resolvedPropertyFromDefinition(prop);
       return prop.returnType;
     }
     return { kind: "any" };
@@ -2342,6 +2335,21 @@ function checkActionCall(
   }
 
   return actionType.returnType ?? { kind: "any" };
+}
+
+function resolvedPropertyFromDefinition(prop: PropertyDefinition): ResolvedProperty {
+  switch (prop.lowering.kind) {
+    case "property":
+      return {
+        kind: "property",
+        shortcutsName: prop.shortcutsName,
+        ...(prop.lowering.userInfo !== undefined ? { userInfo: prop.lowering.userInfo } : {}),
+      };
+    case "dateFormat":
+      return { kind: "dateFormat", format: prop.lowering.format };
+    case "urlComponent":
+      return { kind: "urlComponent", component: prop.lowering.component };
+  }
 }
 
 function assertNever(value: never): never {
