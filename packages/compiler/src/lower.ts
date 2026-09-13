@@ -62,6 +62,7 @@ export class LowerError extends Error {
 interface NamespaceAction {
   runtimeIdentifier: string;
   paramKeys: Map<string, string>;
+  paramLabels: string[];
 }
 
 interface LowerContext {
@@ -111,12 +112,15 @@ export function lower(program: Program): CompilationResult {
     for (const [name, binding] of moduleScope.allBindings()) {
       if (binding.type.kind === "action") {
         const paramKeys = new Map<string, string>();
+        const paramLabels: string[] = [];
         for (const p of binding.type.params) {
           paramKeys.set(p.label, p.label);
+          paramLabels.push(p.label);
         }
         moduleActions.set(name, {
           runtimeIdentifier: binding.type.runtimeIdentifier,
           paramKeys,
+          paramLabels,
         });
       }
     }
@@ -460,6 +464,17 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
   }
 }
 
+function resolveArgLabelFromParams(
+  arg: import("./ast.ts").Argument,
+  index: number,
+  labels: ReadonlyArray<string>,
+): string | undefined {
+  if (arg.label) {
+    return arg.label;
+  }
+  return labels[index];
+}
+
 function lowerNamespaceActionCall(
   expr: CallExpression,
   nsAction: NamespaceAction,
@@ -467,11 +482,16 @@ function lowerNamespaceActionCall(
   ctx: LowerContext,
 ): ActionIR {
   const parameters = new Map<string, ParameterValue>();
-  for (const arg of expr.args) {
-    if (!arg.label) {
+  for (let i = 0; i < expr.args.length; i++) {
+    const arg = expr.args[i];
+    if (!arg) {
       continue;
     }
-    const plistKey = nsAction.paramKeys.get(arg.label);
+    const label = resolveArgLabelFromParams(arg, i, nsAction.paramLabels);
+    if (!label) {
+      continue;
+    }
+    const plistKey = nsAction.paramKeys.get(label);
     if (!plistKey) {
       continue;
     }
@@ -529,10 +549,16 @@ function lowerFunctionCall(
     parameters: new Map(),
   });
 
+  const paramNames = decl.params.map((p) => p.name);
   const provided = new Map<string, Expression>();
-  for (const arg of expr.args) {
-    if (arg.label) {
-      provided.set(arg.label, arg.value);
+  for (let i = 0; i < expr.args.length; i++) {
+    const arg = expr.args[i];
+    if (!arg) {
+      continue;
+    }
+    const label = resolveArgLabelFromParams(arg, i, paramNames);
+    if (label) {
+      provided.set(label, arg.value);
     }
   }
 
@@ -576,10 +602,16 @@ function lowerDeclaredActionCall(
 ): ActionIR {
   const parameters = new Map<string, ParameterValue>();
 
+  const paramLabels = decl.params.map((p) => p.label);
   const provided = new Map<string, Expression>();
-  for (const arg of expr.args) {
-    if (arg.label) {
-      provided.set(arg.label, arg.value);
+  for (let i = 0; i < expr.args.length; i++) {
+    const arg = expr.args[i];
+    if (!arg) {
+      continue;
+    }
+    const label = resolveArgLabelFromParams(arg, i, paramLabels);
+    if (label) {
+      provided.set(label, arg.value);
     }
   }
 
@@ -1728,8 +1760,14 @@ function lowerPipelineFunctionStage(
   const hasPlaceholder = stage.args.some((a) => a.value.kind === "PlaceholderExpression");
   const provided = new Map<string, Expression>();
 
+  const paramNames = decl.params.map((p) => p.name);
+
   if (hasPlaceholder) {
-    for (const arg of stage.args) {
+    for (let i = 0; i < stage.args.length; i++) {
+      const arg = stage.args[i];
+      if (!arg) {
+        continue;
+      }
       if (arg.value.kind === "PlaceholderExpression") {
         const targetName = arg.label ?? decl.params.at(0)?.name;
         if (targetName) {
@@ -1744,17 +1782,20 @@ function lowerPipelineFunctionStage(
             parameters,
           });
         }
-      } else if (arg.label) {
-        provided.set(arg.label, arg.value);
-        const value = lowerToParamValue(arg.value, actions, ctx);
-        const parameters = new Map<string, ParameterValue>();
-        parameters.set("WFDictionaryKey", arg.label);
-        parameters.set("WFDictionaryValue", value);
-        actions.push({
-          identifier: "is.workflow.actions.setvalueforkey",
-          uuid: nextUuid(ctx),
-          parameters,
-        });
+      } else {
+        const label = resolveArgLabelFromParams(arg, i, paramNames);
+        if (label) {
+          provided.set(label, arg.value);
+          const value = lowerToParamValue(arg.value, actions, ctx);
+          const parameters = new Map<string, ParameterValue>();
+          parameters.set("WFDictionaryKey", label);
+          parameters.set("WFDictionaryValue", value);
+          actions.push({
+            identifier: "is.workflow.actions.setvalueforkey",
+            uuid: nextUuid(ctx),
+            parameters,
+          });
+        }
       }
     }
   } else {
@@ -1772,12 +1813,17 @@ function lowerPipelineFunctionStage(
       });
     }
 
-    for (const arg of stage.args) {
-      if (arg.label) {
-        provided.set(arg.label, arg.value);
+    for (let i = 0; i < stage.args.length; i++) {
+      const arg = stage.args[i];
+      if (!arg) {
+        continue;
+      }
+      const label = resolveArgLabelFromParams(arg, i, paramNames);
+      if (label) {
+        provided.set(label, arg.value);
         const value = lowerToParamValue(arg.value, actions, ctx);
         const parameters = new Map<string, ParameterValue>();
-        parameters.set("WFDictionaryKey", arg.label);
+        parameters.set("WFDictionaryKey", label);
         parameters.set("WFDictionaryValue", value);
         actions.push({
           identifier: "is.workflow.actions.setvalueforkey",
@@ -1820,11 +1866,19 @@ function lowerPipelineNamespaceActionStage(
 ): void {
   const parameters = new Map<string, ParameterValue>();
 
-  for (const arg of stage.args) {
-    if (arg.value.kind === "PlaceholderExpression" || !arg.label) {
+  for (let i = 0; i < stage.args.length; i++) {
+    const arg = stage.args[i];
+    if (!arg) {
       continue;
     }
-    const plistKey = nsAction.paramKeys.get(arg.label);
+    if (arg.value.kind === "PlaceholderExpression") {
+      continue;
+    }
+    const label = resolveArgLabelFromParams(arg, i, nsAction.paramLabels);
+    if (!label) {
+      continue;
+    }
+    const plistKey = nsAction.paramKeys.get(label);
     if (!plistKey) {
       continue;
     }
@@ -1846,13 +1900,19 @@ function lowerPipelineDeclaredActionStage(
 ): void {
   const parameters = new Map<string, ParameterValue>();
 
+  const paramLabels = decl.params.map((p) => p.label);
   const provided = new Map<string, Expression>();
-  for (const arg of stage.args) {
+  for (let i = 0; i < stage.args.length; i++) {
+    const arg = stage.args[i];
+    if (!arg) {
+      continue;
+    }
     if (arg.value.kind === "PlaceholderExpression") {
       continue;
     }
-    if (arg.label) {
-      provided.set(arg.label, arg.value);
+    const label = resolveArgLabelFromParams(arg, i, paramLabels);
+    if (label) {
+      provided.set(label, arg.value);
     }
   }
 
