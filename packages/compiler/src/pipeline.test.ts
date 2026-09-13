@@ -9,7 +9,7 @@ shortcut {
   description: "A shortcut created with Chute",
 }
 
-Notification.showAlert(WFAlertActionTitle: "Hello from Chute!");`;
+Notification.showAlert("Hello from Chute!");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -20,8 +20,8 @@ shortcut {
   name: "Multi",
 }
 
-Notification.showAlert(WFAlertActionTitle: "first");
-Notification.showContent(Text: "second");`;
+Notification.showAlert("first");
+Notification.showContent("second");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -33,7 +33,7 @@ shortcut {
 }
 
 const greeting = "Hello";
-Notification.showAlert(WFAlertActionTitle: greeting);`;
+Notification.showAlert(greeting);`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -47,7 +47,7 @@ shortcut {
 const a = 10;
 const b = 20;
 const c = a + b;
-Notification.showContent(Text: "done");`;
+Notification.showContent("done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -59,7 +59,7 @@ shortcut {
 }
 
 const name = "World";
-Notification.showAlert(WFAlertActionTitle: "Hello \${name}!");`;
+Notification.showAlert("Hello \${name}!");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -72,7 +72,7 @@ shortcut {
 
 const x: Number? = nil;
 const y = x ?? 42;
-Notification.showContent(Text: "done");`;
+Notification.showContent("done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -85,9 +85,9 @@ shortcut {
 
 const x = 5;
 if (x > 3) {
-  Notification.showAlert(WFAlertActionTitle: "big");
+  Notification.showAlert("big");
 } else {
-  Notification.showAlert(WFAlertActionTitle: "small");
+  Notification.showAlert("small");
 }`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -101,7 +101,7 @@ shortcut {
 
 const items = [1, 2, 3];
 for item in items {
-  Notification.showAlert(WFAlertActionTitle: "item");
+  Notification.showAlert("item");
 }`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -114,7 +114,7 @@ shortcut {
 }
 
 repeat 3 {
-  Notification.showAlert(WFAlertActionTitle: "again");
+  Notification.showAlert("again");
 }`;
 
     expect(compile(source).main).toMatchSnapshot();
@@ -128,10 +128,10 @@ shortcut {
 
 menu "Choose one" {
   case "Option A" {
-    Notification.showAlert(WFAlertActionTitle: "A");
+    Notification.showAlert("A");
   }
   case "Option B" {
-    Notification.showAlert(WFAlertActionTitle: "B");
+    Notification.showAlert("B");
   }
 }`;
 
@@ -146,7 +146,7 @@ shortcut {
 
 const x = 5;
 const result = x > 3 ? "big" : "small";
-Notification.showAlert(WFAlertActionTitle: result);`;
+Notification.showAlert(result);`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -159,7 +159,7 @@ shortcut {
 
 enum Color { red = "RED", blue = "BLUE" }
 const c = Color.red;
-Notification.showAlert(WFAlertActionTitle: "\${c}");`;
+Notification.showAlert("\${c}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -173,7 +173,7 @@ shortcut {
 record Point { x: Number, y: Number }
 const p = Point(x: 10, y: 20);
 const sum = p.x + p.y;
-Notification.showAlert(WFAlertActionTitle: "\${sum}");`;
+Notification.showAlert("\${sum}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -187,7 +187,7 @@ shortcut {
 record Point { x: Number, y: Number }
 const p = Point(x: 5, y: 7);
 const { x, y } = p;
-Notification.showAlert(WFAlertActionTitle: "\${x}");`;
+Notification.showAlert("\${x}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -200,7 +200,7 @@ shortcut {
 
 enum Direction { north, south, east, west }
 const dir: Direction = .north;
-Notification.showAlert(WFAlertActionTitle: "\${dir}");`;
+Notification.showAlert("\${dir}");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -213,7 +213,7 @@ shortcut {
 
 func greet(name: Text = "World") -> Text { return name; }
 const msg = greet();
-Notification.showAlert(WFAlertActionTitle: msg);`;
+Notification.showAlert(msg);`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -228,8 +228,8 @@ shortcut {
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
-const x = add(a: 3, b: 4);
-Notification.showContent(Text: "\${x}");`;
+const x = add(3, 4);
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.subShortcuts).toHaveLength(1);
@@ -244,9 +244,9 @@ shortcut {
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 func double(n: Number) -> Number { return n * 2; }
-const x = add(a: 3, b: 4);
-const y = double(n: x);
-Notification.showContent(Text: "\${y}");`;
+const x = add(3, 4);
+const y = double(x);
+Notification.showContent("\${y}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -265,8 +265,8 @@ func abs(n: Number) -> Number {
   }
   return n;
 }
-const x = abs(n: -5);
-Notification.showContent(Text: "\${x}");`;
+const x = abs(-5);
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -281,9 +281,9 @@ shortcut {
 }
 
 func double(n: Number) -> Number { return n * 2; }
-func quadruple(n: Number) -> Number { return double(n: double(n: n)); }
-const x = quadruple(n: 3);
-Notification.showContent(Text: "\${x}");`;
+func quadruple(n: Number) -> Number { return double(double(n)); }
+const x = quadruple(3);
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -301,8 +301,8 @@ record Shirt { size: Text, color: Color }
 func makeShirt(size: Text, color: Color) -> Shirt {
   return Shirt(size: size, color: color);
 }
-const s = makeShirt(size: "L", color: Color.red);
-Notification.showAlert(WFAlertActionTitle: s.size);`;
+const s = makeShirt("L", Color.red);
+Notification.showAlert(s.size);`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -317,7 +317,7 @@ shortcut {
 
 func double(n: Number) -> Number { return n * 2; }
 const x = 5 |> double;
-Notification.showContent(Text: "\${x}");`;
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -333,7 +333,7 @@ shortcut {
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 const x = 5 |> double |> triple;
-Notification.showContent(Text: "\${x}");`;
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -349,7 +349,7 @@ shortcut {
 func double(n: Number) -> Number { return n * 2; }
 const x: Number? = nil;
 const y = x |>? double;
-Notification.showContent(Text: "done");`;
+Notification.showContent("done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -363,8 +363,8 @@ shortcut {
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
-const x = 5 |> add(b: 10);
-Notification.showContent(Text: "\${x}");`;
+const x = 5 |> add(10);
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -378,8 +378,8 @@ shortcut {
 }
 
 func add(a: Number, b: Number) -> Number { return a + b; }
-const x = 5 |> add(b: 10, a: _);
-Notification.showContent(Text: "\${x}");`;
+const x = 5 |> add(_, 10);
+Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -408,7 +408,7 @@ func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 const x: Number? = nil;
 const y = x |>? double |> triple;
-Notification.showContent(Text: "done");`;
+Notification.showContent("done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -421,7 +421,7 @@ Notification.showContent(Text: "done");`;
 }
 
 action sendMessage(to: Text, body: Text) = "com.example.send";
-sendMessage(to: "alice", body: "hello");`;
+sendMessage("alice", "hello");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -433,8 +433,8 @@ shortcut {
 }
 
 action search(in: Text, for: Text) -> List<Text> = "com.example.search";
-const results = search(in: "inbox", for: "urgent");
-Notification.showContent(Text: "done");`;
+const results = search("inbox", "urgent");
+Notification.showContent("done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -445,7 +445,7 @@ Notification.showContent(Text: "done");`;
 }
 
 action notify(body: Text, title: Text = "Alert") = "is.workflow.actions.notification";
-notify(body: "Task complete");`;
+notify("Task complete");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -466,14 +466,14 @@ describe("stdlib smoke tests", () => {
   it("should compile showAlert from stdlib", () => {
     const source = `import Notification;
 shortcut { name: "StdlibAlert" }
-Notification.showAlert(WFAlertActionTitle: "Hello from stdlib!");`;
+Notification.showAlert("Hello from stdlib!");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile notification with default title", () => {
     const source = `import Notification;
 shortcut { name: "StdlibNotify" }
-Notification.showNotification(WFNotificationActionBody: "Task complete");`;
+Notification.showNotification("Task complete");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
@@ -481,7 +481,7 @@ Notification.showNotification(WFNotificationActionBody: "Task complete");`;
     const source = `import Device;
 shortcut { name: "Clipboard" }
 const text = Device.getClipboard();
-Device.copyToClipboard(WFInput: text);`;
+Device.copyToClipboard(text);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
@@ -490,29 +490,29 @@ Device.copyToClipboard(WFInput: text);`;
 import Notification;
 shortcut { name: "Date" }
 const now: Date = Scripting.date();
-Notification.showAlert(WFAlertActionTitle: "Reminder");`;
+Notification.showAlert("Reminder");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile openUrls", () => {
     const source = `import Web;
 shortcut { name: "OpenURL" }
-Web.openUrls(WFInput: "https://example.com");`;
+Web.openUrls("https://example.com");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile wait action", () => {
     const source = `import Scripting;
 shortcut { name: "Wait" }
-Scripting.wait(WFDelayTime: 5);`;
+Scripting.wait(5);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
   it("should compile settings toggle actions", () => {
     const source = `import Settings;
 shortcut { name: "Settings" }
-Settings.setWiFi(OnValue: false);
-Settings.setBluetooth(OnValue: true);`;
+Settings.setWiFi(false);
+Settings.setBluetooth(true);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
@@ -527,7 +527,7 @@ msg |> Notification.showAlert;`;
   it("should compile user action shadowing stdlib", () => {
     const source = `shortcut { name: "Shadow" }
 action showAlert(message: Text) = "custom.alert";
-showAlert(message: "custom");`;
+showAlert("custom");`;
     expect(compile(source).main).toMatchSnapshot();
   });
 });
@@ -547,7 +547,7 @@ describe("variable reference slot encoding", () => {
     const source = `import Notification;
 shortcut { name: "Test" }
 const x: Text = "hi";
-Notification.showAlert(WFAlertActionTitle: "\${x}");
+Notification.showAlert("\${x}");
 const y = x;`;
     const block = paramBlock(compile(source).main, "WFVariable");
     expect(block).toContain("<string>WFTextTokenAttachment</string>");
@@ -560,7 +560,7 @@ const y = x;`;
     const source = `import Text;
 shortcut { name: "Test" }
 const raw: Text = "  padded  ";
-const trimmed = Text.trimWhitespace(WFInput: raw);`;
+const trimmed = Text.trimWhitespace(raw);`;
     const block = paramBlock(compile(source).main, "WFInput");
     expect(block).toContain("<string>WFTextTokenString</string>");
     expect(block).toContain("attachmentsByRange");

@@ -218,7 +218,7 @@ describe("checker", () => {
 
   describe("expression statements", () => {
     it("should accept action calls", () => {
-      expect(() => checkSource('showAlert(text: "hello");')).not.toThrow();
+      expect(() => checkSource('showAlert("hello");')).not.toThrow();
     });
   });
 
@@ -227,7 +227,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x = 5;
-          if (x > 3) { showAlert(text: "big"); }
+          if (x > 3) { showAlert("big"); }
         `),
       ).not.toThrow();
     });
@@ -236,7 +236,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x = 5;
-          if (x > 3) { showAlert(text: "big"); } else { showAlert(text: "small"); }
+          if (x > 3) { showAlert("big"); } else { showAlert("small"); }
         `),
       ).not.toThrow();
     });
@@ -256,7 +256,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           if (true) {
-            showAlert(text: "a");
+            showAlert("a");
           } else {
             const y = 1;
           }
@@ -271,7 +271,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const items = [1, 2, 3];
-          for item in items { showAlert(text: "go"); }
+          for item in items { showAlert("go"); }
         `),
       ).not.toThrow();
     });
@@ -280,7 +280,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const x = 5;
-          for item in x { showAlert(text: "go"); }
+          for item in x { showAlert("go"); }
         `),
       ).toThrow(CompileError);
     });
@@ -300,7 +300,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           const items = [1, 2, 3];
-          for item in items { showAlert(text: "go"); }
+          for item in items { showAlert("go"); }
           const x = item + 1;
         `),
       ).toThrow(CompileError);
@@ -309,14 +309,14 @@ describe("checker", () => {
 
   describe("repeat statements", () => {
     it("should accept repeat with number", () => {
-      expect(() => checkSource('repeat 5 { showAlert(text: "go"); }')).not.toThrow();
+      expect(() => checkSource('repeat 5 { showAlert("go"); }')).not.toThrow();
     });
 
     it("should reject repeat with non-number", () => {
       expect(() =>
         checkSource(`
           const s = "hello";
-          repeat s { showAlert(text: "go"); }
+          repeat s { showAlert("go"); }
         `),
       ).toThrow(CompileError);
     });
@@ -327,8 +327,8 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           menu "Pick" {
-            case "A" { showAlert(text: "a"); }
-            case "B" { showAlert(text: "b"); }
+            case "A" { showAlert("a"); }
+            case "B" { showAlert("b"); }
           }
         `),
       ).not.toThrow();
@@ -372,7 +372,7 @@ describe("checker", () => {
         checkSource(`
           const x: Number? = nil;
           if (x == nil) {
-            showAlert(text: "nil");
+            showAlert("nil");
           } else {
             const y = x + 1;
           }
@@ -708,7 +708,7 @@ describe("checker", () => {
 
   describe("function declarations", () => {
     it("should accept a function with no parameters", () => {
-      expect(() => checkSource('func greet() { showAlert(text: "hi"); }')).not.toThrow();
+      expect(() => checkSource('func greet() { showAlert("hi"); }')).not.toThrow();
     });
 
     it("should accept a function with typed parameters", () => {
@@ -728,7 +728,7 @@ describe("checker", () => {
     });
 
     it("should accept bare return in void function", () => {
-      expect(() => checkSource('func greet() { showAlert(text: "hi"); return; }')).not.toThrow();
+      expect(() => checkSource('func greet() { showAlert("hi"); return; }')).not.toThrow();
     });
 
     it("should reject return with value in void function", () => {
@@ -743,12 +743,12 @@ describe("checker", () => {
 
     it("should accept function with default parameter", () => {
       expect(() =>
-        checkSource('func greet(name: Text = "World") { showAlert(text: name); }'),
+        checkSource('func greet(name: Text = "World") { showAlert(name); }'),
       ).not.toThrow();
     });
 
     it("should reject default parameter with wrong type", () => {
-      expect(() => checkSource("func bad(name: Text = 42) { showAlert(text: name); }")).toThrow(
+      expect(() => checkSource("func bad(name: Text = 42) { showAlert(name); }")).toThrow(
         CompileError,
       );
     });
@@ -756,8 +756,8 @@ describe("checker", () => {
     it("should reject duplicate function names", () => {
       expect(() =>
         checkSource(`
-          func greet() { showAlert(text: "hi"); }
-          func greet() { showAlert(text: "hello"); }
+          func greet() { showAlert("hi"); }
+          func greet() { showAlert("hello"); }
         `),
       ).toThrow(CompileError);
     });
@@ -768,7 +768,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(a: 1, b: 2);
+          const result = add(1, 2);
         `),
       ).not.toThrow();
     });
@@ -777,7 +777,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const result: Number = add(a: 1, b: 2);
+          const result: Number = add(1, 2);
         `),
       ).not.toThrow();
     });
@@ -786,7 +786,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(a: "x", b: 2);
+          const result = add("x", 2);
         `),
       ).toThrow(CompileError);
     });
@@ -795,16 +795,16 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(a: 1);
+          const result = add(1);
         `),
       ).toThrow(CompileError);
     });
 
-    it("should reject function call with unknown parameter name", () => {
+    it("should reject function call with too many arguments", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(a: 1, c: 2);
+          const result = add(1, 2, 3);
         `),
       ).toThrow(CompileError);
     });
@@ -822,7 +822,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func greet(name: Text = "World") -> Text { return name; }
-          const result = greet(name: "Alice");
+          const result = greet("Alice");
         `),
       ).not.toThrow();
     });
@@ -830,44 +830,17 @@ describe("checker", () => {
     it("should type void function call as any", () => {
       expect(() =>
         checkSource(`
-          func greet() { showAlert(text: "hi"); }
+          func greet() { showAlert("hi"); }
           greet();
         `),
       ).not.toThrow();
     });
 
-    it("should accept positional arguments in function call", () => {
+    it("should reject labeled arguments in function call", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(1, 2);
-        `),
-      ).not.toThrow();
-    });
-
-    it("should accept mixed positional and labeled arguments", () => {
-      expect(() =>
-        checkSource(`
-          func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(1, b: 2);
-        `),
-      ).not.toThrow();
-    });
-
-    it("should reject positional argument after labeled argument", () => {
-      expect(() =>
-        checkSource(`
-          func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(a: 1, 2);
-        `),
-      ).toThrow(CompileError);
-    });
-
-    it("should reject too many positional arguments", () => {
-      expect(() =>
-        checkSource(`
-          func add(a: Number, b: Number) -> Number { return a + b; }
-          const result = add(1, 2, 3);
+          const result = add(a: 1, b: 2);
         `),
       ).toThrow(CompileError);
     });
@@ -878,7 +851,7 @@ describe("checker", () => {
       const warnings = checkSourceWithWarnings(`
         func countdown(n: Number) {
           if (n > 0) {
-            countdown(n: n - 1);
+            countdown(n - 1);
           }
         }
       `);
@@ -888,7 +861,7 @@ describe("checker", () => {
 
     it("should not emit warning for non-recursive call", () => {
       const warnings = checkSourceWithWarnings(`
-        func greet() { showAlert(text: "hi"); }
+        func greet() { showAlert("hi"); }
         func main() { greet(); }
       `);
       expect(warnings).toHaveLength(0);
@@ -897,10 +870,10 @@ describe("checker", () => {
     it("should emit warning for mutual recursion", () => {
       const warnings = checkSourceWithWarnings(`
         func ping(n: Number) {
-          if (n > 0) { pong(n: n - 1); }
+          if (n > 0) { pong(n - 1); }
         }
         func pong(n: Number) {
-          if (n > 0) { ping(n: n - 1); }
+          if (n > 0) { ping(n - 1); }
         }
       `);
       expect(warnings.length).toBeGreaterThanOrEqual(1);
@@ -911,7 +884,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func main() { helper(); }
-          func helper() { showAlert(text: "hi"); }
+          func helper() { showAlert("hi"); }
         `),
       ).not.toThrow();
     });
@@ -922,8 +895,8 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           enum Color { red = "RED", blue = "BLUE" }
-          func paint(c: Color) { showAlert(text: "painted"); }
-          paint(c: .red);
+          func paint(c: Color) { showAlert("painted"); }
+          paint(.red);
         `),
       ).not.toThrow();
     });
@@ -1015,7 +988,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const x = 5 |> add(b: 10);
+          const x = 5 |> add(10);
         `),
       ).not.toThrow();
     });
@@ -1024,7 +997,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func double(n: Number) -> Number { return n * 2; }
-          const x = double(n: _);
+          const x = double(_);
         `),
       ).toThrow(CompileError);
     });
@@ -1033,7 +1006,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
-          const x = 5 |> add(b: 10, a: _);
+          const x = 5 |> add(_, 10);
         `),
       ).not.toThrow();
     });
@@ -1110,16 +1083,16 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action sendMessage(to: Text, body: Text) = "com.example.send";
-          sendMessage(to: "alice", body: "hello");
+          sendMessage("alice", "hello");
         `),
       ).not.toThrow();
     });
 
-    it("should accept action call with keyword-labeled argument", () => {
+    it("should accept action call with keyword parameter names", () => {
       expect(() =>
         checkSource(`
           action search(in: Text, for: Text) -> List<Text> = "com.example.search";
-          const results = search(in: "inbox", for: "urgent");
+          const results = search("inbox", "urgent");
         `),
       ).not.toThrow();
     });
@@ -1128,7 +1101,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action sendMessage(to: Text, body: Text) = "com.example.send";
-          sendMessage(to: 42, body: "hello");
+          sendMessage(42, "hello");
         `),
       ).toThrow(CompileError);
     });
@@ -1137,16 +1110,16 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action sendMessage(to: Text, body: Text) = "com.example.send";
-          sendMessage(to: "alice");
+          sendMessage("alice");
         `),
       ).toThrow(CompileError);
     });
 
-    it("should reject action call with unknown parameter label", () => {
+    it("should reject action call with too many arguments", () => {
       expect(() =>
         checkSource(`
           action sendMessage(to: Text, body: Text) = "com.example.send";
-          sendMessage(to: "alice", subject: "hello");
+          sendMessage("alice", "hello", "extra");
         `),
       ).toThrow(CompileError);
     });
@@ -1155,7 +1128,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action notify(body: Text, title: Text = "Alert") = "is.workflow.actions.notification";
-          notify(body: "done");
+          notify("done");
         `),
       ).not.toThrow();
     });
@@ -1191,7 +1164,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action transform(mode: Text) -> Text = "com.example.transform";
-          const result = "hello" |> transform(mode: "upper");
+          const result = "hello" |> transform("upper");
         `),
       ).not.toThrow();
     });
@@ -1209,7 +1182,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action transform(mode: Text) -> Text = "com.example.transform";
-          const result = "hello" |> transform(mode: 42);
+          const result = "hello" |> transform(42);
         `),
       ).toThrow(CompileError);
     });
@@ -1251,7 +1224,7 @@ describe("checker", () => {
         checkSource(
           `
             import "./helpers" as H;
-            const msg = H.greet(name: "world");
+            const msg = H.greet("world");
           `,
           { resolver, filePath: "main.chute" },
         ),
@@ -1281,7 +1254,7 @@ describe("checker", () => {
         checkSource(
           `
             import "./actions" as A;
-            A.doThing(text: "hello");
+            A.doThing("hello");
           `,
           { resolver, filePath: "main.chute" },
         ),
@@ -1296,7 +1269,7 @@ describe("checker", () => {
         checkSource(
           `
             import "./helpers" as H;
-            const msg = H.greet(name: "world");
+            const msg = H.greet("world");
           `,
           { resolver, filePath: "main.chute" },
         ),
@@ -1333,7 +1306,7 @@ describe("checker", () => {
 
     it("should reject bare statements in library", () => {
       const resolver = makeResolver({
-        "./bad": 'showAlert(text: "hi");',
+        "./bad": 'showAlert("hi");',
       });
       expect(() =>
         checkSource(
@@ -1458,7 +1431,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           import Notification;
-          Notification.showAlert(WFAlertActionTitle: "hello");
+          Notification.showAlert("hello");
         `),
       ).not.toThrow();
     });
@@ -1467,16 +1440,16 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           import Notification;
-          Notification.showAlert(WFAlertActionTitle: 42);
+          Notification.showAlert(42);
         `),
       ).toThrow(CompileError);
     });
 
-    it("should reject unknown parameter on imported stdlib action", () => {
+    it("should reject labeled arguments on stdlib action call", () => {
       expect(() =>
         checkSource(`
           import Notification;
-          Notification.showAlert(badParam: "hello");
+          Notification.showAlert(WFAlertActionTitle: "hello");
         `),
       ).toThrow(CompileError);
     });
@@ -1493,7 +1466,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           action showAlert(message: Text) = "custom.alert";
-          showAlert(message: "hello");
+          showAlert("hello");
         `),
       ).not.toThrow();
     });
@@ -1503,7 +1476,7 @@ describe("checker", () => {
         checkSource(`
           import Notification;
           import Scripting;
-          Notification.showAlert(WFAlertActionTitle: "hello");
+          Notification.showAlert("hello");
           Scripting.nothing();
         `),
       ).not.toThrow();
@@ -1529,7 +1502,7 @@ describe("checker", () => {
          * @param name The name
          */
         func greet(name: Text) {
-          showAlert(text: name);
+          showAlert(name);
         }
       `);
       expect(warnings.filter((w) => w.message.includes("@param"))).toHaveLength(0);
@@ -1541,7 +1514,7 @@ describe("checker", () => {
          * @param nonexistent Does not exist
          */
         func greet(name: Text) {
-          showAlert(text: name);
+          showAlert(name);
         }
       `);
       expect(warnings.some((w) => w.message.includes("nonexistent"))).toBe(true);
@@ -1554,7 +1527,7 @@ describe("checker", () => {
          * @param name Second
          */
         func greet(name: Text) {
-          showAlert(text: name);
+          showAlert(name);
         }
       `);
       expect(warnings.filter((w) => w.message.includes("duplicate"))).toHaveLength(1);
@@ -1693,7 +1666,7 @@ describe("checker", () => {
       expect(() =>
         checkSource(`
           import Scripting;
-          const u: URL = Scripting.getUrlsFromInput(WFInput: input);
+          const u: URL = Scripting.getUrlsFromInput(input);
         `),
       ).not.toThrow();
     });
