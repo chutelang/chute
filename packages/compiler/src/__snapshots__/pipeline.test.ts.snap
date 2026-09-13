@@ -854,19 +854,6 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
-				<string>b</string>
-				<key>WFDictionaryValue</key>
-				<integer>10</integer>
-			</dict>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.setvalueforkey</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000004</string>
-			<key>WFWorkflowActionParameters</key>
-			<dict>
-				<key>WFDictionaryKey</key>
 				<string>a</string>
 				<key>WFDictionaryValue</key>
 				<dict>
@@ -888,6 +875,19 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 						</dict>
 					</dict>
 				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvalueforkey</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000004</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFDictionaryKey</key>
+				<string>b</string>
+				<key>WFDictionaryValue</key>
+				<integer>10</integer>
 			</dict>
 		</dict>
 		<dict>
@@ -1049,7 +1049,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
-				<string>b</string>
+				<string>a</string>
 				<key>WFDictionaryValue</key>
 				<integer>10</integer>
 			</dict>
@@ -2588,7 +2588,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflowName</key>
-				<string>quadruple_ab06af8d</string>
+				<string>quadruple_cca95c0d</string>
 			</dict>
 		</dict>
 		<dict>
@@ -4992,16 +4992,24 @@ exports[`stdlib smoke tests > should compile getClipboard and copyToClipboard 1`
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFInput</key>
+				<key>WFLocalOnly</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenAttachment</string>
+					<string>WFTextTokenString</string>
 					<key>Value</key>
 					<dict>
-						<key>Type</key>
-						<string>Variable</string>
-						<key>VariableName</key>
-						<string>text</string>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>text</string>
+							</dict>
+						</dict>
 					</dict>
 				</dict>
 			</dict>
@@ -5054,7 +5062,7 @@ exports[`stdlib smoke tests > should compile notification with default title 1`]
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFNotificationActionBody</key>
+				<key>WFNotificationActionTitle</key>
 				<string>Task complete</string>
 			</dict>
 		</dict>

@@ -74,7 +74,7 @@ describe("stdlib modules", () => {
       expect(() =>
         checkSource(`
           import Scripting;
-          Scripting.askForInput(WFAskActionPrompt: "What is your name?");
+          Scripting.askForInput("What is your name?");
         `),
       ).not.toThrow();
     });
@@ -91,7 +91,7 @@ describe("stdlib modules", () => {
       expect(() =>
         checkSource(`
           import Scripting;
-          Scripting.totallyFakeAction(x: "hello");
+          Scripting.totallyFakeAction("hello");
         `),
       ).toThrow(CompileError);
     });
@@ -100,7 +100,7 @@ describe("stdlib modules", () => {
       expect(() =>
         checkSource(`
           import Scripting as S;
-          S.askForInput(WFAskActionPrompt: "hello");
+          S.askForInput("hello");
         `),
       ).not.toThrow();
     });
@@ -110,8 +110,8 @@ describe("stdlib modules", () => {
         checkSource(`
           import Scripting;
           import Web;
-          Scripting.askForInput(WFAskActionPrompt: "URL?");
-          Web.getContentsOfUrl(WFURL: "https://example.com");
+          Scripting.askForInput("URL?");
+          Web.getContentsOfUrl("https://example.com");
         `),
       ).not.toThrow();
     });
