@@ -836,11 +836,38 @@ describe("checker", () => {
       ).not.toThrow();
     });
 
-    it("should reject unlabeled arguments in function call", () => {
+    it("should accept positional arguments in function call", () => {
       expect(() =>
         checkSource(`
           func add(a: Number, b: Number) -> Number { return a + b; }
           const result = add(1, 2);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should accept mixed positional and labeled arguments", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          const result = add(1, b: 2);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject positional argument after labeled argument", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          const result = add(a: 1, 2);
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject too many positional arguments", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+          const result = add(1, 2, 3);
         `),
       ).toThrow(CompileError);
     });
