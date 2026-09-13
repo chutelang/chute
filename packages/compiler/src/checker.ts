@@ -11,7 +11,6 @@ import type { PropertyDefinition } from "./properties.ts";
 import type { ResolvedProperty } from "./ast.ts";
 import type { DocComment } from "./doc-comment.ts";
 import type {
-  Argument,
   CoercionExpression,
   ImportDeclaration,
   ActionDeclaration,
@@ -1201,31 +1200,6 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
   return { kind: "any" };
 }
 
-function resolveArgLabel(
-  arg: Argument,
-  index: number,
-  params: ReadonlyArray<{ name?: string; label?: string }>,
-  calleeName: string,
-  calleeKind: "function" | "action",
-): string {
-  if (arg.label) {
-    return arg.label;
-  }
-  const param = params[index];
-  if (!param) {
-    throw new CheckError(
-      `too many arguments in call to '${calleeName}'`,
-      arg.span,
-      DiagnosticCode.ScopeError,
-    );
-  }
-  const paramName =
-    calleeKind === "function"
-      ? (param as { name: string }).name
-      : (param as { label: string }).label;
-  return paramName;
-}
-
 function checkFunctionCall(
   expr: CallExpression,
   funcType: ChuteType & { kind: "function" },
@@ -1233,7 +1207,6 @@ function checkFunctionCall(
   context: CheckContext,
 ): ChuteType {
   const provided = new Map<string, Expression>();
-  let seenLabeled = false;
 
   for (let i = 0; i < expr.args.length; i++) {
     const arg = expr.args[i];
@@ -1241,39 +1214,28 @@ function checkFunctionCall(
       continue;
     }
     if (arg.label) {
-      seenLabeled = true;
-    } else if (seenLabeled) {
       throw new CheckError(
-        "positional argument cannot follow labeled argument",
+        "function calls use positional arguments, not labeled",
         arg.span,
         DiagnosticCode.ScopeError,
       );
     }
 
-    const resolvedLabel = resolveArgLabel(arg, i, funcType.params, funcType.name, "function");
-
-    const param = funcType.params.find((p) => p.name === resolvedLabel);
+    const param = funcType.params[i];
     if (!param) {
       throw new CheckError(
-        `function '${funcType.name}' has no parameter '${resolvedLabel}'`,
+        `too many arguments in call to '${funcType.name}'`,
         arg.span,
-        DiagnosticCode.UnknownMember,
+        DiagnosticCode.ScopeError,
       );
     }
 
-    if (provided.has(resolvedLabel)) {
-      throw new CheckError(
-        `duplicate argument '${resolvedLabel}' in function call`,
-        arg.span,
-        DiagnosticCode.DuplicateArgument,
-      );
-    }
-    provided.set(resolvedLabel, arg.value);
+    provided.set(param.name, arg.value);
 
     const argType = inferTypeWithHint(arg.value, scope, param.type, context);
     if (!isAssignable(argType, param.type)) {
       throw new CheckError(
-        `cannot pass ${describeType(argType)} for parameter '${resolvedLabel}' of type ${describeType(param.type)}`,
+        `cannot pass ${describeType(argType)} for parameter '${param.name}' of type ${describeType(param.type)}`,
         arg.span,
       );
     }
@@ -2116,48 +2078,37 @@ function inferPipelineFunctionCall(
   const provided = new Map<string, Expression>();
 
   if (hasPlaceholder) {
-    for (const arg of stage.args) {
+    for (let i = 0; i < stage.args.length; i++) {
+      const arg = stage.args[i];
+      if (!arg) {
+        continue;
+      }
+      const param = funcType.params[i];
+      if (!param) {
+        throw new CheckError(
+          `too many arguments in pipeline call to '${funcType.name}'`,
+          arg.span,
+          DiagnosticCode.ScopeError,
+        );
+      }
+
       if (arg.value.kind === "PlaceholderExpression") {
-        if (arg.label) {
-          const param = funcType.params.find((p) => p.name === arg.label);
-          if (param && !isAssignable(inputType, param.type)) {
-            throw new CheckError(
-              `cannot pass ${describeType(inputType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
-              arg.span,
-            );
-          }
-          provided.set(arg.label, arg.value);
-        } else {
-          const firstParam = funcType.params.at(0);
-          if (firstParam) {
-            if (!isAssignable(inputType, firstParam.type)) {
-              throw new CheckError(
-                `cannot pass ${describeType(inputType)} for parameter '${firstParam.name}' of type ${describeType(firstParam.type)}`,
-                arg.span,
-              );
-            }
-            provided.set(firstParam.name, arg.value);
-          }
+        if (!isAssignable(inputType, param.type)) {
+          throw new CheckError(
+            `cannot pass ${describeType(inputType)} for parameter '${param.name}' of type ${describeType(param.type)}`,
+            arg.span,
+          );
         }
+        provided.set(param.name, arg.value);
       } else {
-        if (arg.label) {
-          const param = funcType.params.find((p) => p.name === arg.label);
-          if (!param) {
-            throw new CheckError(
-              `function '${funcType.name}' has no parameter '${arg.label}'`,
-              arg.span,
-              DiagnosticCode.UnknownMember,
-            );
-          }
-          const argType = inferTypeWithHint(arg.value, scope, param.type, context);
-          if (!isAssignable(argType, param.type)) {
-            throw new CheckError(
-              `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
-              arg.span,
-            );
-          }
-          provided.set(arg.label, arg.value);
+        const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+        if (!isAssignable(argType, param.type)) {
+          throw new CheckError(
+            `cannot pass ${describeType(argType)} for parameter '${param.name}' of type ${describeType(param.type)}`,
+            arg.span,
+          );
         }
+        provided.set(param.name, arg.value);
       }
     }
   } else {
@@ -2172,25 +2123,27 @@ function inferPipelineFunctionCall(
       provided.set(firstParam.name, stage.callee);
     }
 
-    for (const arg of stage.args) {
-      if (arg.label) {
-        const param = funcType.params.find((p) => p.name === arg.label);
-        if (!param) {
-          throw new CheckError(
-            `function '${funcType.name}' has no parameter '${arg.label}'`,
-            arg.span,
-            DiagnosticCode.UnknownMember,
-          );
-        }
-        const argType = inferTypeWithHint(arg.value, scope, param.type, context);
-        if (!isAssignable(argType, param.type)) {
-          throw new CheckError(
-            `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
-            arg.span,
-          );
-        }
-        provided.set(arg.label, arg.value);
+    for (let i = 0; i < stage.args.length; i++) {
+      const arg = stage.args[i];
+      if (!arg) {
+        continue;
       }
+      const param = funcType.params[i + 1];
+      if (!param) {
+        throw new CheckError(
+          `too many arguments in pipeline call to '${funcType.name}'`,
+          arg.span,
+          DiagnosticCode.ScopeError,
+        );
+      }
+      const argType = inferTypeWithHint(arg.value, scope, param.type, context);
+      if (!isAssignable(argType, param.type)) {
+        throw new CheckError(
+          `cannot pass ${describeType(argType)} for parameter '${param.name}' of type ${describeType(param.type)}`,
+          arg.span,
+        );
+      }
+      provided.set(param.name, arg.value);
     }
   }
 
@@ -2221,24 +2174,21 @@ function inferPipelineActionCall(
   scope: Scope,
   context: CheckContext,
 ): ChuteType {
-  for (const arg of stage.args) {
+  for (let i = 0; i < stage.args.length; i++) {
+    const arg = stage.args[i];
+    if (!arg) {
+      continue;
+    }
     if (arg.value.kind === "PlaceholderExpression") {
       continue;
     }
 
-    if (arg.label) {
-      const param = actionType.params.find((p) => p.label === arg.label);
-      if (!param) {
-        throw new CheckError(
-          `action '${actionType.name}' has no parameter '${arg.label}'`,
-          arg.span,
-          DiagnosticCode.UnknownMember,
-        );
-      }
+    const param = actionType.params[i];
+    if (param) {
       const argType = inferTypeWithHint(arg.value, scope, param.type, context);
       if (!isAssignable(argType, param.type)) {
         throw new CheckError(
-          `cannot pass ${describeType(argType)} for parameter '${arg.label}' of type ${describeType(param.type)}`,
+          `cannot pass ${describeType(argType)} for parameter '${param.label}' of type ${describeType(param.type)}`,
           arg.span,
         );
       }
@@ -2322,7 +2272,6 @@ function checkActionCall(
   context: CheckContext,
 ): ChuteType {
   const provided = new Map<string, Expression>();
-  let seenLabeled = false;
 
   for (let i = 0; i < expr.args.length; i++) {
     const arg = expr.args[i];
@@ -2330,39 +2279,28 @@ function checkActionCall(
       continue;
     }
     if (arg.label) {
-      seenLabeled = true;
-    } else if (seenLabeled) {
       throw new CheckError(
-        "positional argument cannot follow labeled argument",
+        "action calls use positional arguments, not labeled",
         arg.span,
         DiagnosticCode.ScopeError,
       );
     }
 
-    const resolvedLabel = resolveArgLabel(arg, i, actionType.params, actionType.name, "action");
-
-    const param = actionType.params.find((p) => p.label === resolvedLabel);
+    const param = actionType.params[i];
     if (!param) {
       throw new CheckError(
-        `action '${actionType.name}' has no parameter '${resolvedLabel}'`,
+        `too many arguments in call to '${actionType.name}'`,
         arg.span,
-        DiagnosticCode.UnknownMember,
+        DiagnosticCode.ScopeError,
       );
     }
 
-    if (provided.has(resolvedLabel)) {
-      throw new CheckError(
-        `duplicate argument '${resolvedLabel}' in action call`,
-        arg.span,
-        DiagnosticCode.DuplicateArgument,
-      );
-    }
-    provided.set(resolvedLabel, arg.value);
+    provided.set(param.label, arg.value);
 
     const argType = inferTypeWithHint(arg.value, scope, param.type, context);
     if (!isAssignable(argType, param.type)) {
       throw new CheckError(
-        `cannot pass ${describeType(argType)} for parameter '${resolvedLabel}' of type ${describeType(param.type)}`,
+        `cannot pass ${describeType(argType)} for parameter '${param.label}' of type ${describeType(param.type)}`,
         arg.span,
       );
     }

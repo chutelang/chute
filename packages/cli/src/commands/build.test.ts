@@ -11,7 +11,7 @@ shortcut {
   name: "Test",
 }
 
-Notification.showAlert(WFAlertActionTitle: "hello");
+Notification.showAlert("hello");
 `;
 
 interface FakeIOResult {
