@@ -493,6 +493,9 @@ function lowerNamespaceActionCall(
     if (!arg) {
       continue;
     }
+    if (!arg) {
+      continue;
+    }
     const label = resolveArgLabelFromParams(arg, i, nsAction.paramLabels);
     if (!label) {
       continue;
@@ -568,6 +571,9 @@ function lowerFunctionCall(
     if (!arg) {
       continue;
     }
+    if (!arg) {
+      continue;
+    }
     const label = resolveArgLabelFromParams(arg, i, paramNames);
     if (label) {
       provided.set(label, arg.value);
@@ -618,6 +624,9 @@ function lowerDeclaredActionCall(
   const provided = new Map<string, Expression>();
   for (let i = 0; i < expr.args.length; i++) {
     const arg = expr.args[i];
+    if (!arg) {
+      continue;
+    }
     if (!arg) {
       continue;
     }
@@ -1792,6 +1801,9 @@ function lowerPipelineFunctionStage(
       if (!arg) {
         continue;
       }
+      if (!arg) {
+        continue;
+      }
       if (arg.value.kind === "PlaceholderExpression") {
         const targetName = arg.label ?? decl.params.at(0)?.name;
         if (targetName) {
@@ -1839,6 +1851,9 @@ function lowerPipelineFunctionStage(
 
     for (let i = 0; i < stage.args.length; i++) {
       const arg = stage.args[i];
+      if (!arg) {
+        continue;
+      }
       if (!arg) {
         continue;
       }
@@ -1907,6 +1922,9 @@ function lowerPipelineNamespaceActionStage(
     if (!arg) {
       continue;
     }
+    if (!arg) {
+      continue;
+    }
     if (arg.value.kind === "PlaceholderExpression") {
       continue;
     }
@@ -1940,6 +1958,9 @@ function lowerPipelineDeclaredActionStage(
   const provided = new Map<string, Expression>();
   for (let i = 0; i < stage.args.length; i++) {
     const arg = stage.args[i];
+    if (!arg) {
+      continue;
+    }
     if (!arg) {
       continue;
     }
