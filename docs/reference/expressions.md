@@ -91,6 +91,55 @@ const name = person.name;
 const x = point.x;
 ```
 
+### Properties on opaque types
+
+Some types like `Date`, `URL`, and `Contact` are opaque — they come from Shortcuts and don't have fields you defined. You can access their properties with dot notation:
+
+```text
+import Scripting
+
+let d = Scripting.date();
+let y = d.year;
+let m = d.month;
+```
+
+Available properties depend on the type. For example, `Date` has `year`, `month`, `day`, `hour`, `minute`, `second`, and `weekday`. `URL` has `scheme`, `host`, `path`, `query`, and `fragment`. Accessing an unknown property is a compile error.
+
+Optional chaining works the same way:
+
+```text
+let od = d as Date;
+let y = od?.year; // Number?
+```
+
+## Type coercion
+
+Use `as` to coerce a value from one type to another:
+
+```text
+let n = someText as Number;
+```
+
+Coercion returns an optional because it can fail at runtime. `someText as Number` has type `Number?`, not `Number`.
+
+The compiler validates that the conversion is plausible. `text as Number` is allowed, but `boolean as Date` is a compile error. Use `??` to provide a fallback:
+
+```text
+let n = someText as Number ?? 0;
+```
+
+Coercion works in pipelines with `_ as Type`:
+
+```text
+let n = getText() |> _ as Number;
+```
+
+Property access also works in pipeline stages:
+
+```text
+let year = Scripting.date() |> _.year;
+```
+
 ## Optional chaining
 
 Use `?.` to safely access a member of an optional value. If the value is `nil`, the result is `nil` instead of an error:
