@@ -21,25 +21,25 @@ const label = "Timer";
 
 menu "How long?" {
   case "1 minute" {
-    wait(seconds: 60);
-    notification(body: "Your 1-minute timer is done!", title: label);
+    wait(60);
+    notification("Your 1-minute timer is done!", label);
   }
   case "5 minutes" {
-    wait(seconds: 300);
-    notification(body: "Your 5-minute timer is done!", title: label);
+    wait(300);
+    notification("Your 5-minute timer is done!", label);
   }
   case "10 minutes" {
-    wait(seconds: 600);
-    notification(body: "Your 10-minute timer is done!", title: label);
+    wait(600);
+    notification("Your 10-minute timer is done!", label);
   }
 }
 
-showAlert(text: "Timer started!");
+showAlert("Timer started!");
 ```
 
 ## How it works
 
-The shortcut uses `menu` to present a "Choose from Menu" dialog with three preset durations. Each case calls `wait(seconds:)`, which compiles to the "Wait" action in Shortcuts, and then sends a push notification with `notification()`.
+The shortcut uses `menu` to present a "Choose from Menu" dialog with three preset durations. Each case calls `wait()`, which compiles to the "Wait" action in Shortcuts, and then sends a push notification with `notification()`.
 
 The `label` variable is defined once and reused across all three cases as the notification title. In the compiled shortcut, this becomes a magic variable that each "Show Notification" action references.
 

@@ -8,7 +8,7 @@ Pass a value into a function's first parameter:
 
 ```text
 func double(n: Number) -> Number { return n * 2; }
-const result = 5 |> double; // equivalent to double(n: 5)
+const result = 5 |> double; // equivalent to double(5)
 ```
 
 ### Multi-stage pipelines
@@ -33,11 +33,11 @@ msg |> showAlert;
 
 ## Extra arguments
 
-When the target function takes multiple parameters, the piped value fills the first parameter. Provide the remaining arguments explicitly:
+When the target function takes multiple parameters, the piped value fills the first parameter. Provide the remaining arguments in order:
 
 ```text
 func add(a: Number, b: Number) -> Number { return a + b; }
-const result = 5 |> add(b: 10); // equivalent to add(a: 5, b: 10)
+const result = 5 |> add(10); // equivalent to add(5, 10)
 ```
 
 ## Placeholder `_`
@@ -46,7 +46,7 @@ If you want the piped value to go to a parameter other than the first, use `_` a
 
 ```text
 func add(a: Number, b: Number) -> Number { return a + b; }
-const result = 5 |> add(b: 10, a: _); // a gets the piped value (5)
+const result = 5 |> add(10, _); // a = 10, b = piped value (5)
 ```
 
 `_` is only valid inside pipeline stages. Using it outside a pipeline is a compile error.
@@ -78,7 +78,7 @@ const y = x |>? double |> triple; // y is Number?
 
 ## How it maps to Shortcuts
 
-Pipelines don't introduce any new Shortcuts actions. They're a syntactic convenience, `5 |> double |> triple` compiles to the same sequence of "Run Shortcut" actions as calling `triple(n: double(n: 5))`. The pipeline just makes the data flow easier to read.
+Pipelines don't introduce any new Shortcuts actions. They're a syntactic convenience, `5 |> double |> triple` compiles to the same sequence of "Run Shortcut" actions as calling `triple(double(5))`. The pipeline just makes the data flow easier to read.
 
 ## Related
 

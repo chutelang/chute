@@ -21,15 +21,15 @@ const text = getClipboard();
 
 menu "What do you want to do?" {
   case "Share" {
-    share(input: text);
+    share(text);
   }
   case "Copy Uppercase" {
-    const upper = changeCase(text: text, case: "UPPERCASE");
-    setClipboard(value: upper);
-    showAlert(text: "Copied to clipboard!");
+    const upper = changeCase(text, "UPPERCASE");
+    setClipboard(upper);
+    showAlert("Copied to clipboard!");
   }
   case "Show" {
-    showAlert(text: "Clipboard: ${text}");
+    showAlert("Clipboard: ${text}");
   }
 }
 ```

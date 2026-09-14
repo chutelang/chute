@@ -63,7 +63,7 @@ You can interpolate an enum value into a string, it uses the backing value:
 ```text
 enum Color { red = "RED", blue = "BLUE" }
 const c = Color.red;
-showAlert(text: "${c}"); // shows "RED"
+showAlert("${c}"); // shows "RED"
 ```
 
 ## Records

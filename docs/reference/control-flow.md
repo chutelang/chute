@@ -9,7 +9,7 @@ Test a condition and run a block:
 ```text
 const x = 5;
 if (x > 3) {
-  showAlert(text: "big");
+  showAlert( "big");
 }
 ```
 
@@ -17,9 +17,9 @@ Add `else` for an alternative:
 
 ```text
 if (x > 3) {
-  showAlert(text: "big");
+  showAlert( "big");
 } else {
-  showAlert(text: "small");
+  showAlert( "small");
 }
 ```
 
@@ -27,11 +27,11 @@ Chain multiple conditions with `else if`:
 
 ```text
 if (x > 100) {
-  showAlert(text: "huge");
+  showAlert( "huge");
 } else if (x > 10) {
-  showAlert(text: "medium");
+  showAlert( "medium");
 } else {
-  showAlert(text: "small");
+  showAlert( "small");
 }
 ```
 
@@ -60,11 +60,11 @@ Combine conditions with `&&`, `||`, and `!`:
 
 ```text
 if (x > 0 && x < 100) {
-  showAlert(text: "in range");
+  showAlert( "in range");
 }
 
 if (!(x == 0)) {
-  showAlert(text: "nonzero");
+  showAlert( "nonzero");
 }
 ```
 
@@ -72,7 +72,7 @@ Conditions can be grouped with parentheses:
 
 ```text
 if ((x > 0 && x < 10) || x == 100) {
-  showAlert(text: "match");
+  showAlert( "match");
 }
 ```
 
@@ -81,7 +81,7 @@ A boolean variable can be used directly as a condition:
 ```text
 const ready = true;
 if (ready) {
-  showAlert(text: "go!");
+  showAlert( "go!");
 }
 ```
 
@@ -92,7 +92,7 @@ Iterate over a list:
 ```text
 const items = ["apple", "banana", "cherry"];
 for item in items {
-  showAlert(text: item);
+  showAlert( item);
 }
 ```
 
@@ -106,7 +106,7 @@ Run a block a fixed number of times:
 
 ```text
 repeat 3 {
-  showAlert(text: "again!");
+  showAlert( "again!");
 }
 ```
 
@@ -114,7 +114,7 @@ Use `#index` to access the current iteration index (starting from 0):
 
 ```text
 repeat 5 {
-  showAlert(text: "Iteration ${#index}");
+  showAlert( "Iteration ${#index}");
 }
 ```
 
@@ -127,10 +127,10 @@ Present a menu of choices to the user:
 ```text
 menu "What would you like to do?" {
   case "Say Hello" {
-    showAlert(text: "Hello!");
+    showAlert( "Hello!");
   }
   case "Say Goodbye" {
-    showAlert(text: "Goodbye!");
+    showAlert( "Goodbye!");
   }
 }
 ```

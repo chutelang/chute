@@ -13,7 +13,7 @@ import "./helpers" as H;
 Then access its exported declarations through the alias:
 
 ```text
-const result = H.formatName(first: "Alice", last: "Smith");
+const result = H.formatName("Alice", "Smith");
 ```
 
 The path is relative to the importing file. The `.chute` extension is inferred. You don't need to include it.
@@ -68,7 +68,7 @@ Imported declarations are always accessed through their alias. There are no unqu
 ```text
 import "./math" as math;
 
-const result = math.add(a: 1, b: 2);     // function
+const result = math.add(1, 2);            // function
 const origin = math.Point(x: 0, y: 0);   // record
 const c = math.Color.red;                 // enum member
 ```

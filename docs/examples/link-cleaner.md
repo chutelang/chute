@@ -19,20 +19,20 @@ shortcut {
 }
 
 func cleanURL(url: Text) -> Text {
-  const parts = splitText(text: url, separator: "?");
+  const parts = splitText(url, "?");
   return parts[0];
 }
 
 const url = getClipboard();
 const cleaned = url |> cleanURL;
-setClipboard(value: cleaned);
-showAlert(text: "Cleaned URL copied!\n${cleaned}");
+setClipboard(cleaned);
+showAlert("Cleaned URL copied!\n${cleaned}");
 ```
 
 ## How it works
 
 The shortcut defines a `cleanURL` function that splits a URL on the `?` character and returns the part before it. This part is the base URL without any query string. In Chute, functions compile to separate sub-shortcuts that the main shortcut calls with "Run Shortcut."
 
-The pipeline operator `|>` passes the clipboard URL into `cleanURL`. Writing `url |> cleanURL` is equivalent to `cleanURL(url: url)`, but the pipeline form reads left-to-right, which makes chains of transformations easier to follow.
+The pipeline operator `|>` passes the clipboard URL into `cleanURL`. Writing `url |> cleanURL` is equivalent to `cleanURL(url)`, but the pipeline form reads left-to-right, which makes chains of transformations easier to follow.
 
 After cleaning, the shortcut writes the result back to the clipboard with `setClipboard` and confirms with an alert that includes the cleaned URL via string interpolation.

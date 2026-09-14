@@ -1213,6 +1213,9 @@ function checkFunctionCall(
     if (!arg) {
       continue;
     }
+    if (!arg) {
+      continue;
+    }
     if (arg.label) {
       throw new CheckError(
         "function calls use positional arguments, not labeled",
@@ -2083,6 +2086,9 @@ function inferPipelineFunctionCall(
       if (!arg) {
         continue;
       }
+      if (!arg) {
+        continue;
+      }
       const param = funcType.params[i];
       if (!param) {
         throw new CheckError(
@@ -2125,6 +2131,9 @@ function inferPipelineFunctionCall(
 
     for (let i = 0; i < stage.args.length; i++) {
       const arg = stage.args[i];
+      if (!arg) {
+        continue;
+      }
       if (!arg) {
         continue;
       }
@@ -2176,6 +2185,9 @@ function inferPipelineActionCall(
 ): ChuteType {
   for (let i = 0; i < stage.args.length; i++) {
     const arg = stage.args[i];
+    if (!arg) {
+      continue;
+    }
     if (!arg) {
       continue;
     }
@@ -2275,6 +2287,9 @@ function checkActionCall(
 
   for (let i = 0; i < expr.args.length; i++) {
     const arg = expr.args[i];
+    if (!arg) {
+      continue;
+    }
     if (!arg) {
       continue;
     }
