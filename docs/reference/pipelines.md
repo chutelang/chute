@@ -76,6 +76,28 @@ const x: Number? = nil;
 const y = x |>? double |> triple; // y is Number?
 ```
 
+## Type coercion in pipelines
+
+Use `_ as Type` to coerce the piped value:
+
+```text
+import Scripting
+
+let n = Scripting.ask("Enter a number") |> _ as Number;
+```
+
+## Property access in pipelines
+
+Use `_.property` to access a property of the piped value:
+
+```text
+import Scripting
+
+let year = Scripting.date() |> _.year;
+```
+
+This works with opaque types like `Date` and `URL`. See [Expressions](/reference/expressions) for available properties.
+
 ## How it maps to Shortcuts
 
 Pipelines don't introduce any new Shortcuts actions. They're a syntactic convenience, `5 |> double |> triple` compiles to the same sequence of "Run Shortcut" actions as calling `triple(double(5))`. The pipeline just makes the data flow easier to read.

@@ -101,6 +101,44 @@ const temp: Quantity<celsius> = 22;
 | Temperature | `celsius`, `fahrenheit`, `kelvin` |
 | Angle | `degrees` |
 
+## Opaque types
+
+These types represent Shortcuts content items. They're returned by stdlib actions and can't be constructed directly.
+
+| Type | Description |
+|------|-------------|
+| `Date` | A date and time |
+| `URL` | A web address |
+| `Image` | An image |
+| `Email` | An email address |
+| `Phone` | A phone number |
+| `Contact` | A contact |
+| `Location` | A street address or coordinate |
+| `Article` | A web article |
+
+Access their properties with dot notation:
+
+```text
+import Scripting
+
+let d = Scripting.date();
+let year = d.year;      // Number
+let month = d.month;    // Number
+```
+
+See [Expressions](/reference/expressions) for the full property list per type.
+
+## Type coercion
+
+Use `as` to convert between types:
+
+```text
+let n = someText as Number;   // Number?
+let d = someText as Date;     // Date?
+```
+
+Coercion returns an optional because the conversion can fail at runtime. The compiler checks that the pair is valid — `text as Number` works, but `boolean as Date` is an error.
+
 ## Type inference
 
 You don't always need to write type annotations. Chute infers the type from the value or expression:
