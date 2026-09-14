@@ -203,7 +203,7 @@ Inside a `repeat` loop, `#index` evaluates to the current iteration index (start
 
 ```text
 repeat 3 {
-  showAlert(text: "Iteration ${#index}");
+  showAlert("Iteration ${#index}");
 }
 ```
 

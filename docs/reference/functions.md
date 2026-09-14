@@ -8,13 +8,13 @@ Use `func` followed by the name, parameters, an optional return type, and a body
 
 ```text
 func greet(name: Text) {
-  showAlert(text: "Hello, ${name}!");
+  showAlert("Hello, ${name}!");
 }
 ```
 
 ### Parameters
 
-Parameters are always labeled. Each parameter has a name and a type:
+Each parameter has a name and a type:
 
 ```text
 func add(a: Number, b: Number) -> Number {
@@ -31,8 +31,8 @@ func greet(name: Text = "World") -> Text {
   return name;
 }
 
-const msg = greet();            // uses default: "World"
-const msg2 = greet(name: "Jo"); // overrides default
+const msg = greet();       // uses default: "World"
+const msg2 = greet("Jo");  // overrides default
 ```
 
 The default value must match the parameter's type.
@@ -51,16 +51,10 @@ If a function has a return type, every `return` statement must include a value o
 
 ## Calling functions
 
-All arguments must be labeled:
+Arguments are positional. They match parameters by the order they appear in the function signature:
 
 ```text
-const sum = add(a: 3, b: 4);
-```
-
-Unlabeled arguments are a compile error:
-
-```text
-const sum = add(3, 4); // compile error: arguments must be labeled
+const sum = add(3, 4);
 ```
 
 ## Function composition
@@ -69,7 +63,7 @@ Functions can call other functions, including functions declared later in the fi
 
 ```text
 func double(n: Number) -> Number { return n * 2; }
-func quadruple(n: Number) -> Number { return double(n: double(n: n)); }
+func quadruple(n: Number) -> Number { return double(double(n)); }
 ```
 
 ## Recursion
@@ -79,8 +73,8 @@ Chute supports recursive and mutually recursive functions, but emits a warning. 
 ```text
 func countdown(n: Number) {
   if (n > 0) {
-    showAlert(text: "${n}");
-    countdown(n: n - 1); // warning: recursive call detected
+    showAlert("${n}");
+    countdown(n - 1); // warning: recursive call detected
   }
 }
 ```
