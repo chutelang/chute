@@ -8,7 +8,7 @@ Chute ships with a [standard library](/reference/stdlib/scripting) of ~50 built-
 
 An action declaration specifies:
 - A callable name
-- Parameters with external labels (the Shortcuts parameter key) and types
+- Parameters with names (the Shortcuts parameter key) and types
 - An optional return type
 - A runtime identifier (the Shortcuts action ID)
 
@@ -21,20 +21,20 @@ Breaking this down:
 | Part | Meaning |
 |------|---------|
 | `showAlert` | The name you use to call this action in Chute |
-| `text` | The label you use at the call site: `showAlert(text: "Hello")` |
+| `text` | The parameter name used for documentation and editor hints |
 | `WFAlertActionTitle` | The internal Shortcuts parameter key (written to the compiled plist) |
 | `Text` | The parameter type |
 | `"is.workflow.actions.alert"` | The Shortcuts action identifier |
 
 ### Why two names per parameter?
 
-In the Shortcuts app, each action parameter has an internal key like `WFAlertActionTitle`. These keys aren't user-friendly, so Chute lets you define a readable label (`text`) that maps to the internal key. You write `showAlert(text: "Hello")`, and the compiler emits the correct `WFAlertActionTitle` key in the plist.
+In the Shortcuts app, each action parameter has an internal key like `WFAlertActionTitle`. These keys aren't user-friendly, so Chute lets you define a readable name (`text`) that maps to the internal key. The compiler emits the correct `WFAlertActionTitle` key in the plist.
 
 ## Parameters
 
 ### Multiple parameters
 
-Actions can have multiple parameters, each with their own label and internal key:
+Actions can have multiple parameters, each with their own name and internal key:
 
 ```text
 action notify(
@@ -53,7 +53,7 @@ action notify(
   title WFNotificationActionTitle: Text = "Alert"
 ) = "is.workflow.actions.notification";
 
-notify(body: "Task complete"); // title defaults to "Alert"
+notify("Task complete"); // title defaults to "Alert"
 ```
 
 ### Return types
@@ -63,14 +63,14 @@ Some actions produce a value. Declare this with `-> Type`:
 ```text
 action ask(prompt WFAskActionPrompt: Text) -> Text = "is.workflow.actions.ask";
 
-const name = ask(prompt: "What's your name?");
+const name = ask("What's your name?");
 ```
 
 Actions without a return type don't produce a usable value.
 
 ### Single-name parameters
 
-When the label and internal key are the same, you can write the name once:
+When the parameter name and internal key are the same, you can write the name once:
 
 ```text
 action sendMessage(to: Text, body: Text) = "com.example.send";
@@ -90,11 +90,11 @@ Attributes use the `@name` or `@name(key: value, ...)` syntax and appear after t
 
 ## Calling actions
 
-Call an action the same way you call a function, with labeled arguments:
+Call an action the same way you call a function. Arguments are positional, matched by parameter order:
 
 ```text
-showAlert(text: "Hello!");
-notification(body: "Done", title: "Success");
+showAlert("Hello!");
+notification("Done", "Success");
 const clipboard = getClipboard();
 ```
 
@@ -111,7 +111,7 @@ If you declare an action with the same name as a standard library action, your d
 
 ```text
 action showAlert(message: Text) = "custom.alert";
-showAlert(message: "custom"); // uses your declaration, not the stdlib
+showAlert("custom"); // uses your declaration, not the stdlib
 ```
 
 ## Exporting actions

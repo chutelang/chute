@@ -44,7 +44,7 @@ shortcut {
   description: "A shortcut created with Chute",
 }
 
-showAlert(text: "Hello from Chute!");
+showAlert("Hello from Chute!");
 ```
 
 Every Chute file starts with an optional `shortcut` metadata block that sets the shortcut's name and description. After that comes the body. The body is a sequence of statements that become the shortcut's actions.
@@ -77,8 +77,8 @@ shortcut {
   description: "Asks for your name and greets you",
 }
 
-const name = ask(prompt: "What's your name?");
-showAlert(text: "Hello, ${name}!");
+const name = ask("What's your name?");
+showAlert("Hello, ${name}!");
 ```
 
 This introduces two concepts:
@@ -108,12 +108,12 @@ const text = getClipboard();
 
 menu "What do you want to do?" {
   case "Share" {
-    share(input: text);
+    share(text);
   }
   case "Make Uppercase" {
-    const upper = changeCase(text: text, case: "UPPERCASE");
-    setClipboard(value: upper);
-    showAlert(text: "Copied uppercase text!");
+    const upper = changeCase(text, "UPPERCASE");
+    setClipboard(upper);
+    showAlert("Copied uppercase text!");
   }
 }
 ```

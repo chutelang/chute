@@ -109,7 +109,7 @@ You don't always need to write type annotations. Chute infers the type from the 
 const name = "Alice";          // inferred as Text
 const count = 42;              // inferred as Number
 const items = [1, 2, 3];      // inferred as List<Number>
-const result = ask(prompt: "?"); // inferred as Text (from ask's return type)
+const result = ask("?");          // inferred as Text (from ask's return type)
 ```
 
 Type annotations are required when:

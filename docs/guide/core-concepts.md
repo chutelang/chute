@@ -22,7 +22,7 @@ In Shortcuts, every action's output becomes a *magic variable* that later action
 shortcut { name: "Variables" }
 
 const greeting = "Hello";
-showAlert(text: greeting);
+showAlert(greeting);
 ```
 
 `const` creates an immutable binding. The compiler translates it into a "Set Variable" action, and any reference to `greeting` becomes a "Get Variable" action that retrieves the stored value.
@@ -47,8 +47,8 @@ func double(n: Number) -> Number {
   return n * 2;
 }
 
-const result = double(n: 5);
-showResult(text: "${result}");
+const result = double(5);
+showResult("${result}");
 ```
 
 Under the hood, the compiler does three things:
@@ -95,7 +95,7 @@ shortcut { name: "ControlFlow" }
 
 const items = ["apples", "bananas", "cherries"];
 for item in items {
-  showAlert(text: item);
+  showAlert(item);
 }
 ```
 
@@ -133,7 +133,7 @@ func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 
 const x = 5 |> double |> triple;
-showResult(text: "${x}");
+showResult("${x}");
 ```
 
 The value `5` flows into `double`, and the result flows into `triple`. You can also use `|>?` for optional values. If the value is `nil`, the pipeline short-circuits and the result is `nil`.
@@ -176,7 +176,7 @@ export func add(a: Number, b: Number) -> Number {
 ```text
 // In main.chute
 import "./math" as math;
-const sum = math.add(a: 3, b: 4);
+const sum = math.add(3, 4);
 ```
 
 For more details, see [Imports & Modules](/reference/imports).
