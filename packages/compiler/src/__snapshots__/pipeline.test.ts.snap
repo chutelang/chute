@@ -5166,6 +5166,8 @@ exports[`stdlib smoke tests > should compile settings toggle actions 1`] = `
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
+				<key>operation</key>
+				<integer>0</integer>
 				<key>OnValue</key>
 				<false/>
 			</dict>
@@ -5177,6 +5179,8 @@ exports[`stdlib smoke tests > should compile settings toggle actions 1`] = `
 			<string>00000000-0000-0000-0000-000000000001</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
+				<key>operation</key>
+				<integer>0</integer>
 				<key>OnValue</key>
 				<true/>
 			</dict>

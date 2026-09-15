@@ -174,11 +174,13 @@ function mapParameter(raw, unmappedClasses) {
     unmappedClasses.add(cls);
   }
 
+  const isEnum = cls === "WFEnumerationParameter" && raw.Items && raw.Items.length > 0;
+
   const result = {
     key: raw.Key ?? null,
     label: raw.Label ?? null,
     class: cls,
-    chuteType: TYPE_MAP[cls] ?? "Any",
+    chuteType: isEnum ? "Enum" : (TYPE_MAP[cls] ?? "Any"),
     required: raw.Required === true,
     defaultValue: raw.DefaultValue ?? null,
   };
