@@ -44,6 +44,7 @@ interface StdlibJsonAction {
     chuteType: string;
     required: boolean;
     defaultValue: unknown;
+    items?: string[];
   }>;
   intentIdentifier?: string;
   intentParameters?: Array<{
@@ -77,6 +78,7 @@ const CONTENT_TYPE_MAP: Record<string, ChuteType> = {
   NSString: { kind: "text" },
   WFStringContentItem: { kind: "text" },
   NSAttributedString: { kind: "text" },
+  "public.plain-text": { kind: "text" },
   NSURL: { kind: "opaque", name: "URL" },
   WFURLContentItem: { kind: "opaque", name: "URL" },
   WFEmailAddress: { kind: "opaque", name: "Email" },
@@ -84,6 +86,9 @@ const CONTENT_TYPE_MAP: Record<string, ChuteType> = {
   WFPhoneNumber: { kind: "opaque", name: "Phone" },
   WFPhoneNumberContentItem: { kind: "opaque", name: "Phone" },
   WFStreetAddress: { kind: "opaque", name: "Location" },
+  CLLocation: { kind: "opaque", name: "Location" },
+  WFLocationContentItem: { kind: "opaque", name: "Location" },
+  MKMapItem: { kind: "opaque", name: "Location" },
   NSDecimalNumber: { kind: "number" },
   NSNumber: { kind: "number" },
   WFNumberContentItem: { kind: "number" },
@@ -94,10 +99,16 @@ const CONTENT_TYPE_MAP: Record<string, ChuteType> = {
   NSDate: { kind: "opaque", name: "Date" },
   NSDateComponents: { kind: "opaque", name: "Date" },
   WFDateContentItem: { kind: "opaque", name: "Date" },
+  WFImage: { kind: "opaque", name: "Image" },
+  PHAsset: { kind: "opaque", name: "Image" },
   WFImageContentItem: { kind: "opaque", name: "Image" },
+  WFPhotoMediaContentItem: { kind: "opaque", name: "Image" },
+  "public.image": { kind: "opaque", name: "Image" },
+  WFContact: { kind: "opaque", name: "Contact" },
   WFContactContentItem: { kind: "opaque", name: "Contact" },
-  WFLocationContentItem: { kind: "opaque", name: "Location" },
+  WFArticle: { kind: "opaque", name: "Article" },
   WFArticleContentItem: { kind: "opaque", name: "Article" },
+  WFPDFContentItem: { kind: "opaque", name: "Image" },
 };
 
 function inferReturnType(output: StdlibJsonAction["output"]): ChuteType | undefined {
@@ -130,6 +141,27 @@ function inferReturnType(output: StdlibJsonAction["output"]): ChuteType | undefi
   return { kind: "any" };
 }
 
+function enumTypeFromItems(paramKey: string, items: string[]): ChuteType {
+  const cases = new Map<string, string>();
+  for (const item of items) {
+    const caseName = item
+      .split(/[\s\-_]+/)
+      .map((w, i) => {
+        if (i === 0) {
+          return w.toLowerCase();
+        }
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+      })
+      .join("");
+    cases.set(caseName, item);
+  }
+  return {
+    kind: "enum",
+    name: paramKey,
+    cases,
+  };
+}
+
 function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
   const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
 
@@ -138,19 +170,25 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
       if (!p.key) {
         continue;
       }
+      let type: ChuteType;
+      if (p.chuteType === "Enum" && p.items) {
+        type = enumTypeFromItems(p.key, p.items);
+      } else {
+        type = CHUTE_TYPE_MAP[p.chuteType] ?? { kind: "any" };
+      }
       params.push({
         label: p.key,
-        type: CHUTE_TYPE_MAP[p.chuteType] ?? { kind: "any" },
+        type,
         hasDefault: p.defaultValue !== null || !p.required,
       });
     }
   } else {
     const overrides = action.parameterOverrides ?? {};
     for (const p of action.intentParameters ?? []) {
-      const key = p.name ? overrides[p.name]?.Key : undefined;
-      if (!key) {
+      if (!p.name) {
         continue;
       }
+      const key = overrides[p.name]?.Key ?? p.name;
       params.push({
         label: key,
         type: INTENT_TYPE_MAP[p.type ?? ""] ?? { kind: "any" },
