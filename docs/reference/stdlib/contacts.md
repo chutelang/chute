@@ -11,13 +11,13 @@ import Contacts;
 Calls the phone number passed in as input.
 
 ```chute
-call(IntentAppDefinition: Text, WFCallContact: Text)
+call(Text, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `IntentAppDefinition` | `Text` | [object Object] |
-| `WFCallContact` | `Text` | — |
+| `IntentAppDefinition` | Text | [object Object] |
+| `WFCallContact` | Text | — |
 
 Shortcuts action: `com.apple.mobilephone.call`
 
@@ -26,12 +26,12 @@ Shortcuts action: `com.apple.mobilephone.call`
 Passes the specified contacts to the next action.
 
 ```chute
-contacts(WFContact: Text) -> Any
+contacts(Text) -> Contact
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContact` | `Text` | — |
+| `WFContact` | Text | — |
 
 Shortcuts action: `is.workflow.actions.contacts`
 
@@ -48,12 +48,12 @@ Shortcuts action: `is.workflow.actions.setters.contacts`
 Passes the specified email addresses to the next action.
 
 ```chute
-emailAddress(WFEmailAddress: Text) -> Text
+emailAddress(Text) -> Email
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEmailAddress` | `Text` | — |
+| `WFEmailAddress` | Text | — |
 
 Shortcuts action: `is.workflow.actions.email`
 
@@ -62,14 +62,14 @@ Shortcuts action: `is.workflow.actions.email`
 Calls the contact passed in as input using FaceTime.
 
 ```chute
-facetime(IntentAppDefinition: Text, WFFaceTimeType: Text, WFFaceTimeContact: Text)
+facetime(Text, Enum, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `IntentAppDefinition` | `Text` | [object Object] |
-| `WFFaceTimeType` | `Text` | `"Video"` |
-| `WFFaceTimeContact` | `Text` | — |
+| `IntentAppDefinition` | Text | [object Object] |
+| `WFFaceTimeType` | Video | Audio | `"Video"` |
+| `WFFaceTimeContact` | Text | — |
 
 Shortcuts action: `com.apple.facetime.facetime`
 
@@ -94,19 +94,19 @@ Shortcuts action: `is.workflow.actions.properties.contacts`
 Creates a new contact.
 
 ```chute
-newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Any, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean) -> Any
+newContact(Text, Text, Text, Any, Text, Text, Text, Boolean) -> Contact
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContactFirstName` | `Text` | — |
-| `WFContactLastName` | `Text` | — |
-| `WFContactCompany` | `Text` | — |
-| `WFContactPhoto` | `Any` | — |
-| `WFContactPhoneNumbers` | `Text` | — |
-| `WFContactEmails` | `Text` | — |
-| `WFContactNotes` | `Text` | — |
-| `ShowWhenRun` | `Boolean` | true |
+| `WFContactFirstName` | Text | — |
+| `WFContactLastName` | Text | — |
+| `WFContactCompany` | Text | — |
+| `WFContactPhoto` | Any | — |
+| `WFContactPhoneNumbers` | Text | — |
+| `WFContactEmails` | Text | — |
+| `WFContactNotes` | Text | — |
+| `ShowWhenRun` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.addnewcontact`
 
@@ -115,12 +115,12 @@ Shortcuts action: `is.workflow.actions.addnewcontact`
 Passes the specified phone numbers to the next action.
 
 ```chute
-phoneNumber(WFPhoneNumber: Text) -> Text
+phoneNumber(Text) -> Phone
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPhoneNumber` | `Text` | — |
+| `WFPhoneNumber` | Text | — |
 
 Shortcuts action: `is.workflow.actions.phonenumber`
 
@@ -129,12 +129,12 @@ Shortcuts action: `is.workflow.actions.phonenumber`
 Prompts to pick a person from your contacts and passes the selection to the next action.
 
 ```chute
-selectContact(WFSelectMultiple: Boolean) -> Any
+selectContact(Boolean) -> Contact
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSelectMultiple` | `Boolean` | — |
+| `WFSelectMultiple` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.selectcontacts`
 
@@ -143,7 +143,7 @@ Shortcuts action: `is.workflow.actions.selectcontacts`
 Prompts to pick an email address from your contacts and passes the selection to the next action.
 
 ```chute
-selectEmailAddress() -> Text
+selectEmailAddress() -> Email
 ```
 
 Shortcuts action: `is.workflow.actions.selectemail`
@@ -153,7 +153,7 @@ Shortcuts action: `is.workflow.actions.selectemail`
 Prompts to pick a phone number from your contacts and passes the selection to the next action.
 
 ```chute
-selectPhoneNumber() -> Text
+selectPhoneNumber() -> Phone
 ```
 
 Shortcuts action: `is.workflow.actions.selectphone`

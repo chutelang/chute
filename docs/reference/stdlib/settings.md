@@ -19,12 +19,12 @@ Shortcuts action: `is.workflow.actions.personalhotspot.password.get`
 ## `setAirdropReceiving`
 
 ```chute
-setAirdropReceiving(WFAirDropState: Text)
+setAirdropReceiving(Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFAirDropState` | `Text` | — |
+| `WFAirDropState` | Text | — |
 
 Shortcuts action: `is.workflow.actions.setairdropreceiving`
 
@@ -33,8 +33,13 @@ Shortcuts action: `is.workflow.actions.setairdropreceiving`
 Sets the device’s Airplane Mode to on or off.
 
 ```chute
-setAirplaneMode()
+setAirplaneMode(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.airplanemode.set`
 
@@ -43,8 +48,13 @@ Shortcuts action: `is.workflow.actions.airplanemode.set`
 Sets the Always On Display setting of your iPhone to on or off.
 
 ```chute
-setAlwaysOnDisplay()
+setAlwaysOnDisplay(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.display.always-on.set`
 
@@ -53,16 +63,26 @@ Shortcuts action: `is.workflow.actions.display.always-on.set`
 Sets Announce Notifications to on or off. When on, Siri will announce notifications from new apps that send Time Sensitive notifications or direct messages.
 
 ```chute
-setAnnounceNotifications()
+setAnnounceNotifications(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.announcenotifications.set`
 
 ## `setAppearance`
 
 ```chute
-setAppearance()
+setAppearance(BooleanSettingOperation, DeviceAppearanceType)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `style` | Light | Dark | — |
 
 Shortcuts action: `is.workflow.actions.appearance`
 
@@ -71,8 +91,13 @@ Shortcuts action: `is.workflow.actions.appearance`
 Sets the device’s Bluetooth to on or off.
 
 ```chute
-setBluetooth()
+setBluetooth(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.bluetooth.set`
 
@@ -81,8 +106,12 @@ Shortcuts action: `is.workflow.actions.bluetooth.set`
 Sets the device brightness.
 
 ```chute
-setBrightness()
+setBrightness(Any)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFBrightness` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setbrightness`
 
@@ -91,8 +120,13 @@ Shortcuts action: `is.workflow.actions.setbrightness`
 Sets the device’s Cellular Data to on or off.
 
 ```chute
-setCellularData()
+setCellularData(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.cellulardata.set`
 
@@ -101,8 +135,14 @@ Shortcuts action: `is.workflow.actions.cellulardata.set`
 Turns on or off the flashlight near the device's camera.
 
 ```chute
-setFlashlight()
+setFlashlight(BooleanSettingOperation, Boolean, Any)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `state` | Boolean | — |
+| `WFFlashlightLevel` | Any | — |
 
 Shortcuts action: `is.workflow.actions.flashlight`
 
@@ -111,20 +151,25 @@ Shortcuts action: `is.workflow.actions.flashlight`
 Sets the Personal Hotspot password.
 
 ```chute
-setHotspotPassword(WFInput: Text)
+setHotspotPassword(Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Text` | — |
+| `WFInput` | Text | — |
 
 Shortcuts action: `is.workflow.actions.personalhotspot.password.set`
 
 ## `setLowPowerMode`
 
 ```chute
-setLowPowerMode()
+setLowPowerMode(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.lowpowermode.set`
 
@@ -133,8 +178,13 @@ Shortcuts action: `is.workflow.actions.lowpowermode.set`
 Enables or disables Night Shift. When enabled, the colors of your display will be shifted to the warmer end of the color spectrum after dark. This may help you get a better night’s sleep.
 
 ```chute
-setNightShift()
+setNightShift(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.nightshift.set`
 
@@ -143,13 +193,13 @@ Shortcuts action: `is.workflow.actions.nightshift.set`
 Sets a Noise Control mode on your selected device
 
 ```chute
-setNoiseControlMode(WFRoute: Text, WFListeningMode: Text)
+setNoiseControlMode(Text, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFRoute` | `Text` | — |
-| `WFListeningMode` | `Text` | — |
+| `WFRoute` | Text | — |
+| `WFListeningMode` | Text | — |
 
 Shortcuts action: `is.workflow.actions.listeningmode.set`
 
@@ -158,8 +208,13 @@ Shortcuts action: `is.workflow.actions.listeningmode.set`
 Turns on or off orientation lock on your device.
 
 ```chute
-setOrientationLock()
+setOrientationLock(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.orientationlock.set`
 
@@ -168,8 +223,13 @@ Shortcuts action: `is.workflow.actions.orientationlock.set`
 Sets the device's Personal Hotspot to on or off.
 
 ```chute
-setPersonalHotspot()
+setPersonalHotspot(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 > When turning Personal Hotspot on, this action will make the hotspot discoverable for only a short period of time, in order to preserve battery life.
 
@@ -180,8 +240,13 @@ Shortcuts action: `is.workflow.actions.personalhotspot.set`
 Sets Silence Unknown Callers to on or off. When on, calls from unknown numbers will be silenced and sent to voicemail. Calls will still be displayed on the Recents list. Incoming calls will continue to ring from people in your contacts, recent outgoing calls, and Siri Suggestions.
 
 ```chute
-setSilenceUnknownCallers()
+setSilenceUnknownCallers(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.silenceunknowncallers.set`
 
@@ -190,8 +255,15 @@ Shortcuts action: `is.workflow.actions.silenceunknowncallers.set`
 Enables or disables Stage Manager on the device.
 
 ```chute
-setStageManager()
+setStageManager(BooleanSettingOperation, Boolean, Boolean, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `state` | Boolean | — |
+| `showDock` | Boolean | — |
+| `showRecentApps` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.stagemanager.set`
 
@@ -200,8 +272,13 @@ Shortcuts action: `is.workflow.actions.stagemanager.set`
 Enables or disables True Tone. When enabled, your device display will automatically adapt based on ambient lighting conditions to make colors appear consistent in different environments.
 
 ```chute
-setTrueTone()
+setTrueTone(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.truetone.set`
 
@@ -210,13 +287,13 @@ Shortcuts action: `is.workflow.actions.truetone.set`
 Sets the volume of the device.
 
 ```chute
-setVolume(WFVolumeSetting: Text, WFVolume: Number)
+setVolume(Enum, Number)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVolumeSetting` | `Text` | `"Media"` |
-| `WFVolume` | `Number` | 0.5 |
+| `WFVolumeSetting` | Media | Ringtone | `"Media"` |
+| `WFVolume` | Number | 0.5 |
 
 Shortcuts action: `is.workflow.actions.setvolume`
 
@@ -225,14 +302,14 @@ Shortcuts action: `is.workflow.actions.setvolume`
 Connects, disconnects or changes the On Demand setting for a VPN Configuration on this device.
 
 ```chute
-setVpn(WFVPNOperation: Text, WFOnDemandValue: Boolean, WFVPN: Text)
+setVpn(Enum, Boolean, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVPNOperation` | `Text` | `"Connect"` |
-| `WFOnDemandValue` | `Boolean` | true |
-| `WFVPN` | `Text` | — |
+| `WFVPNOperation` | Connect | Disconnect | Toggle | Set On Demand | Toggle On Demand | `"Connect"` |
+| `WFOnDemandValue` | Boolean | true |
+| `WFVPN` | Text | — |
 
 > VPN Configurations can be set up in the Settings app. On macOS, you must authenticate as an administrator to change the On Demand setting for a VPN Configuration.
 
@@ -243,7 +320,12 @@ Shortcuts action: `is.workflow.actions.vpn.set`
 Sets the device’s Wi-Fi to on or off.
 
 ```chute
-setWiFi()
+setWiFi(BooleanSettingOperation, Boolean)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `operation` | Turn On | Turn Off | Toggle | — |
+| `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.wifi.set`

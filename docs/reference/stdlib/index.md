@@ -6,8 +6,8 @@ Chute's standard library provides access to Siri Shortcuts actions organized int
 import Scripting;
 import Notification;
 
-Scripting.askForInput(WFAskActionPrompt: "What is your name?");
-Notification.showAlert(WFAlertActionTitle: "Hello!");
+Scripting.askForInput("What is your name?");
+Notification.showAlert("Hello!");
 ```
 
 ## Modules
