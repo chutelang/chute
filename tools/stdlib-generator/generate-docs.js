@@ -157,7 +157,7 @@ function generateActionDoc(action) {
   const returnType = inferReturnType(action.output);
   const returnSuffix = returnType ? ` -> ${returnType}` : "";
   const signature = params.length > 0
-    ? `${action.name}(${params.map((p) => formatTypeSimple(p.chuteType)).join(", ")})${returnSuffix}`
+    ? `${action.name}(${params.map((p) => `${p.key}: ${p.chuteType || "Any"}`).join(", ")})${returnSuffix}`
     : `${action.name}()${returnSuffix}`;
 
   lines.push("```chute");

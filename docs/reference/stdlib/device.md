@@ -11,7 +11,7 @@ import Device;
 Connects your computer to the specified file servers on the network. For example, you can connect to SMB/CIFS, NFS, FTP (read-only), or WebDAV servers.
 
 ```chute
-connectToServers(Text) -> Any
+connectToServers(WFInput: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -25,7 +25,7 @@ Shortcuts action: `is.workflow.actions.connecttoservers`
 Copies the result of the last action to the clipboard.
 
 ```chute
-copyToClipboard(Boolean, Text, Any)
+copyToClipboard(WFLocalOnly: Boolean, WFExpirationDate: Text, WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -41,7 +41,7 @@ Shortcuts action: `is.workflow.actions.setclipboard`
 This action ejects a mounted disk or volume.
 
 ```chute
-ejectDisk(Any)
+ejectDisk(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -71,7 +71,7 @@ Shortcuts action: `is.workflow.actions.filter.windows`
 Gets all of your Lock Screen wallpapers, and returns them as output so you can use them with other actions.
 
 ```chute
-getAllWallpapers(Enum) -> Any
+getAllWallpapers(WFPosterType: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -85,7 +85,7 @@ Shortcuts action: `is.workflow.actions.posters.get`
 Returns information about the battery and any charger connected to the device.
 
 ```chute
-getBatteryStatus(Enum) -> Any
+getBatteryStatus(Subject: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -111,7 +111,7 @@ Shortcuts action: `is.workflow.actions.getclipboard`
 Gets the current visible app.
 
 ```chute
-getCurrentApp(Enum) -> Any
+getCurrentApp(WFVisibleAppScope: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -137,7 +137,7 @@ Shortcuts action: `is.workflow.actions.dnd.getfocus`
 Returns the local or external IP address of the device.
 
 ```chute
-getCurrentIpAddress(Enum, Enum) -> Text
+getCurrentIpAddress(WFIPAddressSourceOption: Enum, WFIPAddressTypeOption: Enum) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -160,7 +160,7 @@ Shortcuts action: `is.workflow.actions.properties.appearance`
 Gets information about the current device.
 
 ```chute
-getDeviceDetails(Enum) -> Any
+getDeviceDetails(WFDeviceDetail: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -174,7 +174,7 @@ Shortcuts action: `is.workflow.actions.getdevicedetails`
 Gets information about the currently connected networks.
 
 ```chute
-getNetworkDetails(Text, Enum, Enum) -> Any
+getNetworkDetails(WFNetworkDetailsNetwork: Text, WFWiFiDetail: Enum, WFCellularDetail: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -210,7 +210,7 @@ Shortcuts action: `is.workflow.actions.returntohomescreen`
 Hides one or all open applications. You can choose a list of apps to keep open.
 
 ```chute
-hideApp(Enum, Text, Text)
+hideApp(WFHideAppMode: Enum, WFApp: Text, WFAppsExcept: Text)
 ```
 
 | Parameter | Type | Default |
@@ -226,7 +226,7 @@ Shortcuts action: `is.workflow.actions.hide.app`
 Changes whether the selected application is locked. Locked apps require authentication to access.
 
 ```chute
-lockApp(Enum, Text)
+lockApp(WFLockAppOperation: Enum, WFApp: Text)
 ```
 
 | Parameter | Type | Default |
@@ -261,7 +261,7 @@ Shortcuts action: `is.workflow.actions.logout`
 Moves one or more windows to the specified location.
 
 ```chute
-moveWindow(Enum, Number, Number, Any, Boolean, Text)
+moveWindow(WFPosition: Enum, WFXCoordinate: Number, WFYCoordinate: Number, WFWindow: Any, WFBringToFront: Boolean, Display: Text)
 ```
 
 | Parameter | Type | Default |
@@ -314,7 +314,7 @@ Shortcuts action: `is.workflow.actions.displaysleep`
 Quits one or all open applications. You can choose a list of apps to keep open.
 
 ```chute
-quitApp(Enum, Text, Text, Boolean)
+quitApp(WFQuitAppMode: Enum, WFAppsExcept: Text, WFApp: Text, WFAskToSaveChanges: Boolean)
 ```
 
 | Parameter | Type | Default |
@@ -331,7 +331,7 @@ Shortcuts action: `is.workflow.actions.quit.app`
 Resizes one or more windows to the specified width and height.
 
 ```chute
-resizeWindow(Enum, Number, Number, Any, Boolean)
+resizeWindow(WFConfiguration: Enum, WFWidth: Number, WFHeight: Number, WFWindow: Any, WFBringToFront: Boolean)
 ```
 
 | Parameter | Type | Default |
@@ -349,7 +349,7 @@ Shortcuts action: `is.workflow.actions.resizewindow`
 Searches for content in the system that matches the specified text.
 
 ```chute
-search(Text, Text, Number) -> Any
+search(WFInputText: Text, WFSpotlightSearchResultType: Text, WFSpotlightSearchLimit: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -365,7 +365,7 @@ Shortcuts action: `is.workflow.actions.spotlightsearch`
 Opens Passwords and searches for the given text.
 
 ```chute
-searchInPasswords(Text)
+searchInPasswords(WFShowPasswordsSearchTerm: Text)
 ```
 
 | Parameter | Type | Default |
@@ -379,7 +379,7 @@ Shortcuts action: `is.workflow.actions.openpasswords`
 Sets the specified Focus on or off.
 
 ```chute
-setFocus(Enum, Boolean, Enum, Any, Text, Text)
+setFocus(Operation: Enum, Enabled: Boolean, AssertionType: Enum, Event: Any, Time: Text, FocusModes: Text)
 ```
 
 | Parameter | Type | Default |
@@ -398,7 +398,7 @@ Shortcuts action: `is.workflow.actions.dnd.set`
 Sets the wallpaper to the specified image.
 
 ```chute
-setWallpaperPhoto(Any, Enum, Boolean, Boolean, Text, Boolean, Boolean) -> Any
+setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Enum, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -418,7 +418,7 @@ Shortcuts action: `is.workflow.actions.wallpaper.set`
 Shuts down or restarts your device.
 
 ```chute
-shutDown(Enum)
+shutDown(WFShutdownMode: Enum)
 ```
 
 | Parameter | Type | Default |
@@ -442,7 +442,7 @@ Shortcuts action: `is.workflow.actions.sleep`
 Open the specified apps in split screen mode.
 
 ```chute
-splitScreenApps(Text, Text, Enum)
+splitScreenApps(WFPrimaryAppIdentifier: Text, WFSecondaryAppIdentifier: Text, WFAppRatio: Enum)
 ```
 
 | Parameter | Type | Default |
@@ -468,7 +468,7 @@ Shortcuts action: `is.workflow.actions.startscreensaver`
 Starts a timer in the Clock app for the specified amount of time.
 
 ```chute
-startTimer(Text, Number)
+startTimer(IntentAppDefinition: Text, WFDuration: Number)
 ```
 
 | Parameter | Type | Default |
@@ -483,7 +483,7 @@ Shortcuts action: `is.workflow.actions.timer.start`
 Switches the current Lock Screen wallpaper.
 
 ```chute
-switchBetweenWallpapers(Text)
+switchBetweenWallpapers(WFPoster: Text)
 ```
 
 | Parameter | Type | Default |
@@ -499,7 +499,7 @@ Shortcuts action: `is.workflow.actions.posters.switch`
 Take a screenshot of the device's screen.
 
 ```chute
-takeScreenshot(Enum, Enum, Boolean, Boolean) -> Image
+takeScreenshot(WFTakeScreenshotScreenshotType: Enum, WFTakeScreenshotActionInteractiveSelectionType: Enum, WFTakeScreenshotMainMonitorOnly: Boolean, WFTakeScreenshotIgnoreContextualAssistanceLayers: Boolean) -> Image
 ```
 
 | Parameter | Type | Default |
@@ -516,7 +516,7 @@ Shortcuts action: `is.workflow.actions.takescreenshot`
 Vibrates the device for a short amount of time.
 
 ```chute
-vibrateDevice(Enum)
+vibrateDevice(WFVibrateHapticType: Enum)
 ```
 
 | Parameter | Type | Default |
@@ -530,7 +530,7 @@ Shortcuts action: `is.workflow.actions.vibrate`
 Records and plays back mouse and keyboard events.
 
 ```chute
-watchMeDo(Any, Number)
+watchMeDo(WFUserEvent: Any, WFPlaybackSpeed: Number)
 ```
 
 | Parameter | Type | Default |

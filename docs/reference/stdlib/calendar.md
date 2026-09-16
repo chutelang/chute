@@ -11,7 +11,7 @@ import Calendar;
 Creates a new calendar.
 
 ```chute
-addNewCalendar(Text) -> Text
+addNewCalendar(CalendarName: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -89,7 +89,7 @@ Shortcuts action: `is.workflow.actions.properties.reminders`
 Gets upcoming calendar events, ordered from nearest to farthest away in time.
 
 ```chute
-getUpcomingEvents(Text, Number, Enum, Text) -> Any
+getUpcomingEvents(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number, WFDateSpecifier: Enum, WFSpecifiedDate: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -106,7 +106,7 @@ Shortcuts action: `is.workflow.actions.getupcomingevents`
 Gets upcoming reminders, ordered from nearest to farthest away due date.
 
 ```chute
-getUpcomingReminders(Text, Number) -> Any
+getUpcomingReminders(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -121,7 +121,7 @@ Shortcuts action: `is.workflow.actions.getupcomingreminders`
 Creates a new event and adds it to the selected calendar.
 
 ```chute
-newEvent(Text, Text, Text, Text, Text, Boolean, Enum, Text, Text, Boolean) -> Any
+newEvent(WFCalendarItemTitle: Text, WFCalendarItemLocation: Text, WFCalendarDescriptor: Text, WFCalendarItemStartDate: Text, WFCalendarItemEndDate: Text, WFCalendarItemAllDay: Boolean, WFAlertTime: Enum, WFAlertCustomTime: Text, WFCalendarItemNotes: Text, ShowWhenRun: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -144,7 +144,7 @@ Shortcuts action: `is.workflow.actions.addnewevent`
 Creates a new reminder and adds it to the selected list of reminders.
 
 ```chute
-newReminder(Text, Text, Enum, Enum, Text, Text, Number, Text, Enum, Boolean, Boolean, Text, Any, Any, Text, Text) -> Any
+newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Enum, WFAlertCondition: Enum, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Enum, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Any, WFParentTask: Any, WFTags: Text, WFCalendarItemNotes: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -173,7 +173,7 @@ Shortcuts action: `is.workflow.actions.addnewreminder`
 Shows the date or calendar event passed as input in the Calendar app.
 
 ```chute
-openInCalendar(Any)
+openInCalendar(WFEvent: Any)
 ```
 
 | Parameter | Type | Default |
@@ -187,7 +187,7 @@ Shortcuts action: `is.workflow.actions.showincalendar`
 Shows the specified list in the Reminders app.
 
 ```chute
-openRemindersList(Text)
+openRemindersList(WFList: Text)
 ```
 
 | Parameter | Type | Default |
@@ -201,7 +201,7 @@ Shortcuts action: `is.workflow.actions.reminders.showlist`
 Removes all events passed into the action from the calendars they are contained in.
 
 ```chute
-removeEvents(Boolean, Any)
+removeEvents(WFCalendarIncludeFutureEvents: Boolean, WFInputEvents: Any)
 ```
 
 | Parameter | Type | Default |
@@ -218,7 +218,7 @@ Shortcuts action: `is.workflow.actions.removeevents`
 Removes all reminders passed into the action from the lists they are contained in.
 
 ```chute
-removeReminders(Any)
+removeReminders(WFInputReminders: Any)
 ```
 
 | Parameter | Type | Default |

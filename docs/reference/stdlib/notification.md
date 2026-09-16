@@ -11,7 +11,7 @@ import Notification;
 Displays an alert with a title, a message, and two buttons. If the user selects the OK button, the shortcut continues. The cancel button stops the shortcut.
 
 ```chute
-showAlert(Text, Text, Boolean)
+showAlert(WFAlertActionTitle: Text, WFAlertActionMessage: Text, WFAlertActionCancelButtonShown: Boolean)
 ```
 
 | Parameter | Type | Default |
@@ -27,7 +27,7 @@ Shortcuts action: `is.workflow.actions.alert`
 Shows a preview of the provided content. If run from Siri, speaks the provided text.
 
 ```chute
-showContent(Text)
+showContent(Text: Text)
 ```
 
 | Parameter | Type | Default |
@@ -41,7 +41,7 @@ Shortcuts action: `is.workflow.actions.showresult`
 Shows the results of the previous action in the Content Graph.
 
 ```chute
-showContentGraph(Any)
+showContentGraph(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -55,7 +55,7 @@ Shortcuts action: `is.workflow.actions.viewresult`
 Displays a local notification.
 
 ```chute
-showNotification(Text, Text, Boolean, Any)
+showNotification(WFNotificationActionTitle: Text, WFNotificationActionBody: Text, WFNotificationActionSound: Boolean, WFInput: Any)
 ```
 
 | Parameter | Type | Default |

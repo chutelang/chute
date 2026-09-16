@@ -11,7 +11,7 @@ import Sharing;
 Prompts to share the specified content via AirDrop.
 
 ```chute
-airdrop(Any)
+airdrop(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -25,7 +25,7 @@ Shortcuts action: `is.workflow.actions.airdropdocument`
 Shares the input on Facebook.
 
 ```chute
-postOnFacebook(Any)
+postOnFacebook(FacebookContent: Any)
 ```
 
 | Parameter | Type | Default |
@@ -37,7 +37,7 @@ Shortcuts action: `is.workflow.actions.postonfacebook`
 ## `postToSharedAlbum`
 
 ```chute
-postToSharedAlbum(Any)
+postToSharedAlbum(ImageInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -51,7 +51,7 @@ Shortcuts action: `com.apple.mobileslideshow.StreamShareService`
 Pass text into the action to set the email body. Other types of input are added as attachments.
 
 ```chute
-sendEmail(Text, Text, Text, Text, Text, Text, Text, Boolean, Boolean)
+sendEmail(WFEmailAccountActionSelectedAccount: Text, WFSendEmailActionFrom: Text, WFSendEmailActionToRecipients: Text, WFSendEmailActionCcRecipients: Text, WFSendEmailActionBccRecipients: Text, WFSendEmailActionSubject: Text, WFSendEmailActionInputAttachments: Text, WFSendEmailActionSaveAsDraft: Boolean, WFSendEmailActionShowComposeSheet: Boolean)
 ```
 
 | Parameter | Type | Default |
@@ -73,7 +73,7 @@ Shortcuts action: `is.workflow.actions.sendemail`
 Sends a message. Pass images, videos, or other files as input to include attachments.
 
 ```chute
-sendMessage(Text, Boolean, Text, Text, Text)
+sendMessage(IntentAppDefinition: Text, ShowWhenRun: Boolean, WFSendMessageActionRecipients: Text, WFSendMessageContent: Text, WFSendMessagePrefix: Text)
 ```
 
 | Parameter | Type | Default |
@@ -91,7 +91,7 @@ Shortcuts action: `is.workflow.actions.sendmessage`
 Sends the input to another device via DeskConnect. DeskConnect makes it easy to send web pages, documents, pictures, and anything else between your devices.
 
 ```chute
-sendViaDeskconnect(Any)
+sendViaDeskconnect(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -115,7 +115,7 @@ Shortcuts action: `is.workflow.actions.facebook.messenger.send`
 Prompts to share the specified content.
 
 ```chute
-share(Any)
+share(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -129,7 +129,7 @@ Shortcuts action: `is.workflow.actions.share`
 Prompts to share the specified content using action extensions and sharing extensions provided by other apps.
 
 ```chute
-shareWithApps(Any, Text)
+shareWithApps(WFInput: Any, WFApp: Text)
 ```
 
 | Parameter | Type | Default |
@@ -144,7 +144,7 @@ Shortcuts action: `is.workflow.actions.runextension`
 Tweets the input.
 
 ```chute
-tweet(Text)
+tweet(TweetInput: Text)
 ```
 
 | Parameter | Type | Default |
@@ -158,7 +158,7 @@ Shortcuts action: `is.workflow.actions.tweet`
 Uploads the input to Imgur.
 
 ```chute
-uploadToImgur(Any, Boolean, Boolean, Boolean, Enum, Enum, Text, Text) -> URL
+uploadToImgur(WFInput: Any, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolean, WFImgurAlbum: Boolean, WFImgurAlbumLayout: Enum, WFImgurAlbumPrivacy: Enum, WFImgurTitle: Text, WFImgurDescription: Text) -> URL
 ```
 
 | Parameter | Type | Default |

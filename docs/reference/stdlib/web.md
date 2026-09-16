@@ -11,7 +11,7 @@ import Web;
 Adds URLs passed into the action to your reading list.
 
 ```chute
-addToReadingList(Text)
+addToReadingList(WFURL: Text)
 ```
 
 | Parameter | Type | Default |
@@ -25,7 +25,7 @@ Shortcuts action: `is.workflow.actions.readinglist`
 This action expands and cleans up URLs which have been shortened using a URL shortening service like TinyURL or Bit.ly.
 
 ```chute
-expandUrl(Text) -> URL
+expandUrl(URL: Text) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -49,7 +49,7 @@ Shortcuts action: `is.workflow.actions.filter.articles`
 Searches the App Store, returning the apps that match the specified search terms. You can get more details about the results using the Get Details of App Store App action.
 
 ```chute
-findAppStoreApps(Text, Text, Text, Text, Number) -> Any
+findAppStoreApps(WFSearchTerm: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -67,7 +67,7 @@ Shortcuts action: `is.workflow.actions.searchappstore`
 Searches the iTunes Store, returning the items that match the specified search terms. You can get more details about the results using the Get Details of iTunes Product action.
 
 ```chute
-findItunesStoreItems(Text, Text, Text, Text, Text, Number) -> Any
+findItunesStoreItems(WFSearchTerm: Text, WFMediaType: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -86,7 +86,7 @@ Shortcuts action: `is.workflow.actions.searchitunes`
 Gets article details, including body text, author, publish date, and more, from every URL passed into the action.
 
 ```chute
-getArticleUsingSafariReader(Text) -> Article
+getArticleUsingSafariReader(WFWebPage: Text) -> Article
 ```
 
 | Parameter | Type | Default |
@@ -102,7 +102,7 @@ Shortcuts action: `is.workflow.actions.getarticle`
 Gets the specified part of the URL passed into the action.
 
 ```chute
-getComponentOfUrl(Text, Enum) -> Text
+getComponentOfUrl(WFURL: Text, WFURLComponent: Enum) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -119,7 +119,7 @@ Shortcuts action: `is.workflow.actions.geturlcomponent`
 Gets the contents of URLs passed into the action. Useful for downloading files and web content, or for making API requests.
 
 ```chute
-getContentsOfUrl(Text, Enum, Any, Dictionary, Enum, Dictionary, Dictionary, Any) -> Any
+getContentsOfUrl(WFURL: Text, WFHTTPMethod: Enum, ShowHeaders: Any, WFHTTPHeaders: Dictionary, WFHTTPBodyType: Enum, WFFormValues: Dictionary, WFJSONValues: Dictionary, WFRequestVariable: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -142,7 +142,7 @@ Shortcuts action: `is.workflow.actions.downloadurl`
 Extracts the contents of the web pages passed into the action.
 
 ```chute
-getContentsOfWebPage(Text) -> Text
+getContentsOfWebPage(WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -184,7 +184,7 @@ Shortcuts action: `is.workflow.actions.properties.safariwebpage`
 Retrieves the HTTP headers of the URL passed as input using a HEAD request.
 
 ```chute
-getHeadersOfUrl(Text) -> Dictionary
+getHeadersOfUrl(WFInput: Text) -> Dictionary
 ```
 
 | Parameter | Type | Default |
@@ -198,7 +198,7 @@ Shortcuts action: `is.workflow.actions.url.getheaders`
 Downloads the latest items from an RSS feed.
 
 ```chute
-getItemsFromRssFeed(Text, Number) -> Any
+getItemsFromRssFeed(WFRSSFeedURL: Text, WFRSSItemQuantity: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -213,7 +213,7 @@ Shortcuts action: `is.workflow.actions.rss`
 Extracts any RSS feed URLs from the given web URLs or web page.
 
 ```chute
-getRssFeedsFromPage(Text) -> URL
+getRssFeedsFromPage(WFURLs: Text) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -227,7 +227,7 @@ Shortcuts action: `is.workflow.actions.rss.extract`
 Opens URLs passed into the action in Safari.
 
 ```chute
-openUrls(Text)
+openUrls(WFInput: Text)
 ```
 
 | Parameter | Type | Default |
@@ -241,7 +241,7 @@ Shortcuts action: `is.workflow.actions.openurl`
 Performs the specified x-callback-url action. The x-success, x-cancel, and x-error parameters will be added automatically.
 
 ```chute
-openXCallbackUrl(Boolean, Text, Text, Text, Boolean, Text, Text) -> Any
+openXCallbackUrl(WFXCallbackCustomCallbackEnabled: Boolean, WFXCallbackCustomSuccessKey: Text, WFXCallbackCustomCancelKey: Text, WFXCallbackCustomErrorKey: Text, WFXCallbackCustomSuccessURLEnabled: Boolean, WFXCallbackCustomSuccessURL: Text, WFXCallbackURL: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -261,7 +261,7 @@ Shortcuts action: `is.workflow.actions.openxcallbackurl`
 Runs JavaScript on a Safari web page passed in as input
 
 ```chute
-runjavascriptonwebpage(Text, Any) -> Any
+runjavascriptonwebpage(WFJavaScript: Text, WFInput: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -289,7 +289,7 @@ Shortcuts action: `is.workflow.actions.runjavascriptonwebpage`
 Searches the web for the text provided as input.
 
 ```chute
-searchWeb(Enum, Text)
+searchWeb(WFSearchWebDestination: Enum, WFInputText: Text)
 ```
 
 | Parameter | Type | Default |
@@ -304,7 +304,7 @@ Shortcuts action: `is.workflow.actions.searchweb`
 Shows the iTunes products or App Store apps passed as input in a store sheet. This is useful with the Find iTunes Store Items and Find App Store Apps actions.
 
 ```chute
-showInItunesStore(Any)
+showInItunesStore(WFProduct: Any)
 ```
 
 | Parameter | Type | Default |
@@ -318,7 +318,7 @@ Shortcuts action: `is.workflow.actions.showinstore`
 Shows the web URL passed into the action in a Safari View Controller, allowing you to view the web page without switching apps.
 
 ```chute
-showWebView(Boolean, Text)
+showWebView(WFEnterSafariReader: Boolean, WFURL: Text)
 ```
 
 | Parameter | Type | Default |
@@ -333,7 +333,7 @@ Shortcuts action: `is.workflow.actions.showwebpage`
 Passes the specified URL to the next action.
 
 ```chute
-url(Text) -> URL
+url(WFURLActionURL: Text) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -347,7 +347,7 @@ Shortcuts action: `is.workflow.actions.url`
 Encodes or decodes text passed into the action to be suitable for inclusion in a URL by adding or removing percent escapes when appropriate.
 
 ```chute
-urlEncode(Enum, Text) -> Text
+urlEncode(WFEncodeMode: Enum, WFInput: Text) -> Text
 ```
 
 | Parameter | Type | Default |

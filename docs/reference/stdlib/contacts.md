@@ -11,7 +11,7 @@ import Contacts;
 Calls the phone number passed in as input.
 
 ```chute
-call(Text, Text)
+call(IntentAppDefinition: Text, WFCallContact: Text)
 ```
 
 | Parameter | Type | Default |
@@ -26,7 +26,7 @@ Shortcuts action: `com.apple.mobilephone.call`
 Passes the specified contacts to the next action.
 
 ```chute
-contacts(Text) -> Contact
+contacts(WFContact: Text) -> Contact
 ```
 
 | Parameter | Type | Default |
@@ -48,7 +48,7 @@ Shortcuts action: `is.workflow.actions.setters.contacts`
 Passes the specified email addresses to the next action.
 
 ```chute
-emailAddress(Text) -> Email
+emailAddress(WFEmailAddress: Text) -> Email
 ```
 
 | Parameter | Type | Default |
@@ -62,7 +62,7 @@ Shortcuts action: `is.workflow.actions.email`
 Calls the contact passed in as input using FaceTime.
 
 ```chute
-facetime(Text, Enum, Text)
+facetime(IntentAppDefinition: Text, WFFaceTimeType: Enum, WFFaceTimeContact: Text)
 ```
 
 | Parameter | Type | Default |
@@ -94,7 +94,7 @@ Shortcuts action: `is.workflow.actions.properties.contacts`
 Creates a new contact.
 
 ```chute
-newContact(Text, Text, Text, Any, Text, Text, Text, Boolean) -> Contact
+newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Any, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean) -> Contact
 ```
 
 | Parameter | Type | Default |
@@ -115,7 +115,7 @@ Shortcuts action: `is.workflow.actions.addnewcontact`
 Passes the specified phone numbers to the next action.
 
 ```chute
-phoneNumber(Text) -> Phone
+phoneNumber(WFPhoneNumber: Text) -> Phone
 ```
 
 | Parameter | Type | Default |
@@ -129,7 +129,7 @@ Shortcuts action: `is.workflow.actions.phonenumber`
 Prompts to pick a person from your contacts and passes the selection to the next action.
 
 ```chute
-selectContact(Boolean) -> Contact
+selectContact(WFSelectMultiple: Boolean) -> Contact
 ```
 
 | Parameter | Type | Default |

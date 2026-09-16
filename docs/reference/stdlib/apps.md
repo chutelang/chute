@@ -11,7 +11,7 @@ import Apps;
 Adds a new item to Todoist.
 
 ```chute
-addTodoistItem(Text, Text, Text, Text, Enum, Enum, Text, Any) -> URL
+addTodoistItem(WFTodoistContent: Text, WFTodoistProject: Text, WFTodoistDueDate: Text, WFTodoistReminder: Text, WFTodoistReminderType: Enum, WFTodoistPriority: Enum, WFTodoistNotes: Text, WFTodoistFile: Any) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -32,7 +32,7 @@ Shortcuts action: `is.workflow.actions.todoist.add`
 Adds the input to Instapaper.
 
 ```chute
-addToInstapaper(Text, Text)
+addToInstapaper(WFInstapaperFolder: Text, WFInputURL: Text)
 ```
 
 | Parameter | Type | Default |
@@ -47,7 +47,7 @@ Shortcuts action: `is.workflow.actions.instapaper.add`
 Adds the URL passed into the action to your Pinboard.
 
 ```chute
-addToPinboard(Text, Text, Boolean, Boolean, Text, Text)
+addToPinboard(WFPinTitle: Text, WFPinTags: Text, WFPinPublic: Boolean, WFPinUnread: Boolean, WFPinDescription: Text, WFPinboardURL: Text)
 ```
 
 | Parameter | Type | Default |
@@ -66,7 +66,7 @@ Shortcuts action: `is.workflow.actions.pinboard.add`
 Adds the input to Pocket.
 
 ```chute
-addToPocket(Text, Text)
+addToPocket(WFPocketTags: Text, WFInputURL: Text)
 ```
 
 | Parameter | Type | Default |
@@ -81,7 +81,7 @@ Shortcuts action: `is.workflow.actions.pocket.add`
 Creates a new card on the specified list and board in your Trello account.
 
 ```chute
-addTrelloCard(Text, Text, Text, Text, Enum, Any, Text) -> Any
+addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTrelloDueDate: Text, WFTrelloCardPosition: Enum, WFTrelloAttachments: Any, WFTrelloDescription: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -101,7 +101,7 @@ Shortcuts action: `is.workflow.actions.trello.add.card`
 Adds the text passed as input to the end of the specified file.
 
 ```chute
-appendToDropboxTextFile(Text, Enum, Boolean, Text) -> Any
+appendToDropboxTextFile(WFFilePath: Text, WFAppendFileWriteMode: Enum, WFAppendOnNewLine: Boolean, WFInput: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -120,7 +120,7 @@ Shortcuts action: `is.workflow.actions.dropbox.appendfile`
 Finds a note using the specified criteria and appends the input to the note.
 
 ```chute
-appendToEvernote(Any, Text, Enum, Text) -> Any
+appendToEvernote(WFInput: Any, WFEvernoteNotesTitleSearch: Text, WFEvernoteWriteMode: Enum, WFEvernoteNotesNotebookName: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -137,7 +137,7 @@ Shortcuts action: `is.workflow.actions.evernote.append`
 Makes a new Dropbox folder.
 
 ```chute
-createDropboxFolder(Text)
+createDropboxFolder(WFFilePath: Text)
 ```
 
 | Parameter | Type | Default |
@@ -151,7 +151,7 @@ Shortcuts action: `is.workflow.actions.dropbox.createfolder`
 Saves the input as a note in Evernote.
 
 ```chute
-createNewNote(Text, Text, List&lt;Text&gt;, Any) -> Any
+createNewNote(WFEvernoteNoteTitle: Text, WFEvernoteNotebook: Text, WFEvernoteTags: List<Text>, WFInput: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -168,7 +168,7 @@ Shortcuts action: `is.workflow.actions.evernote.new`
 Creates a new board in your Trello account.
 
 ```chute
-createTrelloBoard(Text, Text) -> Any
+createTrelloBoard(WFTrelloName: Text, WFTrelloDescription: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -183,7 +183,7 @@ Shortcuts action: `is.workflow.actions.trello.add.board`
 Creates a new list on the specified board in your Trello account.
 
 ```chute
-createTrelloList(Text, Text, Enum) -> Any
+createTrelloList(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloPosition: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -199,7 +199,7 @@ Shortcuts action: `is.workflow.actions.trello.add.list`
 Deletes the notes passed as input from Evernote.
 
 ```chute
-deleteNotes(Any)
+deleteNotes(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -229,7 +229,7 @@ Shortcuts action: `is.workflow.actions.properties.ulysses.sheet`
 Gets files from Dropbox. Turn off “Show Document Picker” to specify a path to retrieve.
 
 ```chute
-getDropboxFile(Boolean, Boolean, Text, Text, Boolean) -> Any
+getDropboxFile(WFShowFilePicker: Boolean, SelectMultiple: Boolean, WFGetFilePath: Text, WFGetFileInitialDirectoryPath: Text, WFFileErrorIfNotFound: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -247,7 +247,7 @@ Shortcuts action: `is.workflow.actions.dropbox.open`
 Gets the contents of a folder in Instapaper. Requires Instapaper Premium.
 
 ```chute
-getInstapaperBookmarks(Text, Number) -> URL
+getInstapaperBookmarks(WFInstapaperFolder: Text, WFBookmarkCount: Number) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -262,7 +262,7 @@ Shortcuts action: `is.workflow.actions.instapaper.get`
 Returns items in your Pocket account.
 
 ```chute
-getItemsFromPocket(Number, Enum, Text, Text) -> URL
+getItemsFromPocket(WFPocketItemCount: Number, WFPocketItemState: Enum, WFPocketItemSearchTerm: Text, WFPocketItemSearchTags: Text) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -279,7 +279,7 @@ Shortcuts action: `is.workflow.actions.pocket.get`
 Gets a link to the Evernote note passed into the action, which can be shared.
 
 ```chute
-getNoteLink(Boolean, Any) -> URL
+getNoteLink(WFEvernoteShareInAppLink: Boolean, WFInput: Any) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -294,7 +294,7 @@ Shortcuts action: `is.workflow.actions.evernote.getlink`
 Gets recent notes from Evernote, optionally filtering based on criteria.
 
 ```chute
-getNotes(Text, List&lt;Text&gt;, Text, Number) -> Any
+getNotes(WFEvernoteNotesTitleSearch: Text, WFEvernoteNotesTags: List<Text>, WFEvernoteNotesNotebookName: Text, WFEvernoteNotesCount: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -311,7 +311,7 @@ Shortcuts action: `is.workflow.actions.evernote.get`
 Gets bookmarks in your Pinboard account.
 
 ```chute
-getPinboardBookmarks(Text, Number) -> URL
+getPinboardBookmarks(WFPinTags: Text, WFBookmarkCount: Number) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -326,7 +326,7 @@ Shortcuts action: `is.workflow.actions.pinboard.get`
 Gets cards, lists, or boards in your Trello account.
 
 ```chute
-getTrelloItems(Enum, Text, Text) -> Any
+getTrelloItems(WFTrelloItemType: Enum, WFTrelloBoard: Text, WFTrelloList: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -342,7 +342,7 @@ Shortcuts action: `is.workflow.actions.trello.get`
 Imports the photos passed as input into Lightroom.
 
 ```chute
-importToLightroom(Boolean, Enum, Text, Any)
+importToLightroom(applyPreset: Boolean, presetGroup: Enum, preset: Text, WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -375,7 +375,7 @@ Shortcuts action: `com.apple.TVRemoteUIService.LaunchRemoteIntent`
 Opens BlindSquare showing information about the place passed as input, so you can save it as a favorite, start tracking it, or start simulation mode.
 
 ```chute
-openInBlindsquare(Boolean, Text)
+openInBlindsquare(WFBlindSquareSimulation: Boolean, WFInput: Text)
 ```
 
 | Parameter | Type | Default |
@@ -390,7 +390,7 @@ Shortcuts action: `is.workflow.actions.showinblindsquare`
 Opens a file in GoodReader.
 
 ```chute
-openInGoodreader(Any)
+openInGoodreader(WFInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -412,7 +412,7 @@ Shortcuts action: `com.apple.TVRemoteUIService.PauseContentIntent`
 Posts the input to the specified Slack channel.
 
 ```chute
-postToSlack(Text, Text, Any)
+postToSlack(WFAccount: Text, SlackChannel: Text, WFSlackInput: Any)
 ```
 
 | Parameter | Type | Default |
@@ -428,7 +428,7 @@ Shortcuts action: `is.workflow.actions.slack.send`
 Posts the content passed into the action to Tumblr.
 
 ```chute
-postToTumblr(Any, Boolean, Text, Text, Enum, Text, Text, Text, Text, Text) -> URL
+postToTumblr(WFInput: Any, WFComposeInApp: Boolean, WFBlogName: Text, WFPostType: Text, WFPostState: Enum, WFPostTitle: Text, WFPostSource: Text, WFPostCaption: Text, WFPostTags: Text, WFPostDescription: Text) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -451,7 +451,7 @@ Shortcuts action: `is.workflow.actions.tumblr.post`
 Posts the input to a WordPress blog as a new post or page.
 
 ```chute
-postToWordpress(Text, Text, Text, Text, Text, Text, Text, Text, Any, Boolean, Text, Text, Text, Text, Any, Any, Dictionary, Any) -> URL
+postToWordpress(WFAccount: Text, Blog: Text, Title: Text, Type: Text, Format: Text, Status: Text, Categories: Text, Tags: Text, Advanced: Any, AllowComments: Boolean, Slug: Text, Excerpt: Text, Date: Text, Template: Text, ThumbnailImage: Any, ShowCustomFields: Any, CustomFields: Dictionary, WFInput: Any) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -490,7 +490,7 @@ Shortcuts action: `com.apple.TVRemoteUIService.ReduceLoudSoundsIntent`
 Requests a payment from the specified people using a payment app on your device.
 
 ```chute
-requestPayment(Text, Text, Number, Boolean, Boolean, Text)
+requestPayment(IntentAppDefinition: Text, WFVenmoActionRecipients: Text, WFVenmoActionAmount: Number, WFVenmoActionAppSwitch: Boolean, ShowWhenRun: Boolean, WFVenmoActionNote: Text)
 ```
 
 | Parameter | Type | Default |
@@ -509,7 +509,7 @@ Shortcuts action: `is.workflow.actions.venmo.request`
 Save files to Dropbox. Turn off “Ask Where to Save” in order to specify a destination path.
 
 ```chute
-saveDropboxFile(Boolean, Text, Boolean, Any) -> Any
+saveDropboxFile(WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFileOverwrite: Boolean, WFInput: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -524,7 +524,7 @@ Shortcuts action: `is.workflow.actions.dropbox.savefile`
 ## `saveWithTransmit`
 
 ```chute
-saveWithTransmit(Enum, Text, Text)
+saveWithTransmit(TransmitSaveTo: Enum, TransmitFavoriteName: Text, TransmitPath: Text)
 ```
 
 | Parameter | Type | Default |
@@ -540,7 +540,7 @@ Shortcuts action: `com.panic.iOS.Transmit.Share`
 Sends a payment to the specified people using a payment app on your device.
 
 ```chute
-sendPayment(Text, Text, Number, Boolean, Text)
+sendPayment(IntentAppDefinition: Text, WFVenmoActionRecipients: Text, WFVenmoActionAmount: Number, WFVenmoActionAppSwitch: Boolean, WFVenmoActionNote: Text)
 ```
 
 | Parameter | Type | Default |
@@ -598,7 +598,7 @@ Shortcuts action: `com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent`
 Uploads the input to CloudApp and returns the CloudApp URL.
 
 ```chute
-uploadToCloudapp(Enum, Any) -> URL
+uploadToCloudapp(WFCloudAppPrivacyType: Enum, WFInput: Any) -> URL
 ```
 
 | Parameter | Type | Default |
