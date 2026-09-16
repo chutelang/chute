@@ -53,6 +53,7 @@ interface StdlibJsonAction {
     enumType?: string | null;
   }>;
   parameterOverrides?: Record<string, { Key?: string }>;
+  input?: { ParameterKey?: string } | null;
   output?: { Types?: string[] } | null;
 }
 
@@ -219,6 +220,18 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
         type,
         hasDefault: true,
       });
+    }
+  }
+
+  const inputKey = action.input?.ParameterKey;
+  if (inputKey) {
+    const idx = params.findIndex((p) => p.label === inputKey);
+    if (idx > 0) {
+      const removed = params.splice(idx, 1);
+      const inputParam = removed[0];
+      if (inputParam) {
+        params.unshift(inputParam);
+      }
     }
   }
 
