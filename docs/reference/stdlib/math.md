@@ -11,16 +11,16 @@ import Math;
 Performs a number operation on the input and returns the result.
 
 ```chute
-calculate(WFInput: Number, WFMathOperation: Text, WFScientificMathOperation: Text, WFMathOperand: Number, WFScientificMathOperand: Number) -> Number
+calculate(Number, Enum, Enum, Number, Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Number` | — |
-| `WFMathOperation` | `Text` | `"+"` |
-| `WFScientificMathOperation` | `Text` | — |
-| `WFMathOperand` | `Number` | — |
-| `WFScientificMathOperand` | `Number` | — |
+| `WFInput` | Number | — |
+| `WFMathOperation` | + | - | × | ÷ | … | `"+"` |
+| `WFScientificMathOperation` | Modulus | x^2 | x^3 | x^y | e^x | 10^x | ln(x) | log(x) | √x | ∛x | x! | sin(x) | cos(x) | tan(x) | abs(x) | — |
+| `WFMathOperand` | Number | — |
+| `WFScientificMathOperand` | Number | — |
 
 Shortcuts action: `is.workflow.actions.math`
 
@@ -39,12 +39,12 @@ $8 USD in euros
 7 feet in meters
 
 ```chute
-calculateExpression(Input: Text) -> Number
+calculateExpression(Text) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Input` | `Text` | — |
+| `Input` | Text | — |
 
 Shortcuts action: `is.workflow.actions.calculateexpression`
 
@@ -53,13 +53,13 @@ Shortcuts action: `is.workflow.actions.calculateexpression`
 Calculates statistics on the numbers that are provided as input.
 
 ```chute
-calculateStatistics(WFStatisticsOperation: Text, Input: Any) -> Number
+calculateStatistics(Enum, Any) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFStatisticsOperation` | `Text` | `"Average"` |
-| `Input` | `Any` | — |
+| `WFStatisticsOperation` | Average | Minimum | Maximum | Sum | Median | Mode | Range | Standard Deviation | `"Average"` |
+| `Input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.statistics`
 
@@ -68,14 +68,14 @@ Shortcuts action: `is.workflow.actions.statistics`
 Converts the measurements passed into the action to the specified unit.
 
 ```chute
-convertMeasurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Text, WFInput: Any) -> Number
+convertMeasurement(Text, Text, Any) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMeasurementUnitType` | `Text` | `"Length"` |
-| `WFMeasurementUnit` | `Text` | — |
-| `WFInput` | `Any` | — |
+| `WFMeasurementUnitType` | Text | `"Length"` |
+| `WFMeasurementUnit` | Text | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.measurement.convert`
 
@@ -84,13 +84,13 @@ Shortcuts action: `is.workflow.actions.measurement.convert`
 Passes the specified measurement (including number and unit) to the next action.
 
 ```chute
-measurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Number) -> Number
+measurement(Text, Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMeasurementUnitType` | `Text` | `"Length"` |
-| `WFMeasurementUnit` | `Number` | — |
+| `WFMeasurementUnitType` | Text | `"Length"` |
+| `WFMeasurementUnit` | Number | — |
 
 Shortcuts action: `is.workflow.actions.measurement.create`
 
@@ -99,12 +99,12 @@ Shortcuts action: `is.workflow.actions.measurement.create`
 Passes a number to the next action.
 
 ```chute
-number(WFNumberActionNumber: Number) -> Number
+number(Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFNumberActionNumber` | `Number` | — |
+| `WFNumberActionNumber` | Number | — |
 
 Shortcuts action: `is.workflow.actions.number`
 
@@ -113,13 +113,13 @@ Shortcuts action: `is.workflow.actions.number`
 Passes a random number between the given minimum and maximum to the next action. The minimum and maximum numbers are included as possible results.
 
 ```chute
-randomNumber(WFRandomNumberMinimum: Number, WFRandomNumberMaximum: Number) -> Number
+randomNumber(Number, Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFRandomNumberMinimum` | `Number` | — |
-| `WFRandomNumberMaximum` | `Number` | — |
+| `WFRandomNumberMinimum` | Number | — |
+| `WFRandomNumberMaximum` | Number | — |
 
 Shortcuts action: `is.workflow.actions.number.random`
 
@@ -128,14 +128,14 @@ Shortcuts action: `is.workflow.actions.number.random`
 Rounds the number(s) passed into the action.
 
 ```chute
-roundNumber(WFInput: Number, WFRoundTo: Text, WFRoundMode: Text, TenToThePowerOf: Number) -> Number
+roundNumber(Number, Enum, Enum, Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Number` | — |
-| `WFRoundTo` | `Text` | `"Ones Place"` |
-| `WFRoundMode` | `Text` | `"Normal"` |
-| `TenToThePowerOf` | `Number` | 0 |
+| `WFInput` | Number | — |
+| `WFRoundTo` | Millions | Hundred Thousands | Ten Thousands | Thousands | Hundreds Place | Tens Place | Ones Place | Tenths | Hundredths | Thousandths | Ten Thousandths | Hundred Thousandths | Millionths | Ten Millionths | Hundred Millionths | Billionths | 10 ^ | `"Ones Place"` |
+| `WFRoundMode` | Normal | Always Round Up | Always Round Down | `"Normal"` |
+| `TenToThePowerOf` | Number | 0 |
 
 Shortcuts action: `is.workflow.actions.round`

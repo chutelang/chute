@@ -13,13 +13,13 @@ Appends this action's input to the specified variable, creating the variable if 
 This allows you to make a variable hold multiple items.
 
 ```chute
-addToVariable(WFVariableName: Any, WFInput: Any) -> Any
+addToVariable(Any, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVariableName` | `Any` | — |
-| `WFInput` | `Any` | — |
+| `WFVariableName` | Any | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.appendvariable`
 
@@ -28,14 +28,14 @@ Shortcuts action: `is.workflow.actions.appendvariable`
 Adds or subtracts an amount of time from the date passed into the action.
 
 ```chute
-adjustDate(WFDate: Text, WFAdjustOperation: Text, WFDuration: Number) -> Text
+adjustDate(Text, Enum, Number) -> Date
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDate` | `Text` | — |
-| `WFAdjustOperation` | `Text` | `"Add"` |
-| `WFDuration` | `Number` | — |
+| `WFDate` | Text | — |
+| `WFAdjustOperation` | Add | Subtract | Get Start of Minute | Get Start of Hour | Get Start of Day | Get Start of Week | Get Start of Month | Get Start of Year | `"Add"` |
+| `WFDuration` | Number | — |
 
 > This action supports decimal numbers when adding or subtracting seconds, minutes, hours, or days. Otherwise only integers are supported.
 
@@ -46,8 +46,23 @@ Shortcuts action: `is.workflow.actions.adjustdate`
 Displays a dialog prompting the user to enter a piece of information.
 
 ```chute
-askForInput() -> Any
+askForInput(Any, AskForInputType, Any, Any, Any, Any, Any, Any, Any, Boolean, Boolean, Boolean) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFAskActionPrompt` | Any | — |
+| `WFInputType` | Text | Number | URL | Date | Time | Date and Time | — |
+| `WFAskActionDefaultAnswer` | Any | — |
+| `WFAskActionDefaultAnswerNumber` | Any | — |
+| `urlAnswer` | Any | — |
+| `WFAskActionDefaultAnswerURL` | Any | — |
+| `WFAskActionDefaultAnswerDate` | Any | — |
+| `WFAskActionDefaultAnswerTime` | Any | — |
+| `WFAskActionDefaultAnswerDateAndTime` | Any | — |
+| `WFAskActionAllowsDecimalNumbers` | Boolean | — |
+| `WFAskActionAllowsNegativeNumbers` | Boolean | — |
+| `WFAllowsMultilineText` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.ask`
 
@@ -56,14 +71,14 @@ Shortcuts action: `is.workflow.actions.ask`
 Encodes or decodes text or files using Base64 encoding.
 
 ```chute
-base64Encode(WFEncodeMode: Text, WFBase64LineBreakMode: Text, WFInput: Any) -> Text
+base64Encode(Enum, Enum, Any) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEncodeMode` | `Text` | `"Encode"` |
-| `WFBase64LineBreakMode` | `Text` | `"Every 76 Characters"` |
-| `WFInput` | `Any` | — |
+| `WFEncodeMode` | Encode | Decode | `"Encode"` |
+| `WFBase64LineBreakMode` | None | Every 64 Characters | Every 76 Characters | `"Every 76 Characters"` |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.base64encode`
 
@@ -72,15 +87,15 @@ Shortcuts action: `is.workflow.actions.base64encode`
 Presents a menu of the items passed as input to the action and outputs the user's selection.
 
 ```chute
-chooseFromList(WFInput: Any, WFChooseFromListActionPrompt: Text, WFChooseFromListActionSelectMultiple: Boolean, WFChooseFromListActionSelectAll: Boolean) -> Any
+chooseFromList(Any, Text, Boolean, Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
-| `WFChooseFromListActionPrompt` | `Text` | `""` |
-| `WFChooseFromListActionSelectMultiple` | `Boolean` | false |
-| `WFChooseFromListActionSelectAll` | `Boolean` | false |
+| `WFInput` | Any | — |
+| `WFChooseFromListActionPrompt` | Text | `""` |
+| `WFChooseFromListActionSelectMultiple` | Boolean | false |
+| `WFChooseFromListActionSelectAll` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.choosefromlist`
 
@@ -89,13 +104,13 @@ Shortcuts action: `is.workflow.actions.choosefromlist`
 Presents a menu and runs different actions based on which menu item was chosen.
 
 ```chute
-chooseFromMenu(WFMenuPrompt: Text, WFMenuItems: List<Any>)
+chooseFromMenu(Text, List<Any>)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMenuPrompt` | `Text` | — |
-| `WFMenuItems` | `List<Any>` | One,Two |
+| `WFMenuPrompt` | Text | — |
+| `WFMenuItems` | List<Any> | One,Two |
 
 Shortcuts action: `is.workflow.actions.choosefrommenu`
 
@@ -104,12 +119,12 @@ Shortcuts action: `is.workflow.actions.choosefrommenu`
 This action lets you explain how part of a shortcut works. When run, this action does nothing.
 
 ```chute
-comment(WFCommentActionText: Text)
+comment(Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCommentActionText` | `Text` | — |
+| `WFCommentActionText` | Text | — |
 
 Shortcuts action: `is.workflow.actions.comment`
 
@@ -128,14 +143,14 @@ Shortcuts action: `is.workflow.actions.handoff`
 Converts the specified date and time from one time zone to another.
 
 ```chute
-convertTimeZone(Date: Text, SourceTimeZone: Text, DestinationTimeZone: Text) -> Text
+convertTimeZone(Text, Text, Text) -> Date
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Date` | `Text` | — |
-| `SourceTimeZone` | `Text` | — |
-| `DestinationTimeZone` | `Text` | — |
+| `Date` | Text | — |
+| `SourceTimeZone` | Text | — |
+| `DestinationTimeZone` | Text | — |
 
 Shortcuts action: `is.workflow.actions.converttimezone`
 
@@ -144,13 +159,13 @@ Shortcuts action: `is.workflow.actions.converttimezone`
 Counts the number of items, characters, words, sentences, or lines passed as input.
 
 ```chute
-count(WFCountType: Text, Input: Any) -> Number
+count(Enum, Any) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCountType` | `Text` | `"Items"` |
-| `Input` | `Any` | — |
+| `WFCountType` | Items | Characters | Words | Sentences | Lines | `"Items"` |
+| `Input` | Any | — |
 
 > This is just like the Count in Sesame Street, but instead of a vampire, it's a Shortcuts action.
 
@@ -161,16 +176,16 @@ Shortcuts action: `is.workflow.actions.count`
 Creates a Quick Response (QR) code for the specified text.
 
 ```chute
-createQrCode(WFText: Text, WFQRForegroundColor: Text, WFQRBackgroundColor: Text, WFQRRounded: Boolean, WFQRErrorCorrectionLevel: Text) -> Any
+createQrCode(Text, Text, Text, Boolean, Enum) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFText` | `Text` | — |
-| `WFQRForegroundColor` | `Text` | [object Object] |
-| `WFQRBackgroundColor` | `Text` | [object Object] |
-| `WFQRRounded` | `Boolean` | false |
-| `WFQRErrorCorrectionLevel` | `Text` | `"Medium"` |
+| `WFText` | Text | — |
+| `WFQRForegroundColor` | Text | [object Object] |
+| `WFQRBackgroundColor` | Text | [object Object] |
+| `WFQRRounded` | Boolean | false |
+| `WFQRErrorCorrectionLevel` | Low | Medium | Quartile | High | `"Medium"` |
 
 Shortcuts action: `is.workflow.actions.generatebarcode`
 
@@ -179,15 +194,15 @@ Shortcuts action: `is.workflow.actions.generatebarcode`
 Passes the specified date and time to the next action.
 
 ```chute
-date(WFDateActionMode: Text, WFDateActionDate: Text, WFEventOccurrenceMode: Text, WFEventOccurrenceSpecifiedYear: Text) -> Text
+date(Text, Text, Enum, Text) -> Date
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDateActionMode` | `Text` | `"Current Date"` |
-| `WFDateActionDate` | `Text` | — |
-| `WFEventOccurrenceMode` | `Text` | `"Next Occurrence"` |
-| `WFEventOccurrenceSpecifiedYear` | `Text` | — |
+| `WFDateActionMode` | Text | `"Current Date"` |
+| `WFDateActionDate` | Text | — |
+| `WFEventOccurrenceMode` | Next Occurrence | Specified Year | `"Next Occurrence"` |
+| `WFEventOccurrenceSpecifiedYear` | Text | — |
 
 Shortcuts action: `is.workflow.actions.date`
 
@@ -196,12 +211,12 @@ Shortcuts action: `is.workflow.actions.date`
 Passes the specified list of key-value pairs to the next action as a dictionary.
 
 ```chute
-dictionary(WFItems: Dictionary) -> Dictionary
+dictionary(Dictionary) -> Dictionary
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFItems` | `Dictionary` | — |
+| `WFItems` | Dictionary | — |
 
 > When coerced to text, the dictionary is represented as JSON.
 
@@ -230,18 +245,18 @@ Shortcuts action: `is.workflow.actions.filter.apps`
 Formats a date and time into text.
 
 ```chute
-formatDate(WFDateFormatStyle: Text, WFRelativeDateFormatStyle: Text, WFTimeFormatStyle: Text, WFISO8601IncludeTime: Boolean, WFDateFormat: Text, WFDate: Text, WFLocale: Text) -> Text
+formatDate(Enum, Enum, Enum, Boolean, Text, Text, Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDateFormatStyle` | `Text` | `"Short"` |
-| `WFRelativeDateFormatStyle` | `Text` | `"Medium"` |
-| `WFTimeFormatStyle` | `Text` | `"Short"` |
-| `WFISO8601IncludeTime` | `Boolean` | — |
-| `WFDateFormat` | `Text` | — |
-| `WFDate` | `Text` | — |
-| `WFLocale` | `Text` | — |
+| `WFDateFormatStyle` | None | Short | Medium | Long | Relative | RFC 2822 | ISO 8601 | Custom | `"Short"` |
+| `WFRelativeDateFormatStyle` | Short | Medium | Long | `"Medium"` |
+| `WFTimeFormatStyle` | None | Short | Medium | Long | Relative | `"Short"` |
+| `WFISO8601IncludeTime` | Boolean | — |
+| `WFDateFormat` | Text | — |
+| `WFDate` | Text | — |
+| `WFLocale` | Text | — |
 
 > Custom format strings use the format patterns from Unicode Technical Standard #35 (unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_Patterns).
 
@@ -252,14 +267,14 @@ Shortcuts action: `is.workflow.actions.format.date`
 Formats a file size into text.
 
 ```chute
-formatFileSize(WFFileSizeFormat: Text, WFFileSizeIncludeUnits: Boolean, WFFileSize: Number) -> Text
+formatFileSize(Enum, Boolean, Number) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFileSizeFormat` | `Text` | `"Automatic"` |
-| `WFFileSizeIncludeUnits` | `Boolean` | true |
-| `WFFileSize` | `Number` | — |
+| `WFFileSizeFormat` | Automatic | Bytes | KB | MB | GB | TB | PB | EB | ZB | YB or Higher | `"Automatic"` |
+| `WFFileSizeIncludeUnits` | Boolean | true |
+| `WFFileSize` | Number | — |
 
 > 1000 bytes are shown as 1 KB.
 
@@ -270,13 +285,13 @@ Shortcuts action: `is.workflow.actions.format.filesize`
 Formats a number into text.
 
 ```chute
-formatNumber(WFNumber: Number, WFNumberFormatDecimalPlaces: Number) -> Text
+formatNumber(Number, Number) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFNumber` | `Number` | — |
-| `WFNumberFormatDecimalPlaces` | `Number` | 2 |
+| `WFNumber` | Number | — |
+| `WFNumberFormatDecimalPlaces` | Number | 2 |
 
 Shortcuts action: `is.workflow.actions.format.number`
 
@@ -285,13 +300,13 @@ Shortcuts action: `is.workflow.actions.format.number`
 Generates a MD5/SHA1 hash from the input.
 
 ```chute
-generateHash(WFHashType: Text, WFInput: Any) -> Text
+generateHash(Enum, Any) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHashType` | `Text` | `"MD5"` |
-| `WFInput` | `Any` | — |
+| `WFHashType` | MD5 | SHA1 | SHA256 | SHA512 | `"MD5"` |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.hash`
 
@@ -300,12 +315,12 @@ Shortcuts action: `is.workflow.actions.hash`
 Returns any street addresses found in the output from the previous action.
 
 ```chute
-getAddressesFromInput(WFInput: Any) -> Any
+getAddressesFromInput(Any) -> Location
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.detect.address`
 
@@ -314,12 +329,12 @@ Shortcuts action: `is.workflow.actions.detect.address`
 Gets contacts from the result of the previous action.
 
 ```chute
-getContactsFromInput(WFInput: Any) -> Any
+getContactsFromInput(Any) -> Contact
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.detect.contacts`
 
@@ -328,12 +343,12 @@ Shortcuts action: `is.workflow.actions.detect.contacts`
 Returns any dates found in the output from the previous action.
 
 ```chute
-getDatesFromInput(WFInput: Any) -> Text
+getDatesFromInput(Any) -> Date
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.detect.date`
 
@@ -350,12 +365,12 @@ Shortcuts action: `is.workflow.actions.properties.appstore`
 Makes a dictionary from the text passed as input. JSON (like {"foo": "bar"}), key-value pairs (like foo=bar&baz=biz), and XML-based plist are supported.
 
 ```chute
-getDictionaryFromInput(WFInput: Any) -> Dictionary
+getDictionaryFromInput(Any) -> Dictionary
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.detect.dictionary`
 
@@ -364,14 +379,14 @@ Shortcuts action: `is.workflow.actions.detect.dictionary`
 Gets the value for the specified key in the dictionary passed into the action.
 
 ```chute
-getDictionaryValue(WFGetDictionaryValueType: Text, WFDictionaryKey: Text, WFInput: Any) -> Any
+getDictionaryValue(Enum, Text, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFGetDictionaryValueType` | `Text` | `"Value"` |
-| `WFDictionaryKey` | `Text` | — |
-| `WFInput` | `Any` | — |
+| `WFGetDictionaryValueType` | Value | All Keys | All Values | `"Value"` |
+| `WFDictionaryKey` | Text | — |
+| `WFInput` | Any | — |
 
 > You can reference values deep inside of a dictionary by providing multiple keys separated by dots. For example, to get the value "soup" from the dictionary {"beverages": [{"favorite": "soup"}]}, you can specify the key path "beverages.1.favorite".
 
@@ -382,12 +397,12 @@ Shortcuts action: `is.workflow.actions.getvalueforkey`
 Returns any email addresses found in the output from the previous action.
 
 ```chute
-getEmailAddressesFromInput(WFInput: Text) -> Text
+getEmailAddressesFromInput(Text) -> Email
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Text` | — |
+| `WFInput` | Text | — |
 
 Shortcuts action: `is.workflow.actions.detect.emailaddress`
 
@@ -396,13 +411,13 @@ Shortcuts action: `is.workflow.actions.detect.emailaddress`
 Returns a particular file type from the input.
 
 ```chute
-getFileOfType(WFFileType: Text, WFInput: Any) -> Any
+getFileOfType(Text, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFileType` | `Text` | `"public.rtf"` |
-| `WFInput` | `Any` | — |
+| `WFFileType` | Text | `"public.rtf"` |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.gettypeaction`
 
@@ -413,12 +428,12 @@ Gets images from the result of the previous action.
 For example, this action can get the album art of a song, or all the images on a web page.
 
 ```chute
-getImagesFromInput(WFInput: Any) -> Any
+getImagesFromInput(Any) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.detect.images`
 
@@ -427,16 +442,16 @@ Shortcuts action: `is.workflow.actions.detect.images`
 Returns one or more items from the list passed as input. You can get the first item, the last item, a random item, the item at a particular index, or items in a range of indexes.
 
 ```chute
-getItemFromList(WFItemSpecifier: Text, WFItemIndex: Number, WFItemRangeStart: Number, WFItemRangeEnd: Number, WFInput: Any) -> Any
+getItemFromList(Enum, Number, Number, Number, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFItemSpecifier` | `Text` | `"First Item"` |
-| `WFItemIndex` | `Number` | — |
-| `WFItemRangeStart` | `Number` | — |
-| `WFItemRangeEnd` | `Number` | — |
-| `WFInput` | `Any` | — |
+| `WFItemSpecifier` | First Item | Last Item | Random Item | Item At Index | Items in Range | `"First Item"` |
+| `WFItemIndex` | Number | — |
+| `WFItemRangeStart` | Number | — |
+| `WFItemRangeEnd` | Number | — |
+| `WFInput` | Any | — |
 
 > Lists use one-based indexing, so the first item is at index 1, the second is at index 2, etc.
 
@@ -447,13 +462,13 @@ Shortcuts action: `is.workflow.actions.getitemfromlist`
 Returns the name of every item passed as input. Depending on the input, this could be a file name, the title of a website, the title of a calendar event, etc.
 
 ```chute
-getName(WFInput: Any, GetWebPageTitle: Boolean) -> Text
+getName(Any, Boolean) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
-| `GetWebPageTitle` | `Boolean` | true |
+| `WFInput` | Any | — |
+| `GetWebPageTitle` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.getitemname`
 
@@ -462,12 +477,12 @@ Shortcuts action: `is.workflow.actions.getitemname`
 Returns numbers from the previous action's output.
 
 ```chute
-getNumbersFromInput(WFInput: Number) -> Number
+getNumbersFromInput(Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Number` | — |
+| `WFInput` | Number | — |
 
 Shortcuts action: `is.workflow.actions.detect.number`
 
@@ -476,13 +491,13 @@ Shortcuts action: `is.workflow.actions.detect.number`
 Returns a particular object class from the input.
 
 ```chute
-getObjectOfClass(Class: Text, Input: Any) -> Any
+getObjectOfClass(Text, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Class` | `Text` | — |
-| `Input` | `Any` | — |
+| `Class` | Text | — |
+| `Input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.getclassaction`
 
@@ -491,12 +506,12 @@ Shortcuts action: `is.workflow.actions.getclassaction`
 Returns any phone numbers found in the output from the previous action.
 
 ```chute
-getPhoneNumbersFromInput(WFInput: Text) -> Text
+getPhoneNumbersFromInput(Text) -> Phone
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Text` | — |
+| `WFInput` | Text | — |
 
 Shortcuts action: `is.workflow.actions.detect.phonenumber`
 
@@ -507,12 +522,12 @@ Returns text from the previous action's output.
 For example, this action can get the name of a photo or song, or the text of a web page.
 
 ```chute
-getTextFromInput(WFInput: Any) -> Text
+getTextFromInput(Any) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.detect.text`
 
@@ -521,14 +536,14 @@ Shortcuts action: `is.workflow.actions.detect.text`
 Subtracts the specified date from the date passed into the action. For example, this action could get the number of minutes from now until a calendar event passed in as input.
 
 ```chute
-getTimeBetweenDates(WFTimeUntilFromDate: Text, WFInput: Text, WFTimeUntilUnit: Text) -> Number
+getTimeBetweenDates(Text, Text, Enum) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFTimeUntilFromDate` | `Text` | — |
-| `WFInput` | `Text` | — |
-| `WFTimeUntilUnit` | `Text` | `"Minutes"` |
+| `WFTimeUntilFromDate` | Text | — |
+| `WFInput` | Text | — |
+| `WFTimeUntilUnit` | Total Time | Seconds | Minutes | Hours | Days | Weeks | Months | Years | `"Minutes"` |
 
 > This action outputs a negative number if the input date takes place before the specified date.
 
@@ -539,12 +554,12 @@ Shortcuts action: `is.workflow.actions.gettimebetweendates`
 Returns the type of every item passed as input. For example, if a URL is passed, this action will return “URL”.
 
 ```chute
-getType(WFInput: Any) -> Text
+getType(Any) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.getitemtype`
 
@@ -553,12 +568,12 @@ Shortcuts action: `is.workflow.actions.getitemtype`
 Returns any links found in the output from the previous action.
 
 ```chute
-getUrlsFromInput(WFInput: Text) -> Text
+getUrlsFromInput(Text) -> URL
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Text` | — |
+| `WFInput` | Text | — |
 
 Shortcuts action: `is.workflow.actions.detect.link`
 
@@ -567,12 +582,12 @@ Shortcuts action: `is.workflow.actions.detect.link`
 Gets the value of the specified variable and passes it to the next action.
 
 ```chute
-getVariable(WFVariable: Any) -> Any
+getVariable(Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVariable` | `Any` | — |
+| `WFVariable` | Any | — |
 
 Shortcuts action: `is.workflow.actions.getvariable`
 
@@ -591,16 +606,16 @@ Shortcuts action: `is.workflow.actions.conditional`
 Stops execution of the current shortcut and dismisses the shortcut on screen. No more actions will be run after this action.
 
 ```chute
-input(WFInputType: Text, WFInputSurface: Text, WFNoInputBehavior: Text, WFStopAndRespondResponse: Text, WFAskForType: Text)
+input(Text, Text, Enum, Text, Enum)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInputType` | `Text` | — |
-| `WFInputSurface` | `Text` | `""` |
-| `WFNoInputBehavior` | `Text` | `"Stop and Respond"` |
-| `WFStopAndRespondResponse` | `Text` | — |
-| `WFAskForType` | `Text` | `"Photos"` |
+| `WFInputType` | Text | — |
+| `WFInputSurface` | Text | `""` |
+| `WFNoInputBehavior` | Stop and Respond | Ask For | Get Clipboard | Continue | `"Stop and Respond"` |
+| `WFStopAndRespondResponse` | Text | — |
+| `WFAskForType` | Files | Text | Date | Photos | Contacts | Email Address | Music | Phone Number | `"Photos"` |
 
 Shortcuts action: `is.workflow.actions.input`
 
@@ -609,12 +624,12 @@ Shortcuts action: `is.workflow.actions.input`
 Allows you to specify a list of items to be passed to the next action.
 
 ```chute
-list(WFItems: List<Any>) -> Any
+list(List<Any>) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFItems` | `List<Any>` | One,Two |
+| `WFItems` | List<Any> | One,Two |
 
 > If you specify a variable, the contents of that variable will be included in the list.
 
@@ -635,14 +650,14 @@ Shortcuts action: `is.workflow.actions.nothing`
 Opens the specified app.
 
 ```chute
-openApp(WFSelectedApp: Text, WFAppName: Text, WFWindowingFormat: Text) -> Any
+openApp(Text, Text, Enum) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSelectedApp` | `Text` | — |
-| `WFAppName` | `Text` | — |
-| `WFWindowingFormat` | `Text` | `"Full Screen"` |
+| `WFSelectedApp` | Text | — |
+| `WFAppName` | Text | — |
+| `WFWindowingFormat` | Full Screen | Left | Right | Top | Bottom | Top Leading | Top Trailing | Bottom Leading | Bottom Trailing | Left Third | Middle Third | Right Third | `"Full Screen"` |
 
 Shortcuts action: `is.workflow.actions.openapp`
 
@@ -651,15 +666,15 @@ Shortcuts action: `is.workflow.actions.openapp`
 Opens the input as a file in the specified app.
 
 ```chute
-openFile(WFOpenInAskWhenRun: Boolean, WFSelectedApp: Text, WFAppName: Text, WFInput: Any)
+openFile(Boolean, Text, Text, Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFOpenInAskWhenRun` | `Boolean` | false |
-| `WFSelectedApp` | `Text` | — |
-| `WFAppName` | `Text` | — |
-| `WFInput` | `Any` | — |
+| `WFOpenInAskWhenRun` | Boolean | false |
+| `WFSelectedApp` | Text | — |
+| `WFAppName` | Text | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.openin`
 
@@ -668,12 +683,12 @@ Shortcuts action: `is.workflow.actions.openin`
 Repeats the contained actions, running them the specified number of times.
 
 ```chute
-repeat(WFRepeatCount: Number) -> Any
+repeat(Number) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFRepeatCount` | `Number` | 1 |
+| `WFRepeatCount` | Number | 1 |
 
 Shortcuts action: `is.workflow.actions.repeat.count`
 
@@ -682,12 +697,12 @@ Shortcuts action: `is.workflow.actions.repeat.count`
 Takes a list of items as input, and runs the contained actions once for each item in the list.
 
 ```chute
-repeatWithEach(WFInput: Any) -> Any
+repeatWithEach(Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.repeat.each`
 
@@ -696,13 +711,13 @@ Shortcuts action: `is.workflow.actions.repeat.each`
 This action executes an AppleScript.
 
 ```chute
-runApplescript(Input: Any, Script: Text) -> Any
+runApplescript(Any, Text) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Input` | `Any` | — |
-| `Script` | `Text` | `"on run {input, parameters}
+| `Input` | Any | — |
+| `Script` | Text | `"on run {input, parameters}
     (* Your script goes here *)
     return input
 end run"` |
@@ -714,13 +729,13 @@ Shortcuts action: `is.workflow.actions.runapplescript`
 This action executes a JavaScript for Automation (JXA) script.
 
 ```chute
-runJavascriptForMacAutomation(Input: Any, Script: Text) -> Any
+runJavascriptForMacAutomation(Any, Text) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Input` | `Any` | — |
-| `Script` | `Text` | `"function run(input, parameters) {
+| `Input` | Any | — |
+| `Script` | Text | `"function run(input, parameters) {
     // Your script goes here
     return input;
 }"` |
@@ -732,19 +747,19 @@ Shortcuts action: `is.workflow.actions.runjavascriptforautomation`
 Runs a script on a remote computer over SSH.
 
 ```chute
-runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser: Text, WFSSHAuthenticationType: Text, WFSSHPassword: Text, WFSSHKey: Text, WFInput: Any) -> Any
+runScriptOverSsh(Text, Text, Text, Text, Enum, Text, Text, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSSHScript` | `Text` | — |
-| `WFSSHHost` | `Text` | — |
-| `WFSSHPort` | `Text` | `"22"` |
-| `WFSSHUser` | `Text` | — |
-| `WFSSHAuthenticationType` | `Text` | `"Password"` |
-| `WFSSHPassword` | `Text` | — |
-| `WFSSHKey` | `Text` | — |
-| `WFInput` | `Any` | — |
+| `WFSSHScript` | Text | — |
+| `WFSSHHost` | Text | — |
+| `WFSSHPort` | Text | `"22"` |
+| `WFSSHUser` | Text | — |
+| `WFSSHAuthenticationType` | Password | SSH Key | `"Password"` |
+| `WFSSHPassword` | Text | — |
+| `WFSSHKey` | Text | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.runsshscript`
 
@@ -753,16 +768,16 @@ Shortcuts action: `is.workflow.actions.runsshscript`
 This action executes a UNIX shell script. The script will execute starting in your user’s home directory.
 
 ```chute
-runShellScript(Script: Text, Shell: Text, Input: Any, InputMode: Text, RunAsRoot: Boolean) -> Any
+runShellScript(Text, Text, Any, Enum, Boolean) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Script` | `Text` | — |
-| `Shell` | `Text` | — |
-| `Input` | `Any` | — |
-| `InputMode` | `Text` | `"to stdin"` |
-| `RunAsRoot` | `Boolean` | false |
+| `Script` | Text | — |
+| `Shell` | Text | — |
+| `Input` | Any | — |
+| `InputMode` | to stdin | as arguments | `"to stdin"` |
+| `RunAsRoot` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.runshellscript`
 
@@ -781,14 +796,14 @@ Shortcuts action: `is.workflow.actions.scanbarcode`
 Sets a value in the dictionary passed into the action. 
 
 ```chute
-setDictionaryValue(WFDictionaryKey: Text, WFDictionaryValue: Text, WFDictionary: Any) -> Dictionary
+setDictionaryValue(Text, Text, Any) -> Dictionary
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDictionaryKey` | `Text` | — |
-| `WFDictionaryValue` | `Text` | — |
-| `WFDictionary` | `Any` | — |
+| `WFDictionaryKey` | Text | — |
+| `WFDictionaryValue` | Text | — |
+| `WFDictionary` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setvalueforkey`
 
@@ -797,14 +812,14 @@ Shortcuts action: `is.workflow.actions.setvalueforkey`
 Sets the name of the item passed as input.
 
 ```chute
-setName(WFName: Text, WFDontIncludeFileExtension: Boolean, WFInput: Any) -> Any
+setName(Text, Boolean, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFName` | `Text` | — |
-| `WFDontIncludeFileExtension` | `Boolean` | — |
-| `WFInput` | `Any` | — |
+| `WFName` | Text | — |
+| `WFDontIncludeFileExtension` | Boolean | — |
+| `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setitemname`
 
@@ -813,13 +828,13 @@ Shortcuts action: `is.workflow.actions.setitemname`
 Sets the value of the specified variable to the input of this action.
 
 ```chute
-setVariable(WFInput: Any, WFVariableName: Any)
+setVariable(Any, Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | `Any` | — |
-| `WFVariableName` | `Any` | — |
+| `WFInput` | Any | — |
+| `WFVariableName` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setvariable`
 
@@ -828,12 +843,12 @@ Shortcuts action: `is.workflow.actions.setvariable`
 Shows the Content Source of Input contents
 
 ```chute
-showContentAttribution(Input: Any)
+showContentAttribution(Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Input` | `Any` | — |
+| `Input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.debug.contentattribution`
 
@@ -848,14 +863,14 @@ Stops execution of the current shortcut, and outputs content. This action is use
 No more actions will be run after this action.
 
 ```chute
-stopAndOutput(WFOutput: Text, WFNoOutputSurfaceBehavior: Text, WFResponse: Text)
+stopAndOutput(Text, Enum, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFOutput` | `Text` | `""` |
-| `WFNoOutputSurfaceBehavior` | `Text` | `"Do Nothing"` |
-| `WFResponse` | `Text` | `""` |
+| `WFOutput` | Text | `""` |
+| `WFNoOutputSurfaceBehavior` | Respond | Do Nothing | Copy to Clipboard | `"Do Nothing"` |
+| `WFResponse` | Text | `""` |
 
 Shortcuts action: `is.workflow.actions.output`
 
@@ -872,12 +887,12 @@ Shortcuts action: `is.workflow.actions.exit`
 ## `unknownIntent`
 
 ```chute
-unknownIntent(ShowWhenRun: Boolean)
+unknownIntent(Boolean)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `ShowWhenRun` | `Boolean` | true |
+| `ShowWhenRun` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.sirikit.donation.handle`
 
@@ -894,15 +909,15 @@ Shortcuts action: `is.workflow.actions.useractivity.open`
 Use a model to handle complex requests in your shortcuts.
 
 ```chute
-useModel(WFLLMPrompt: Text, WFLLMModel: Text, FollowUp: Boolean, WFGenerativeResultType: Text) -> Any
+useModel(Text, Text, Boolean, Text) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFLLMPrompt` | `Text` | — |
-| `WFLLMModel` | `Text` | — |
-| `FollowUp` | `Boolean` | false |
-| `WFGenerativeResultType` | `Text` | — |
+| `WFLLMPrompt` | Text | — |
+| `WFLLMModel` | Text | — |
+| `FollowUp` | Boolean | false |
+| `WFGenerativeResultType` | Text | — |
 
 Shortcuts action: `is.workflow.actions.askllm`
 
@@ -911,12 +926,12 @@ Shortcuts action: `is.workflow.actions.askllm`
 Waits for the specified number of seconds before continuing with the next action.
 
 ```chute
-wait(WFDelayTime: Number)
+wait(Number)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDelayTime` | `Number` | 1 |
+| `WFDelayTime` | Number | 1 |
 
 Shortcuts action: `is.workflow.actions.delay`
 

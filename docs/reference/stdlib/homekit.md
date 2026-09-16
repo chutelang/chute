@@ -11,13 +11,13 @@ import HomeKit;
 Set the state of your home.
 
 ```chute
-controlHome(WFHome: Text, WFHomeTriggerActionSets: Text)
+controlHome(Text, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHome` | `Text` | — |
-| `WFHomeTriggerActionSets` | `Text` | — |
+| `WFHome` | Text | — |
+| `WFHomeTriggerActionSets` | Text | — |
 
 Shortcuts action: `is.workflow.actions.homeaccessory`
 
@@ -26,14 +26,14 @@ Shortcuts action: `is.workflow.actions.homeaccessory`
 Gets the state of a Home accessory.
 
 ```chute
-getState(WFHome: Text, WFHMService: Text, WFHMCharacteristic: Text)
+getState(Text, Text, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHome` | `Text` | — |
-| `WFHMService` | `Text` | — |
-| `WFHMCharacteristic` | `Text` | — |
+| `WFHome` | Text | — |
+| `WFHMService` | Text | — |
+| `WFHMCharacteristic` | Text | — |
 
 Shortcuts action: `is.workflow.actions.gethomeaccessorystate`
 
@@ -42,13 +42,13 @@ Shortcuts action: `is.workflow.actions.gethomeaccessorystate`
 Announces a message passed as input using Intercom.
 
 ```chute
-intercom(WFHome: Text, WFInput: Text)
+intercom(Text, Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHome` | `Text` | — |
-| `WFInput` | `Text` | — |
+| `WFHome` | Text | — |
+| `WFInput` | Text | — |
 
 > This action accepts both text and media files as input. Media files will be broadcast as they are. When text is provided, it will be first converted to audio using the current Siri language and voice. You can also use the Make Spoken Audio From Text action to customize the voice parameters.
 

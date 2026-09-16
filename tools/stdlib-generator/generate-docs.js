@@ -48,7 +48,27 @@ for (const [, actions] of byCategory) {
   actions.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function formatType(chuteType) {
+const INTENT_ENUM_VALUES = {
+  BooleanSettingOperation: ["Turn On", "Turn Off", "Toggle"],
+  DeviceAppearanceType: ["Light", "Dark"],
+  AskForInputType: ["Text", "Number", "URL", "Date", "Time", "Date and Time"],
+  ChangeCaseType: ["UPPERCASE", "lowercase", "Capitalize Every Word", "Capitalize with Title Case", "Capitalize with sentence case", "aLtErNaTiNg CaSe"],
+  CombineTextSeparator: ["New Lines", "Spaces", "Every Character", "Custom"],
+  SplitTextSeparator: ["New Lines", "Spaces", "Every Character", "Custom"],
+  MatchTextGetGroupType: ["Group At Index", "All Groups"],
+};
+
+function formatType(param) {
+  if (param.chuteType === "Enum" && param.items) {
+    return param.items.join(" | ");
+  }
+  if (param.enumType && INTENT_ENUM_VALUES[param.enumType]) {
+    return INTENT_ENUM_VALUES[param.enumType].join(" | ");
+  }
+  return param.chuteType || "Any";
+}
+
+function formatTypeSimple(chuteType) {
   return chuteType || "Any";
 }
 
@@ -56,13 +76,17 @@ const CONTENT_TYPE_MAP = {
   NSString: "Text",
   WFStringContentItem: "Text",
   NSAttributedString: "Text",
-  NSURL: "Text",
-  WFURLContentItem: "Text",
-  WFEmailAddress: "Text",
-  WFEmailAddressContentItem: "Text",
-  WFPhoneNumber: "Text",
-  WFPhoneNumberContentItem: "Text",
-  WFStreetAddress: "Text",
+  "public.plain-text": "Text",
+  NSURL: "URL",
+  WFURLContentItem: "URL",
+  WFEmailAddress: "Email",
+  WFEmailAddressContentItem: "Email",
+  WFPhoneNumber: "Phone",
+  WFPhoneNumberContentItem: "Phone",
+  WFStreetAddress: "Location",
+  CLLocation: "Location",
+  WFLocationContentItem: "Location",
+  MKMapItem: "Location",
   NSDecimalNumber: "Number",
   NSNumber: "Number",
   WFNumberContentItem: "Number",
@@ -70,9 +94,18 @@ const CONTENT_TYPE_MAP = {
   WFBooleanContentItem: "Boolean",
   NSDictionary: "Dictionary",
   WFDictionaryContentItem: "Dictionary",
-  NSDate: "Text",
-  NSDateComponents: "Text",
-  WFDateContentItem: "Text",
+  NSDate: "Date",
+  NSDateComponents: "Date",
+  WFDateContentItem: "Date",
+  WFImage: "Image",
+  PHAsset: "Image",
+  WFImageContentItem: "Image",
+  WFPhotoMediaContentItem: "Image",
+  "public.image": "Image",
+  WFContact: "Contact",
+  WFContactContentItem: "Contact",
+  WFArticle: "Article",
+  WFArticleContentItem: "Article",
 };
 
 function inferReturnType(output) {
@@ -104,11 +137,23 @@ function generateActionDoc(action) {
     lines.push("");
   }
 
-  const params = action.parameters.filter((p) => p.key);
+  let params = action.parameters.filter((p) => p.key);
+  if (params.length === 0 && action.intentParameters) {
+    const overrides = action.parameterOverrides ?? {};
+    params = action.intentParameters
+      .filter((p) => p.name)
+      .map((p) => ({
+        key: overrides[p.name]?.Key ?? p.name,
+        chuteType: p.enumType ?? (p.type === "Boolean" ? "Boolean" : p.type === "Integer" ? "Number" : "Any"),
+        enumType: p.enumType ?? undefined,
+        required: false,
+        defaultValue: null,
+      }));
+  }
   const returnType = inferReturnType(action.output);
   const returnSuffix = returnType ? ` -> ${returnType}` : "";
   const signature = params.length > 0
-    ? `${action.name}(${params.map((p) => `${p.key}: ${formatType(p.chuteType)}`).join(", ")})${returnSuffix}`
+    ? `${action.name}(${params.map((p) => formatTypeSimple(p.chuteType)).join(", ")})${returnSuffix}`
     : `${action.name}()${returnSuffix}`;
 
   lines.push("```chute");
@@ -121,7 +166,7 @@ function generateActionDoc(action) {
     lines.push("| --- | --- | --- |");
     for (const p of params) {
       lines.push(
-        `| \`${p.key}\` | \`${formatType(p.chuteType)}\` | ${formatDefault(p.defaultValue)} |`,
+        `| \`${p.key}\` | ${formatType(p)} | ${formatDefault(p.defaultValue)} |`,
       );
     }
     lines.push("");
@@ -186,8 +231,8 @@ const indexLines = [
   "import Scripting;",
   "import Notification;",
   "",
-  'Scripting.askForInput(WFAskActionPrompt: "What is your name?");',
-  'Notification.showAlert(WFAlertActionTitle: "Hello!");',
+  'Scripting.askForInput("What is your name?");',
+  'Notification.showAlert("Hello!");',
   "```",
   "",
   "## Modules",
