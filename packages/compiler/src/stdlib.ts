@@ -50,6 +50,7 @@ interface StdlibJsonAction {
   intentParameters?: Array<{
     name: string | null;
     type: string | null;
+    enumType?: string | null;
   }>;
   parameterOverrides?: Record<string, { Key?: string }>;
   output?: { Types?: string[] } | null;
@@ -141,6 +142,23 @@ function inferReturnType(output: StdlibJsonAction["output"]): ChuteType | undefi
   return { kind: "any" };
 }
 
+const INTENT_ENUM_VALUES: Record<string, string[]> = {
+  BooleanSettingOperation: ["Turn On", "Turn Off", "Toggle"],
+  DeviceAppearanceType: ["Light", "Dark"],
+  AskForInputType: ["Text", "Number", "URL", "Date", "Time", "Date and Time"],
+  ChangeCaseType: [
+    "UPPERCASE",
+    "lowercase",
+    "Capitalize Every Word",
+    "Capitalize with Title Case",
+    "Capitalize with sentence case",
+    "Alternate Case",
+  ],
+  CombineTextSeparator: ["New Lines", "Spaces", "Every Character", "Custom"],
+  MatchTextGetGroupType: ["Group At Index", "All Groups"],
+  SplitTextSeparator: ["New Lines", "Spaces", "Every Character", "Custom"],
+};
+
 function enumTypeFromItems(paramKey: string, items: string[]): ChuteType {
   const cases = new Map<string, string>();
   for (const item of items) {
@@ -189,9 +207,16 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
         continue;
       }
       const key = overrides[p.name]?.Key ?? p.name;
+      let type: ChuteType;
+      const enumValues = p.enumType ? INTENT_ENUM_VALUES[p.enumType] : undefined;
+      if (enumValues) {
+        type = enumTypeFromItems(key, enumValues);
+      } else {
+        type = INTENT_TYPE_MAP[p.type ?? ""] ?? { kind: "any" };
+      }
       params.push({
         label: key,
-        type: INTENT_TYPE_MAP[p.type ?? ""] ?? { kind: "any" },
+        type,
         hasDefault: true,
       });
     }
