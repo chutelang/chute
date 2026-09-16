@@ -18,7 +18,7 @@ appendToTextFile(Any, Text, Enum, Boolean, Text) -> Any
 | --- | --- | --- |
 | `WFFile` | Any | — |
 | `WFFilePath` | Text | — |
-| `WFAppendFileWriteMode` | Append | Prepend | `"Append"` |
+| `WFAppendFileWriteMode` | Append \| Prepend | `"Append"` |
 | `WFAppendOnNewLine` | Boolean | true |
 | `WFInput` | Text | — |
 
@@ -181,7 +181,7 @@ getTextFromPdf(Any, Enum, Text, Text, Boolean) -> Text
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Any | — |
-| `WFGetTextFromPDFTextType` | Text | Rich Text | `"Text"` |
+| `WFGetTextFromPDFTextType` | Text \| Rich Text | `"Text"` |
 | `WFGetTextFromPDFPageHeader` | Text | — |
 | `WFGetTextFromPDFPageFooter` | Text | — |
 | `WFCombinePages` | Boolean | true |
@@ -310,12 +310,12 @@ makePdf(Boolean, Enum, Number, Number, Number, Any, Enum) -> Any
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFPDFIncludeMargin` | Boolean | false |
-| `WFPDFIncludedPages` | All Pages | Single Page | Page Range | `"All Pages"` |
+| `WFPDFIncludedPages` | All Pages \| Single Page \| Page Range | `"All Pages"` |
 | `WFPDFSinglePage` | Number | — |
 | `WFPDFPageRangeStart` | Number | — |
 | `WFPDFPageRangeEnd` | Number | — |
 | `WFInput` | Any | — |
-| `WFPDFDocumentMergeBehavior` | Append | Shuffle | `"Append"` |
+| `WFPDFDocumentMergeBehavior` | Append \| Shuffle | `"Append"` |
 
 Shortcuts action: `is.workflow.actions.makepdf`
 
@@ -479,7 +479,7 @@ selectFile(Enum, Boolean) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPickingMode` | Files | Folders | `"Files"` |
+| `WFPickingMode` | Files \| Folders | `"Files"` |
 | `SelectMultiple` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.select`

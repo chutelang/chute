@@ -20,8 +20,8 @@ addTodoistItem(Text, Text, Text, Text, Enum, Enum, Text, Any) -> URL
 | `WFTodoistProject` | Text | `"Inbox"` |
 | `WFTodoistDueDate` | Text | — |
 | `WFTodoistReminder` | Text | — |
-| `WFTodoistReminderType` | Email | Push Notification | Text Message | `"Email"` |
-| `WFTodoistPriority` | 4 | 3 | 2 | 1 | `"4"` |
+| `WFTodoistReminderType` | Email \| Push Notification \| Text Message | `"Email"` |
+| `WFTodoistPriority` | 4 \| 3 \| 2 \| 1 | `"4"` |
 | `WFTodoistNotes` | Text | — |
 | `WFTodoistFile` | Any | — |
 
@@ -90,7 +90,7 @@ addTrelloCard(Text, Text, Text, Text, Enum, Any, Text) -> Any
 | `WFTrelloBoard` | Text | — |
 | `WFTrelloList` | Text | — |
 | `WFTrelloDueDate` | Text | — |
-| `WFTrelloCardPosition` | Top | Bottom | `"Top"` |
+| `WFTrelloCardPosition` | Top \| Bottom | `"Top"` |
 | `WFTrelloAttachments` | Any | — |
 | `WFTrelloDescription` | Text | — |
 
@@ -107,7 +107,7 @@ appendToDropboxTextFile(Text, Enum, Boolean, Text) -> Any
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFFilePath` | Text | — |
-| `WFAppendFileWriteMode` | Append | Prepend | `"Append"` |
+| `WFAppendFileWriteMode` | Append \| Prepend | `"Append"` |
 | `WFAppendOnNewLine` | Boolean | true |
 | `WFInput` | Text | — |
 
@@ -127,7 +127,7 @@ appendToEvernote(Any, Text, Enum, Text) -> Any
 | --- | --- | --- |
 | `WFInput` | Any | — |
 | `WFEvernoteNotesTitleSearch` | Text | — |
-| `WFEvernoteWriteMode` | Append | Prepend | `"Append"` |
+| `WFEvernoteWriteMode` | Append \| Prepend | `"Append"` |
 | `WFEvernoteNotesNotebookName` | Text | — |
 
 Shortcuts action: `is.workflow.actions.evernote.append`
@@ -151,14 +151,14 @@ Shortcuts action: `is.workflow.actions.dropbox.createfolder`
 Saves the input as a note in Evernote.
 
 ```chute
-createNewNote(Text, Text, List<Text>, Any) -> Any
+createNewNote(Text, Text, List&lt;Text&gt;, Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFEvernoteNoteTitle` | Text | — |
 | `WFEvernoteNotebook` | Text | — |
-| `WFEvernoteTags` | List<Text> | — |
+| `WFEvernoteTags` | List&lt;Text&gt; | — |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.evernote.new`
@@ -190,7 +190,7 @@ createTrelloList(Text, Text, Enum) -> Any
 | --- | --- | --- |
 | `WFTrelloName` | Text | — |
 | `WFTrelloBoard` | Text | — |
-| `WFTrelloPosition` | Top | Bottom | `"Top"` |
+| `WFTrelloPosition` | Top \| Bottom | `"Top"` |
 
 Shortcuts action: `is.workflow.actions.trello.add.list`
 
@@ -268,7 +268,7 @@ getItemsFromPocket(Number, Enum, Text, Text) -> URL
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFPocketItemCount` | Number | — |
-| `WFPocketItemState` | Unread | Archived | All | `"All"` |
+| `WFPocketItemState` | Unread \| Archived \| All | `"All"` |
 | `WFPocketItemSearchTerm` | Text | — |
 | `WFPocketItemSearchTags` | Text | — |
 
@@ -294,13 +294,13 @@ Shortcuts action: `is.workflow.actions.evernote.getlink`
 Gets recent notes from Evernote, optionally filtering based on criteria.
 
 ```chute
-getNotes(Text, List<Text>, Text, Number) -> Any
+getNotes(Text, List&lt;Text&gt;, Text, Number) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFEvernoteNotesTitleSearch` | Text | — |
-| `WFEvernoteNotesTags` | List<Text> | — |
+| `WFEvernoteNotesTags` | List&lt;Text&gt; | — |
 | `WFEvernoteNotesNotebookName` | Text | — |
 | `WFEvernoteNotesCount` | Number | 1 |
 
@@ -331,7 +331,7 @@ getTrelloItems(Enum, Text, Text) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFTrelloItemType` | Boards | Lists | Cards | `"Boards"` |
+| `WFTrelloItemType` | Boards \| Lists \| Cards | `"Boards"` |
 | `WFTrelloBoard` | Text | — |
 | `WFTrelloList` | Text | — |
 
@@ -348,7 +348,7 @@ importToLightroom(Boolean, Enum, Text, Any)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `applyPreset` | Boolean | false |
-| `presetGroup` | B&W | Color | Creative | Curve | Grain | Sharpening | Vignetting | `"Color"` |
+| `presetGroup` | B&W \| Color \| Creative \| Curve \| Grain \| Sharpening \| Vignetting | `"Color"` |
 | `preset` | Text | — |
 | `WFInput` | Any | — |
 
@@ -437,7 +437,7 @@ postToTumblr(Any, Boolean, Text, Text, Enum, Text, Text, Text, Text, Text) -> UR
 | `WFComposeInApp` | Boolean | — |
 | `WFBlogName` | Text | — |
 | `WFPostType` | Text | — |
-| `WFPostState` | Post Now | Add to Queue | Save as Draft | Post Privately | `"Post Now"` |
+| `WFPostState` | Post Now \| Add to Queue \| Save as Draft \| Post Privately | `"Post Now"` |
 | `WFPostTitle` | Text | — |
 | `WFPostSource` | Text | — |
 | `WFPostCaption` | Text | — |
@@ -529,7 +529,7 @@ saveWithTransmit(Enum, Text, Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `TransmitSaveTo` | Local | Remote | `"Remote"` |
+| `TransmitSaveTo` | Local \| Remote | `"Remote"` |
 | `TransmitFavoriteName` | Text | — |
 | `TransmitPath` | Text | — |
 
@@ -603,7 +603,7 @@ uploadToCloudapp(Enum, Any) -> URL
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCloudAppPrivacyType` | Private | Public | `"Private"` |
+| `WFCloudAppPrivacyType` | Private \| Public | `"Private"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.cloudapp.upload`

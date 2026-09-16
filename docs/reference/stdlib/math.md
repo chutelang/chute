@@ -17,8 +17,8 @@ calculate(Number, Enum, Enum, Number, Number) -> Number
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Number | — |
-| `WFMathOperation` | + | - | × | ÷ | … | `"+"` |
-| `WFScientificMathOperation` | Modulus | x^2 | x^3 | x^y | e^x | 10^x | ln(x) | log(x) | √x | ∛x | x! | sin(x) | cos(x) | tan(x) | abs(x) | — |
+| `WFMathOperation` | + \| - \| × \| ÷ \| … | `"+"` |
+| `WFScientificMathOperation` | Modulus \| x^2 \| x^3 \| x^y \| e^x \| 10^x \| ln(x) \| log(x) \| √x \| ∛x \| x! \| sin(x) \| cos(x) \| tan(x) \| abs(x) | — |
 | `WFMathOperand` | Number | — |
 | `WFScientificMathOperand` | Number | — |
 
@@ -58,7 +58,7 @@ calculateStatistics(Enum, Any) -> Number
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFStatisticsOperation` | Average | Minimum | Maximum | Sum | Median | Mode | Range | Standard Deviation | `"Average"` |
+| `WFStatisticsOperation` | Average \| Minimum \| Maximum \| Sum \| Median \| Mode \| Range \| Standard Deviation | `"Average"` |
 | `Input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.statistics`
@@ -134,8 +134,8 @@ roundNumber(Number, Enum, Enum, Number) -> Number
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Number | — |
-| `WFRoundTo` | Millions | Hundred Thousands | Ten Thousands | Thousands | Hundreds Place | Tens Place | Ones Place | Tenths | Hundredths | Thousandths | Ten Thousandths | Hundred Thousandths | Millionths | Ten Millionths | Hundred Millionths | Billionths | 10 ^ | `"Ones Place"` |
-| `WFRoundMode` | Normal | Always Round Up | Always Round Down | `"Normal"` |
+| `WFRoundTo` | Millions \| Hundred Thousands \| Ten Thousands \| Thousands \| Hundreds Place \| Tens Place \| Ones Place \| Tenths \| Hundredths \| Thousandths \| Ten Thousandths \| Hundred Thousandths \| Millionths \| Ten Millionths \| Hundred Millionths \| Billionths \| 10 ^ | `"Ones Place"` |
+| `WFRoundMode` | Normal \| Always Round Up \| Always Round Down | `"Normal"` |
 | `TenToThePowerOf` | Number | 0 |
 
 Shortcuts action: `is.workflow.actions.round`

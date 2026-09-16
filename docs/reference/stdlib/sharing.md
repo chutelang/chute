@@ -167,8 +167,8 @@ uploadToImgur(Any, Boolean, Boolean, Boolean, Enum, Enum, Text, Text) -> URL
 | `WFImgurAnonymous` | Boolean | true |
 | `WFImgurDirectLink` | Boolean | — |
 | `WFImgurAlbum` | Boolean | false |
-| `WFImgurAlbumLayout` | Blog | Grid | Horizontal | Vertical | `"Blog"` |
-| `WFImgurAlbumPrivacy` | Public | Hidden | Secret | `"Hidden"` |
+| `WFImgurAlbumLayout` | Blog \| Grid \| Horizontal \| Vertical | `"Blog"` |
+| `WFImgurAlbumPrivacy` | Public \| Hidden \| Secret | `"Hidden"` |
 | `WFImgurTitle` | Text | — |
 | `WFImgurDescription` | Text | — |
 

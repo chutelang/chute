@@ -108,7 +108,7 @@ getComponentOfUrl(Text, Enum) -> Text
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFURL` | Text | — |
-| `WFURLComponent` | Scheme | User | Password | Host | Port | Path | Query | Fragment | `"Scheme"` |
+| `WFURLComponent` | Scheme \| User \| Password \| Host \| Port \| Path \| Query \| Fragment | `"Scheme"` |
 
 > URLs are structured as follows: scheme://user:password@host:port/path?query#fragment
 
@@ -125,10 +125,10 @@ getContentsOfUrl(Text, Enum, Any, Dictionary, Enum, Dictionary, Dictionary, Any)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFURL` | Text | — |
-| `WFHTTPMethod` | GET | POST | PUT | PATCH | DELETE | `"GET"` |
+| `WFHTTPMethod` | GET \| POST \| PUT \| PATCH \| DELETE | `"GET"` |
 | `ShowHeaders` | Any | — |
 | `WFHTTPHeaders` | Dictionary | — |
-| `WFHTTPBodyType` | JSON | Form | File | `"JSON"` |
+| `WFHTTPBodyType` | JSON \| Form \| File | `"JSON"` |
 | `WFFormValues` | Dictionary | — |
 | `WFJSONValues` | Dictionary | — |
 | `WFRequestVariable` | Any | — |
@@ -294,7 +294,7 @@ searchWeb(Enum, Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSearchWebDestination` | Amazon | Bing | DuckDuckGo | eBay | Google | Reddit | Twitter | Yahoo! | YouTube | `"Google"` |
+| `WFSearchWebDestination` | Amazon \| Bing \| DuckDuckGo \| eBay \| Google \| Reddit \| Twitter \| Yahoo! \| YouTube | `"Google"` |
 | `WFInputText` | Text | — |
 
 Shortcuts action: `is.workflow.actions.searchweb`
@@ -352,7 +352,7 @@ urlEncode(Enum, Text) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEncodeMode` | Encode | Decode | `"Encode"` |
+| `WFEncodeMode` | Encode \| Decode | `"Encode"` |
 | `WFInput` | Text | — |
 
 Shortcuts action: `is.workflow.actions.urlencode`
