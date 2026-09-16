@@ -17,7 +17,7 @@ changeCase(Any, ChangeCaseType)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `text` | Any | — |
-| `WFCaseType` | UPPERCASE | lowercase | Capitalize Every Word | Capitalize with Title Case | Capitalize with sentence case | aLtErNaTiNg CaSe | — |
+| `WFCaseType` | UPPERCASE \| lowercase \| Capitalize Every Word \| Capitalize with Title Case \| Capitalize with sentence case \| aLtErNaTiNg CaSe | — |
 
 Shortcuts action: `is.workflow.actions.text.changecase`
 
@@ -32,7 +32,7 @@ combineText(Any, CombineTextSeparator, Any)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `text` | Any | — |
-| `WFTextSeparator` | New Lines | Spaces | Every Character | Custom | — |
+| `WFTextSeparator` | New Lines \| Spaces \| Every Character \| Custom | — |
 | `WFTextCustomSeparator` | Any | — |
 
 Shortcuts action: `is.workflow.actions.text.combine`
@@ -76,7 +76,7 @@ dictateText(Text, Enum) -> Text
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFSpeechLanguage` | Text | — |
-| `WFDictateTextStopListening` | After Pause | After Short Pause | On Tap | `"After Pause"` |
+| `WFDictateTextStopListening` | After Pause \| After Short Pause \| On Tap | `"After Pause"` |
 
 Shortcuts action: `is.workflow.actions.dictatetext`
 
@@ -105,7 +105,7 @@ getGroupFromMatchedText(Any, MatchTextGetGroupType, Number)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `matches` | Any | — |
-| `WFGetGroupType` | Group At Index | All Groups | — |
+| `WFGetGroupType` | Group At Index \| All Groups | — |
 | `WFGroupIndex` | Number | — |
 
 Shortcuts action: `is.workflow.actions.text.match.getgroup`
@@ -218,7 +218,7 @@ splitText(Any, SplitTextSeparator, Any)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `text` | Any | — |
-| `WFTextSeparator` | New Lines | Spaces | Every Character | Custom | — |
+| `WFTextSeparator` | New Lines \| Spaces \| Every Character \| Custom | — |
 | `WFTextCustomSeparator` | Any | — |
 
 Shortcuts action: `is.workflow.actions.text.split`

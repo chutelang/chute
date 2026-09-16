@@ -27,7 +27,7 @@ findPlaces(Text, Text, Number, Enum) -> Location
 | `WFInput` | Text | — |
 | `WFSearchQuery` | Text | — |
 | `WFSearchRadius` | Number | — |
-| `WFSearchSortOrder` | Relevance | Distance | `"Relevance"` |
+| `WFSearchSortOrder` | Relevance \| Distance | `"Relevance"` |
 
 Shortcuts action: `is.workflow.actions.searchlocalbusinesses`
 
@@ -103,7 +103,7 @@ getDistance(Text, Text, Enum, Text, Text) -> Number
 | --- | --- | --- |
 | `WFGetDirectionsCustomLocation` | Text | — |
 | `WFGetDistanceDestination` | Text | — |
-| `WFGetDirectionsActionMode` | Direct | Driving | Walking | Biking | `"Direct"` |
+| `WFGetDirectionsActionMode` | Direct \| Driving \| Walking \| Biking | `"Direct"` |
 | `WFDistanceUnit` | Text | — |
 | `Accuracy` | Text | — |
 
@@ -160,7 +160,7 @@ getTravelTime(Text, Text, Enum) -> Any
 | --- | --- | --- |
 | `WFGetDirectionsCustomLocation` | Text | — |
 | `WFDestination` | Text | — |
-| `WFGetDirectionsActionMode` | Driving | Walking | Transit | Biking | `"Driving"` |
+| `WFGetDirectionsActionMode` | Driving \| Walking \| Transit \| Biking | `"Driving"` |
 
 > Travel times are provided by Apple Maps and take into account current traffic conditions.
 
@@ -177,7 +177,7 @@ getWeatherForecast(Text, Enum) -> Any
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFWeatherCustomLocation` | Text | — |
-| `WFWeatherForecastType` | Hourly | Daily | `"Daily"` |
+| `WFWeatherForecastType` | Hourly \| Daily | `"Daily"` |
 
 Shortcuts action: `is.workflow.actions.weather.forecast`
 

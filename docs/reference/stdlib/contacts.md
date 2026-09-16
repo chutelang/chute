@@ -68,7 +68,7 @@ facetime(Text, Enum, Text)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `IntentAppDefinition` | Text | [object Object] |
-| `WFFaceTimeType` | Video | Audio | `"Video"` |
+| `WFFaceTimeType` | Video \| Audio | `"Video"` |
 | `WFFaceTimeContact` | Text | — |
 
 Shortcuts action: `com.apple.facetime.facetime`

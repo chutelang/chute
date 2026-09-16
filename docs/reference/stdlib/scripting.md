@@ -34,7 +34,7 @@ adjustDate(Text, Enum, Number) -> Date
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFDate` | Text | — |
-| `WFAdjustOperation` | Add | Subtract | Get Start of Minute | Get Start of Hour | Get Start of Day | Get Start of Week | Get Start of Month | Get Start of Year | `"Add"` |
+| `WFAdjustOperation` | Add \| Subtract \| Get Start of Minute \| Get Start of Hour \| Get Start of Day \| Get Start of Week \| Get Start of Month \| Get Start of Year | `"Add"` |
 | `WFDuration` | Number | — |
 
 > This action supports decimal numbers when adding or subtracting seconds, minutes, hours, or days. Otherwise only integers are supported.
@@ -52,7 +52,7 @@ askForInput(Any, AskForInputType, Any, Any, Any, Any, Any, Any, Any, Boolean, Bo
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFAskActionPrompt` | Any | — |
-| `WFInputType` | Text | Number | URL | Date | Time | Date and Time | — |
+| `WFInputType` | Text \| Number \| URL \| Date \| Time \| Date and Time | — |
 | `WFAskActionDefaultAnswer` | Any | — |
 | `WFAskActionDefaultAnswerNumber` | Any | — |
 | `urlAnswer` | Any | — |
@@ -76,8 +76,8 @@ base64Encode(Enum, Enum, Any) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEncodeMode` | Encode | Decode | `"Encode"` |
-| `WFBase64LineBreakMode` | None | Every 64 Characters | Every 76 Characters | `"Every 76 Characters"` |
+| `WFEncodeMode` | Encode \| Decode | `"Encode"` |
+| `WFBase64LineBreakMode` | None \| Every 64 Characters \| Every 76 Characters | `"Every 76 Characters"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.base64encode`
@@ -104,13 +104,13 @@ Shortcuts action: `is.workflow.actions.choosefromlist`
 Presents a menu and runs different actions based on which menu item was chosen.
 
 ```chute
-chooseFromMenu(Text, List<Any>)
+chooseFromMenu(Text, List&lt;Any&gt;)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFMenuPrompt` | Text | — |
-| `WFMenuItems` | List<Any> | One,Two |
+| `WFMenuItems` | List&lt;Any&gt; | One,Two |
 
 Shortcuts action: `is.workflow.actions.choosefrommenu`
 
@@ -164,7 +164,7 @@ count(Enum, Any) -> Number
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCountType` | Items | Characters | Words | Sentences | Lines | `"Items"` |
+| `WFCountType` | Items \| Characters \| Words \| Sentences \| Lines | `"Items"` |
 | `Input` | Any | — |
 
 > This is just like the Count in Sesame Street, but instead of a vampire, it's a Shortcuts action.
@@ -185,7 +185,7 @@ createQrCode(Text, Text, Text, Boolean, Enum) -> Image
 | `WFQRForegroundColor` | Text | [object Object] |
 | `WFQRBackgroundColor` | Text | [object Object] |
 | `WFQRRounded` | Boolean | false |
-| `WFQRErrorCorrectionLevel` | Low | Medium | Quartile | High | `"Medium"` |
+| `WFQRErrorCorrectionLevel` | Low \| Medium \| Quartile \| High | `"Medium"` |
 
 Shortcuts action: `is.workflow.actions.generatebarcode`
 
@@ -201,7 +201,7 @@ date(Text, Text, Enum, Text) -> Date
 | --- | --- | --- |
 | `WFDateActionMode` | Text | `"Current Date"` |
 | `WFDateActionDate` | Text | — |
-| `WFEventOccurrenceMode` | Next Occurrence | Specified Year | `"Next Occurrence"` |
+| `WFEventOccurrenceMode` | Next Occurrence \| Specified Year | `"Next Occurrence"` |
 | `WFEventOccurrenceSpecifiedYear` | Text | — |
 
 Shortcuts action: `is.workflow.actions.date`
@@ -250,9 +250,9 @@ formatDate(Enum, Enum, Enum, Boolean, Text, Text, Text) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDateFormatStyle` | None | Short | Medium | Long | Relative | RFC 2822 | ISO 8601 | Custom | `"Short"` |
-| `WFRelativeDateFormatStyle` | Short | Medium | Long | `"Medium"` |
-| `WFTimeFormatStyle` | None | Short | Medium | Long | Relative | `"Short"` |
+| `WFDateFormatStyle` | None \| Short \| Medium \| Long \| Relative \| RFC 2822 \| ISO 8601 \| Custom | `"Short"` |
+| `WFRelativeDateFormatStyle` | Short \| Medium \| Long | `"Medium"` |
+| `WFTimeFormatStyle` | None \| Short \| Medium \| Long \| Relative | `"Short"` |
 | `WFISO8601IncludeTime` | Boolean | — |
 | `WFDateFormat` | Text | — |
 | `WFDate` | Text | — |
@@ -272,7 +272,7 @@ formatFileSize(Enum, Boolean, Number) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFileSizeFormat` | Automatic | Bytes | KB | MB | GB | TB | PB | EB | ZB | YB or Higher | `"Automatic"` |
+| `WFFileSizeFormat` | Automatic \| Bytes \| KB \| MB \| GB \| TB \| PB \| EB \| ZB \| YB or Higher | `"Automatic"` |
 | `WFFileSizeIncludeUnits` | Boolean | true |
 | `WFFileSize` | Number | — |
 
@@ -305,7 +305,7 @@ generateHash(Enum, Any) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHashType` | MD5 | SHA1 | SHA256 | SHA512 | `"MD5"` |
+| `WFHashType` | MD5 \| SHA1 \| SHA256 \| SHA512 | `"MD5"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.hash`
@@ -384,7 +384,7 @@ getDictionaryValue(Enum, Text, Any) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFGetDictionaryValueType` | Value | All Keys | All Values | `"Value"` |
+| `WFGetDictionaryValueType` | Value \| All Keys \| All Values | `"Value"` |
 | `WFDictionaryKey` | Text | — |
 | `WFInput` | Any | — |
 
@@ -447,7 +447,7 @@ getItemFromList(Enum, Number, Number, Number, Any) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFItemSpecifier` | First Item | Last Item | Random Item | Item At Index | Items in Range | `"First Item"` |
+| `WFItemSpecifier` | First Item \| Last Item \| Random Item \| Item At Index \| Items in Range | `"First Item"` |
 | `WFItemIndex` | Number | — |
 | `WFItemRangeStart` | Number | — |
 | `WFItemRangeEnd` | Number | — |
@@ -543,7 +543,7 @@ getTimeBetweenDates(Text, Text, Enum) -> Number
 | --- | --- | --- |
 | `WFTimeUntilFromDate` | Text | — |
 | `WFInput` | Text | — |
-| `WFTimeUntilUnit` | Total Time | Seconds | Minutes | Hours | Days | Weeks | Months | Years | `"Minutes"` |
+| `WFTimeUntilUnit` | Total Time \| Seconds \| Minutes \| Hours \| Days \| Weeks \| Months \| Years | `"Minutes"` |
 
 > This action outputs a negative number if the input date takes place before the specified date.
 
@@ -613,9 +613,9 @@ input(Text, Text, Enum, Text, Enum)
 | --- | --- | --- |
 | `WFInputType` | Text | — |
 | `WFInputSurface` | Text | `""` |
-| `WFNoInputBehavior` | Stop and Respond | Ask For | Get Clipboard | Continue | `"Stop and Respond"` |
+| `WFNoInputBehavior` | Stop and Respond \| Ask For \| Get Clipboard \| Continue | `"Stop and Respond"` |
 | `WFStopAndRespondResponse` | Text | — |
-| `WFAskForType` | Files | Text | Date | Photos | Contacts | Email Address | Music | Phone Number | `"Photos"` |
+| `WFAskForType` | Files \| Text \| Date \| Photos \| Contacts \| Email Address \| Music \| Phone Number | `"Photos"` |
 
 Shortcuts action: `is.workflow.actions.input`
 
@@ -624,12 +624,12 @@ Shortcuts action: `is.workflow.actions.input`
 Allows you to specify a list of items to be passed to the next action.
 
 ```chute
-list(List<Any>) -> Any
+list(List&lt;Any&gt;) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFItems` | List<Any> | One,Two |
+| `WFItems` | List&lt;Any&gt; | One,Two |
 
 > If you specify a variable, the contents of that variable will be included in the list.
 
@@ -657,7 +657,7 @@ openApp(Text, Text, Enum) -> Any
 | --- | --- | --- |
 | `WFSelectedApp` | Text | — |
 | `WFAppName` | Text | — |
-| `WFWindowingFormat` | Full Screen | Left | Right | Top | Bottom | Top Leading | Top Trailing | Bottom Leading | Bottom Trailing | Left Third | Middle Third | Right Third | `"Full Screen"` |
+| `WFWindowingFormat` | Full Screen \| Left \| Right \| Top \| Bottom \| Top Leading \| Top Trailing \| Bottom Leading \| Bottom Trailing \| Left Third \| Middle Third \| Right Third | `"Full Screen"` |
 
 Shortcuts action: `is.workflow.actions.openapp`
 
@@ -756,7 +756,7 @@ runScriptOverSsh(Text, Text, Text, Text, Enum, Text, Text, Any) -> Any
 | `WFSSHHost` | Text | — |
 | `WFSSHPort` | Text | `"22"` |
 | `WFSSHUser` | Text | — |
-| `WFSSHAuthenticationType` | Password | SSH Key | `"Password"` |
+| `WFSSHAuthenticationType` | Password \| SSH Key | `"Password"` |
 | `WFSSHPassword` | Text | — |
 | `WFSSHKey` | Text | — |
 | `WFInput` | Any | — |
@@ -776,7 +776,7 @@ runShellScript(Text, Text, Any, Enum, Boolean) -> Text
 | `Script` | Text | — |
 | `Shell` | Text | — |
 | `Input` | Any | — |
-| `InputMode` | to stdin | as arguments | `"to stdin"` |
+| `InputMode` | to stdin \| as arguments | `"to stdin"` |
 | `RunAsRoot` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.runshellscript`
@@ -869,7 +869,7 @@ stopAndOutput(Text, Enum, Text)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFOutput` | Text | `""` |
-| `WFNoOutputSurfaceBehavior` | Respond | Do Nothing | Copy to Clipboard | `"Do Nothing"` |
+| `WFNoOutputSurfaceBehavior` | Respond \| Do Nothing \| Copy to Clipboard | `"Do Nothing"` |
 | `WFResponse` | Text | `""` |
 
 Shortcuts action: `is.workflow.actions.output`

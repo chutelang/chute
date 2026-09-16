@@ -96,7 +96,7 @@ getUpcomingEvents(Text, Number, Enum, Text) -> Any
 | --- | --- | --- |
 | `WFGetUpcomingItemCalendar` | Text | — |
 | `WFGetUpcomingItemCount` | Number | 1 |
-| `WFDateSpecifier` | Any Day | Today | Tomorrow | Specified Day | `"Any Day"` |
+| `WFDateSpecifier` | Any Day \| Today \| Tomorrow \| Specified Day | `"Any Day"` |
 | `WFSpecifiedDate` | Text | — |
 
 Shortcuts action: `is.workflow.actions.getupcomingevents`
@@ -132,7 +132,7 @@ newEvent(Text, Text, Text, Text, Text, Boolean, Enum, Text, Text, Boolean) -> An
 | `WFCalendarItemStartDate` | Text | — |
 | `WFCalendarItemEndDate` | Text | — |
 | `WFCalendarItemAllDay` | Boolean | — |
-| `WFAlertTime` | None | At time of event | 5 minutes before | 15 minutes before | 30 minutes before | 1 hour before | 2 hours before | 1 day before | 2 days before | 1 week before | Custom | — |
+| `WFAlertTime` | None \| At time of event \| 5 minutes before \| 15 minutes before \| 30 minutes before \| 1 hour before \| 2 hours before \| 1 day before \| 2 days before \| 1 week before \| Custom | — |
 | `WFAlertCustomTime` | Text | — |
 | `WFCalendarItemNotes` | Text | — |
 | `ShowWhenRun` | Boolean | true |
@@ -151,13 +151,13 @@ newReminder(Text, Text, Enum, Enum, Text, Text, Number, Text, Enum, Boolean, Boo
 | --- | --- | --- |
 | `WFCalendarItemTitle` | Text | — |
 | `WFCalendarDescriptor` | Text | — |
-| `WFAlertEnabled` | No Alert | Alert | `"No Alert"` |
-| `WFAlertCondition` | At Time | When I Arrive | When I Leave | When Messaging | `"At Time"` |
+| `WFAlertEnabled` | No Alert \| Alert | `"No Alert"` |
+| `WFAlertCondition` | At Time \| When I Arrive \| When I Leave \| When Messaging | `"At Time"` |
 | `WFAlertLocation` | Text | — |
 | `WFAlertPerson` | Text | — |
 | `WFAlertLocationRadius` | Number | 1000 |
 | `WFAlertCustomTime` | Text | — |
-| `WFPriority` | None | Low | Medium | High | `"None"` |
+| `WFPriority` | None \| Low \| Medium \| High | `"None"` |
 | `WFUrgent` | Boolean | — |
 | `WFFlag` | Boolean | — |
 | `WFURL` | Text | — |

@@ -35,7 +35,7 @@ addToPlayingNext(Enum, Any)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFWhenToPlay` | Next | Later | `"Next"` |
+| `WFWhenToPlay` | Next \| Later | `"Next"` |
 | `WFMusic` | Any | — |
 
 Shortcuts action: `is.workflow.actions.addmusictoupnext`
@@ -65,7 +65,7 @@ changePlaybackDestination(Enum, Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMediaRouteOperation` | Set | Add | Remove | `"Set"` |
+| `WFMediaRouteOperation` | Set \| Add \| Remove | `"Set"` |
 | `WFMediaRoute` | Text | `"Local"` |
 
 > When attempting to add a device that does not support groups, all other devices are removed as playback destinations first.
@@ -92,7 +92,7 @@ combineImages(Enum, Number, Any) -> Image
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImageCombineMode` | Horizontally | Vertically | In a Grid | `"Horizontally"` |
+| `WFImageCombineMode` | Horizontally \| Vertically \| In a Grid | `"Horizontally"` |
 | `WFImageCombineSpacing` | Number | 0 |
 | `WFInput` | Any | — |
 
@@ -158,7 +158,7 @@ cropImage(Any, Enum, Number, Number, Number, Number) -> Image
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Any | — |
-| `WFImageCropPosition` | Center | Top Left | Top Right | Bottom Left | Bottom Right | Custom | `"Center"` |
+| `WFImageCropPosition` | Center \| Top Left \| Top Right \| Bottom Left \| Bottom Right \| Custom | `"Center"` |
 | `WFImageCropX` | Number | — |
 | `WFImageCropY` | Number | — |
 | `WFImageCropWidth` | Number | 100 |
@@ -193,9 +193,9 @@ encodeMedia(Any, Boolean, Enum, Enum, Enum, Boolean, Number, Any, Text, Text, Te
 | --- | --- | --- |
 | `WFMedia` | Any | — |
 | `WFMediaAudioOnly` | Boolean | false |
-| `WFMediaAudioFormat` | M4A | AIFF | `"M4A"` |
-| `WFMediaSize` | 640x480 | 960x540 | 1280x720 | 1920x1080 | 3840x2160 | HEVC 1920x1080 | HEVC 3840x2160 | ProRes 422 | Passthrough | `"Passthrough"` |
-| `WFMediaSpeed` | 0.5X | Normal | 1.5X | 2X | Custom | `"Normal"` |
+| `WFMediaAudioFormat` | M4A \| AIFF | `"M4A"` |
+| `WFMediaSize` | 640x480 \| 960x540 \| 1280x720 \| 1920x1080 \| 3840x2160 \| HEVC 1920x1080 \| HEVC 3840x2160 \| ProRes 422 \| Passthrough | `"Passthrough"` |
+| `WFMediaSpeed` | 0.5X \| Normal \| 1.5X \| 2X \| Custom | `"Normal"` |
 | `WFMediaPreserveTransparency` | Boolean | false |
 | `WFMediaCustomSpeed` | Number | — |
 | `Metadata` | Any | — |
@@ -226,8 +226,8 @@ finderConvertImage(Boolean, Any, Enum, Enum) -> Image
 | --- | --- | --- |
 | `WFPreserveMetadata` | Boolean | — |
 | `WFImage` | Any | — |
-| `WFFileFormat` | JPEG | PNG | HEIF | `"JPEG"` |
-| `WFSize` | Small | Medium | Large | Original | `"Small"` |
+| `WFFileFormat` | JPEG \| PNG \| HEIF | `"JPEG"` |
+| `WFSize` | Small \| Medium \| Large \| Original | `"Small"` |
 
 Shortcuts action: `is.workflow.actions.image.convert.finder`
 
@@ -294,7 +294,7 @@ flipImage(Enum, Any) -> Image
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImageFlipDirection` | Horizontal | Vertical | `"Horizontal"` |
+| `WFImageFlipDirection` | Horizontal \| Vertical | `"Horizontal"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.image.flip`
@@ -323,7 +323,7 @@ getCurrentSong(Enum) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Subject` | Current Song | Current Playback Time | `"Current Song"` |
+| `Subject` | Current Song \| Current Playback Time | `"Current Song"` |
 
 Shortcuts action: `is.workflow.actions.getcurrentsong`
 
@@ -543,7 +543,7 @@ importAudioFilesIntoMusic(Any, Boolean, Enum) -> Any
 | --- | --- | --- |
 | `WFInput` | Any | — |
 | `WFImportAudioFilesReencode` | Boolean | false |
-| `WFImportAudioFilesEncoder` | Default | AAC | AIFF | Lossless | MP3 | WAV | `"Default"` |
+| `WFImportAudioFilesEncoder` | Default \| AAC \| AIFF \| Lossless \| MP3 \| WAV | `"Default"` |
 
 Shortcuts action: `is.workflow.actions.importaudiofiles`
 
@@ -607,7 +607,7 @@ maskImage(Any, Enum, Number, Any) -> Image
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Any | — |
-| `WFMaskType` | Rounded Rectangle | Ellipse | Icon | Custom Image | `"Rounded Rectangle"` |
+| `WFMaskType` | Rounded Rectangle \| Ellipse \| Icon \| Custom Image | `"Rounded Rectangle"` |
 | `WFMaskCornerRadius` | Number | — |
 | `WFCustomMaskImage` | Any | — |
 
@@ -626,7 +626,7 @@ overlayImage(Any, Any, Boolean, Enum, Number, Number, Number, Number, Number, Nu
 | `WFImage` | Any | — |
 | `WFInput` | Any | — |
 | `WFShouldShowImageEditor` | Boolean | true |
-| `WFImagePosition` | Center | Top Left | Top Right | Bottom Left | Bottom Right | Custom | `"Center"` |
+| `WFImagePosition` | Center \| Top Left \| Top Right \| Bottom Left \| Bottom Right \| Custom | `"Center"` |
 | `WFImageWidth` | Number | — |
 | `WFImageHeight` | Number | — |
 | `WFImageX` | Number | — |
@@ -648,7 +648,7 @@ overlayText(Text, Any, Enum, Number, Number, Number, Number, Number, Number, Tex
 | --- | --- | --- |
 | `WFText` | Text | — |
 | `WFImage` | Any | — |
-| `WFTextPosition` | Top Left | Top Center | Top Right | Middle Left | Center | Middle Right | Bottom Left | Bottom Center | Bottom Right | Custom Position | `"Center"` |
+| `WFTextPosition` | Top Left \| Top Center \| Top Right \| Middle Left \| Center \| Middle Right \| Bottom Left \| Bottom Center \| Bottom Right \| Custom Position | `"Center"` |
 | `WFTextX` | Number | — |
 | `WFPercentageTextX` | Number | — |
 | `WFTextY` | Number | — |
@@ -658,7 +658,7 @@ overlayText(Text, Any, Enum, Number, Number, Number, Number, Number, Number, Tex
 | `WFFont` | Text | — |
 | `WFFontSize` | Number | 36 |
 | `WFPercentageFontSize` | Number | 0.1 |
-| `WFTextAlignment` | Left | Center | Right | `"Center"` |
+| `WFTextAlignment` | Left \| Center \| Right | `"Center"` |
 | `WFTextColor` | Text | — |
 | `WFTextRotation` | Number | 0 |
 | `WFTextOutlineEnabled` | Boolean | false |
@@ -667,7 +667,7 @@ overlayText(Text, Any, Enum, Number, Number, Number, Number, Number, Number, Tex
 | `WFTextStrokeColor` | Text | — |
 | `WFTextBoxWidth` | Number | — |
 | `WFPercentageTextBoxWidth` | Number | 0.8 |
-| `WFSizingMethod` | Proportional | Absolute | `"Proportional"` |
+| `WFSizingMethod` | Proportional \| Absolute | `"Proportional"` |
 
 Shortcuts action: `is.workflow.actions.overlaytext`
 
@@ -681,7 +681,7 @@ play/pause(Enum, Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPlayPauseBehavior` | Play/Pause | Play | Pause | `"Play/Pause"` |
+| `WFPlayPauseBehavior` | Play/Pause \| Play \| Pause | `"Play/Pause"` |
 | `WFMediaRoute` | Text | `"Local"` |
 
 Shortcuts action: `is.workflow.actions.pausemusic`
@@ -697,8 +697,8 @@ playMusic(Any, Enum, Enum)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFMediaItems` | Any | — |
-| `WFPlayMusicActionShuffle` | Off | Songs | — |
-| `WFPlayMusicActionRepeat` | None | One | All | — |
+| `WFPlayMusicActionShuffle` | Off \| Songs | — |
+| `WFPlayMusicActionRepeat` | None \| One \| All | — |
 
 Shortcuts action: `is.workflow.actions.playmusic`
 
@@ -713,7 +713,7 @@ playPodcast(Text, Enum)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFPodcastShow` | Text | — |
-| `WFPodcastPlaybackOrder` | Default | Newest First | Oldest First | — |
+| `WFPodcastPlaybackOrder` | Default \| Newest First \| Oldest First | — |
 
 Shortcuts action: `is.workflow.actions.playpodcast`
 
@@ -756,9 +756,9 @@ recordAudio(Enum, Enum, Enum, Number) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFRecordingCompression` | Normal | Very High | `"Normal"` |
-| `WFRecordingStart` | On Tap | Immediately | `"On Tap"` |
-| `WFRecordingEnd` | On Tap | After Time | `"On Tap"` |
+| `WFRecordingCompression` | Normal \| Very High | `"Normal"` |
+| `WFRecordingStart` | On Tap \| Immediately | `"On Tap"` |
+| `WFRecordingEnd` | On Tap \| After Time | `"On Tap"` |
 | `WFRecordingTimeInterval` | Number | — |
 
 Shortcuts action: `is.workflow.actions.recordaudio`
@@ -803,7 +803,7 @@ resizeImage(Enum, Number, Number, Number, Number, Any) -> Image
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImageResizeKey` | Size | Percentage | Longest Edge | `"Size"` |
+| `WFImageResizeKey` | Size \| Percentage \| Longest Edge | `"Size"` |
 | `WFImageResizeWidth` | Number | 640 |
 | `WFImageResizeHeight` | Number | — |
 | `WFImageResizePercentage` | Number | — |
@@ -856,7 +856,7 @@ seek(Enum, Number, Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSeekBehavior` | To Time | Forward By | Backward By | `"To Time"` |
+| `WFSeekBehavior` | To Time \| Forward By \| Backward By | `"To Time"` |
 | `WFTimeInterval` | Number | — |
 | `WFMediaRoute` | Text | `"Local"` |
 
@@ -886,7 +886,7 @@ selectPhotos(Enum, Boolean) -> Image
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPhotoPickerTypes` | Images | Live Photos | Videos | Images,Live Photos,Videos |
+| `WFPhotoPickerTypes` | Images \| Live Photos \| Videos | Images,Live Photos,Videos |
 | `WFSelectMultiplePhotos` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.selectphoto`
@@ -916,7 +916,7 @@ skipBack(Enum, Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSkipBackBehavior` | Beginning | Previous Song | `"Beginning"` |
+| `WFSkipBackBehavior` | Beginning \| Previous Song | `"Beginning"` |
 | `WFMediaRoute` | Text | `"Local"` |
 
 Shortcuts action: `is.workflow.actions.skipback`
@@ -947,7 +947,7 @@ takePhoto(Boolean, Number, Enum) -> Image
 | --- | --- | --- |
 | `WFCameraCaptureShowPreview` | Boolean | true |
 | `WFPhotoCount` | Number | 1 |
-| `WFCameraCaptureDevice` | Front | Back | `"Back"` |
+| `WFCameraCaptureDevice` | Front \| Back | `"Back"` |
 
 Shortcuts action: `is.workflow.actions.takephoto`
 
@@ -961,9 +961,9 @@ takeVideo(Enum, Enum, Enum) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCameraCaptureDevice` | Front | Back | `"Back"` |
-| `WFCameraCaptureQuality` | Low | Medium | High | `"High"` |
-| `WFRecordingStart` | On Tap | Immediately | `"Immediately"` |
+| `WFCameraCaptureDevice` | Front \| Back | `"Back"` |
+| `WFCameraCaptureQuality` | Low \| Medium \| High | `"High"` |
+| `WFRecordingStart` | On Tap \| Immediately | `"Immediately"` |
 
 Shortcuts action: `is.workflow.actions.takevideo`
 

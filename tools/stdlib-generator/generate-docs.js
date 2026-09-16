@@ -58,18 +58,22 @@ const INTENT_ENUM_VALUES = {
   MatchTextGetGroupType: ["Group At Index", "All Groups"],
 };
 
+function escapeAngleBrackets(text) {
+  return text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
 function formatType(param) {
   if (param.chuteType === "Enum" && param.items) {
-    return param.items.join(" | ");
+    return param.items.join(" \\| ");
   }
   if (param.enumType && INTENT_ENUM_VALUES[param.enumType]) {
-    return INTENT_ENUM_VALUES[param.enumType].join(" | ");
+    return INTENT_ENUM_VALUES[param.enumType].join(" \\| ");
   }
-  return param.chuteType || "Any";
+  return escapeAngleBrackets(param.chuteType || "Any");
 }
 
 function formatTypeSimple(chuteType) {
-  return chuteType || "Any";
+  return escapeAngleBrackets(chuteType || "Any");
 }
 
 const CONTENT_TYPE_MAP = {
