@@ -5161,26 +5161,106 @@ exports[`stdlib smoke tests > should compile settings toggle actions 1`] = `
 	<array>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.wifi.set</string>
+			<string>is.workflow.actions.gettext</string>
 			<key>UUID</key>
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
+				<key>WFTextActionText</key>
+				<string>Turn Off</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000001</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariableName</key>
+				<string>__chute_tmp_0</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.wifi.set</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000002</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
 				<key>operation</key>
-				<integer>0</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>__chute_tmp_0</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
 				<key>OnValue</key>
 				<false/>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.gettext</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000003</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFTextActionText</key>
+				<string>Turn On</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.setvariable</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000004</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFVariableName</key>
+				<string>__chute_tmp_1</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.bluetooth.set</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000001</string>
+			<string>00000000-0000-0000-0000-000000000005</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>operation</key>
-				<integer>0</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>&#xFFFC;</string>
+						<key>attachmentsByRange</key>
+						<dict>
+							<key>{0, 1}</key>
+							<dict>
+								<key>Type</key>
+								<string>Variable</string>
+								<key>VariableName</key>
+								<string>__chute_tmp_1</string>
+							</dict>
+						</dict>
+					</dict>
+				</dict>
 				<key>OnValue</key>
 				<true/>
 			</dict>

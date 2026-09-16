@@ -511,8 +511,8 @@ Scripting.wait(5);`;
   it("should compile settings toggle actions", () => {
     const source = `import Settings;
 shortcut { name: "Settings" }
-Settings.setWiFi(0, false);
-Settings.setBluetooth(0, true);`;
+Settings.setWiFi(.turnOff, false);
+Settings.setBluetooth(.turnOn, true);`;
     expect(compile(source).main).toMatchSnapshot();
   });
 
