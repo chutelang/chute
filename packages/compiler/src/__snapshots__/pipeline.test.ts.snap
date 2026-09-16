@@ -4992,24 +4992,16 @@ exports[`stdlib smoke tests > should compile getClipboard and copyToClipboard 1`
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFLocalOnly</key>
+				<key>WFInput</key>
 				<dict>
 					<key>WFSerializationType</key>
-					<string>WFTextTokenString</string>
+					<string>WFTextTokenAttachment</string>
 					<key>Value</key>
 					<dict>
-						<key>string</key>
-						<string>&#xFFFC;</string>
-						<key>attachmentsByRange</key>
-						<dict>
-							<key>{0, 1}</key>
-							<dict>
-								<key>Type</key>
-								<string>Variable</string>
-								<key>VariableName</key>
-								<string>text</string>
-							</dict>
-						</dict>
+						<key>Type</key>
+						<string>Variable</string>
+						<key>VariableName</key>
+						<string>text</string>
 					</dict>
 				</dict>
 			</dict>
@@ -5062,7 +5054,7 @@ exports[`stdlib smoke tests > should compile notification with default title 1`]
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFNotificationActionTitle</key>
+				<key>WFNotificationActionBody</key>
 				<string>Task complete</string>
 			</dict>
 		</dict>
