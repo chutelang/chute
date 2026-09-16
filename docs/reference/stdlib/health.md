@@ -11,7 +11,7 @@ import Health;
 Ends the active workout on your Apple Watch.
 
 ```chute
-endWorkout(Text)
+endWorkout(IntentAppDefinition: Text)
 ```
 
 | Parameter | Type | Default |
@@ -43,7 +43,7 @@ Shortcuts action: `is.workflow.actions.properties.health.quantity`
 Adds a data point into the Health app. You can log anything that the Health app supports, including your weight, steps taken, running distance, caloric intake and more.
 
 ```chute
-logHealthSample(Text, Number, Number, Text, Text, Text, Text, Text) -> Any
+logHealthSample(WFQuantitySampleType: Text, WFQuantitySampleQuantity: Number, WFQuantitySampleAdditionalQuantity: Number, WFQuantitySampleAdditionalEnumeration: Text, WFCategorySampleEnumeration: Text, WFCategorySampleAdditionalEnumerationKey: Text, WFQuantitySampleDate: Text, WFSampleEndDate: Text) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -64,7 +64,7 @@ Shortcuts action: `is.workflow.actions.health.quantity.log`
 Adds a workout into the Health app. You can log all kinds of activities, from running and cycling to playing a sport.
 
 ```chute
-logWorkout(Text, Text, Number, Number, Number) -> Any
+logWorkout(WFWorkoutReadableActivityType: Text, WFWorkoutDate: Text, WFWorkoutDuration: Number, WFWorkoutCaloriesQuantity: Number, WFWorkoutDistanceQuantity: Number) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -82,7 +82,7 @@ Shortcuts action: `is.workflow.actions.health.workout.log`
 Starts a workout on your Apple Watch.
 
 ```chute
-startWorkout(Text, Text, Boolean, Number)
+startWorkout(IntentAppDefinition: Text, workoutName: Text, isOpenEnded: Boolean, WorkoutGoal: Number)
 ```
 
 | Parameter | Type | Default |

@@ -11,7 +11,7 @@ import HomeKit;
 Set the state of your home.
 
 ```chute
-controlHome(Text, Text)
+controlHome(WFHome: Text, WFHomeTriggerActionSets: Text)
 ```
 
 | Parameter | Type | Default |
@@ -26,7 +26,7 @@ Shortcuts action: `is.workflow.actions.homeaccessory`
 Gets the state of a Home accessory.
 
 ```chute
-getState(Text, Text, Text)
+getState(WFHome: Text, WFHMService: Text, WFHMCharacteristic: Text)
 ```
 
 | Parameter | Type | Default |
@@ -42,7 +42,7 @@ Shortcuts action: `is.workflow.actions.gethomeaccessorystate`
 Announces a message passed as input using Intercom.
 
 ```chute
-intercom(Text, Text)
+intercom(WFHome: Text, WFInput: Text)
 ```
 
 | Parameter | Type | Default |
