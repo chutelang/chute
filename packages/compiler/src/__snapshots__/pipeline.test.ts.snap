@@ -887,7 +887,18 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>b</string>
 				<key>WFDictionaryValue</key>
-				<integer>10</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>10</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -1051,7 +1062,18 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>a</string>
 				<key>WFDictionaryValue</key>
-				<integer>10</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>10</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -2002,7 +2024,18 @@ exports[`compile > should compile const destructuring 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>x</string>
 				<key>WFDictionaryValue</key>
-				<integer>5</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>5</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -2015,7 +2048,18 @@ exports[`compile > should compile const destructuring 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>y</string>
 				<key>WFDictionaryValue</key>
-				<integer>7</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>7</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -2577,7 +2621,18 @@ exports[`compile > should compile function calling another function 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>n</string>
 				<key>WFDictionaryValue</key>
-				<integer>3</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>3</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -3935,7 +3990,18 @@ exports[`compile > should compile multiple functions 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>a</string>
 				<key>WFDictionaryValue</key>
-				<integer>3</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>3</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -3948,7 +4014,18 @@ exports[`compile > should compile multiple functions 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>b</string>
 				<key>WFDictionaryValue</key>
-				<integer>4</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>4</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -4292,7 +4369,18 @@ exports[`compile > should compile record construction and field access 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>x</string>
 				<key>WFDictionaryValue</key>
-				<integer>10</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>10</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
@@ -4305,7 +4393,18 @@ exports[`compile > should compile record construction and field access 1`] = `
 				<key>WFDictionaryKey</key>
 				<string>y</string>
 				<key>WFDictionaryValue</key>
-				<integer>20</integer>
+				<dict>
+					<key>WFSerializationType</key>
+					<string>WFTextTokenString</string>
+					<key>Value</key>
+					<dict>
+						<key>string</key>
+						<string>20</string>
+						<key>attachmentsByRange</key>
+						<dict>
+						</dict>
+					</dict>
+				</dict>
 			</dict>
 		</dict>
 		<dict>
