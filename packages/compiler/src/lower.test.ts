@@ -328,9 +328,15 @@ describe("lower", () => {
       );
       expect(setKeyActions).toHaveLength(2);
       expect(setKeyActions.at(0)?.parameters.get("WFDictionaryKey")).toBe("x");
-      expect(setKeyActions.at(0)?.parameters.get("WFDictionaryValue")).toBe(1);
+      expect(setKeyActions.at(0)?.parameters.get("WFDictionaryValue")).toMatchObject({
+        kind: "InterpolatedText",
+        parts: [{ kind: "text", value: "1" }],
+      });
       expect(setKeyActions.at(1)?.parameters.get("WFDictionaryKey")).toBe("y");
-      expect(setKeyActions.at(1)?.parameters.get("WFDictionaryValue")).toBe(2);
+      expect(setKeyActions.at(1)?.parameters.get("WFDictionaryValue")).toMatchObject({
+        kind: "InterpolatedText",
+        parts: [{ kind: "text", value: "2" }],
+      });
     });
 
     it("should lower record field access to getvalueforkey", () => {

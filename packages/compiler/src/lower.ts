@@ -569,7 +569,7 @@ function lowerFunctionCall(
     }
 
     const key = param.name;
-    const value = lowerToParamValue(valueExpr, actions, ctx);
+    const value = wrapAsTextToken(lowerToParamValue(valueExpr, actions, ctx));
 
     const parameters = new Map<string, ParameterValue>();
     parameters.set("WFDictionaryKey", key);
@@ -692,6 +692,22 @@ function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerCont
   });
 }
 
+function wrapAsTextToken(value: ParameterValue): ParameterValue {
+  if (typeof value === "number") {
+    return {
+      kind: "InterpolatedText",
+      parts: [{ kind: "text", value: String(value) }],
+    };
+  }
+  if (typeof value === "boolean") {
+    return {
+      kind: "InterpolatedText",
+      parts: [{ kind: "text", value: value ? "1" : "0" }],
+    };
+  }
+  return value;
+}
+
 function lowerDictionaryLiteral(
   expr: DictionaryLiteral,
   actions: ActionIR[],
@@ -705,7 +721,7 @@ function lowerDictionaryLiteral(
 
   for (const entry of expr.entries) {
     const key = lowerToParamValue(entry.key, actions, ctx);
-    const value = lowerToParamValue(entry.value, actions, ctx);
+    const value = wrapAsTextToken(lowerToParamValue(entry.value, actions, ctx));
 
     const parameters = new Map<string, ParameterValue>();
     parameters.set("WFDictionaryKey", key);
@@ -1573,7 +1589,7 @@ function lowerRecordConstruction(
     }
 
     const key = arg.label;
-    const value = lowerToParamValue(arg.value, actions, ctx);
+    const value = wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx));
 
     const parameters = new Map<string, ParameterValue>();
     parameters.set("WFDictionaryKey", key);
@@ -1786,7 +1802,7 @@ function lowerPipelineFunctionStage(
         const label = resolveArgLabelFromParams(arg, i, paramNames);
         if (label) {
           provided.set(label, arg.value);
-          const value = lowerToParamValue(arg.value, actions, ctx);
+          const value = wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx));
           const parameters = new Map<string, ParameterValue>();
           parameters.set("WFDictionaryKey", label);
           parameters.set("WFDictionaryValue", value);
@@ -1821,7 +1837,7 @@ function lowerPipelineFunctionStage(
       const label = resolveArgLabelFromParams(arg, i, paramNames);
       if (label) {
         provided.set(label, arg.value);
-        const value = lowerToParamValue(arg.value, actions, ctx);
+        const value = wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx));
         const parameters = new Map<string, ParameterValue>();
         parameters.set("WFDictionaryKey", label);
         parameters.set("WFDictionaryValue", value);
@@ -1836,7 +1852,7 @@ function lowerPipelineFunctionStage(
 
   for (const param of decl.params) {
     if (!provided.has(param.name) && param.defaultValue) {
-      const value = lowerToParamValue(param.defaultValue, actions, ctx);
+      const value = wrapAsTextToken(lowerToParamValue(param.defaultValue, actions, ctx));
       const parameters = new Map<string, ParameterValue>();
       parameters.set("WFDictionaryKey", param.name);
       parameters.set("WFDictionaryValue", value);
