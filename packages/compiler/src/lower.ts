@@ -47,7 +47,7 @@ import type {
 } from "./ir.ts";
 import type { ResolvedProperty } from "./ast.ts";
 import { getContentItemClass } from "./coercion.ts";
-import { getStdlibModule } from "./stdlib.ts";
+import { getStdlibModule, getParameterSlot } from "./stdlib.ts";
 
 export class LowerError extends Error {
   constructor(
@@ -499,7 +499,19 @@ function lowerNamespaceActionCall(
     if (!plistKey) {
       continue;
     }
-    parameters.set(plistKey, lowerToParamValue(arg.value, parentActions, ctx));
+
+    const slot = getParameterSlot(nsAction.runtimeIdentifier, plistKey);
+    if (
+      slot === "picker" &&
+      (arg.value.kind === "StringLiteral" || arg.value.kind === "NumberLiteral")
+    ) {
+      lowerExpression(arg.value, parentActions, ctx);
+      const tempName = nextTempName(ctx);
+      parentActions.push(makeSetVariableAction(tempName, ctx));
+      parameters.set(plistKey, { kind: "VariableRef", name: tempName });
+    } else {
+      parameters.set(plistKey, lowerToParamValue(arg.value, parentActions, ctx));
+    }
   }
   return {
     identifier: nsAction.runtimeIdentifier,
