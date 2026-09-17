@@ -1476,11 +1476,11 @@ function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): num
     case "!=":
       return 1;
     case ">":
-      return 4;
+      return 2;
     case ">=":
-      return 4;
+      return 3;
     case "<":
-      return 5;
+      return 4;
     case "<=":
       return 5;
     case "contains":
