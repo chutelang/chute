@@ -639,8 +639,14 @@ function lowerBinaryExpression(
   const operand = lowerOperandPreservingMagicVariable(expr.right, actions, ctx);
 
   const parameters = new Map<string, ParameterValue>();
-  parameters.set("WFMathOperation", mathOperationSymbol(expr.operator));
-  parameters.set("WFMathOperand", operand);
+  if (expr.operator === "%") {
+    parameters.set("WFMathOperation", "…");
+    parameters.set("WFScientificMathOperation", "Modulus");
+    parameters.set("WFScientificMathOperand", operand);
+  } else {
+    parameters.set("WFMathOperation", mathOperationSymbol(expr.operator));
+    parameters.set("WFMathOperand", operand);
+  }
 
   actions.push({
     identifier: "is.workflow.actions.math",
