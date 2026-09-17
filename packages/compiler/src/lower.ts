@@ -351,6 +351,10 @@ function lowerDeclaration(
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
+  if (decl.initializer.kind === "NilLiteral") {
+    actions.push(makeSetVariableAction(decl.name, ctx));
+    return;
+  }
   lowerExpression(decl.initializer, actions, ctx);
   actions.push(makeSetVariableAction(decl.name, ctx));
 }
