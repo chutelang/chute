@@ -315,7 +315,7 @@ describe("lower", () => {
       expect(actions).toHaveLength(0);
     });
 
-    it("should lower record construction to dictionary with field keys", () => {
+    it("should lower record construction to dictionary with inline items", () => {
       const actions = lowerSource(
         'shortcut { name: "Test" } record Point { x: Number, y: Number } const p = Point(x: 1, y: 2);',
       );
@@ -323,20 +323,12 @@ describe("lower", () => {
       const dictAction = actions.find((a) => a.identifier === "is.workflow.actions.dictionary");
       expect(dictAction).toBeDefined();
 
-      const setKeyActions = actions.filter(
-        (a) => a.identifier === "is.workflow.actions.setvalueforkey",
-      );
-      expect(setKeyActions).toHaveLength(2);
-      expect(setKeyActions.at(0)?.parameters.get("WFDictionaryKey")).toBe("x");
-      expect(setKeyActions.at(0)?.parameters.get("WFDictionaryValue")).toMatchObject({
-        kind: "InterpolatedText",
-        parts: [{ kind: "text", value: "1" }],
-      });
-      expect(setKeyActions.at(1)?.parameters.get("WFDictionaryKey")).toBe("y");
-      expect(setKeyActions.at(1)?.parameters.get("WFDictionaryValue")).toMatchObject({
-        kind: "InterpolatedText",
-        parts: [{ kind: "text", value: "2" }],
-      });
+      const items = dictAction?.parameters.get("WFItems") as any;
+      expect(items).toBeDefined();
+      expect(items.kind).toBe("DictItems");
+      expect(items.entries).toHaveLength(2);
+      expect(items.entries[0].key).toBe("x");
+      expect(items.entries[1].key).toBe("y");
     });
 
     it("should lower record field access to getvalueforkey", () => {
@@ -470,31 +462,31 @@ describe("lower", () => {
       const actions = sub?.actions ?? [];
 
       const identifiers = actions.map((a) => a.identifier);
-      expect(identifiers.slice(0, 8)).toEqual([
-        "is.workflow.actions.getvariable",
-        "is.workflow.actions.setvariable",
-        "is.workflow.actions.getvariable",
+      expect(identifiers.slice(0, 7)).toEqual([
+        "is.workflow.actions.setvariable", // store ExtensionInput
+        "is.workflow.actions.getvariable", // get input dict for param a
         "is.workflow.actions.getvalueforkey",
         "is.workflow.actions.setvariable",
-        "is.workflow.actions.getvariable",
+        "is.workflow.actions.getvariable", // get input dict for param b
         "is.workflow.actions.getvalueforkey",
         "is.workflow.actions.setvariable",
       ]);
 
-      const firstGetVariable = actions.at(0);
-      expect(firstGetVariable?.parameters.get("WFVariable")).toEqual({
-        kind: "VariableRef",
-        name: "Shortcut Input",
-      });
+      // First action is setvariable with ExtensionInputRef
+      const firstAction = actions.at(0);
+      expect(firstAction?.identifier).toBe("is.workflow.actions.setvariable");
+      expect(firstAction?.parameters.get("WFInput")).toEqual({ kind: "ExtensionInputRef" });
 
-      const firstDictionaryKey = actions.at(3);
+      const tempName = firstAction?.parameters.get("WFVariableName") as string | undefined;
+
+      const firstDictionaryKey = actions.at(2);
       expect(firstDictionaryKey?.parameters.get("WFDictionaryKey")).toBe("a");
 
-      const secondDictionaryKey = actions.at(6);
+      const secondDictionaryKey = actions.at(5);
       expect(secondDictionaryKey?.parameters.get("WFDictionaryKey")).toBe("b");
 
-      const restoreBeforeSecondExtraction = actions.at(5);
-      const tempName = actions.at(1)?.parameters.get("WFVariableName") as string | undefined;
+      // Before extracting the second param, restore the input dict
+      const restoreBeforeSecondExtraction = actions.at(4);
       expect(
         (
           restoreBeforeSecondExtraction?.parameters.get("WFVariable") as

@@ -1,10 +1,14 @@
 import type {
   ActionIR,
+  ActionOutputRef,
   Aggrandizement,
+  DictItems,
   InterpolatedText,
+  ListItems,
   ParameterValue,
   ShortcutIR,
   VariableRef,
+  WorkflowRef,
 } from "./ir.ts";
 import type { InputSlot } from "./coercion.ts";
 import { getParameterSlot } from "./stdlib.ts";
@@ -28,7 +32,7 @@ export function codegen(ir: ShortcutIR): string {
   emitBool(lines, 1, false);
 
   emitKey(lines, 1, "WFWorkflowHasShortcutInputVariables");
-  emitBool(lines, 1, false);
+  emitBool(lines, 1, ir.acceptsInput ?? false);
 
   emitKey(lines, 1, "WFWorkflowIcon");
   emitIndent(lines, 1, "<dict>");
@@ -40,7 +44,13 @@ export function codegen(ir: ShortcutIR): string {
   emitIndent(lines, 1, "<array/>");
 
   emitKey(lines, 1, "WFWorkflowInputContentItemClasses");
-  emitIndent(lines, 1, "<array/>");
+  if (ir.acceptsInput) {
+    emitIndent(lines, 1, "<array>");
+    emitIndent(lines, 2, "<string>WFContentItem</string>");
+    emitIndent(lines, 1, "</array>");
+  } else {
+    emitIndent(lines, 1, "<array/>");
+  }
 
   emitKeyInteger(lines, 1, "WFWorkflowMinimumClientVersion", 900);
 
@@ -121,6 +131,16 @@ function emitKeyValue(
   emitKey(lines, depth, key);
   if (value.kind === "VariableRef") {
     emitVariableRef(lines, depth, value, getParameterSlot(actionIdentifier, key));
+  } else if (value.kind === "ActionOutputRef") {
+    emitActionOutputRef(lines, depth, value, getParameterSlot(actionIdentifier, key));
+  } else if (value.kind === "ExtensionInputRef") {
+    emitExtensionInputRef(lines, depth);
+  } else if (value.kind === "WorkflowRef") {
+    emitWorkflowRef(lines, depth, value);
+  } else if (value.kind === "ListItems") {
+    emitListItems(lines, depth, value, actionIdentifier);
+  } else if (value.kind === "DictItems") {
+    emitDictItems(lines, depth, value, actionIdentifier);
   } else {
     emitInterpolatedText(lines, depth, value);
   }
@@ -262,6 +282,122 @@ function buildCombinedText(text: InterpolatedText): {
 
 function xmlEscapeWithAttachments(text: string): string {
   return escapeXml(text).replaceAll(OBJECT_REPLACEMENT_CHAR, OBJECT_REPLACEMENT_ENTITY);
+}
+
+function emitExtensionInputRef(lines: string[], depth: number): void {
+  emitIndent(lines, depth, "<dict>");
+  emitKey(lines, depth + 1, "Value");
+  emitIndent(lines, depth + 1, "<dict>");
+  emitKeyString(lines, depth + 2, "Type", "ExtensionInput");
+  emitIndent(lines, depth + 1, "</dict>");
+  emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");
+  emitIndent(lines, depth, "</dict>");
+}
+
+function emitWorkflowRef(lines: string[], depth: number, ref: WorkflowRef): void {
+  emitIndent(lines, depth, "<dict>");
+  emitKeyString(lines, depth + 1, "WFSerializationType", "WFDictionaryFieldValue");
+  emitKey(lines, depth + 1, "Value");
+  emitIndent(lines, depth + 1, "<dict>");
+  emitKeyString(lines, depth + 2, "WFWorkflowName", ref.name);
+  emitIndent(lines, depth + 1, "</dict>");
+  emitIndent(lines, depth, "</dict>");
+}
+
+function emitActionOutputRef(
+  lines: string[],
+  depth: number,
+  ref: ActionOutputRef,
+  slot: InputSlot,
+): void {
+  emitIndent(lines, depth, "<dict>");
+  emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");
+  emitKey(lines, depth + 1, "Value");
+  emitIndent(lines, depth + 1, "<dict>");
+  emitKeyString(lines, depth + 2, "Type", "ActionOutput");
+  emitKeyString(lines, depth + 2, "OutputName", ref.outputName);
+  emitKeyString(lines, depth + 2, "OutputUUID", ref.outputUUID);
+  emitIndent(lines, depth + 1, "</dict>");
+  emitIndent(lines, depth, "</dict>");
+}
+
+function emitTokenValue(
+  lines: string[],
+  depth: number,
+  value: ParameterValue,
+  actionIdentifier: string,
+): void {
+  if (typeof value === "string") {
+    emitIndent(lines, depth, "<dict>");
+    emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenString");
+    emitKey(lines, depth + 1, "Value");
+    emitIndent(lines, depth + 1, "<dict>");
+    emitKeyRawString(lines, depth + 2, "string", xmlEscapeWithAttachments(value));
+    emitIndent(lines, depth + 1, "</dict>");
+    emitIndent(lines, depth, "</dict>");
+  } else if (typeof value === "number") {
+    emitIndent(lines, depth, "<dict>");
+    emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenString");
+    emitKey(lines, depth + 1, "Value");
+    emitIndent(lines, depth + 1, "<dict>");
+    emitKeyRawString(lines, depth + 2, "string", String(value));
+    emitIndent(lines, depth + 1, "</dict>");
+    emitIndent(lines, depth, "</dict>");
+  } else if (typeof value !== "boolean" && value.kind === "VariableRef") {
+    emitVariableRef(lines, depth, value, getParameterSlot(actionIdentifier, ""));
+  } else if (typeof value !== "boolean" && value.kind === "InterpolatedText") {
+    emitInterpolatedText(lines, depth, value);
+  } else {
+    emitIndent(lines, depth, "<dict>");
+    emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenString");
+    emitKey(lines, depth + 1, "Value");
+    emitIndent(lines, depth + 1, "<dict>");
+    emitKeyRawString(lines, depth + 2, "string", String(value));
+    emitIndent(lines, depth + 1, "</dict>");
+    emitIndent(lines, depth, "</dict>");
+  }
+}
+
+function emitListItems(
+  lines: string[],
+  depth: number,
+  list: ListItems,
+  actionIdentifier: string,
+): void {
+  emitIndent(lines, depth, "<array>");
+  for (const item of list.items) {
+    emitIndent(lines, depth + 1, "<dict>");
+    emitKeyInteger(lines, depth + 2, "WFItemType", item.itemType);
+    emitKey(lines, depth + 2, "WFValue");
+    emitTokenValue(lines, depth + 2, item.value, actionIdentifier);
+    emitIndent(lines, depth + 1, "</dict>");
+  }
+  emitIndent(lines, depth, "</array>");
+}
+
+function emitDictItems(
+  lines: string[],
+  depth: number,
+  dict: DictItems,
+  actionIdentifier: string,
+): void {
+  emitIndent(lines, depth, "<dict>");
+  emitKey(lines, depth + 1, "Value");
+  emitIndent(lines, depth + 1, "<dict>");
+  emitKey(lines, depth + 2, "WFDictionaryFieldValueItems");
+  emitIndent(lines, depth + 2, "<array>");
+  for (const entry of dict.entries) {
+    emitIndent(lines, depth + 3, "<dict>");
+    emitKeyInteger(lines, depth + 4, "WFItemType", entry.itemType);
+    emitKey(lines, depth + 4, "WFKey");
+    emitTokenValue(lines, depth + 4, entry.key, actionIdentifier);
+    emitKey(lines, depth + 4, "WFValue");
+    emitTokenValue(lines, depth + 4, entry.value, actionIdentifier);
+    emitIndent(lines, depth + 3, "</dict>");
+  }
+  emitIndent(lines, depth + 2, "</array>");
+  emitIndent(lines, depth + 1, "</dict>");
+  emitIndent(lines, depth, "</dict>");
 }
 
 function emitKey(lines: string[], depth: number, key: string): void {

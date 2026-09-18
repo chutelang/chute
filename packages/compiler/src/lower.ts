@@ -197,9 +197,16 @@ function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext
   const actions: ActionIR[] = [];
 
   if (decl.params.length > 0) {
+    // Store the shortcut input (ExtensionInput) in a temp variable
     const inputTempName = nextTempName(subCtx);
-    actions.push(makeGetVariableAction("Shortcut Input", subCtx));
-    actions.push(makeSetVariableAction(inputTempName, subCtx));
+    const setInputParams = new Map<string, ParameterValue>();
+    setInputParams.set("WFInput", { kind: "ExtensionInputRef" });
+    setInputParams.set("WFVariableName", inputTempName);
+    actions.push({
+      identifier: "is.workflow.actions.setvariable",
+      uuid: nextUuid(subCtx),
+      parameters: setInputParams,
+    });
 
     for (const param of decl.params) {
       actions.push(makeGetVariableAction(inputTempName, subCtx));
@@ -220,7 +227,7 @@ function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext
   }
 
   const subName = deriveFunctionShortcutName(decl);
-  return { name: subName, actions };
+  return { name: subName, actions, acceptsInput: decl.params.length > 0 };
 }
 
 function deriveFunctionShortcutName(decl: FunctionDeclaration): string {
@@ -352,6 +359,7 @@ function lowerDeclaration(
   ctx: LowerContext,
 ): void {
   if (decl.initializer.kind === "NilLiteral") {
+    // Skip the Nothing action — a Set Variable with no input sets the variable to empty
     actions.push(makeSetVariableAction(decl.name, ctx));
     return;
   }
@@ -374,10 +382,7 @@ function lowerReturnStatement(stmt: ReturnStatement, actions: ActionIR[], ctx: L
     lowerExpression(stmt.value, actions, ctx);
     const tempName = nextTempName(ctx);
     actions.push(makeSetVariableAction(tempName, ctx));
-    parameters.set("WFOutput", {
-      kind: "VariableRef",
-      name: tempName,
-    });
+    parameters.set("WFOutput", { kind: "VariableRef", name: tempName });
   }
   actions.push({
     identifier: "is.workflow.actions.output",
@@ -512,6 +517,8 @@ function lowerNamespaceActionCall(
       slot === "picker" &&
       (arg.value.kind === "StringLiteral" || arg.value.kind === "NumberLiteral")
     ) {
+      // Picker parameters need a variable reference, not a bare literal.
+      // Emit a Text/Number action to produce the value, then reference it.
       lowerExpression(arg.value, parentActions, ctx);
       const tempName = nextTempName(ctx);
       parentActions.push(makeSetVariableAction(tempName, ctx));
@@ -566,12 +573,6 @@ function lowerFunctionCall(
   actions: ActionIR[],
   ctx: LowerContext,
 ): ActionIR {
-  actions.push({
-    identifier: "is.workflow.actions.dictionary",
-    uuid: nextUuid(ctx),
-    parameters: new Map(),
-  });
-
   const paramNames = decl.params.map((p) => p.name);
   const provided = new Map<string, Expression>();
   for (let i = 0; i < expr.args.length; i++) {
@@ -585,30 +586,35 @@ function lowerFunctionCall(
     }
   }
 
+  const entries: import("./ir.ts").DictEntry[] = [];
   for (const param of decl.params) {
     const valueExpr = provided.get(param.name) ?? param.defaultValue;
     if (!valueExpr) {
       continue;
     }
-
-    const key = param.name;
-    const value = wrapAsTextToken(lowerToParamValue(valueExpr, actions, ctx));
-
-    const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFDictionaryKey", key);
-    parameters.set("WFDictionaryValue", value);
-
-    actions.push({
-      identifier: "is.workflow.actions.setvalueforkey",
-      uuid: nextUuid(ctx),
-      parameters,
+    entries.push({
+      itemType: dictItemType(valueExpr),
+      key: param.name,
+      value: wrapAsTextToken(lowerToParamValue(valueExpr, actions, ctx)),
     });
   }
+
+  const dictParams = new Map<string, ParameterValue>();
+  dictParams.set("WFItems", { kind: "DictItems", entries });
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters: dictParams,
+  });
+
+  const dictTempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(dictTempName, ctx));
 
   const subName = deriveFunctionShortcutName(decl);
 
   const runParams = new Map<string, ParameterValue>();
   runParams.set("WFWorkflowName", subName);
+  runParams.set("WFInput", { kind: "VariableRef", name: dictTempName });
 
   return {
     identifier: "is.workflow.actions.runworkflow",
@@ -709,15 +715,29 @@ function lowerCoalesceExpression(
   actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
-function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerContext): void {
-  for (const element of expr.elements) {
-    lowerExpression(element, actions, ctx);
+function listItemType(expr: Expression): number {
+  if (expr.kind === "NumberLiteral") {
+    return 3;
   }
+  if (expr.kind === "BooleanLiteral") {
+    return 4;
+  }
+  return 0; // Text
+}
+
+function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerContext): void {
+  const items: import("./ir.ts").ListItem[] = expr.elements.map((el) => ({
+    itemType: listItemType(el),
+    value: lowerToParamValue(el, actions, ctx),
+  }));
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFItems", { kind: "ListItems", items });
 
   actions.push({
     identifier: "is.workflow.actions.list",
     uuid: nextUuid(ctx),
-    parameters: new Map(),
+    parameters,
   });
 }
 
@@ -737,31 +757,35 @@ function wrapAsTextToken(value: ParameterValue): ParameterValue {
   return value;
 }
 
+function dictItemType(expr: Expression): number {
+  if (expr.kind === "NumberLiteral") {
+    return 3;
+  }
+  if (expr.kind === "BooleanLiteral") {
+    return 4;
+  }
+  return 0; // Text
+}
+
 function lowerDictionaryLiteral(
   expr: DictionaryLiteral,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
+  const entries: import("./ir.ts").DictEntry[] = expr.entries.map((entry) => ({
+    itemType: dictItemType(entry.value),
+    key: lowerToParamValue(entry.key, actions, ctx),
+    value: wrapAsTextToken(lowerToParamValue(entry.value, actions, ctx)),
+  }));
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFItems", { kind: "DictItems", entries });
+
   actions.push({
     identifier: "is.workflow.actions.dictionary",
     uuid: nextUuid(ctx),
-    parameters: new Map(),
+    parameters,
   });
-
-  for (const entry of expr.entries) {
-    const key = lowerToParamValue(entry.key, actions, ctx);
-    const value = wrapAsTextToken(lowerToParamValue(entry.value, actions, ctx));
-
-    const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFDictionaryKey", key);
-    parameters.set("WFDictionaryValue", value);
-
-    actions.push({
-      identifier: "is.workflow.actions.setvalueforkey",
-      uuid: nextUuid(ctx),
-      parameters,
-    });
-  }
 }
 
 function lowerKeyedAccess(
@@ -1602,11 +1626,7 @@ function lowerRecordConstruction(
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
-  actions.push({
-    identifier: "is.workflow.actions.dictionary",
-    uuid: nextUuid(ctx),
-    parameters: new Map(),
-  });
+  const entries: import("./ir.ts").DictEntry[] = [];
 
   for (const arg of expr.args) {
     if (!arg.label) {
@@ -1617,19 +1637,21 @@ function lowerRecordConstruction(
       );
     }
 
-    const key = arg.label;
-    const value = wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx));
-
-    const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFDictionaryKey", key);
-    parameters.set("WFDictionaryValue", value);
-
-    actions.push({
-      identifier: "is.workflow.actions.setvalueforkey",
-      uuid: nextUuid(ctx),
-      parameters,
+    entries.push({
+      itemType: dictItemType(arg.value),
+      key: arg.label,
+      value: wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx)),
     });
   }
+
+  const parameters = new Map<string, ParameterValue>();
+  parameters.set("WFItems", { kind: "DictItems", entries });
+
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters,
+  });
 }
 
 function lowerPipelineExpression(
@@ -1796,14 +1818,9 @@ function lowerPipelineFunctionStage(
   const pipedTempName = nextTempName(ctx);
   actions.push(makeSetVariableAction(pipedTempName, ctx));
 
-  actions.push({
-    identifier: "is.workflow.actions.dictionary",
-    uuid: nextUuid(ctx),
-    parameters: new Map(),
-  });
-
   const hasPlaceholder = stage.args.some((a) => a.value.kind === "PlaceholderExpression");
   const provided = new Map<string, Expression>();
+  const entries: import("./ir.ts").DictEntry[] = [];
 
   const paramNames = decl.params.map((p) => p.name);
 
@@ -1817,28 +1834,20 @@ function lowerPipelineFunctionStage(
         const targetName = arg.label ?? decl.params.at(0)?.name;
         if (targetName) {
           provided.set(targetName, arg.value);
-          const value: ParameterValue = { kind: "VariableRef", name: pipedTempName };
-          const parameters = new Map<string, ParameterValue>();
-          parameters.set("WFDictionaryKey", targetName);
-          parameters.set("WFDictionaryValue", value);
-          actions.push({
-            identifier: "is.workflow.actions.setvalueforkey",
-            uuid: nextUuid(ctx),
-            parameters,
+          entries.push({
+            itemType: 0,
+            key: targetName,
+            value: { kind: "VariableRef", name: pipedTempName },
           });
         }
       } else {
         const label = resolveArgLabelFromParams(arg, i, paramNames);
         if (label) {
           provided.set(label, arg.value);
-          const value = wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx));
-          const parameters = new Map<string, ParameterValue>();
-          parameters.set("WFDictionaryKey", label);
-          parameters.set("WFDictionaryValue", value);
-          actions.push({
-            identifier: "is.workflow.actions.setvalueforkey",
-            uuid: nextUuid(ctx),
-            parameters,
+          entries.push({
+            itemType: dictItemType(arg.value),
+            key: label,
+            value: wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx)),
           });
         }
       }
@@ -1847,14 +1856,10 @@ function lowerPipelineFunctionStage(
     const firstParam = decl.params.at(0);
     if (firstParam) {
       provided.set(firstParam.name, stage.callee);
-      const value: ParameterValue = { kind: "VariableRef", name: pipedTempName };
-      const parameters = new Map<string, ParameterValue>();
-      parameters.set("WFDictionaryKey", firstParam.name);
-      parameters.set("WFDictionaryValue", value);
-      actions.push({
-        identifier: "is.workflow.actions.setvalueforkey",
-        uuid: nextUuid(ctx),
-        parameters,
+      entries.push({
+        itemType: 0,
+        key: firstParam.name,
+        value: { kind: "VariableRef", name: pipedTempName },
       });
     }
 
@@ -1866,14 +1871,10 @@ function lowerPipelineFunctionStage(
       const label = resolveArgLabelFromParams(arg, i, paramNames);
       if (label) {
         provided.set(label, arg.value);
-        const value = wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx));
-        const parameters = new Map<string, ParameterValue>();
-        parameters.set("WFDictionaryKey", label);
-        parameters.set("WFDictionaryValue", value);
-        actions.push({
-          identifier: "is.workflow.actions.setvalueforkey",
-          uuid: nextUuid(ctx),
-          parameters,
+        entries.push({
+          itemType: dictItemType(arg.value),
+          key: label,
+          value: wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx)),
         });
       }
     }
@@ -1881,21 +1882,29 @@ function lowerPipelineFunctionStage(
 
   for (const param of decl.params) {
     if (!provided.has(param.name) && param.defaultValue) {
-      const value = wrapAsTextToken(lowerToParamValue(param.defaultValue, actions, ctx));
-      const parameters = new Map<string, ParameterValue>();
-      parameters.set("WFDictionaryKey", param.name);
-      parameters.set("WFDictionaryValue", value);
-      actions.push({
-        identifier: "is.workflow.actions.setvalueforkey",
-        uuid: nextUuid(ctx),
-        parameters,
+      entries.push({
+        itemType: dictItemType(param.defaultValue),
+        key: param.name,
+        value: wrapAsTextToken(lowerToParamValue(param.defaultValue, actions, ctx)),
       });
     }
   }
 
+  const dictParams = new Map<string, ParameterValue>();
+  dictParams.set("WFItems", { kind: "DictItems", entries });
+  actions.push({
+    identifier: "is.workflow.actions.dictionary",
+    uuid: nextUuid(ctx),
+    parameters: dictParams,
+  });
+
+  const dictTempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(dictTempName, ctx));
+
   const subName = deriveFunctionShortcutName(decl);
   const runParams = new Map<string, ParameterValue>();
   runParams.set("WFWorkflowName", subName);
+  runParams.set("WFInput", { kind: "VariableRef", name: dictTempName });
   actions.push({
     identifier: "is.workflow.actions.runworkflow",
     uuid: nextUuid(ctx),
