@@ -369,13 +369,20 @@ function lowerAssignment(assign: Assignment, actions: ActionIR[], ctx: LowerCont
 }
 
 function lowerReturnStatement(stmt: ReturnStatement, actions: ActionIR[], ctx: LowerContext): void {
+  const parameters = new Map<string, ParameterValue>();
   if (stmt.value) {
     lowerExpression(stmt.value, actions, ctx);
+    const tempName = nextTempName(ctx);
+    actions.push(makeSetVariableAction(tempName, ctx));
+    parameters.set("WFOutput", {
+      kind: "VariableRef",
+      name: tempName,
+    });
   }
   actions.push({
     identifier: "is.workflow.actions.output",
     uuid: nextUuid(ctx),
-    parameters: new Map(),
+    parameters,
   });
 }
 
