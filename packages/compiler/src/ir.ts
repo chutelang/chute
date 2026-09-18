@@ -1,6 +1,7 @@
 export interface ShortcutIR {
   name: string;
   actions: ActionIR[];
+  acceptsInput?: boolean;
 }
 
 export interface CompilationResult {
@@ -15,7 +16,53 @@ export interface ActionIR {
   groupingIdentifier?: string | undefined;
 }
 
-export type ParameterValue = string | number | boolean | VariableRef | InterpolatedText;
+export type ParameterValue =
+  | string
+  | number
+  | boolean
+  | VariableRef
+  | ActionOutputRef
+  | ExtensionInputRef
+  | WorkflowRef
+  | InterpolatedText
+  | ListItems
+  | DictItems;
+
+export interface ActionOutputRef {
+  kind: "ActionOutputRef";
+  outputName: string;
+  outputUUID: string;
+}
+
+export interface ExtensionInputRef {
+  kind: "ExtensionInputRef";
+}
+
+export interface WorkflowRef {
+  kind: "WorkflowRef";
+  name: string;
+}
+
+export interface ListItems {
+  kind: "ListItems";
+  items: ListItem[];
+}
+
+export interface ListItem {
+  itemType: number; // 0=Text, 3=Number, 4=Boolean
+  value: ParameterValue;
+}
+
+export interface DictItems {
+  kind: "DictItems";
+  entries: DictEntry[];
+}
+
+export interface DictEntry {
+  itemType: number;
+  key: ParameterValue;
+  value: ParameterValue;
+}
 
 export type Aggrandizement =
   | { kind: "coercion"; itemClass: string }
