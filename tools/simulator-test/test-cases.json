@@ -1,0 +1,422 @@
+[
+  {
+    "name": "text-literal",
+    "source": "shortcut { name: \"Test\" } const msg = \"hello world\";",
+    "expected": "hello world"
+  },
+  {
+    "name": "number-literal",
+    "source": "shortcut { name: \"Test\" } const x = 42;",
+    "expected": "42"
+  },
+  {
+    "name": "string-interpolation",
+    "source": "shortcut { name: \"Test\" } const name = \"World\"; const greeting = \"Hello, ${name}!\";",
+    "expected": "Hello, World!"
+  },
+  {
+    "name": "arithmetic-add",
+    "source": "shortcut { name: \"Test\" } const a = 10; const b = 3; const c = a + b;",
+    "expected": "13"
+  },
+  {
+    "name": "arithmetic-subtract",
+    "source": "shortcut { name: \"Test\" } const a = 10; const b = 3; const c = a - b;",
+    "expected": "7"
+  },
+  {
+    "name": "arithmetic-multiply",
+    "source": "shortcut { name: \"Test\" } const a = 6; const b = 7; const c = a * b;",
+    "expected": "42"
+  },
+  {
+    "name": "arithmetic-divide",
+    "source": "shortcut { name: \"Test\" } const a = 20; const b = 4; const c = a / b;",
+    "expected": "5"
+  },
+  {
+    "name": "arithmetic-modulo",
+    "source": "shortcut { name: \"Test\" } const a = 17; const b = 5; const c = a % b;",
+    "expected": "2"
+  },
+  {
+    "name": "unary-negation",
+    "source": "shortcut { name: \"Test\" } const a = 42; const b = -a;",
+    "expected": "-42"
+  },
+  {
+    "name": "boolean-true",
+    "source": "shortcut { name: \"Test\" } const x = true;",
+    "expected": "true"
+  },
+  {
+    "name": "boolean-false",
+    "source": "shortcut { name: \"Test\" } const x = false;",
+    "expected": "false"
+  },
+  {
+    "name": "nil-coalescing",
+    "source": "shortcut { name: \"Test\" } const a: Number? = nil; const b = a ?? 99;",
+    "expected": "99"
+  },
+  {
+    "name": "nil-coalescing-non-nil",
+    "source": "shortcut { name: \"Test\" } const a: Number? = 42; const b = a ?? 99;",
+    "expected": "42"
+  },
+  {
+    "name": "let-reassignment",
+    "source": "shortcut { name: \"Test\" } let x = 1; x = 2; x = 3; const result = x;",
+    "expected": "3"
+  },
+  {
+    "name": "ternary-true",
+    "source": "shortcut { name: \"Test\" } const x = 10; const result = x > 5 ? \"big\" : \"small\";",
+    "expected": "big"
+  },
+  {
+    "name": "ternary-false",
+    "source": "shortcut { name: \"Test\" } const x = 2; const result = x > 5 ? \"big\" : \"small\";",
+    "expected": "small"
+  },
+  {
+    "name": "if-else-true-branch",
+    "source": "shortcut { name: \"Test\" } const x = 10; let result = \"\"; if (x > 5) { result = \"big\"; } else { result = \"small\"; } const out = result;",
+    "expected": "big"
+  },
+  {
+    "name": "if-else-false-branch",
+    "source": "shortcut { name: \"Test\" } const x = 2; let result = \"\"; if (x > 5) { result = \"big\"; } else { result = \"small\"; } const out = result;",
+    "expected": "small"
+  },
+  {
+    "name": "list-literal",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = [10, 20, 30]; const result = Scripting.count(items);",
+    "expected": "3"
+  },
+  {
+    "name": "dictionary-literal",
+    "source": "shortcut { name: \"Test\" } const d = {\"name\": \"Alice\", \"age\": 30}; const result = d.name;",
+    "expected": "Alice"
+  },
+  {
+    "name": "dictionary-subscript",
+    "source": "shortcut { name: \"Test\" } const d = {\"key\": \"value\"}; const result = d[\"key\"];",
+    "expected": "value"
+  },
+  {
+    "name": "enum-member-access",
+    "source": "shortcut { name: \"Test\" } enum Color { red = \"RED\", blue = \"BLUE\" } const result = Color.red;",
+    "expected": "RED"
+  },
+  {
+    "name": "enum-implicit-values",
+    "source": "shortcut { name: \"Test\" } enum Dir { north, south, east, west } const result = Dir.east;",
+    "expected": "east"
+  },
+  {
+    "name": "enum-dot-name-shorthand",
+    "source": "shortcut { name: \"Test\" } enum Color { red = \"RED\", blue = \"BLUE\" } const result: Color = .blue;",
+    "expected": "BLUE"
+  },
+  {
+    "name": "record-construction-and-field-access",
+    "source": "shortcut { name: \"Test\" } record Point { x: Number, y: Number } const p = Point(x: 10, y: 20); const result = p.x;",
+    "expected": "10"
+  },
+  {
+    "name": "record-field-interpolation",
+    "source": "shortcut { name: \"Test\" } record Point { x: Number, y: Number } const p = Point(x: 3, y: 7); const result = \"(${p.x}, ${p.y})\";",
+    "expected": "(3, 7)"
+  },
+  {
+    "name": "function-return-value",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } const result = double(21);",
+    "expected": "42"
+  },
+  {
+    "name": "function-two-params",
+    "source": "shortcut { name: \"Test\" } func add(a: Number, b: Number) -> Number { return a + b; } const result = add(17, 25);",
+    "expected": "42"
+  },
+  {
+    "name": "function-default-param",
+    "source": "shortcut { name: \"Test\" } func greet(name: Text, greeting: Text = \"Hello\") -> Text { return \"${greeting}, ${name}!\"; } const result = greet(\"World\");",
+    "expected": "Hello, World!"
+  },
+  {
+    "name": "coercion-text-to-number",
+    "source": "shortcut { name: \"Test\" } const t = \"42\"; const n = t as Number; const result = n ?? 0;",
+    "expected": "42"
+  },
+  {
+    "name": "coercion-number-to-text",
+    "source": "shortcut { name: \"Test\" } const n = 42; const result = n as Text ?? \"\";",
+    "expected": "42"
+  },
+  {
+    "name": "pipeline-single-stage",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } const result = 21 |> double;",
+    "expected": "42"
+  },
+  {
+    "name": "pipeline-multi-stage",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } func addOne(n: Number) -> Number { return n + 1; } const result = 10 |> double |> addOne;",
+    "expected": "21"
+  },
+  {
+    "name": "pipeline-with-placeholder",
+    "source": "shortcut { name: \"Test\" } func add(a: Number, b: Number) -> Number { return a + b; } const result = 5 |> add(_, 10);",
+    "expected": "15"
+  },
+  {
+    "name": "pipeline-coercion",
+    "source": "shortcut { name: \"Test\" } const maybeNum = \"123\" |> _ as Number; const result = maybeNum ?? 0;",
+    "expected": "123"
+  },
+  {
+    "name": "stdlib-calculate-expression",
+    "source": "import Math;\nshortcut { name: \"Test\" } const result = Math.calculateExpression(\"2 + 3 * 4\");",
+    "expected": "14"
+  },
+  {
+    "name": "stdlib-base64-encode",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.base64Encode(\"Hello\");",
+    "expected": "SGVsbG8="
+  },
+  {
+    "name": "stdlib-replace-text",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.replaceText(\"hello world\", \"world\", \"Chute\");",
+    "expected": "hello Chute"
+  },
+  {
+    "name": "stdlib-count-items",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.count(\"hello\");",
+    "expected": "1"
+  },
+  {
+    "name": "stdlib-detect-language",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.detectLanguage(\"Bonjour le monde\");",
+    "expected": "French"
+  },
+  {
+    "name": "stdlib-generate-hash",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.generateHash(\"hello\");",
+    "expected": "5d41402abc4b2a76b9719d911017c592"
+  },
+  {
+    "name": "stdlib-url-encode",
+    "source": "import Web;\nshortcut { name: \"Test\" } const result = Web.urlEncode(\"hello world\");",
+    "expected": "hello%20world"
+  },
+  {
+    "name": "complex-multi-step-data-flow",
+    "source": "shortcut { name: \"Test\" } const text = \"7\"; const num = text as Number ?? 0; const doubled = num * 2; const tripled = doubled + num; const result = \"result is ${tripled}\";",
+    "expected": "result is 21"
+  },
+  {
+    "name": "complex-pipeline-chain",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } func addTen(n: Number) -> Number { return n + 10; } func negate(n: Number) -> Number { return -n; } const result = 5 |> double |> addTen |> negate;",
+    "expected": "-20"
+  },
+  {
+    "name": "complex-function-composition",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } func square(n: Number) -> Number { return n * n; } const base = 4; const squared = square(base); const items = [1, 2, 3]; const count = Scripting.count(items); const result = squared + count;",
+    "expected": "19"
+  },
+  {
+    "name": "complex-conditional-data-flow",
+    "source": "shortcut { name: \"Test\" } const x = 15; let label = \"\"; if (x > 10) { label = \"high\"; } else { label = \"low\"; } const n = x * 2; const result = \"${label}: ${n}\";",
+    "expected": "high: 30"
+  },
+  {
+    "name": "complex-coercion-chain",
+    "source": "shortcut { name: \"Test\" } const src = \"5\"; const maybeNum = src as Number; const num = maybeNum ?? 0; const added = num + 37; const maybeText = added as Text; const back = maybeText ?? \"\"; const result = \"answer: ${back}\";",
+    "expected": "answer: 42"
+  },
+  {
+    "name": "complex-nested-interpolation",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } const x = 10; const result = \"${x} doubled is ${double(x)} and tripled is ${x * 3}\";",
+    "expected": "10 doubled is 20 and tripled is 30"
+  },
+  {
+    "name": "complex-record-round-trip",
+    "source": "shortcut { name: \"Test\" } record Rect { w: Number, h: Number } const r = Rect(w: 5, h: 8); const area = r.w * r.h; const result = \"area: ${area}\";",
+    "expected": "area: 40"
+  },
+  {
+    "name": "complex-pipeline-with-function-and-coercion",
+    "source": "shortcut { name: \"Test\" } func addFive(n: Number) -> Number { return n + 5; } const maybeNum = \"10\" |> _ as Number; const result = (maybeNum ?? 0) |> addFive;",
+    "expected": "15"
+  },
+  {
+    "name": "repeat-index-concat",
+    "source": "shortcut { name: \"Test\" } let s = \"\"; repeat 3 { s = \"${s}${#index}\"; } const result = s;",
+    "expected": "012"
+  },
+  {
+    "name": "repeat-index-sum",
+    "source": "shortcut { name: \"Test\" } let total = 0; repeat 5 { total = total + #index; } const result = total;",
+    "expected": "10"
+  },
+  {
+    "name": "for-loop-concat",
+    "source": "shortcut { name: \"Test\" } const items = [\"a\", \"b\", \"c\"]; let s = \"\"; for item in items { s = \"${s}${item}\"; } const result = s;",
+    "expected": "abc"
+  },
+  {
+    "name": "for-loop-conditional",
+    "source": "shortcut { name: \"Test\" } const nums = [1, 2, 3, 4, 5]; let total = 0; for n in nums { if (n > 2) { total = total + n; } } const result = total;",
+    "expected": "12"
+  },
+  {
+    "name": "nested-if-in-for",
+    "source": "shortcut { name: \"Test\" } const items = [\"cat\", \"dog\", \"cow\"]; let found = \"none\"; for item in items { if (item == \"dog\") { found = \"yes\"; } } const result = found;",
+    "expected": "yes"
+  },
+  {
+    "name": "nested-function-calls",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } func addOne(n: Number) -> Number { return n + 1; } const result = double(addOne(5));",
+    "expected": "12"
+  },
+  {
+    "name": "function-calling-function",
+    "source": "shortcut { name: \"Test\" } func square(n: Number) -> Number { return n * n; } func sumOfSquares(a: Number, b: Number) -> Number { return square(a) + square(b); } const result = sumOfSquares(3, 4);",
+    "expected": "25"
+  },
+  {
+    "name": "dictionary-number-value",
+    "source": "shortcut { name: \"Test\" } const d = {\"x\": 42}; const result = d.x;",
+    "expected": "42"
+  },
+  {
+    "name": "dictionary-number-interpolation",
+    "source": "shortcut { name: \"Test\" } const d = {\"width\": 10, \"height\": 20}; const result = \"${d.width}x${d.height}\";",
+    "expected": "10x20"
+  },
+  {
+    "name": "record-mixed-types",
+    "source": "shortcut { name: \"Test\" } record Person { name: Text, age: Number } const p = Person(name: \"Alice\", age: 30); const result = \"${p.name} is ${p.age}\";",
+    "expected": "Alice is 30"
+  },
+  {
+    "name": "coercion-failed-fallback",
+    "source": "shortcut { name: \"Test\" } const bad = \"notanumber\" as Number; const result = bad ?? 0;",
+    "expected": "0"
+  },
+  {
+    "name": "arithmetic-order-of-operations",
+    "source": "shortcut { name: \"Test\" } const result = 2 + 3 * 4;",
+    "expected": "14"
+  },
+  {
+    "name": "arithmetic-parentheses",
+    "source": "shortcut { name: \"Test\" } const result = (2 + 3) * 4;",
+    "expected": "20"
+  },
+  {
+    "name": "arithmetic-complex",
+    "source": "shortcut { name: \"Test\" } const result = (10 - 2) * (3 + 1) / 4;",
+    "expected": "8"
+  },
+  {
+    "name": "enum-if-match",
+    "source": "shortcut { name: \"Test\" } enum Mode { fast, slow } const m: Mode = .fast; let result = \"\"; if (m == Mode.fast) { result = \"turbo\"; } else { result = \"chill\"; } const out = result;",
+    "expected": "turbo"
+  },
+  {
+    "name": "enum-if-no-match",
+    "source": "shortcut { name: \"Test\" } enum Mode { fast, slow } const m: Mode = .slow; let result = \"\"; if (m == Mode.fast) { result = \"turbo\"; } else { result = \"chill\"; } const out = result;",
+    "expected": "chill"
+  },
+  {
+    "name": "stdlib-trim-whitespace",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.trimWhitespace(\"  hello  \");",
+    "expected": "hello"
+  },
+  {
+    "name": "stdlib-change-case-upper",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.changeCase(\"hello\", .uppercase);",
+    "expected": "HELLO"
+  },
+  {
+    "name": "stdlib-change-case-lower",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.changeCase(\"HELLO\", .lowercase);",
+    "expected": "hello"
+  },
+  {
+    "name": "stdlib-calculate-formula",
+    "source": "import Math;\nshortcut { name: \"Test\" } const result = Math.calculateExpression(\"(100 - 20) / 4\");",
+    "expected": "20"
+  },
+  {
+    "name": "stdlib-hash-sha256",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.generateHash(\"test\");",
+    "expected": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+  },
+  {
+    "name": "stdlib-url-decode",
+    "source": "import Web;\nshortcut { name: \"Test\" } const result = Web.urlEncode(\"hello%20world\", .decode);",
+    "expected": "hello world"
+  },
+  {
+    "name": "stdlib-count-list-items",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = [\"a\", \"b\", \"c\", \"d\"]; const result = Scripting.count(items, .items);",
+    "expected": "4"
+  },
+  {
+    "name": "stdlib-count-words",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.count(\"the quick brown fox\", .words);",
+    "expected": "4"
+  },
+  {
+    "name": "complex-for-with-function",
+    "source": "shortcut { name: \"Test\" } func double(n: Number) -> Number { return n * 2; } const nums = [1, 2, 3]; let total = 0; for n in nums { total = total + double(n); } const result = total;",
+    "expected": "12"
+  },
+  {
+    "name": "complex-repeat-even-odd",
+    "source": "shortcut { name: \"Test\" } let s = \"\"; repeat 4 { let label = #index % 2 == 0 ? \"E\" : \"O\"; s = \"${s}${label}\"; } const result = s;",
+    "expected": "EOEO"
+  },
+  {
+    "name": "complex-record-to-function",
+    "source": "shortcut { name: \"Test\" } record Rect { w: Number, h: Number } func area(width: Number, height: Number) -> Number { return width * height; } const r = Rect(w: 6, h: 9); const result = area(r.w, r.h);",
+    "expected": "54"
+  },
+  {
+    "name": "complex-enum-pipeline",
+    "source": "shortcut { name: \"Test\" } enum Op { add, sub } func apply(val: Number, op: Op) -> Number { let r = val; if (op == Op.add) { r = val + 10; } else { r = val - 10; } return r; } const result = 25 |> apply(_, Op.sub);",
+    "expected": "15"
+  },
+  {
+    "name": "complex-list-accumulate",
+    "source": "shortcut { name: \"Test\" } const words = [\"hello\", \"beautiful\", \"world\"]; let sentence = \"\"; for w in words { let sep = sentence == \"\" ? \"\" : \" \"; sentence = \"${sentence}${sep}${w}\"; } const result = sentence;",
+    "expected": "hello beautiful world"
+  },
+  {
+    "name": "complex-everything-combined",
+    "source": "shortcut { name: \"Test\" } enum Size { small = \"S\", large = \"L\" } record Box { label: Text, size: Size, count: Number } func describe(b: Box) -> Text { return \"${b.count}x ${b.label} (${b.size})\"; } const box = Box(label: \"Widget\", size: .large, count: 5); const result = describe(box);",
+    "expected": "5x Widget (L)"
+  },
+  {
+    "name": "complex-nested-loops",
+    "source": "shortcut { name: \"Test\" } let total = 0; repeat 3 { let inner = 0; repeat 2 { inner = inner + 1; } total = total + inner; } const result = total;",
+    "expected": "6"
+  },
+  {
+    "name": "complex-multi-coercion-pipeline",
+    "source": "shortcut { name: \"Test\" } func triple(n: Number) -> Number { return n * 3; } const raw = \"4\"; const parsed = raw as Number; const n = parsed ?? 0; const result = n |> triple;",
+    "expected": "12"
+  },
+  {
+    "name": "complex-dictionary-computed",
+    "source": "shortcut { name: \"Test\" } const d = {\"base\": 10}; const val = d.base; const maybeNum = val as Number; const n = maybeNum ?? 0; const result = n * n;",
+    "expected": "100"
+  },
+  {
+    "name": "empty-string-handling",
+    "source": "shortcut { name: \"Test\" } const empty = \"\"; const result = \"start${empty}end\";",
+    "expected": "startend"
+  }
+]

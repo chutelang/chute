@@ -1,0 +1,506 @@
+[
+  {
+    "name": "text-literal",
+    "status": "PASS",
+    "expected": "hello world",
+    "actual": "hello world"
+  },
+  {
+    "name": "number-literal",
+    "status": "PASS",
+    "expected": "42",
+    "actual": "42"
+  },
+  {
+    "name": "string-interpolation",
+    "status": "PASS",
+    "expected": "Hello, World!",
+    "actual": "Hello, World!"
+  },
+  {
+    "name": "arithmetic-add",
+    "status": "PASS",
+    "expected": "13",
+    "actual": "13"
+  },
+  {
+    "name": "arithmetic-subtract",
+    "status": "PASS",
+    "expected": "7",
+    "actual": "7"
+  },
+  {
+    "name": "arithmetic-multiply",
+    "status": "PASS",
+    "expected": "42",
+    "actual": "42"
+  },
+  {
+    "name": "arithmetic-divide",
+    "status": "PASS",
+    "expected": "5",
+    "actual": "5"
+  },
+  {
+    "name": "arithmetic-modulo",
+    "status": "PASS",
+    "expected": "2",
+    "actual": "2"
+  },
+  {
+    "name": "unary-negation",
+    "status": "PASS",
+    "expected": "-42",
+    "actual": "-42"
+  },
+  {
+    "name": "boolean-true",
+    "status": "PASS",
+    "expected": "true",
+    "actual": "true"
+  },
+  {
+    "name": "boolean-false",
+    "status": "PASS",
+    "expected": "false",
+    "actual": "false"
+  },
+  {
+    "name": "nil-coalescing",
+    "status": "PASS",
+    "expected": "99",
+    "actual": "99"
+  },
+  {
+    "name": "nil-coalescing-non-nil",
+    "status": "PASS",
+    "expected": "42",
+    "actual": "42"
+  },
+  {
+    "name": "let-reassignment",
+    "status": "PASS",
+    "expected": "3",
+    "actual": "3"
+  },
+  {
+    "name": "ternary-true",
+    "status": "PASS",
+    "expected": "big",
+    "actual": "big"
+  },
+  {
+    "name": "ternary-false",
+    "status": "PASS",
+    "expected": "small",
+    "actual": "small"
+  },
+  {
+    "name": "if-else-true-branch",
+    "status": "PASS",
+    "expected": "big",
+    "actual": "big"
+  },
+  {
+    "name": "if-else-false-branch",
+    "status": "PASS",
+    "expected": "small",
+    "actual": "small"
+  },
+  {
+    "name": "list-literal",
+    "status": "PASS",
+    "expected": "3",
+    "actual": "3"
+  },
+  {
+    "name": "dictionary-literal",
+    "status": "PASS",
+    "expected": "Alice",
+    "actual": "Alice"
+  },
+  {
+    "name": "dictionary-subscript",
+    "status": "PASS",
+    "expected": "value",
+    "actual": "value"
+  },
+  {
+    "name": "enum-member-access",
+    "status": "PASS",
+    "expected": "RED",
+    "actual": "RED"
+  },
+  {
+    "name": "enum-implicit-values",
+    "status": "PASS",
+    "expected": "east",
+    "actual": "east"
+  },
+  {
+    "name": "enum-dot-name-shorthand",
+    "status": "PASS",
+    "expected": "BLUE",
+    "actual": "BLUE"
+  },
+  {
+    "name": "record-construction-and-field-access",
+    "status": "PASS",
+    "expected": "10",
+    "actual": "10"
+  },
+  {
+    "name": "record-field-interpolation",
+    "status": "PASS",
+    "expected": "(3, 7)",
+    "actual": "(3, 7)"
+  },
+  {
+    "name": "function-return-value",
+    "status": "FAIL",
+    "expected": "42",
+    "actual": ""
+  },
+  {
+    "name": "function-two-params",
+    "status": "FAIL",
+    "expected": "42",
+    "actual": ""
+  },
+  {
+    "name": "function-default-param",
+    "status": "FAIL",
+    "expected": "Hello, World!",
+    "actual": ", !"
+  },
+  {
+    "name": "coercion-text-to-number",
+    "status": "PASS",
+    "expected": "42",
+    "actual": "42"
+  },
+  {
+    "name": "coercion-number-to-text",
+    "status": "PASS",
+    "expected": "42",
+    "actual": "42"
+  },
+  {
+    "name": "pipeline-single-stage",
+    "status": "FAIL",
+    "expected": "42",
+    "actual": ""
+  },
+  {
+    "name": "pipeline-multi-stage",
+    "status": "FAIL",
+    "expected": "21",
+    "actual": ""
+  },
+  {
+    "name": "pipeline-with-placeholder",
+    "status": "FAIL",
+    "expected": "15",
+    "actual": ""
+  },
+  {
+    "name": "pipeline-coercion",
+    "status": "PASS",
+    "expected": "123",
+    "actual": "123"
+  },
+  {
+    "name": "stdlib-calculate-expression",
+    "status": "PASS",
+    "expected": "14",
+    "actual": "14"
+  },
+  {
+    "name": "stdlib-base64-encode",
+    "status": "PASS",
+    "expected": "SGVsbG8=",
+    "actual": "SGVsbG8="
+  },
+  {
+    "name": "stdlib-replace-text",
+    "status": "PASS",
+    "expected": "hello Chute",
+    "actual": "hello Chute"
+  },
+  {
+    "name": "stdlib-count-items",
+    "status": "PASS",
+    "expected": "1",
+    "actual": "1"
+  },
+  {
+    "name": "stdlib-detect-language",
+    "status": "PASS",
+    "expected": "French",
+    "actual": "French"
+  },
+  {
+    "name": "stdlib-generate-hash",
+    "status": "PASS",
+    "expected": "5d41402abc4b2a76b9719d911017c592",
+    "actual": "5d41402abc4b2a76b9719d911017c592"
+  },
+  {
+    "name": "stdlib-url-encode",
+    "status": "PASS",
+    "expected": "hello%20world",
+    "actual": "hello%20world"
+  },
+  {
+    "name": "complex-multi-step-data-flow",
+    "status": "PASS",
+    "expected": "result is 21",
+    "actual": "result is 21"
+  },
+  {
+    "name": "complex-pipeline-chain",
+    "status": "FAIL",
+    "expected": "-20",
+    "actual": ""
+  },
+  {
+    "name": "complex-function-composition",
+    "status": "FAIL",
+    "expected": "19",
+    "actual": ""
+  },
+  {
+    "name": "complex-conditional-data-flow",
+    "status": "PASS",
+    "expected": "high: 30",
+    "actual": "high: 30"
+  },
+  {
+    "name": "complex-coercion-chain",
+    "status": "PASS",
+    "expected": "answer: 42",
+    "actual": "answer: 42"
+  },
+  {
+    "name": "complex-nested-interpolation",
+    "status": "FAIL",
+    "expected": "10 doubled is 20 and tripled is 30",
+    "actual": "10 doubled is  and tripled is 30"
+  },
+  {
+    "name": "complex-record-round-trip",
+    "status": "PASS",
+    "expected": "area: 40",
+    "actual": "area: 40"
+  },
+  {
+    "name": "complex-pipeline-with-function-and-coercion",
+    "status": "TIMEOUT",
+    "expected": "15",
+    "actual": null
+  },
+  {
+    "name": "repeat-index-concat",
+    "status": "FAIL",
+    "expected": "012",
+    "actual": "123"
+  },
+  {
+    "name": "repeat-index-sum",
+    "status": "FAIL",
+    "expected": "10",
+    "actual": "15"
+  },
+  {
+    "name": "for-loop-concat",
+    "status": "PASS",
+    "expected": "abc",
+    "actual": "abc"
+  },
+  {
+    "name": "for-loop-conditional",
+    "status": "TIMEOUT",
+    "expected": "12",
+    "actual": null
+  },
+  {
+    "name": "nested-if-in-for",
+    "status": "TIMEOUT",
+    "expected": "yes",
+    "actual": null
+  },
+  {
+    "name": "nested-function-calls",
+    "status": "FAIL",
+    "expected": "12",
+    "actual": ""
+  },
+  {
+    "name": "function-calling-function",
+    "status": "FAIL",
+    "expected": "25",
+    "actual": ""
+  },
+  {
+    "name": "dictionary-number-value",
+    "status": "PASS",
+    "expected": "42",
+    "actual": "42"
+  },
+  {
+    "name": "dictionary-number-interpolation",
+    "status": "PASS",
+    "expected": "10x20",
+    "actual": "10x20"
+  },
+  {
+    "name": "record-mixed-types",
+    "status": "PASS",
+    "expected": "Alice is 30",
+    "actual": "Alice is 30"
+  },
+  {
+    "name": "coercion-failed-fallback",
+    "status": "FAIL",
+    "expected": "0",
+    "actual": "No"
+  },
+  {
+    "name": "arithmetic-order-of-operations",
+    "status": "PASS",
+    "expected": "14",
+    "actual": "14"
+  },
+  {
+    "name": "arithmetic-parentheses",
+    "status": "PASS",
+    "expected": "20",
+    "actual": "20"
+  },
+  {
+    "name": "arithmetic-complex",
+    "status": "PASS",
+    "expected": "8",
+    "actual": "8"
+  },
+  {
+    "name": "enum-if-match",
+    "status": "TIMEOUT",
+    "expected": "turbo",
+    "actual": null
+  },
+  {
+    "name": "enum-if-no-match",
+    "status": "TIMEOUT",
+    "expected": "chill",
+    "actual": null
+  },
+  {
+    "name": "stdlib-trim-whitespace",
+    "status": "PASS",
+    "expected": "hello",
+    "actual": "hello"
+  },
+  {
+    "name": "stdlib-change-case-upper",
+    "status": "PASS",
+    "expected": "HELLO",
+    "actual": "HELLO"
+  },
+  {
+    "name": "stdlib-change-case-lower",
+    "status": "FAIL",
+    "expected": "hello",
+    "actual": "HELLO"
+  },
+  {
+    "name": "stdlib-calculate-formula",
+    "status": "PASS",
+    "expected": "20",
+    "actual": "20"
+  },
+  {
+    "name": "stdlib-hash-sha256",
+    "status": "FAIL",
+    "expected": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "actual": "098f6bcd4621d373cade4e832627b4f6"
+  },
+  {
+    "name": "stdlib-url-decode",
+    "status": "PASS",
+    "expected": "hello world",
+    "actual": "hello world"
+  },
+  {
+    "name": "stdlib-count-list-items",
+    "status": "PASS",
+    "expected": "4",
+    "actual": "4"
+  },
+  {
+    "name": "stdlib-count-words",
+    "status": "PASS",
+    "expected": "4",
+    "actual": "4"
+  },
+  {
+    "name": "complex-for-with-function",
+    "status": "FAIL",
+    "expected": "12",
+    "actual": "0"
+  },
+  {
+    "name": "complex-repeat-even-odd",
+    "status": "FAIL",
+    "expected": "EOEO",
+    "actual": "OOOO"
+  },
+  {
+    "name": "complex-record-to-function",
+    "status": "FAIL",
+    "expected": "54",
+    "actual": ""
+  },
+  {
+    "name": "complex-enum-pipeline",
+    "status": "TIMEOUT",
+    "expected": "15",
+    "actual": null
+  },
+  {
+    "name": "complex-list-accumulate",
+    "status": "TIMEOUT",
+    "expected": "hello beautiful world",
+    "actual": null
+  },
+  {
+    "name": "complex-everything-combined",
+    "status": "FAIL",
+    "expected": "5x Widget (L)",
+    "actual": "x  ()"
+  },
+  {
+    "name": "complex-nested-loops",
+    "status": "PASS",
+    "expected": "6",
+    "actual": "6"
+  },
+  {
+    "name": "complex-multi-coercion-pipeline",
+    "status": "TIMEOUT",
+    "expected": "12",
+    "actual": null
+  },
+  {
+    "name": "complex-dictionary-computed",
+    "status": "PASS",
+    "expected": "100",
+    "actual": "100"
+  },
+  {
+    "name": "empty-string-handling",
+    "status": "PASS",
+    "expected": "startend",
+    "actual": "startend"
+  }
+]
