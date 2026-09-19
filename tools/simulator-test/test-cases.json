@@ -386,7 +386,7 @@
   },
   {
     "name": "complex-enum-pipeline",
-    "source": "shortcut { name: \"Test\" } enum Op { add, sub } func apply(val: Number, op: Op) -> Number { let r = val; if (op == Op.add) { r = val + 10; } else { r = val - 10; } return r; } const result = 25 |> apply(_, Op.sub);",
+    "source": "shortcut { name: \"Test\" } enum Op { add = \"add\", sub = \"sub\" } func apply(val: Number, op: Text) -> Number { let r = val; if (op == \"add\") { r = val + 10; } else { r = val - 10; } return r; } const result = 25 |> apply(_, Op.sub);",
     "expected": "15"
   },
   {

@@ -173,6 +173,19 @@ export class Scope {
     return this.parent?.lookupNamespace(name);
   }
 
+  createFunctionScope(): Scope {
+    const restricted = new Scope(undefined);
+    for (const [name, binding] of this.allBindings()) {
+      if (binding.type.kind === "function" || binding.type.kind === "action" || name === "input") {
+        restricted.define(name, binding.type, binding.mutable);
+      }
+    }
+    for (const [name, ns] of this.allNamespaces()) {
+      restricted.defineNamespace(name, ns);
+    }
+    return restricted;
+  }
+
   allBindings(): ReadonlyMap<string, { type: ChuteType; mutable: boolean }> {
     const merged = new Map<string, Binding>();
     if (this.parent) {
@@ -181,6 +194,19 @@ export class Scope {
       }
     }
     for (const [k, v] of this.bindings) {
+      merged.set(k, v);
+    }
+    return merged;
+  }
+
+  allNamespaces(): ReadonlyMap<string, Scope> {
+    const merged = new Map<string, Scope>();
+    if (this.parent) {
+      for (const [k, v] of this.parent.allNamespaces()) {
+        merged.set(k, v);
+      }
+    }
+    for (const [k, v] of this.namespaces) {
       merged.set(k, v);
     }
     return merged;
@@ -1857,7 +1883,7 @@ function checkFunctionDeclaration(
 
   const funcType = binding.type;
 
-  const bodyScope = new Scope(scope);
+  const bodyScope = new Scope(scope.createFunctionScope());
   for (const p of funcType.params) {
     bodyScope.define(p.name, p.type, false);
   }

@@ -846,6 +846,56 @@ describe("checker", () => {
     });
   });
 
+  describe("function scope restrictions", () => {
+    it("should reject outer-scope enum access in function body", () => {
+      expect(() =>
+        checkSource(`
+          enum Op { add, sub }
+          func apply(val: Number) -> Number {
+            let r = val;
+            if (val == Op.add) { r = val + 1; }
+            return r;
+          }
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject outer-scope variable access in function body", () => {
+      expect(() =>
+        checkSource(`
+          const x = 10;
+          func double() -> Number { return x * 2; }
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should allow stdlib namespace access in function body", () => {
+      expect(() =>
+        checkSource(`
+          import Scripting;
+          func countItems() -> Number { return Scripting.count([1, 2, 3]); }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should allow calling other functions from function body", () => {
+      expect(() =>
+        checkSource(`
+          func double(n: Number) -> Number { return n * 2; }
+          func quad(n: Number) -> Number { return double(double(n)); }
+        `),
+      ).not.toThrow();
+    });
+
+    it("should allow parameters in function body", () => {
+      expect(() =>
+        checkSource(`
+          func add(a: Number, b: Number) -> Number { return a + b; }
+        `),
+      ).not.toThrow();
+    });
+  });
+
   describe("recursion warnings", () => {
     it("should emit warning for direct recursion", () => {
       const warnings = checkSourceWithWarnings(`
