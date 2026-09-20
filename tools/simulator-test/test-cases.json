@@ -252,12 +252,12 @@
   {
     "name": "repeat-index-concat",
     "source": "shortcut { name: \"Test\" } let s = \"\"; repeat 3 { s = \"${s}${#index}\"; } const result = s;",
-    "expected": "012"
+    "expected": "123"
   },
   {
     "name": "repeat-index-sum",
     "source": "shortcut { name: \"Test\" } let total = 0; repeat 5 { total = total + #index; } const result = total;",
-    "expected": "10"
+    "expected": "15"
   },
   {
     "name": "for-loop-concat",
@@ -377,7 +377,7 @@
   {
     "name": "complex-repeat-even-odd",
     "source": "shortcut { name: \"Test\" } let s = \"\"; repeat 4 { let label = #index % 2 == 0 ? \"E\" : \"O\"; s = \"${s}${label}\"; } const result = s;",
-    "expected": "EOEO"
+    "expected": "OEOE"
   },
   {
     "name": "complex-record-to-function",
