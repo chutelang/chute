@@ -110,7 +110,7 @@ repeat 3 {
 }
 ```
 
-Use `#index` to access the current iteration index (starting from 0):
+Use `#index` to access the current iteration index (starting from 1):
 
 ```text
 repeat 5 {

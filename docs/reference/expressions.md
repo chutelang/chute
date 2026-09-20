@@ -248,7 +248,7 @@ See [Enums and records](/reference/enums-records) for details.
 
 ## `#index`
 
-Inside a `repeat` loop, `#index` evaluates to the current iteration index (starting from 0). It's typed as `Number`.
+Inside a `repeat` loop, `#index` evaluates to the current iteration index (starting from 1). It's typed as `Number`.
 
 ```text
 repeat 3 {
