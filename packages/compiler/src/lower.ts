@@ -1387,7 +1387,7 @@ function emitComparisonBlock(
   };
 
   if (typeof rightValue === "number") {
-    extra["WFNumberValue"] = rightValue;
+    extra["WFNumberValue"] = String(rightValue);
   } else {
     extra["WFConditionalActionString"] = rightValue;
   }
@@ -1416,8 +1416,8 @@ function emitRangeTestBlock(
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: 999,
-    WFNumberValue: lowValue,
-    WFAnotherNumber: highValue,
+    WFNumberValue: typeof lowValue === "number" ? String(lowValue) : lowValue,
+    WFAnotherNumber: typeof highValue === "number" ? String(highValue) : highValue,
   };
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));
@@ -1513,7 +1513,7 @@ function emitOrConditionBlock(
 
   const groupId = nextUuid(ctx);
   actions.push(makeGetVariableAction(tempName, ctx));
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 4, WFNumberValue: 0 }));
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 4, WFNumberValue: "0" }));
   thenBranch();
   if (elseBranch) {
     actions.push(makeConditionalAction(1, groupId, ctx));
