@@ -4001,7 +4001,7 @@ exports[`compile > should compile function with conditional return 2`] = `
 				<key>WFCondition</key>
 				<integer>4</integer>
 				<key>WFNumberValue</key>
-				<integer>0</integer>
+				<string>0</string>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
@@ -4302,7 +4302,7 @@ exports[`compile > should compile if/else statement 1`] = `
 				<key>WFCondition</key>
 				<integer>2</integer>
 				<key>WFNumberValue</key>
-				<integer>3</integer>
+				<string>3</string>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
@@ -5564,7 +5564,7 @@ exports[`compile > should compile ternary expression 1`] = `
 				<key>WFCondition</key>
 				<integer>2</integer>
 				<key>WFNumberValue</key>
-				<integer>3</integer>
+				<string>3</string>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
