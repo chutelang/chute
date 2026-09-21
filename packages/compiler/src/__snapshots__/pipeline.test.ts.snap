@@ -75,7 +75,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>100</integer>
+				<string>100</string>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
@@ -1881,7 +1881,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>100</integer>
+				<string>100</string>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
@@ -3967,7 +3967,7 @@ exports[`compile > should compile function with conditional return 2`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>4</integer>
+				<string>4</string>
 				<key>WFNumberValue</key>
 				<string>0</string>
 				<key>WFControlFlowMode</key>
@@ -4268,7 +4268,7 @@ exports[`compile > should compile if/else statement 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>2</integer>
+				<string>2</string>
 				<key>WFNumberValue</key>
 				<string>3</string>
 				<key>WFControlFlowMode</key>
@@ -4877,7 +4877,7 @@ exports[`compile > should compile nil coalescing 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>100</integer>
+				<string>100</string>
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
@@ -5498,7 +5498,7 @@ exports[`compile > should compile ternary expression 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>2</integer>
+				<string>2</string>
 				<key>WFNumberValue</key>
 				<string>3</string>
 				<key>WFControlFlowMode</key>
