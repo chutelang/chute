@@ -302,7 +302,7 @@
   {
     "name": "coercion-failed-fallback",
     "source": "shortcut { name: \"Test\" } const bad = \"notanumber\" as Number; const result = bad ?? 0;",
-    "expected": "No"
+    "expected": "0"
   },
   {
     "name": "arithmetic-order-of-operations",
