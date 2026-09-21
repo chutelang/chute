@@ -63,6 +63,7 @@ interface NamespaceAction {
   runtimeIdentifier: string;
   paramKeys: Map<string, string>;
   paramLabels: string[];
+  inputLabel?: string;
 }
 
 interface LowerContext {
@@ -121,6 +122,7 @@ export function lower(program: Program): CompilationResult {
           runtimeIdentifier: binding.type.runtimeIdentifier,
           paramKeys,
           paramLabels,
+          ...(binding.type.inputLabel !== undefined ? { inputLabel: binding.type.inputLabel } : {}),
         });
       }
     }
@@ -507,6 +509,11 @@ function lowerNamespaceActionCall(
     if (!label) {
       continue;
     }
+    if (label === nsAction.inputLabel) {
+      lowerExpression(arg.value, parentActions, ctx);
+      continue;
+    }
+
     const plistKey = nsAction.paramKeys.get(label);
     if (!plistKey) {
       continue;
@@ -517,8 +524,6 @@ function lowerNamespaceActionCall(
       slot === "picker" &&
       (arg.value.kind === "StringLiteral" || arg.value.kind === "NumberLiteral")
     ) {
-      // Picker parameters need a variable reference, not a bare literal.
-      // Emit a Text/Number action to produce the value, then reference it.
       lowerExpression(arg.value, parentActions, ctx);
       const tempName = nextTempName(ctx);
       parentActions.push(makeSetVariableAction(tempName, ctx));
