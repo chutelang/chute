@@ -930,7 +930,10 @@ function isSideEffectFreeValue(expr: Expression): boolean {
     case "NumberLiteral":
     case "BooleanLiteral":
     case "Identifier":
+    case "DotNameExpression":
       return true;
+    case "MemberExpression":
+      return expr.object.kind === "Identifier";
     case "InterpolatedString":
       return expr.parts.every(
         (part) => part.kind === "TextPart" || part.expression.kind === "Identifier",
@@ -959,6 +962,23 @@ function lowerToParamValue(
         kind: "VariableRef",
         name: expr.name,
       };
+    case "MemberExpression": {
+      if (expr.object.kind === "Identifier" && ctx.enums.has(expr.object.name)) {
+        const backingValue = ctx.enums.get(expr.object.name)?.get(expr.property);
+        if (backingValue !== undefined) {
+          return backingValue;
+        }
+      }
+      lowerExpression(expr, actions, ctx);
+      break;
+    }
+    case "DotNameExpression": {
+      if (expr.resolvedBackingValue !== undefined) {
+        return expr.resolvedBackingValue;
+      }
+      lowerExpression(expr, actions, ctx);
+      break;
+    }
     case "InterpolatedString":
       return buildInterpolatedText(expr, actions, ctx);
     case "CoercionExpression": {
