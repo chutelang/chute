@@ -72,6 +72,7 @@ export type ChuteType =
       runtimeIdentifier: string;
       params: Array<{ label: string; type: ChuteType; hasDefault: boolean }>;
       returnType: ChuteType | undefined;
+      inputLabel?: string;
     }
   | { kind: "opaque"; name: string }
   | { kind: "any" };

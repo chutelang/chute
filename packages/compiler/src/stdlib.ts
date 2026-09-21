@@ -52,7 +52,10 @@ interface StdlibJsonAction {
     type: string | null;
     enumType?: string | null;
   }>;
-  parameterOverrides?: Record<string, { Key?: string }>;
+  parameterOverrides?: Record<
+    string,
+    { Key?: string; IntentEnumOverrides?: Record<string, string> }
+  >;
   input?: { ParameterKey?: string } | null;
   output?: { Types?: string[] } | null;
 }
@@ -183,6 +186,7 @@ function enumTypeFromItems(paramKey: string, items: string[]): ChuteType {
 
 function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
   const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
+  let inputLabel: string | undefined;
 
   if (action.parameters.length > 0) {
     for (const p of action.parameters) {
@@ -207,16 +211,26 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
       if (!p.name) {
         continue;
       }
-      const key = overrides[p.name]?.Key ?? p.name;
-      let type: ChuteType;
+      const override = overrides[p.name];
+      const key = override?.Key;
       const enumValues = p.enumType ? INTENT_ENUM_VALUES[p.enumType] : undefined;
+      if (!key && !enumValues) {
+        inputLabel = p.name;
+      }
+      let type: ChuteType;
       if (enumValues) {
-        type = enumTypeFromItems(key, enumValues);
+        const enumKey = key ?? p.name;
+        const enumOverrides = override?.IntentEnumOverrides;
+        if (enumOverrides) {
+          type = enumTypeFromItems(enumKey, Object.values(enumOverrides));
+        } else {
+          type = enumTypeFromItems(enumKey, enumValues);
+        }
       } else {
         type = INTENT_TYPE_MAP[p.type ?? ""] ?? { kind: "any" };
       }
       params.push({
-        label: key,
+        label: key ?? p.name,
         type,
         hasDefault: true,
       });
@@ -243,6 +257,7 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
     runtimeIdentifier: action.identifier,
     params,
     returnType,
+    ...(inputLabel !== undefined ? { inputLabel } : {}),
   };
 }
 
