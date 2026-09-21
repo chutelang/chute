@@ -962,21 +962,25 @@ function lowerToParamValue(
     case "InterpolatedString":
       return buildInterpolatedText(expr, actions, ctx);
     case "CoercionExpression": {
-      const innerName = resolveVariableName(expr.expression, actions, ctx);
-      const itemClass = getContentItemClass(expr.targetType);
-      if (!itemClass) {
-        throw new LowerError(`no content item class for type '${expr.targetType}'`, expr.span);
+      if (expr.targetType === "Text") {
+        const innerName = resolveVariableName(expr.expression, actions, ctx);
+        const itemClass = getContentItemClass(expr.targetType);
+        if (!itemClass) {
+          throw new LowerError(`no content item class for type '${expr.targetType}'`, expr.span);
+        }
+        return {
+          kind: "VariableRef",
+          name: innerName,
+          aggrandizements: [
+            {
+              kind: "coercion",
+              itemClass,
+            },
+          ],
+        };
       }
-      return {
-        kind: "VariableRef",
-        name: innerName,
-        aggrandizements: [
-          {
-            kind: "coercion",
-            itemClass,
-          },
-        ],
-      };
+      lowerExpression(expr, actions, ctx);
+      break;
     }
     default:
       lowerExpression(expr, actions, ctx);
@@ -1320,6 +1324,28 @@ function lowerCoercionExpression(
     uuid: nextUuid(ctx),
     parameters,
   });
+
+  if (expr.targetType !== "Text") {
+    emitCoercionNilFallback(actions, ctx);
+  }
+}
+
+function emitCoercionNilFallback(actions: ActionIR[], ctx: LowerContext): void {
+  const tempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(tempName, ctx));
+
+  actions.push(makeGetVariableAction(tempName, ctx));
+  const groupId = nextUuid(ctx);
+  actions.push(
+    makeConditionalAction(0, groupId, ctx, {
+      WFCondition: 0,
+      WFConditionalActionString: "No",
+    }),
+  );
+  actions.push(makeNothingAction(ctx));
+  actions.push(makeConditionalAction(1, groupId, ctx));
+  actions.push(makeGetVariableAction(tempName, ctx));
+  actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
 function emitConditionBlock(
@@ -1711,6 +1737,9 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
       uuid: nextUuid(ctx),
       parameters,
     });
+    if (targetType !== "Text") {
+      emitCoercionNilFallback(actions, ctx);
+    }
     return;
   }
 

@@ -805,16 +805,25 @@ describe("lower", () => {
       expect(detectAction).toBeUndefined();
     });
 
-    it("should lower chained coercion to two getvariable actions with coercion aggrandizements", () => {
+    it("should lower chained coercion to getvariable actions with coercion aggrandizements", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
         const n: Number? = input as Text as Number;
       `);
-      const getVarActions = actions.filter(
-        (a) => a.identifier === "is.workflow.actions.getvariable",
-      );
-      expect(getVarActions.length).toBe(2);
-      expect(getVarActions[0]?.parameters.get("WFVariable")).toMatchObject({
+      const coercionActions = actions.filter((a) => {
+        if (a.identifier !== "is.workflow.actions.getvariable") {
+          return false;
+        }
+        const wfVar = a.parameters.get("WFVariable");
+        return (
+          typeof wfVar === "object" &&
+          wfVar !== null &&
+          "aggrandizements" in wfVar &&
+          wfVar.aggrandizements?.some((ag) => ag.kind === "coercion")
+        );
+      });
+      expect(coercionActions.length).toBe(2);
+      expect(coercionActions[0]?.parameters.get("WFVariable")).toMatchObject({
         kind: "VariableRef",
         aggrandizements: [
           {
@@ -823,7 +832,7 @@ describe("lower", () => {
           },
         ],
       });
-      expect(getVarActions[1]?.parameters.get("WFVariable")).toMatchObject({
+      expect(coercionActions[1]?.parameters.get("WFVariable")).toMatchObject({
         kind: "VariableRef",
         aggrandizements: [
           {
