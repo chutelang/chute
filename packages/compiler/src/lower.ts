@@ -711,7 +711,7 @@ function lowerCoalesceExpression(
   const groupId = nextUuid(ctx);
 
   lowerExpression(expr.left, actions, ctx);
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: "100" }));
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
 
   lowerExpression(expr.left, actions, ctx);
   actions.push(makeConditionalAction(1, groupId, ctx));
@@ -1363,7 +1363,7 @@ function emitCoercionNilFallback(actions: ActionIR[], ctx: LowerContext): void {
   const groupId = nextUuid(ctx);
   actions.push(
     makeConditionalAction(0, groupId, ctx, {
-      WFCondition: "0",
+      WFCondition: 0,
       WFConditionalActionString: "No",
     }),
   );
@@ -1434,7 +1434,7 @@ function emitComparisonBlock(
   const condCode = comparisonConditionCode(cond.operator);
 
   const extra: Record<string, ParameterValue> = {
-    WFCondition: String(condCode),
+    WFCondition: condCode,
   };
 
   if (typeof rightValue === "number") {
@@ -1466,7 +1466,7 @@ function emitRangeTestBlock(
   const highValue = lowerToParamValue(cond.high, actions, ctx);
 
   const extra: Record<string, ParameterValue> = {
-    WFCondition: "999",
+    WFCondition: 999,
     WFNumberValue: typeof lowValue === "number" ? String(lowValue) : lowValue,
     WFAnotherNumber: typeof highValue === "number" ? String(highValue) : highValue,
   };
@@ -1492,7 +1492,7 @@ function emitTypeTestBlock(
   lowerExpression(cond.subject, actions, ctx);
 
   const extra: Record<string, ParameterValue> = {
-    WFCondition: "100",
+    WFCondition: 100,
   };
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));
@@ -1517,7 +1517,7 @@ function emitBoolRefBlock(
   lowerExpression(subject, actions, ctx);
 
   const extra: Record<string, ParameterValue> = {
-    WFCondition: "100",
+    WFCondition: 100,
   };
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));
@@ -1564,7 +1564,7 @@ function emitOrConditionBlock(
 
   const groupId = nextUuid(ctx);
   actions.push(makeGetVariableAction(tempName, ctx));
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: "4", WFNumberValue: "0" }));
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 4, WFNumberValue: "0" }));
   thenBranch();
   if (elseBranch) {
     actions.push(makeConditionalAction(1, groupId, ctx));
@@ -1726,7 +1726,7 @@ function lowerPipelineExpression(
   }
 
   const groupId = nextUuid(ctx);
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: "100" }));
+  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
 
   for (const stage of expr.stages.slice(optionalIndex)) {
     lowerPipelineStage(stage, actions, ctx);
