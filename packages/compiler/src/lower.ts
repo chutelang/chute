@@ -1439,6 +1439,11 @@ function emitComparisonBlock(
 
   if (typeof rightValue === "number") {
     extra["WFNumberValue"] = String(rightValue);
+  } else if (typeof rightValue === "string") {
+    extra["WFConditionalActionString"] = {
+      kind: "InterpolatedText",
+      parts: [{ kind: "text", value: rightValue }],
+    };
   } else {
     extra["WFConditionalActionString"] = rightValue;
   }
