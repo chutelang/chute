@@ -391,7 +391,7 @@
   },
   {
     "name": "complex-list-accumulate",
-    "source": "shortcut { name: \"Test\" } const words = [\"hello\", \"beautiful\", \"world\"]; let sentence = \"\"; for w in words { let sep = sentence == \"\" ? \"\" : \" \"; sentence = \"${sentence}${sep}${w}\"; } const result = sentence;",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const words = [\"hello\", \"beautiful\", \"world\"]; let sentence = \"\"; for w in words { let count = Scripting.count(sentence); let sep = count == 0 ? \"\" : \" \"; sentence = \"${sentence}${sep}${w}\"; } const result = sentence;",
     "expected": "hello beautiful world"
   },
   {
