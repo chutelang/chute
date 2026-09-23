@@ -1431,7 +1431,8 @@ function emitComparisonBlock(
 
   lowerExpression(cond.left, actions, ctx);
   const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
-  const condCode = comparisonConditionCode(cond.operator);
+  const isTextComparison = typeof rightValue !== "number";
+  const condCode = comparisonConditionCode(cond.operator, isTextComparison);
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: condCode,
@@ -1439,11 +1440,6 @@ function emitComparisonBlock(
 
   if (typeof rightValue === "number") {
     extra["WFNumberValue"] = String(rightValue);
-  } else if (typeof rightValue === "string") {
-    extra["WFConditionalActionString"] = {
-      kind: "InterpolatedText",
-      parts: [{ kind: "text", value: rightValue }],
-    };
   } else {
     extra["WFConditionalActionString"] = rightValue;
   }
@@ -1578,7 +1574,28 @@ function emitOrConditionBlock(
   actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
-function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): number {
+function comparisonConditionCode(
+  op: import("./ast.ts").ComparisonOperator,
+  isText = false,
+): number {
+  if (isText) {
+    switch (op) {
+      case "==":
+        return 4;
+      case "!=":
+        return 5;
+      case "contains":
+        return 99;
+      case "!contains":
+        return 999;
+      case "hasPrefix":
+        return 8;
+      case "hasSuffix":
+        return 9;
+      default:
+        return 4;
+    }
+  }
   switch (op) {
     case "==":
       return 0;
@@ -1593,13 +1610,13 @@ function comparisonConditionCode(op: import("./ast.ts").ComparisonOperator): num
     case "<=":
       return 5;
     case "contains":
-      return 8;
+      return 99;
     case "!contains":
-      return 9;
+      return 999;
     case "hasPrefix":
-      return 2;
+      return 8;
     case "hasSuffix":
-      return 3;
+      return 9;
   }
 }
 
