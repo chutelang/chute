@@ -418,5 +418,135 @@
     "name": "empty-string-handling",
     "source": "shortcut { name: \"Test\" } const empty = \"\"; const result = \"start${empty}end\";",
     "expected": "startend"
+  },
+  {
+    "name": "cmp-num-equal-true",
+    "source": "shortcut { name: \"Test\" } const x = 5; const result = x == 5 ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-num-equal-false",
+    "source": "shortcut { name: \"Test\" } const x = 5; const result = x == 3 ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-num-not-equal-true",
+    "source": "shortcut { name: \"Test\" } const x = 5; const result = x != 3 ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-num-not-equal-false",
+    "source": "shortcut { name: \"Test\" } const x = 5; const result = x != 5 ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-num-greater-true",
+    "source": "shortcut { name: \"Test\" } const x = 10; const result = x > 5 ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-num-greater-false",
+    "source": "shortcut { name: \"Test\" } const x = 3; const result = x > 5 ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-num-greater-equal-true",
+    "source": "shortcut { name: \"Test\" } const x = 5; const result = x >= 5 ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-num-greater-equal-false",
+    "source": "shortcut { name: \"Test\" } const x = 4; const result = x >= 5 ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-num-less-true",
+    "source": "shortcut { name: \"Test\" } const x = 3; const result = x < 5 ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-num-less-false",
+    "source": "shortcut { name: \"Test\" } const x = 10; const result = x < 5 ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-num-less-equal-true",
+    "source": "shortcut { name: \"Test\" } const x = 5; const result = x <= 5 ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-num-less-equal-false",
+    "source": "shortcut { name: \"Test\" } const x = 6; const result = x <= 5 ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-equal-true",
+    "source": "shortcut { name: \"Test\" } const x = \"hello\"; const result = x == \"hello\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-equal-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello\"; const result = x == \"world\" ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-not-equal-true",
+    "source": "shortcut { name: \"Test\" } const x = \"hello\"; const result = x != \"world\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-not-equal-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello\"; const result = x != \"hello\" ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-equal-empty-true",
+    "source": "shortcut { name: \"Test\" } const x = \"\"; const result = x == \"\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-equal-empty-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello\"; const result = x == \"\" ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-contains-true",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x contains \"world\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-contains-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x contains \"foo\" ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-not-contains-true",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x !contains \"foo\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-not-contains-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x !contains \"world\" ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-has-prefix-true",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x hasPrefix \"hello\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-has-prefix-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x hasPrefix \"world\" ? \"yes\" : \"no\";",
+    "expected": "no"
+  },
+  {
+    "name": "cmp-text-has-suffix-true",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x hasSuffix \"world\" ? \"yes\" : \"no\";",
+    "expected": "yes"
+  },
+  {
+    "name": "cmp-text-has-suffix-false",
+    "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x hasSuffix \"hello\" ? \"yes\" : \"no\";",
+    "expected": "no"
   }
 ]
