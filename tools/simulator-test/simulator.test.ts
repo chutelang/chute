@@ -83,9 +83,49 @@ function mcli(): string {
 // mobilecli async helpers
 // ---------------------------------------------------------------------------
 
+let _lastAgentDevice: string | undefined;
+
+async function killStaleRunners(): Promise<void> {
+  // Kill any lingering devicekit XCTest runner processes on the host
+  try {
+    const { stdout } = await exec("pgrep", ["-f", "devicekit-iosUITests-Runner"]);
+    const pids = stdout.split("\n").filter(Boolean);
+    if (pids.length > 0) {
+      await exec("kill", ["-9", ...pids]).catch(() => {});
+      await sleep(1000);
+    }
+  } catch {
+    // no matching processes
+  }
+}
+
+async function restartAgent(udid: string): Promise<void> {
+  await killStaleRunners();
+  await exec(mcli(), ["agent", "install", "--device", udid, "--force"]).catch(() => {});
+  await exec("xcrun", [
+    "simctl", "spawn", udid, "launchctl", "kickstart", "-k",
+    "system/com.apple.backboardd",
+  ]).catch(() => {});
+  await sleep(5000);
+}
+
 async function mobilecli(...args: string[]): Promise<string> {
-  const { stdout } = await exec(mcli(), args);
-  return stdout;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const { stdout } = await exec(mcli(), args);
+      return stdout;
+    } catch (e: any) {
+      if (attempt < 2 && String(e.message).includes("WebDriverAgent")) {
+        const deviceIdx = args.indexOf("--device");
+        const udid = deviceIdx >= 0 ? args[deviceIdx + 1] : _lastAgentDevice;
+        if (udid) await restartAgent(udid);
+        else await sleep(5000);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error("mobilecli failed after retries");
 }
 
 interface UIElement {
@@ -272,6 +312,7 @@ async function ensureSimulator(): Promise<string> {
   await simctl("boot", udid);
   await exec("xcrun", ["simctl", "bootstatus", udid, "-b"], { timeout: 120000 });
 
+  await killStaleRunners();
   await mobilecli("agent", "install", "--device", udid);
   await exec("xcrun", [
     "simctl",
@@ -283,6 +324,8 @@ async function ensureSimulator(): Promise<string> {
     "system/com.apple.backboardd",
   ]);
   await sleep(3000);
+
+  _lastAgentDevice = udid;
 
   for (let i = 0; i < 15; i++) {
     if (await isAgentReady(udid)) return udid;
