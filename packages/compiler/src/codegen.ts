@@ -132,7 +132,7 @@ function emitKeyValue(
   if (value.kind === "VariableRef") {
     emitVariableRef(lines, depth, value, getParameterSlot(actionIdentifier, key));
   } else if (value.kind === "ActionOutputRef") {
-    emitActionOutputRef(lines, depth, value, getParameterSlot(actionIdentifier, key));
+    emitActionOutputRef(lines, depth, value);
   } else if (value.kind === "ExtensionInputRef") {
     emitExtensionInputRef(lines, depth);
   } else if (value.kind === "WorkflowRef") {
@@ -308,7 +308,6 @@ function emitActionOutputRef(
   lines: string[],
   depth: number,
   ref: ActionOutputRef,
-  slot: InputSlot,
 ): void {
   emitIndent(lines, depth, "<dict>");
   emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");

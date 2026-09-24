@@ -404,7 +404,7 @@ function resolveImport(
     );
   }
 
-  resolveFileImport(imp, scope, context, resolver, currentFile, resolving, importAliases);
+  resolveFileImport(imp, scope, context, resolver, currentFile, resolving);
 }
 
 function resolveFileImport(
@@ -414,7 +414,6 @@ function resolveFileImport(
   resolver: FileResolver,
   currentFile: string,
   resolving: Set<string>,
-  importAliases: Set<string>,
 ): void {
   let resolvedPath: string;
   try {
