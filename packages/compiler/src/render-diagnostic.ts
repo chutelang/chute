@@ -56,7 +56,7 @@ export function renderDiagnostic(
   const filePath = options?.filePath ?? "<source>";
   const loc = locate(source, diagnostic.span.start);
   const underlineLen = Math.max(1, diagnostic.span.end - diagnostic.span.start);
-  const gutter = String(loc.line).length;
+  const gutter = String(loc.line).length + 1;
   const pad = " ".repeat(gutter);
 
   const sevColor = severityColor(diagnostic.severity);

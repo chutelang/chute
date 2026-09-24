@@ -2,113 +2,112 @@
 
 exports[`renderDiagnostic > should handle errors on the first character 1`] = `
 "error[CHT004]: unexpected character: @
- --> <source>:1:1
-  |
+  --> <source>:1:1
+   |
  1 | @foo;
-  | ^
-  |"
+   | ^
+   |"
 `;
 
 exports[`renderDiagnostic > should handle single-character span 1`] = `
 "error[CHT004]: unexpected character: !
- --> <source>:1:11
-  |
+  --> <source>:1:11
+   |
  1 | const x = !;
-  |           ^
-  |"
+   |           ^
+   |"
 `;
 
 exports[`renderDiagnostic > should render a single-line error with underline 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> <source>:1:11
-  |
+  --> <source>:1:11
+   |
  1 | const x = foo;
-  |           ^^^
-  |"
+   |           ^^^
+   |"
 `;
 
 exports[`renderDiagnostic > should render a warning 1`] = `
 "warning[CHT900]: unknown quantity unit 'bananas'
- --> <source>:1:11
-  |
- 1 | const x = 5bananas;
-  |           ^^^^^^^^^
-  |"
+  --> <source>:1:10
+   |
+ 1 | const x: Quantity<bananas> = 5;
+   |          ^^^^^^^^^^^^^^^^^
+   |"
 `;
 
 exports[`renderDiagnostic > should render an error with a suggestion 1`] = `
 "error[CHT103]: empty dictionary must use {:} syntax
- --> <source>:1:11
-  |
+  --> <source>:1:11
+   |
  1 | const d = {};
-  |           ^^
-  |           = help: use {:} instead of {}
-  |"
+   |           ^^
+   |"
 `;
 
 exports[`renderDiagnostic > should render with a custom file name 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> hello.chute:1:11
-  |
+  --> hello.chute:1:11
+   |
  1 | const x = foo;
-  |           ^^^
-  |"
+   |           ^^^
+   |"
 `;
 
 exports[`renderDiagnostic > should render with color when enabled 1`] = `
 "[1m[31merror[CHT201][0m[1m: undefined variable 'foo'[0m
- [34m-->[0m <source>:1:11
-  [34m|[0m
+  [34m-->[0m <source>:1:11
+   [34m|[0m
  [34m1[0m [34m|[0m const x = foo;
-  [34m|[0m           [1m[31m^^^[0m
-  [34m|[0m"
+   [34m|[0m           [1m[31m^^^[0m
+   [34m|[0m"
 `;
 
 exports[`renderDiagnostic > should render with correct line and column numbers 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> <source>:3:11
-  |
+  --> <source>:3:11
+   |
  3 | const c = foo;
-  |           ^^^
-  |"
+   |           ^^^
+   |"
 `;
 
 exports[`renderDiagnostics > should render a summary line 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> <source>:1:11
-  |
+  --> <source>:1:11
+   |
  1 | const x = foo;
-  |           ^^^
-  |
+   |           ^^^
+   |
 error[CHT200]: cannot assign Text to Number
- --> <source>:3:4
-  |
+  --> <source>:3:5
+   |
  3 | y = "hi";
-  |    ^^^^
-  |
+   |     ^^^^
+   |
 warning[CHT900]: unknown quantity unit 'bananas'
- --> <source>:2:2
-  |
- 2 | let y = 5;
-  |  ^^^^^
-  |
+  --> <source>:2:8
+   |
+ 2 | let y: Quantity<bananas> = 5;
+   |        ^^^^^^^^^^^^^^^^^
+   |
 2 errors, 1 warning emitted
 "
 `;
 
 exports[`renderDiagnostics > should render multiple diagnostics separated by blank lines 1`] = `
 "error[CHT201]: undefined variable 'foo'
- --> <source>:1:11
-  |
+  --> <source>:1:11
+   |
  1 | const x = foo;
-  |           ^^^
-  |
+   |           ^^^
+   |
 error[CHT201]: undefined variable 'bar'
- --> <source>:2:11
-  |
+  --> <source>:2:11
+   |
  2 | const y = bar;
-  |           ^^^
-  |
+   |           ^^^
+   |
 2 errors emitted
 "
 `;
