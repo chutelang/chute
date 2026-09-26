@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll, afterAll } from "vitest";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { execFile, spawn } from "node:child_process";
+import { execFile, spawn, type ChildProcess } from "node:child_process";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
@@ -14,6 +14,7 @@ const CLI_PATH = path.join(REPO_ROOT, "packages/cli/dist/cli.js");
 const SENTINEL = "__CHUTE_TEST_WAITING__";
 const POLL_INTERVAL_MS = 500;
 const POLL_TIMEOUT_MS = 15000;
+const WDA_PORT = 8991;
 
 const DEVICE_TYPE = "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro";
 const RUNTIME = "com.apple.CoreSimulator.SimRuntime.iOS-26-5";
@@ -57,126 +58,32 @@ async function exec(
 }
 
 // ---------------------------------------------------------------------------
-// mobilecli resolution
+// WDA via HTTP (tap, pressHome — fast, no subprocess per call)
 // ---------------------------------------------------------------------------
 
-function findMobilecli(): string {
-  const platform = process.platform === "win32" ? "windows" : process.platform;
-  const arch = process.arch === "x64" ? "amd64" : process.arch;
-  const ext = platform === "windows" ? ".exe" : "";
-  const binaryName = `mobilecli-${platform}-${arch}${ext}`;
+let wdaSession = "";
 
-  const npxDir = path.join(process.env.HOME!, ".npm", "_npx");
-  if (fs.existsSync(npxDir)) {
-    for (const entry of fs.readdirSync(npxDir)) {
-      const candidate = path.join(npxDir, entry, "node_modules", "mobilecli", "bin", binaryName);
-      if (fs.existsSync(candidate)) {
-        return candidate;
-      }
-    }
-  }
-  throw new Error("mobilecli not found. Install mobile-mcp: npx @mobilenext/mobile-mcp@latest");
+async function wdaRequest(method: string, path: string, body?: unknown): Promise<unknown> {
+  const url = `http://localhost:${WDA_PORT}${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  return res.json();
 }
 
-let _mobilecliPath: string;
-function mcli(): string {
-  if (!_mobilecliPath) {
-    _mobilecliPath = findMobilecli();
-  }
-  return _mobilecliPath;
+async function createSession(): Promise<string> {
+  const res = (await wdaRequest("POST", "/session", { capabilities: {} })) as any;
+  return res.sessionId;
 }
 
-// ---------------------------------------------------------------------------
-// mobilecli async helpers
-// ---------------------------------------------------------------------------
-
-let _lastAgentDevice: string | undefined;
-
-async function killStaleRunners(): Promise<void> {
-  // Kill any lingering devicekit XCTest runner processes on the host
-  try {
-    const { stdout } = await exec("pgrep", ["-f", "devicekit-iosUITests-Runner"]);
-    const pids = stdout.split("\n").filter(Boolean);
-    if (pids.length > 0) {
-      await exec("kill", ["-9", ...pids]).catch(() => {});
-      await sleep(1000);
-    }
-  } catch {
-    // no matching processes
-  }
+async function tap(x: number, y: number): Promise<void> {
+  await wdaRequest("POST", `/session/${wdaSession}/wda/tap`, { x, y });
 }
 
-async function restartAgent(udid: string): Promise<void> {
-  await killStaleRunners();
-  await exec(mcli(), ["agent", "install", "--device", udid, "--force"]).catch(() => {});
-  await exec("xcrun", [
-    "simctl",
-    "spawn",
-    udid,
-    "launchctl",
-    "kickstart",
-    "-k",
-    "system/com.apple.backboardd",
-  ]).catch(() => {});
-  await sleep(5000);
-}
-
-async function mobilecli(...args: string[]): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const { stdout } = await exec(mcli(), args);
-      return stdout;
-    } catch (e: any) {
-      if (attempt < 2 && String(e.message).includes("WebDriverAgent")) {
-        const deviceIdx = args.indexOf("--device");
-        const udid = deviceIdx >= 0 ? args[deviceIdx + 1] : _lastAgentDevice;
-        if (udid) {
-          await restartAgent(udid);
-        } else {
-          await sleep(5000);
-        }
-        continue;
-      }
-      throw e;
-    }
-  }
-  throw new Error("mobilecli failed after retries");
-}
-
-interface UIElement {
-  type?: string;
-  label?: string;
-  name?: string;
-  rect?: { x: number; y: number; width: number; height: number };
-  children?: UIElement[];
-}
-
-async function dumpUI(udid: string): Promise<{ data?: { elements?: UIElement[] } }> {
-  return JSON.parse(await mobilecli("dump", "ui", "--device", udid));
-}
-
-async function findElement(udid: string, label: string): Promise<UIElement | null> {
-  const dump = await dumpUI(udid);
-  return flatFind(dump.data?.elements ?? [], label);
-}
-
-function flatFind(elements: UIElement[], label: string): UIElement | null {
-  for (const el of elements) {
-    if (el.label === label || el.name === label) {
-      return el;
-    }
-    if (el.children) {
-      const found = flatFind(el.children, label);
-      if (found) {
-        return found;
-      }
-    }
-  }
-  return null;
-}
-
-async function tap(udid: string, x: number, y: number): Promise<void> {
-  await mobilecli("io", "tap", "--device", udid, `${Math.round(x)},${Math.round(y)}`);
+async function pressHome(): Promise<void> {
+  await wdaRequest("POST", `/session/${wdaSession}/wda/homescreen`);
 }
 
 // ---------------------------------------------------------------------------
@@ -213,11 +120,7 @@ function wrapSource(source: string): string {
   if (matches.length === 0) {
     throw new Error("Test source must declare at least one variable");
   }
-  const lastMatch = matches[matches.length - 1];
-  if (!lastMatch) {
-    throw new Error("no var");
-  }
-  const lastVar = lastMatch[1];
+  const lastVar = matches[matches.length - 1][1];
   let modified = source;
   if (!modified.includes("import Device")) {
     modified = `import Device;\n${modified}`;
@@ -226,11 +129,12 @@ function wrapSource(source: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Build (sync — called in parallel via Promise.all before tests run)
+// Build
 // ---------------------------------------------------------------------------
 
 interface BuildResult {
   main: string;
+  subShortcuts: string[];
   workDir: string;
 }
 
@@ -240,10 +144,8 @@ async function buildShortcut(
   workDir: string,
 ): Promise<BuildResult> {
   fs.mkdirSync(workDir, { recursive: true });
-
   const srcFile = path.join(workDir, `${shortcutName}.chute`);
   fs.writeFileSync(srcFile, wrapSource(chuteSource));
-
   await exec("node", [CLI_PATH, "build", srcFile], { timeout: 30000, cwd: REPO_ROOT });
 
   const mainPath = path.join(workDir, `${shortcutName}.shortcut`);
@@ -251,76 +153,143 @@ async function buildShortcut(
     throw new Error(`Expected output at ${mainPath} but not found`);
   }
 
-  return { main: mainPath, workDir };
+  const subShortcuts = fs
+    .readdirSync(workDir)
+    .filter((f) => f.endsWith(".shortcut") && f !== `${shortcutName}.shortcut`)
+    .map((f) => path.join(workDir, f));
+
+  return { main: mainPath, subShortcuts, workDir };
 }
 
 // ---------------------------------------------------------------------------
 // Import a shortcut into the Simulator
 // ---------------------------------------------------------------------------
 
-async function importShortcut(signedPath: string, udid: string): Promise<void> {
-  await openurl(udid, `file://${signedPath}`);
-
+async function findAndTapElement(label: string, timeoutMs = 10000): Promise<boolean> {
   const start = Date.now();
-  let found = false;
-  while (Date.now() - start < 15000) {
+  while (Date.now() - start < timeoutMs) {
     try {
-      const btn =
-        (await findElement(udid, "Add Shortcut")) ?? (await findElement(udid, "Update Shortcut"));
-      if (btn?.rect) {
-        if (!found) {
-          found = true;
-          await sleep(800);
-        }
-        await tap(udid, btn.rect.x + btn.rect.width / 2, btn.rect.y + btn.rect.height / 2);
-        await sleep(1000);
-        const still =
-          (await findElement(udid, "Add Shortcut")) ?? (await findElement(udid, "Replace"));
-        if (!still?.rect) {
-          return;
-        }
+      const res = (await wdaRequest("POST", `/session/${wdaSession}/element`, {
+        using: "name",
+        value: label,
+      })) as any;
+      if (res.value?.ELEMENT) {
+        await sleep(500);
+        await wdaRequest("POST", `/session/${wdaSession}/element/${res.value.ELEMENT}/click`);
+        return true;
       }
     } catch {
-      // dump ui can fail transiently during transitions
+      /* element not found yet */
     }
     await sleep(500);
   }
-  throw new Error("Timed out waiting for 'Add Shortcut' button");
+  return false;
+}
+
+async function importShortcut(signedPath: string, udid: string): Promise<void> {
+  await openurl(udid, `file://${signedPath}`);
+  const found =
+    (await findAndTapElement("Add Shortcut", 15000)) ||
+    (await findAndTapElement("Update Shortcut", 2000));
+  if (!found) {
+    throw new Error("Timed out waiting for 'Add Shortcut' button");
+  }
+  await sleep(1000);
 }
 
 // ---------------------------------------------------------------------------
-// Cleanup between tests
+// WDA + Simulator lifecycle
 // ---------------------------------------------------------------------------
 
-async function cleanupBetweenTests(udid: string): Promise<void> {
-  await mobilecli("io", "button", "--device", udid, "HOME");
-  await sleep(500);
+let wdaProcess: ChildProcess | null = null;
+
+let _wdaUdid: string;
+
+function wdaXctestrun(): string {
+  return path.join(
+    process.env.HOME!,
+    ".maestro-runner/cache/wda-builds/sim-ios26.5-iphone/DerivedData/Build/Products",
+    "WebDriverAgentRunner_iphonesimulator26.5-arm64.xctestrun",
+  );
+}
+
+async function buildWDAIfNeeded(udid: string): Promise<void> {
+  if (fs.existsSync(wdaXctestrun())) {
+    return;
+  }
+  const flowFile = path.join(TMP_DIR, "_wda-init.yaml");
+  fs.mkdirSync(TMP_DIR, { recursive: true });
+  fs.writeFileSync(flowFile, "appId: com.apple.Preferences\n---\n- pressKey: home\n");
+  await exec(
+    path.join(process.env.HOME!, ".maestro-runner/bin/maestro-runner"),
+    ["--platform", "ios", "--device", udid, "test", flowFile],
+    { timeout: 600000 },
+  );
+}
+
+async function launchWDA(udid: string): Promise<void> {
+  stopWDA();
+  _wdaUdid = udid;
+
+  const derivedData = path.join(
+    process.env.HOME!,
+    ".maestro-runner/cache/wda-builds/sim-ios26.5-iphone/DerivedData",
+  );
+
+  wdaProcess = spawn(
+    "xcodebuild",
+    [
+      "test-without-building",
+      "-xctestrun",
+      wdaXctestrun(),
+      "-destination",
+      `platform=iOS Simulator,id=${udid}`,
+      "-derivedDataPath",
+      derivedData,
+    ],
+    { stdio: "ignore" },
+  );
+
+  wdaProcess.on("exit", () => {
+    wdaProcess = null;
+  });
+
+  for (let i = 0; i < 30; i++) {
+    await sleep(1000);
+    try {
+      const res = await fetch(`http://localhost:${WDA_PORT}/status`);
+      if (res.ok) {
+        wdaSession = await createSession();
+        return;
+      }
+    } catch {
+      /* not ready yet */
+    }
+  }
+  throw new Error("WDA did not start");
+}
+
+async function ensureWDA(): Promise<void> {
   try {
-    const el = await findElement(udid, "OK");
-    if (el?.rect) {
-      await tap(udid, el.rect.x + el.rect.width / 2, el.rect.y + el.rect.height / 2);
-      await sleep(300);
+    const res = await fetch(`http://localhost:${WDA_PORT}/status`);
+    if (res.ok) {
+      return;
     }
   } catch {
-    // ignore
+    /* WDA is down */
   }
+  console.log("  [WDA restarting...]");
+  await launchWDA(_wdaUdid);
 }
 
-// ---------------------------------------------------------------------------
-// Simulator setup
-// ---------------------------------------------------------------------------
-
-async function isAgentReady(udid: string): Promise<boolean> {
-  try {
-    JSON.parse(await mobilecli("dump", "ui", "--device", udid));
-    return true;
-  } catch {
-    return false;
+function stopWDA(): void {
+  if (wdaProcess) {
+    wdaProcess.kill("SIGTERM");
+    wdaProcess = null;
   }
 }
 
 async function ensureSimulator(): Promise<string> {
-  // Find an iPhone 17 Pro simulator
   const { stdout } = await exec("xcrun", ["simctl", "list", "devices", "available", "-j"]);
   const allDevices = JSON.parse(stdout);
   const runtimeDevices: Array<{ udid: string; name: string; state: string }> =
@@ -339,32 +308,11 @@ async function ensureSimulator(): Promise<string> {
   await simctl("boot", udid);
   await exec("xcrun", ["simctl", "bootstatus", udid, "-b"], { timeout: 120000 });
 
-  await killStaleRunners();
-  await mobilecli("agent", "install", "--device", udid);
-  await exec("xcrun", [
-    "simctl",
-    "spawn",
-    udid,
-    "launchctl",
-    "kickstart",
-    "-k",
-    "system/com.apple.backboardd",
-  ]);
-  await sleep(3000);
-
-  _lastAgentDevice = udid;
-
-  for (let i = 0; i < 15; i++) {
-    if (await isAgentReady(udid)) {
-      return udid;
-    }
-    await sleep(3000);
-  }
-  throw new Error("mobilecli agent not responding after install");
+  return udid;
 }
 
 // ---------------------------------------------------------------------------
-// Run one test case (import + run + read clipboard)
+// Run one test case
 // ---------------------------------------------------------------------------
 
 async function runShortcutTest(
@@ -372,22 +320,26 @@ async function runShortcutTest(
   shortcutName: string,
   udid: string,
 ): Promise<string | null> {
-  await cleanupBetweenTests(udid);
+  await ensureWDA();
+  await pressHome();
+  await sleep(500);
 
+  for (const sub of build.subShortcuts) {
+    await importShortcut(sub, udid);
+  }
   await importShortcut(build.main, udid);
 
-  // Set sentinel and run
   await pbcopy(udid, SENTINEL);
   await openurl(udid, `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}`);
 
-  // Dismiss permission dialogs with retries
+  // Dismiss permission dialogs
   for (let i = 0; i < 4; i++) {
     await sleep(1000);
-    await tap(udid, 290, 175); // clipboard "Allow"
-    await tap(udid, 201, 560); // output "Always Allow"
+    await tap(290, 175); // clipboard "Allow"
+    await tap(201, 560); // output "Always Allow"
   }
 
-  // Poll clipboard for the result
+  // Poll clipboard
   const start = Date.now();
   while (Date.now() - start < POLL_TIMEOUT_MS) {
     const content = await pbpaste(udid);
@@ -420,15 +372,20 @@ describe("simulator", { timeout: 600_000 }, () => {
     if (!fs.existsSync(CLI_PATH)) {
       throw new Error("Chute CLI not built. Run: pnpm build");
     }
-    mcli();
     fs.mkdirSync(TMP_DIR, { recursive: true });
 
     console.log("Setting up simulator...");
     udid = await ensureSimulator();
     console.log(`Simulator ready: ${udid}`);
+
+    console.log("Starting WebDriverAgent...");
+    await buildWDAIfNeeded(udid);
+    await launchWDA(udid);
+    console.log("WDA ready");
   }, 300_000);
 
   afterAll(() => {
+    stopWDA();
     fs.rmSync(TMP_DIR, { recursive: true, force: true });
   });
 
