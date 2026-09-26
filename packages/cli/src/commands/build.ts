@@ -100,28 +100,10 @@ function buildFile(file: string, sign: boolean, io: IO): void {
       return;
     }
 
-    for (const sub of result.subShortcuts) {
-      const subShortcutPath = path.join(outDir, `${sub.name}.shortcut`);
-      try {
-        signShortcut(io, sub.plist, subShortcutPath);
-      } catch (err) {
-        io.stderr(
-          `chute build: signing failed for sub-shortcut ${sub.name}: ${err instanceof Error ? err.message : err}\n`,
-        );
-        io.setExitCode(1);
-        return;
-      }
-    }
-
     io.stdout(`${shortcutPath}\n`);
   } else {
     const plistPath = path.join(outDir, `${baseName}.plist`);
     io.writeFile(plistPath, result.main);
-
-    for (const sub of result.subShortcuts) {
-      const subPath = path.join(outDir, `${sub.name}.plist`);
-      io.writeFile(subPath, sub.plist);
-    }
     io.stdout(`${plistPath}\n`);
   }
 }

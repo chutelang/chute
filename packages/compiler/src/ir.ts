@@ -6,7 +6,6 @@ export interface ShortcutIR {
 
 export interface CompilationResult {
   main: ShortcutIR;
-  subShortcuts: ShortcutIR[];
 }
 
 export interface ActionIR {
@@ -24,9 +23,15 @@ export type ParameterValue =
   | ActionOutputRef
   | ExtensionInputRef
   | WorkflowRef
+  | SelfRef
   | InterpolatedText
   | ListItems
   | DictItems;
+
+export interface SelfRef {
+  kind: "SelfRef";
+  name: string;
+}
 
 export interface ActionOutputRef {
   kind: "ActionOutputRef";

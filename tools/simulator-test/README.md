@@ -25,22 +25,26 @@ Compiles Chute source to signed shortcuts, imports them into the iOS Simulator, 
 ## Usage
 
 Run all tests:
+
 ```bash
 npx vitest run tools/simulator-test/simulator.test.ts
 ```
 
 Run a specific test by name:
+
 ```bash
 npx vitest run tools/simulator-test/simulator.test.ts -t "text-literal"
 npx vitest run tools/simulator-test/simulator.test.ts -t "arithmetic"
 ```
 
 Force a fresh simulator reset:
+
 ```bash
 SIM_RESET=1 npx vitest run tools/simulator-test/simulator.test.ts
 ```
 
 Legacy runner (runs all tests, always resets):
+
 ```bash
 node tools/simulator-test/run.js
 ```

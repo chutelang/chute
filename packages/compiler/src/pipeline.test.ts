@@ -217,11 +217,9 @@ Notification.showAlert(msg);`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
-    expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
   });
 
-  it("should compile a multi-parameter function's sub-shortcut", () => {
+  it("should compile a multi-parameter function", () => {
     const source = `import Notification;
 shortcut {
   name: "AddTwo",
@@ -232,8 +230,7 @@ const x = add(3, 4);
 Notification.showContent("\${x}");`;
 
     const result = compile(source);
-    expect(result.subShortcuts).toHaveLength(1);
-    expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
+    expect(result.main).toMatchSnapshot();
   });
 
   it("should compile multiple functions", () => {
@@ -250,7 +247,6 @@ Notification.showContent("\${y}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(2);
   });
 
   it("should compile function with conditional return", () => {
@@ -270,8 +266,6 @@ Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
-    expect(result.subShortcuts.at(0)?.plist).toMatchSnapshot();
   });
 
   it("should compile function calling another function", () => {
@@ -287,7 +281,6 @@ Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(2);
   });
 
   it("should compile function using enums and records", () => {
@@ -306,7 +299,6 @@ Notification.showAlert(s.size);`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
   });
 
   it("should compile a single-stage pipeline", () => {
@@ -321,7 +313,6 @@ Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
   });
 
   it("should compile a multi-stage pipeline", () => {
@@ -337,7 +328,6 @@ Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(2);
   });
 
   it("should compile an optional pipeline with |>?", () => {
@@ -353,7 +343,6 @@ Notification.showContent("done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
   });
 
   it("should compile a pipeline with explicit arguments", () => {
@@ -368,7 +357,6 @@ Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
   });
 
   it("should compile a pipeline with _ placeholder", () => {
@@ -383,7 +371,6 @@ Notification.showContent("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(1);
   });
 
   it("should compile a pipeline ending in an action call", () => {
@@ -412,7 +399,6 @@ Notification.showContent("done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
-    expect(result.subShortcuts).toHaveLength(2);
   });
 
   it("should compile action declaration and call", () => {
