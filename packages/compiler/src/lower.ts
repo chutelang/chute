@@ -936,7 +936,7 @@ function isSideEffectFreeValue(expr: Expression): boolean {
     case "DotNameExpression":
       return true;
     case "MemberExpression":
-      return expr.object.kind === "Identifier";
+      return false;
     case "InterpolatedString":
       return expr.parts.every(
         (part) => part.kind === "TextPart" || part.expression.kind === "Identifier",
