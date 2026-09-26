@@ -34,11 +34,15 @@ let filled = 0;
 
 for (const action of Object.values(actions)) {
   const iid = action.IntentIdentifier;
-  if (!iid) continue;
+  if (!iid) {
+    continue;
+  }
 
   const className = iid.split(".").pop();
   const intent = byClass.get(className);
-  if (!intent) continue;
+  if (!intent) {
+    continue;
+  }
 
   joined++;
 
@@ -63,4 +67,6 @@ for (const action of Object.values(actions)) {
 }
 
 fs.writeFileSync(outPath, JSON.stringify(actions, null, 2) + "\n");
-console.log(`joined=${joined} names_filled=${filled} total=${Object.keys(actions).length} -> ${outPath}`);
+console.log(
+  `joined=${joined} names_filled=${filled} total=${Object.keys(actions).length} -> ${outPath}`,
+);

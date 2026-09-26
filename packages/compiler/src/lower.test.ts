@@ -365,22 +365,25 @@ describe("lower", () => {
   });
 
   describe("function declarations", () => {
-    it("should emit no actions in main for function declaration", () => {
+    it("should emit dispatch block in main for function declaration", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; func greet() { alert("hi"); }',
+      );
+      expect(actions.length).toBeGreaterThan(0);
+      const outputActions = actions.filter(
+        (a: ActionIR) => a.identifier === "is.workflow.actions.output",
+      );
+      expect(outputActions.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("should set acceptsInput when functions exist", () => {
       const result = lowerSourceResult(
         'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; func greet() { alert("hi"); }',
       );
-      expect(result.main.actions).toHaveLength(0);
+      expect(result.main.acceptsInput).toBe(true);
     });
 
-    it("should produce a sub-shortcut for each function", () => {
-      const result = lowerSourceResult(
-        'shortcut { name: "Test" } action alert(text: Text) = "is.workflow.actions.alert"; func greet() { alert("hi"); }',
-      );
-      expect(result.subShortcuts).toHaveLength(1);
-      expect(result.subShortcuts.at(0)?.name).toContain("greet");
-    });
-
-    it("should lower function call to runworkflow action", () => {
+    it("should lower function call to self-calling runworkflow action", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }
         action alert(text: Text) = "is.workflow.actions.alert";
@@ -391,30 +394,36 @@ describe("lower", () => {
         (a) => a.identifier === "is.workflow.actions.runworkflow",
       );
       expect(runActions).toHaveLength(1);
+      expect(runActions.at(0)?.parameters.get("WFWorkflow")).toEqual({
+        kind: "SelfRef",
+        name: "Test",
+      });
     });
 
-    it("should pass arguments as dictionary in function call", () => {
+    it("should pass arguments as dictionary with __chute_fn in function call", () => {
       const result = lowerSourceResult(`
         shortcut { name: "Test" }
         func add(a: Number, b: Number) -> Number { return a + b; }
         const result = add(1, 2);
       `);
-      const runActions = result.main.actions.filter(
-        (a) => a.identifier === "is.workflow.actions.runworkflow",
+      const dictActions = result.main.actions.filter(
+        (a) => a.identifier === "is.workflow.actions.dictionary",
       );
-      expect(runActions).toHaveLength(1);
+      const callDict = dictActions.at(-1);
+      const items = callDict?.parameters.get("WFItems") as
+        | { kind: "DictItems"; entries: Array<{ key: unknown }> }
+        | undefined;
+      const keys = items?.entries.map((e) => e.key);
+      expect(keys).toContain("__chute_fn");
     });
 
-    it("should emit output action for return statement", () => {
-      const result = lowerSourceResult(`
+    it("should emit output action for return statement in dispatch block", () => {
+      const actions = lowerSource(`
         shortcut { name: "Test" }
         func add(a: Number, b: Number) -> Number { return a + b; }
       `);
-      const sub = result.subShortcuts.at(0);
-      const outputActions = sub?.actions.filter(
-        (a) => a.identifier === "is.workflow.actions.output",
-      );
-      expect(outputActions?.length).toBeGreaterThanOrEqual(1);
+      const outputActions = actions.filter((a) => a.identifier === "is.workflow.actions.output");
+      expect(outputActions.length).toBeGreaterThanOrEqual(1);
     });
 
     it("should fill default parameter values at the call site", () => {
@@ -429,71 +438,34 @@ describe("lower", () => {
       expect(runActions).toHaveLength(1);
     });
 
-    it("should derive sub-shortcut name from function name plus content hash", () => {
-      const result = lowerSourceResult(`
+    it("should emit dispatch guard checking __chute_fn key", () => {
+      const actions = lowerSource(`
         shortcut { name: "Test" }
         action alert(text: Text) = "is.workflow.actions.alert";
         func greet() { alert("hi"); }
       `);
-      const subName = result.subShortcuts.at(0)?.name;
-      expect(subName).toMatch(/^greet_[a-f0-9]+$/);
+      const getKeyActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvalueforkey",
+      );
+      const fnKeyAction = getKeyActions.find(
+        (a) => a.parameters.get("WFDictionaryKey") === "__chute_fn",
+      );
+      expect(fnKeyAction).toBeDefined();
     });
 
-    it("should derive the same sub-shortcut name regardless of source position", () => {
-      const resultA = lowerSourceResult(`
+    it("should extract parameters from dispatch input dictionary", () => {
+      const actions = lowerSource(`
         shortcut { name: "Test" }
         func add(a: Number, b: Number) -> Number { return a + b; }
       `);
-      const resultB = lowerSourceResult(`
-        shortcut { name: "Test" }
-
-
-        func add(a: Number, b: Number) -> Number { return a + b; }
-      `);
-      expect(resultA.subShortcuts.at(0)?.name).toBe(resultB.subShortcuts.at(0)?.name);
-    });
-
-    it("should restore the input dictionary before extracting each parameter", () => {
-      const result = lowerSourceResult(`
-        shortcut { name: "Test" }
-        func add(a: Number, b: Number) -> Number { return a + b; }
-      `);
-      const sub = result.subShortcuts.at(0);
-      const actions = sub?.actions ?? [];
-
-      const identifiers = actions.map((a) => a.identifier);
-      expect(identifiers.slice(0, 7)).toEqual([
-        "is.workflow.actions.setvariable", // store ExtensionInput
-        "is.workflow.actions.getvariable", // get input dict for param a
-        "is.workflow.actions.getvalueforkey",
-        "is.workflow.actions.setvariable",
-        "is.workflow.actions.getvariable", // get input dict for param b
-        "is.workflow.actions.getvalueforkey",
-        "is.workflow.actions.setvariable",
-      ]);
-
-      // First action is setvariable with ExtensionInputRef
-      const firstAction = actions.at(0);
-      expect(firstAction?.identifier).toBe("is.workflow.actions.setvariable");
-      expect(firstAction?.parameters.get("WFInput")).toEqual({ kind: "ExtensionInputRef" });
-
-      const tempName = firstAction?.parameters.get("WFVariableName") as string | undefined;
-
-      const firstDictionaryKey = actions.at(2);
-      expect(firstDictionaryKey?.parameters.get("WFDictionaryKey")).toBe("a");
-
-      const secondDictionaryKey = actions.at(5);
-      expect(secondDictionaryKey?.parameters.get("WFDictionaryKey")).toBe("b");
-
-      // Before extracting the second param, restore the input dict
-      const restoreBeforeSecondExtraction = actions.at(4);
-      expect(
-        (
-          restoreBeforeSecondExtraction?.parameters.get("WFVariable") as
-            | { kind: "VariableRef"; name: string }
-            | undefined
-        )?.name,
-      ).toBe(tempName);
+      const getKeyActions = actions.filter(
+        (a) => a.identifier === "is.workflow.actions.getvalueforkey",
+      );
+      const paramKeys = getKeyActions
+        .map((a) => a.parameters.get("WFDictionaryKey"))
+        .filter((k) => k !== "__chute_fn");
+      expect(paramKeys).toContain("a");
+      expect(paramKeys).toContain("b");
     });
   });
 
@@ -561,22 +533,23 @@ describe("lower", () => {
         const y = x |>? double |> triple;
       `);
 
-      const conditionals = actions.filter(
-        (a) => a.identifier === "is.workflow.actions.conditional",
-      );
       const runWorkflows = actions.filter(
         (a) => a.identifier === "is.workflow.actions.runworkflow",
       );
+      expect(runWorkflows).toHaveLength(2);
 
-      expect(conditionals).toHaveLength(3);
+      const firstRunIdx = actions.indexOf(runWorkflows.at(0)!);
+      const lastRunIdx = actions.indexOf(runWorkflows.at(-1)!);
 
-      const condStart = actions.indexOf(conditionals.at(0)!);
-      const condEnd = actions.indexOf(conditionals.at(2)!);
-      const runIndices = runWorkflows.map((r) => actions.indexOf(r));
-      for (const ri of runIndices) {
-        expect(ri).toBeGreaterThan(condStart);
-        expect(ri).toBeLessThan(condEnd);
-      }
+      const pipelineConditionals = actions.filter(
+        (a, i) => a.identifier === "is.workflow.actions.conditional" && i >= firstRunIdx - 5,
+      );
+      expect(pipelineConditionals).toHaveLength(3);
+
+      const condStart = actions.indexOf(pipelineConditionals.at(0)!);
+      const condEnd = actions.indexOf(pipelineConditionals.at(2)!);
+      expect(firstRunIdx).toBeGreaterThan(condStart);
+      expect(lastRunIdx).toBeLessThan(condEnd);
     });
   });
 

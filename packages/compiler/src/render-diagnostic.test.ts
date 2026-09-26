@@ -47,8 +47,7 @@ describe("renderDiagnostic", () => {
     const source = "const x: Quantity<bananas> = 5;";
     const ast = parse(source);
     const decl = ast.body[0];
-    const typeSpan =
-      decl?.kind === "ConstDeclaration" ? decl.typeAnnotation?.base.span : undefined;
+    const typeSpan = decl?.kind === "ConstDeclaration" ? decl.typeAnnotation?.base.span : undefined;
     const d: Diagnostic = {
       code: DiagnosticCode.UnknownUnit,
       severity: "warning",
@@ -170,11 +169,8 @@ describe("renderDiagnostics", () => {
     const ast = parse(source);
     const fooExpr = findExpression(ast.body, (e) => e.kind === "Identifier" && e.name === "foo");
     const hiExpr = findExpression(ast.body, (e) => e.kind === "StringLiteral" && e.value === "hi");
-    const yDecl = ast.body.find(
-      (s) => s.kind === "LetDeclaration" && s.name === "y",
-    );
-    const unitSpan =
-      yDecl?.kind === "LetDeclaration" ? yDecl.typeAnnotation?.base.span : undefined;
+    const yDecl = ast.body.find((s) => s.kind === "LetDeclaration" && s.name === "y");
+    const unitSpan = yDecl?.kind === "LetDeclaration" ? yDecl.typeAnnotation?.base.span : undefined;
     const diagnostics: Diagnostic[] = [
       {
         code: DiagnosticCode.UndefinedVariable,

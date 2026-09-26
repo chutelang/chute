@@ -6,6 +6,7 @@ import type {
   InterpolatedText,
   ListItems,
   ParameterValue,
+  SelfRef,
   ShortcutIR,
   VariableRef,
   WorkflowRef,
@@ -137,6 +138,8 @@ function emitKeyValue(
     emitExtensionInputRef(lines, depth);
   } else if (value.kind === "WorkflowRef") {
     emitWorkflowRef(lines, depth, value);
+  } else if (value.kind === "SelfRef") {
+    emitSelfRef(lines, depth, value);
   } else if (value.kind === "ListItems") {
     emitListItems(lines, depth, value, actionIdentifier);
   } else if (value.kind === "DictItems") {
@@ -304,11 +307,15 @@ function emitWorkflowRef(lines: string[], depth: number, ref: WorkflowRef): void
   emitIndent(lines, depth, "</dict>");
 }
 
-function emitActionOutputRef(
-  lines: string[],
-  depth: number,
-  ref: ActionOutputRef,
-): void {
+function emitSelfRef(lines: string[], depth: number, ref: SelfRef): void {
+  emitIndent(lines, depth, "<dict>");
+  emitKey(lines, depth + 1, "isSelf");
+  emitBool(lines, depth + 1, true);
+  emitKeyString(lines, depth + 1, "workflowName", ref.name);
+  emitIndent(lines, depth, "</dict>");
+}
+
+function emitActionOutputRef(lines: string[], depth: number, ref: ActionOutputRef): void {
   emitIndent(lines, depth, "<dict>");
   emitKeyString(lines, depth + 1, "WFSerializationType", "WFTextTokenAttachment");
   emitKey(lines, depth + 1, "Value");

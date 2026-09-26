@@ -43,7 +43,6 @@ import type {
   InterpolatedText,
   InterpolatedTextPart,
   ParameterValue,
-  ShortcutIR,
 } from "./ir.ts";
 import type { ResolvedProperty } from "./ast.ts";
 import { getContentItemClass } from "./coercion.ts";
@@ -74,7 +73,7 @@ interface LowerContext {
   functions: Map<string, FunctionDeclaration>;
   actions: Map<string, ActionDeclaration>;
   namespaceActions: Map<string, Map<string, NamespaceAction>>;
-  subShortcuts: ShortcutIR[];
+  shortcutName: string;
 }
 
 export function lower(program: Program): CompilationResult {
@@ -97,8 +96,6 @@ export function lower(program: Program): CompilationResult {
       actionDecls.set(stmt.name, stmt);
     }
   }
-
-  const subShortcuts: ShortcutIR[] = [];
 
   const namespaceActions = new Map<string, Map<string, NamespaceAction>>();
   for (const imp of program.imports) {
@@ -137,13 +134,12 @@ export function lower(program: Program): CompilationResult {
     functions,
     actions: actionDecls,
     namespaceActions,
-    subShortcuts,
+    shortcutName: name,
   };
 
-  for (const [, decl] of functions) {
+  if (functions.size > 0) {
     try {
-      const subShortcut = lowerFunctionToSubShortcut(decl, ctx);
-      subShortcuts.push(subShortcut);
+      emitFunctionDispatchBlock(functions, actions, ctx);
     } catch (e) {
       if (e instanceof LowerError) {
         collectedErrors.push(lowerErrorToDiagnostic(e));
@@ -170,8 +166,11 @@ export function lower(program: Program): CompilationResult {
   }
 
   return {
-    main: { name, actions },
-    subShortcuts,
+    main: {
+      name,
+      actions,
+      acceptsInput: functions.size > 0,
+    },
   };
 }
 
@@ -184,97 +183,93 @@ function lowerErrorToDiagnostic(e: LowerError): Diagnostic {
   };
 }
 
-function lowerFunctionToSubShortcut(decl: FunctionDeclaration, ctx: LowerContext): ShortcutIR {
-  const subCtx: LowerContext = {
-    uuidCounter: 0,
-    tempCounter: 0,
-    enums: ctx.enums,
-    records: ctx.records,
-    functions: ctx.functions,
-    actions: ctx.actions,
-    namespaceActions: ctx.namespaceActions,
-    subShortcuts: ctx.subShortcuts,
-  };
+function emitFunctionDispatchBlock(
+  functions: Map<string, FunctionDeclaration>,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): void {
+  const inputTempName = nextTempName(ctx);
+  const setInputParams = new Map<string, ParameterValue>();
+  setInputParams.set("WFInput", { kind: "ExtensionInputRef" });
+  setInputParams.set("WFVariableName", inputTempName);
+  actions.push({
+    identifier: "is.workflow.actions.setvariable",
+    uuid: nextUuid(ctx),
+    parameters: setInputParams,
+  });
 
-  const actions: ActionIR[] = [];
+  actions.push(makeGetVariableAction(inputTempName, ctx));
+  const keyParams = new Map<string, ParameterValue>();
+  keyParams.set("WFDictionaryKey", "__chute_fn");
+  actions.push({
+    identifier: "is.workflow.actions.getvalueforkey",
+    uuid: nextUuid(ctx),
+    parameters: keyParams,
+  });
 
-  if (decl.params.length > 0) {
-    // Store the shortcut input (ExtensionInput) in a temp variable
-    const inputTempName = nextTempName(subCtx);
-    const setInputParams = new Map<string, ParameterValue>();
-    setInputParams.set("WFInput", { kind: "ExtensionInputRef" });
-    setInputParams.set("WFVariableName", inputTempName);
-    actions.push({
-      identifier: "is.workflow.actions.setvariable",
-      uuid: nextUuid(subCtx),
-      parameters: setInputParams,
-    });
+  const rawFnTempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(rawFnTempName, ctx));
+
+  const outerGroupId = nextUuid(ctx);
+  actions.push(makeGetVariableAction(rawFnTempName, ctx));
+  actions.push(makeConditionalAction(0, outerGroupId, ctx, { WFCondition: 100 }));
+
+  const coerceParams = new Map<string, ParameterValue>();
+  coerceParams.set("WFTextActionText", {
+    kind: "InterpolatedText",
+    parts: [{ kind: "variable", name: rawFnTempName }],
+  });
+  actions.push({
+    identifier: "is.workflow.actions.gettext",
+    uuid: nextUuid(ctx),
+    parameters: coerceParams,
+  });
+
+  const fnNameTempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(fnNameTempName, ctx));
+
+  for (const [name, decl] of functions) {
+    const fnGroupId = nextUuid(ctx);
+    actions.push(makeGetVariableAction(fnNameTempName, ctx));
+    actions.push(
+      makeConditionalAction(0, fnGroupId, ctx, {
+        WFCondition: 4,
+        WFConditionalActionString: name,
+      }),
+    );
 
     for (const param of decl.params) {
-      actions.push(makeGetVariableAction(inputTempName, subCtx));
-
-      const parameters = new Map<string, ParameterValue>();
-      parameters.set("WFDictionaryKey", param.name);
+      actions.push(makeGetVariableAction(inputTempName, ctx));
+      const paramKeyParams = new Map<string, ParameterValue>();
+      paramKeyParams.set("WFDictionaryKey", param.name);
       actions.push({
         identifier: "is.workflow.actions.getvalueforkey",
-        uuid: nextUuid(subCtx),
-        parameters,
+        uuid: nextUuid(ctx),
+        parameters: paramKeyParams,
       });
-      actions.push(makeSetVariableAction(param.name, subCtx));
+      actions.push(makeSetVariableAction(param.name, ctx));
     }
-  }
 
-  for (const stmt of decl.body) {
-    lowerStatement(stmt, actions, subCtx);
-  }
-
-  const subName = deriveFunctionShortcutName(decl);
-  return { name: subName, actions, acceptsInput: decl.params.length > 0 };
-}
-
-function deriveFunctionShortcutName(decl: FunctionDeclaration): string {
-  const content = JSON.stringify(
-    stripSpans({
-      params: decl.params.map((p) => ({
-        name: p.name,
-        type: p.type,
-      })),
-      body: decl.body,
-      returnType: decl.returnType,
-    }),
-  );
-  const hash = simpleHash(content);
-  return `${decl.name}_${hash}`;
-}
-
-/**
- * Removes `span` fields recursively so that source positions don.t affect
- * content hashes.
- */
-function stripSpans(obj: unknown): unknown {
-  if (obj === null || obj === undefined || typeof obj !== "object") {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(stripSpans);
-  }
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
-    if (key === "span") {
-      continue;
+    for (const stmt of decl.body) {
+      lowerStatement(stmt, actions, ctx);
     }
-    result[key] = stripSpans(value);
-  }
-  return result;
-}
 
-function simpleHash(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash + char) | 0;
+    actions.push({
+      identifier: "is.workflow.actions.output",
+      uuid: nextUuid(ctx),
+      parameters: new Map<string, ParameterValue>(),
+    });
+
+    actions.push(makeConditionalAction(2, fnGroupId, ctx));
   }
-  return (hash >>> 0).toString(16);
+
+  actions.push({
+    identifier: "is.workflow.actions.output",
+    uuid: nextUuid(ctx),
+    parameters: new Map<string, ParameterValue>(),
+  });
+
+  actions.push(makeConditionalAction(2, outerGroupId, ctx));
 }
 
 function collectEnum(decl: EnumDeclaration, enums: Map<string, Map<string, string>>): void {
@@ -592,6 +587,11 @@ function lowerFunctionCall(
   }
 
   const entries: import("./ir.ts").DictEntry[] = [];
+  entries.push({
+    itemType: 0,
+    key: "__chute_fn",
+    value: decl.name,
+  });
   for (const param of decl.params) {
     const valueExpr = provided.get(param.name) ?? param.defaultValue;
     if (!valueExpr) {
@@ -615,10 +615,8 @@ function lowerFunctionCall(
   const dictTempName = nextTempName(ctx);
   actions.push(makeSetVariableAction(dictTempName, ctx));
 
-  const subName = deriveFunctionShortcutName(decl);
-
   const runParams = new Map<string, ParameterValue>();
-  runParams.set("WFWorkflowName", subName);
+  runParams.set("WFWorkflow", { kind: "SelfRef", name: ctx.shortcutName });
   runParams.set("WFInput", { kind: "VariableRef", name: dictTempName });
 
   return {
@@ -1966,6 +1964,12 @@ function lowerPipelineFunctionStage(
     }
   }
 
+  entries.push({
+    itemType: 0,
+    key: "__chute_fn",
+    value: decl.name,
+  });
+
   const dictParams = new Map<string, ParameterValue>();
   dictParams.set("WFItems", { kind: "DictItems", entries });
   actions.push({
@@ -1977,9 +1981,8 @@ function lowerPipelineFunctionStage(
   const dictTempName = nextTempName(ctx);
   actions.push(makeSetVariableAction(dictTempName, ctx));
 
-  const subName = deriveFunctionShortcutName(decl);
   const runParams = new Map<string, ParameterValue>();
-  runParams.set("WFWorkflowName", subName);
+  runParams.set("WFWorkflow", { kind: "SelfRef", name: ctx.shortcutName });
   runParams.set("WFInput", { kind: "VariableRef", name: dictTempName });
   actions.push({
     identifier: "is.workflow.actions.runworkflow",

@@ -38,19 +38,6 @@ export function run(file: string, io: IO = realIO): void {
     return;
   }
 
-  for (const sub of compileResult.subShortcuts) {
-    const subShortcutPath = path.join(outDir, `${sub.name}.shortcut`);
-    try {
-      signShortcut(io, sub.plist, subShortcutPath);
-    } catch (err) {
-      io.stderr(
-        `chute run: signing failed for sub-shortcut ${sub.name}: ${err instanceof Error ? err.message : err}\n`,
-      );
-      io.setExitCode(1);
-      return;
-    }
-  }
-
   const result = io.spawn("open", [shortcutPath], {
     stdio: "inherit",
     timeout: 10000,

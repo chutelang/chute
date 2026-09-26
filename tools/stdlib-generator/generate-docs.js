@@ -52,7 +52,14 @@ const INTENT_ENUM_VALUES = {
   BooleanSettingOperation: ["Turn On", "Turn Off", "Toggle"],
   DeviceAppearanceType: ["Light", "Dark"],
   AskForInputType: ["Text", "Number", "URL", "Date", "Time", "Date and Time"],
-  ChangeCaseType: ["UPPERCASE", "lowercase", "Capitalize Every Word", "Capitalize with Title Case", "Capitalize with sentence case", "aLtErNaTiNg CaSe"],
+  ChangeCaseType: [
+    "UPPERCASE",
+    "lowercase",
+    "Capitalize Every Word",
+    "Capitalize with Title Case",
+    "Capitalize with sentence case",
+    "aLtErNaTiNg CaSe",
+  ],
   CombineTextSeparator: ["New Lines", "Spaces", "Every Character", "Custom"],
   SplitTextSeparator: ["New Lines", "Spaces", "Every Character", "Custom"],
   MatchTextGetGroupType: ["Group At Index", "All Groups"],
@@ -114,19 +121,35 @@ const CONTENT_TYPE_MAP = {
 
 function inferReturnType(output) {
   const types = output?.Types;
-  if (!types || types.length === 0) return null;
-  if (types.length === 1) return CONTENT_TYPE_MAP[types[0]] ?? "Any";
+  if (!types || types.length === 0) {
+    return null;
+  }
+  if (types.length === 1) {
+    return CONTENT_TYPE_MAP[types[0]] ?? "Any";
+  }
   const mapped = types.map((t) => CONTENT_TYPE_MAP[t]).filter(Boolean);
-  if (mapped.length === 0) return "Any";
-  if (new Set(mapped).size === 1) return mapped[0];
+  if (mapped.length === 0) {
+    return "Any";
+  }
+  if (new Set(mapped).size === 1) {
+    return mapped[0];
+  }
   return "Any";
 }
 
 function formatDefault(value) {
-  if (value === null || value === undefined) return "—";
-  if (typeof value === "boolean") return String(value);
-  if (typeof value === "number") return String(value);
-  if (typeof value === "string") return `\`"${value}"\``;
+  if (value === null || value === undefined) {
+    return "—";
+  }
+  if (typeof value === "boolean") {
+    return String(value);
+  }
+  if (typeof value === "number") {
+    return String(value);
+  }
+  if (typeof value === "string") {
+    return `\`"${value}"\``;
+  }
   return String(value);
 }
 
@@ -148,7 +171,9 @@ function generateActionDoc(action) {
       .filter((p) => p.name)
       .map((p) => ({
         key: overrides[p.name]?.Key ?? p.name,
-        chuteType: p.enumType ?? (p.type === "Boolean" ? "Boolean" : p.type === "Integer" ? "Number" : "Any"),
+        chuteType:
+          p.enumType ??
+          (p.type === "Boolean" ? "Boolean" : p.type === "Integer" ? "Number" : "Any"),
         enumType: p.enumType ?? undefined,
         required: false,
         defaultValue: null,
@@ -156,9 +181,10 @@ function generateActionDoc(action) {
   }
   const returnType = inferReturnType(action.output);
   const returnSuffix = returnType ? ` -> ${returnType}` : "";
-  const signature = params.length > 0
-    ? `${action.name}(${params.map((p) => `${p.key}: ${p.chuteType || "Any"}`).join(", ")})${returnSuffix}`
-    : `${action.name}()${returnSuffix}`;
+  const signature =
+    params.length > 0
+      ? `${action.name}(${params.map((p) => `${p.key}: ${p.chuteType || "Any"}`).join(", ")})${returnSuffix}`
+      : `${action.name}()${returnSuffix}`;
 
   lines.push("```chute");
   lines.push(signature);
@@ -169,9 +195,7 @@ function generateActionDoc(action) {
     lines.push("| Parameter | Type | Default |");
     lines.push("| --- | --- | --- |");
     for (const p of params) {
-      lines.push(
-        `| \`${p.key}\` | ${formatType(p)} | ${formatDefault(p.defaultValue)} |`,
-      );
+      lines.push(`| \`${p.key}\` | ${formatType(p)} | ${formatDefault(p.defaultValue)} |`);
     }
     lines.push("");
   }

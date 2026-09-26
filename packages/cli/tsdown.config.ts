@@ -6,5 +6,7 @@ export default defineConfig({
   target: "node24",
   clean: true,
   noExternal: [/^@chutelang\//],
-  banner: { js: "#!/usr/bin/env node" },
+  outputOptions: {
+    banner: "#!/usr/bin/env node",
+  },
 });

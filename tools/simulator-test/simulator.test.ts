@@ -39,8 +39,11 @@ async function exec(
       child.stdout!.on("data", (d: Buffer) => (stdout += d));
       child.stderr!.on("data", (d: Buffer) => (stderr += d));
       child.on("close", (code) => {
-        if (code !== 0) reject(new Error(`${cmd} failed (${code}): ${stderr.trim()}`));
-        else resolve({ stdout: stdout.trim(), stderr: stderr.trim() });
+        if (code !== 0) {
+          reject(new Error(`${cmd} failed (${code}): ${stderr.trim()}`));
+        } else {
+          resolve({ stdout: stdout.trim(), stderr: stderr.trim() });
+        }
       });
       child.stdin!.end(opts.input);
     });
@@ -67,7 +70,9 @@ function findMobilecli(): string {
   if (fs.existsSync(npxDir)) {
     for (const entry of fs.readdirSync(npxDir)) {
       const candidate = path.join(npxDir, entry, "node_modules", "mobilecli", "bin", binaryName);
-      if (fs.existsSync(candidate)) return candidate;
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
     }
   }
   throw new Error("mobilecli not found. Install mobile-mcp: npx @mobilenext/mobile-mcp@latest");
@@ -75,7 +80,9 @@ function findMobilecli(): string {
 
 let _mobilecliPath: string;
 function mcli(): string {
-  if (!_mobilecliPath) _mobilecliPath = findMobilecli();
+  if (!_mobilecliPath) {
+    _mobilecliPath = findMobilecli();
+  }
   return _mobilecliPath;
 }
 
@@ -103,7 +110,12 @@ async function restartAgent(udid: string): Promise<void> {
   await killStaleRunners();
   await exec(mcli(), ["agent", "install", "--device", udid, "--force"]).catch(() => {});
   await exec("xcrun", [
-    "simctl", "spawn", udid, "launchctl", "kickstart", "-k",
+    "simctl",
+    "spawn",
+    udid,
+    "launchctl",
+    "kickstart",
+    "-k",
     "system/com.apple.backboardd",
   ]).catch(() => {});
   await sleep(5000);
@@ -118,8 +130,11 @@ async function mobilecli(...args: string[]): Promise<string> {
       if (attempt < 2 && String(e.message).includes("WebDriverAgent")) {
         const deviceIdx = args.indexOf("--device");
         const udid = deviceIdx >= 0 ? args[deviceIdx + 1] : _lastAgentDevice;
-        if (udid) await restartAgent(udid);
-        else await sleep(5000);
+        if (udid) {
+          await restartAgent(udid);
+        } else {
+          await sleep(5000);
+        }
         continue;
       }
       throw e;
@@ -147,10 +162,14 @@ async function findElement(udid: string, label: string): Promise<UIElement | nul
 
 function flatFind(elements: UIElement[], label: string): UIElement | null {
   for (const el of elements) {
-    if (el.label === label || el.name === label) return el;
+    if (el.label === label || el.name === label) {
+      return el;
+    }
     if (el.children) {
       const found = flatFind(el.children, label);
-      if (found) return found;
+      if (found) {
+        return found;
+      }
     }
   }
   return null;
@@ -191,10 +210,18 @@ async function openurl(udid: string, url: string): Promise<void> {
 
 function wrapSource(source: string): string {
   const matches = [...source.matchAll(/\b(?:const|let)\s+([a-zA-Z_]\w*)/g)];
-  if (matches.length === 0) throw new Error("Test source must declare at least one variable");
-  const lastMatch = matches[matches.length - 1]; if (!lastMatch) { throw new Error("no var"); } const lastVar = lastMatch[1];
+  if (matches.length === 0) {
+    throw new Error("Test source must declare at least one variable");
+  }
+  const lastMatch = matches[matches.length - 1];
+  if (!lastMatch) {
+    throw new Error("no var");
+  }
+  const lastVar = lastMatch[1];
   let modified = source;
-  if (!modified.includes("import Device")) modified = `import Device;\n${modified}`;
+  if (!modified.includes("import Device")) {
+    modified = `import Device;\n${modified}`;
+  }
   return `${modified}\nDevice.copyToClipboard(${lastVar});`;
 }
 
@@ -204,7 +231,6 @@ function wrapSource(source: string): string {
 
 interface BuildResult {
   main: string;
-  subShortcuts: string[];
   workDir: string;
 }
 
@@ -225,12 +251,7 @@ async function buildShortcut(
     throw new Error(`Expected output at ${mainPath} but not found`);
   }
 
-  const subShortcuts = fs
-    .readdirSync(workDir)
-    .filter((f) => f.endsWith(".shortcut") && f !== `${shortcutName}.shortcut`)
-    .map((f) => path.join(workDir, f));
-
-  return { main: mainPath, subShortcuts, workDir };
+  return { main: mainPath, workDir };
 }
 
 // ---------------------------------------------------------------------------
@@ -255,7 +276,9 @@ async function importShortcut(signedPath: string, udid: string): Promise<void> {
         await sleep(1000);
         const still =
           (await findElement(udid, "Add Shortcut")) ?? (await findElement(udid, "Replace"));
-        if (!still?.rect) return;
+        if (!still?.rect) {
+          return;
+        }
       }
     } catch {
       // dump ui can fail transiently during transitions
@@ -303,11 +326,15 @@ async function ensureSimulator(): Promise<string> {
   const runtimeDevices: Array<{ udid: string; name: string; state: string }> =
     allDevices.devices?.[RUNTIME] ?? [];
   const candidate = runtimeDevices.find((d) => d.name.startsWith("iPhone 17 Pro"));
-  if (!candidate) throw new Error("No iPhone 17 Pro simulator found");
+  if (!candidate) {
+    throw new Error("No iPhone 17 Pro simulator found");
+  }
 
   const udid = candidate.udid;
 
-  if (candidate.state === "Booted") await simctl("shutdown", udid);
+  if (candidate.state === "Booted") {
+    await simctl("shutdown", udid);
+  }
   await simctl("erase", udid);
   await simctl("boot", udid);
   await exec("xcrun", ["simctl", "bootstatus", udid, "-b"], { timeout: 120000 });
@@ -328,7 +355,9 @@ async function ensureSimulator(): Promise<string> {
   _lastAgentDevice = udid;
 
   for (let i = 0; i < 15; i++) {
-    if (await isAgentReady(udid)) return udid;
+    if (await isAgentReady(udid)) {
+      return udid;
+    }
     await sleep(3000);
   }
   throw new Error("mobilecli agent not responding after install");
@@ -345,10 +374,6 @@ async function runShortcutTest(
 ): Promise<string | null> {
   await cleanupBetweenTests(udid);
 
-  // Import sub-shortcuts, then main
-  for (const sub of build.subShortcuts) {
-    await importShortcut(sub, udid);
-  }
   await importShortcut(build.main, udid);
 
   // Set sentinel and run
@@ -366,7 +391,9 @@ async function runShortcutTest(
   const start = Date.now();
   while (Date.now() - start < POLL_TIMEOUT_MS) {
     const content = await pbpaste(udid);
-    if (content !== SENTINEL) return content;
+    if (content !== SENTINEL) {
+      return content;
+    }
     await sleep(POLL_INTERVAL_MS);
   }
   return null;
@@ -390,7 +417,9 @@ let udid: string;
 
 describe("simulator", { timeout: 600_000 }, () => {
   beforeAll(async () => {
-    if (!fs.existsSync(CLI_PATH)) throw new Error("Chute CLI not built. Run: pnpm build");
+    if (!fs.existsSync(CLI_PATH)) {
+      throw new Error("Chute CLI not built. Run: pnpm build");
+    }
     mcli();
     fs.mkdirSync(TMP_DIR, { recursive: true });
 

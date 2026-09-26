@@ -321,6 +321,7 @@ function ensureParameterSlots(): Map<string, Map<string, InputSlot>> {
     }
     cachedParameterSlots.set(action.identifier, slots);
   }
+
   return cachedParameterSlots;
 }
 

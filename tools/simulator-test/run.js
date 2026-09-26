@@ -43,22 +43,13 @@ function findMobilecli() {
   const binaryName = `mobilecli-${platform}-${arch}${ext}`;
 
   // Walk up from the npx cache looking for the binary
-  const npxDir = path.join(
-    process.env.HOME,
-    ".npm",
-    "_npx",
-  );
+  const npxDir = path.join(process.env.HOME, ".npm", "_npx");
   if (fs.existsSync(npxDir)) {
     for (const entry of fs.readdirSync(npxDir)) {
-      const candidate = path.join(
-        npxDir,
-        entry,
-        "node_modules",
-        "mobilecli",
-        "bin",
-        binaryName,
-      );
-      if (fs.existsSync(candidate)) return candidate;
+      const candidate = path.join(npxDir, entry, "node_modules", "mobilecli", "bin", binaryName);
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
     }
   }
 
@@ -67,15 +58,15 @@ function findMobilecli() {
     execFileSync("which", [binaryName], { stdio: "pipe" });
     return binaryName;
   } catch {
-    throw new Error(
-      `mobilecli not found. Install mobile-mcp: npx @mobilenext/mobile-mcp@latest`,
-    );
+    throw new Error(`mobilecli not found. Install mobile-mcp: npx @mobilenext/mobile-mcp@latest`);
   }
 }
 
 let _mobilecliPath;
 function mobilecliPath() {
-  if (!_mobilecliPath) _mobilecliPath = findMobilecli();
+  if (!_mobilecliPath) {
+    _mobilecliPath = findMobilecli();
+  }
   return _mobilecliPath;
 }
 
@@ -104,10 +95,14 @@ function findElement(deviceId, label) {
 
 function flatFind(elements, label) {
   for (const el of elements) {
-    if (el.label === label || el.name === label) return el;
+    if (el.label === label || el.name === label) {
+      return el;
+    }
     if (el.children) {
       const found = flatFind(el.children, label);
-      if (found) return found;
+      if (found) {
+        return found;
+      }
     }
   }
   return null;
@@ -220,7 +215,9 @@ async function pollClipboard(timeoutMs, deviceId) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     // Dismiss permission dialogs (clipboard access, etc.) on every poll
-    if (deviceId) dismissPermissionDialogs(deviceId);
+    if (deviceId) {
+      dismissPermissionDialogs(deviceId);
+    }
     const content = pbpaste();
     if (content !== SENTINEL) {
       return content;
@@ -255,11 +252,14 @@ function buildShortcut(chuteSource, shortcutName) {
     if (fs.existsSync(plistPath)) {
       throw new Error("chute build produced .plist instead of .shortcut — is signing available?");
     }
-    throw new Error(`Expected output at ${mainPath} but not found. stdout: ${result.stdout?.toString()}`);
+    throw new Error(
+      `Expected output at ${mainPath} but not found. stdout: ${result.stdout?.toString()}`,
+    );
   }
 
   // Collect sub-shortcuts (functions compile to separate .shortcut files)
-  const allFiles = fs.readdirSync(TMP_DIR)
+  const allFiles = fs
+    .readdirSync(TMP_DIR)
     .filter((f) => f.endsWith(".shortcut") && f !== `${shortcutName}.shortcut`)
     .map((f) => path.join(TMP_DIR, f));
 
@@ -293,8 +293,11 @@ async function importShortcut(signedPath, shortcutName, deviceId) {
         sleepSync(1000);
 
         // Verify it was dismissed (button should be gone)
-        const still = findElement(deviceId, "Add Shortcut") ?? findElement(deviceId, "Update Shortcut");
-        if (!still?.rect) return; // success
+        const still =
+          findElement(deviceId, "Add Shortcut") ?? findElement(deviceId, "Update Shortcut");
+        if (!still?.rect) {
+          return;
+        } // success
         // Otherwise retry the tap
       }
     } catch {
@@ -357,7 +360,9 @@ async function runTest(testCase, deviceId) {
     // 0. Clean up stale state and old build artifacts
     cleanupBetweenTests(deviceId);
     for (const f of fs.readdirSync(TMP_DIR)) {
-      if (f.endsWith(".shortcut")) fs.unlinkSync(path.join(TMP_DIR, f));
+      if (f.endsWith(".shortcut")) {
+        fs.unlinkSync(path.join(TMP_DIR, f));
+      }
     }
 
     // 1. Build and sign
@@ -404,7 +409,9 @@ function getAnyDeviceUdid() {
     timeout: 10000,
   });
   const match = result.stdout?.toString().match(/\(([0-9A-F-]{36})\) \((Booted|Shutdown)\)/);
-  if (!match) throw new Error("No available iOS Simulator found");
+  if (!match) {
+    throw new Error("No available iOS Simulator found");
+  }
   return { udid: match[1], state: match[2] };
 }
 
@@ -437,8 +444,11 @@ function resetSimulator() {
   process.stdout.write("Installing mobilecli agent... ");
   mobilecli("agent", "install", "--device", udid);
   // Kick backboardd so the WebDriverAgent runner starts cleanly
-  spawnSync("xcrun", ["simctl", "spawn", "booted", "launchctl", "kickstart", "-k",
-    "system/com.apple.backboardd"], { stdio: "pipe", timeout: 10000 });
+  spawnSync(
+    "xcrun",
+    ["simctl", "spawn", "booted", "launchctl", "kickstart", "-k", "system/com.apple.backboardd"],
+    { stdio: "pipe", timeout: 10000 },
+  );
   sleepSync(3000);
   console.log("done");
 
