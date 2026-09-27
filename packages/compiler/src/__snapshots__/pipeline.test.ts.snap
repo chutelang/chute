@@ -8391,7 +8391,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
-				<integer>4</integer>
+				<integer>0</integer>
 				<key>WFNumberValue</key>
 				<string>0</string>
 				<key>WFControlFlowMode</key>

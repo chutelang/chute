@@ -1597,7 +1597,7 @@ function comparisonConditionCode(
   }
   switch (op) {
     case "==":
-      return 0;
+      return 4;
     case "!=":
       return 5;
     case ">":
@@ -1605,7 +1605,7 @@ function comparisonConditionCode(
     case ">=":
       return 3;
     case "<":
-      return 4;
+      return 0;
     case "<=":
       return 1;
     case "contains":
