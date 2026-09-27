@@ -1429,8 +1429,9 @@ function emitComparisonBlock(
 
   lowerExpression(cond.left, actions, ctx);
   const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
-  const isTextComparison = typeof rightValue !== "number";
-  const condCode = comparisonConditionCode(cond.operator, isTextComparison);
+  const isTextOperator = cond.operator === "contains" || cond.operator === "!contains"
+    || cond.operator === "hasPrefix" || cond.operator === "hasSuffix";
+  const condCode = comparisonConditionCode(cond.operator, isTextOperator);
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: condCode,
