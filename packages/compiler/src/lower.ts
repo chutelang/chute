@@ -1598,7 +1598,7 @@ function comparisonConditionCode(
     case "==":
       return 0;
     case "!=":
-      return 1;
+      return 5;
     case ">":
       return 2;
     case ">=":
@@ -1606,7 +1606,7 @@ function comparisonConditionCode(
     case "<":
       return 4;
     case "<=":
-      return 5;
+      return 1;
     case "contains":
       return 99;
     case "!contains":
