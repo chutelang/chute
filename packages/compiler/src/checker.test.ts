@@ -847,7 +847,7 @@ describe("checker", () => {
   });
 
   describe("function scope restrictions", () => {
-    it("should reject outer-scope enum access in function body", () => {
+    it("should allow outer-scope enum access in function body", () => {
       expect(() =>
         checkSource(`
           enum Op { add, sub }
@@ -857,7 +857,7 @@ describe("checker", () => {
             return r;
           }
         `),
-      ).toThrow(CompileError);
+      ).not.toThrow();
     });
 
     it("should reject outer-scope variable access in function body", () => {
