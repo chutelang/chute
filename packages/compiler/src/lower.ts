@@ -266,12 +266,6 @@ function emitFunctionDispatchBlock(
     actions.push(makeConditionalAction(2, fnGroupId, ctx));
   }
 
-  actions.push({
-    identifier: "is.workflow.actions.output",
-    uuid: nextUuid(ctx),
-    parameters: new Map<string, ParameterValue>(),
-  });
-
   actions.push(makeConditionalAction(2, outerGroupId, ctx));
 }
 
@@ -912,7 +906,7 @@ function lowerOperandPreservingMagicVariable(
   actions: ActionIR[],
   ctx: LowerContext,
 ): ParameterValue {
-  if (isSideEffectFreeValue(expr)) {
+  if (isSideEffectFreeValue(expr, ctx)) {
     return lowerToParamValue(expr, actions, ctx);
   }
 
@@ -930,7 +924,7 @@ function lowerOperandPreservingMagicVariable(
  * Returns `true` if `lowerToParamValue` can.t emit actions or overwrite the
  * current magic variable.
  */
-function isSideEffectFreeValue(expr: Expression): boolean {
+function isSideEffectFreeValue(expr: Expression, ctx: LowerContext): boolean {
   switch (expr.kind) {
     case "StringLiteral":
     case "NumberLiteral":
@@ -939,7 +933,7 @@ function isSideEffectFreeValue(expr: Expression): boolean {
     case "DotNameExpression":
       return true;
     case "MemberExpression":
-      return false;
+      return expr.object.kind === "Identifier" && ctx.enums.has(expr.object.name);
     case "InterpolatedString":
       return expr.parts.every(
         (part) => part.kind === "TextPart" || part.expression.kind === "Identifier",
@@ -1447,6 +1441,19 @@ function emitComparisonBlock(
     extra["WFNumberValue"] = String(rightValue);
   } else {
     extra["WFConditionalActionString"] = rightValue;
+
+    const rawName = nextTempName(ctx);
+    actions.push(makeSetVariableAction(rawName, ctx));
+    const coerceParams = new Map<string, ParameterValue>();
+    coerceParams.set("WFTextActionText", {
+      kind: "InterpolatedText",
+      parts: [{ kind: "variable", name: rawName }],
+    });
+    actions.push({
+      identifier: "is.workflow.actions.gettext",
+      uuid: nextUuid(ctx),
+      parameters: coerceParams,
+    });
   }
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));
