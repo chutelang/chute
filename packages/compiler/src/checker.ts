@@ -184,6 +184,9 @@ export class Scope {
     for (const [name, ns] of this.allNamespaces()) {
       restricted.defineNamespace(name, ns);
     }
+    for (const [name, type] of this.allTypes()) {
+      restricted.defineType(name, type);
+    }
     return restricted;
   }
 
