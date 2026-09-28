@@ -254,11 +254,14 @@ function emitFunctionDispatchBlock(
       lowerStatement(stmt, actions, ctx);
     }
 
-    actions.push({
-      identifier: "is.workflow.actions.output",
-      uuid: nextUuid(ctx),
-      parameters: new Map<string, ParameterValue>(),
-    });
+    const lastStmt = decl.body.at(-1);
+    if (!lastStmt || lastStmt.kind !== "ReturnStatement") {
+      actions.push({
+        identifier: "is.workflow.actions.output",
+        uuid: nextUuid(ctx),
+        parameters: new Map<string, ParameterValue>(),
+      });
+    }
 
     actions.push(makeConditionalAction(2, fnGroupId, ctx));
   }
@@ -1429,8 +1432,11 @@ function emitComparisonBlock(
 
   lowerExpression(cond.left, actions, ctx);
   const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
-  const isTextOperator = cond.operator === "contains" || cond.operator === "!contains"
-    || cond.operator === "hasPrefix" || cond.operator === "hasSuffix";
+  const isTextOperator =
+    cond.operator === "contains" ||
+    cond.operator === "!contains" ||
+    cond.operator === "hasPrefix" ||
+    cond.operator === "hasSuffix";
   const condCode = comparisonConditionCode(cond.operator, isTextOperator);
 
   const extra: Record<string, ParameterValue> = {

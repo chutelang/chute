@@ -334,15 +334,9 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000019</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000020</string>
+			<string>00000000-0000-0000-0000-000000000019</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -355,7 +349,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -376,7 +370,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
@@ -386,14 +380,14 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000021</string>
+				<string>00000000-0000-0000-0000-000000000020</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -414,7 +408,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvalueforkey</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
@@ -425,7 +419,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -436,7 +430,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -457,7 +451,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.math</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFMathOperation</key>
@@ -470,7 +464,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -481,7 +475,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFOutput</key>
@@ -508,6 +502,19 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.conditional</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000030</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFControlFlowMode</key>
+				<integer>2</integer>
+				<key>GroupingIdentifier</key>
+				<string>00000000-0000-0000-0000-000000000020</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
 			<string>00000000-0000-0000-0000-000000000031</string>
@@ -522,25 +529,6 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>2</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000021</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000033</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.conditional</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000034</string>
-			<key>WFWorkflowActionParameters</key>
-			<dict>
-				<key>WFControlFlowMode</key>
-				<integer>2</integer>
-				<key>GroupingIdentifier</key>
 				<string>00000000-0000-0000-0000-000000000004</string>
 			</dict>
 		</dict>
@@ -548,7 +536,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000035</string>
+			<string>00000000-0000-0000-0000-000000000033</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -559,7 +547,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000036</string>
+			<string>00000000-0000-0000-0000-000000000034</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -580,7 +568,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000038</string>
+			<string>00000000-0000-0000-0000-000000000036</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
@@ -588,14 +576,14 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000037</string>
+				<string>00000000-0000-0000-0000-000000000035</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000039</string>
+			<string>00000000-0000-0000-0000-000000000037</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -606,7 +594,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000040</string>
+			<string>00000000-0000-0000-0000-000000000038</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -682,7 +670,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000041</string>
+			<string>00000000-0000-0000-0000-000000000039</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -693,7 +681,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000042</string>
+			<string>00000000-0000-0000-0000-000000000040</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -721,7 +709,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000043</string>
+			<string>00000000-0000-0000-0000-000000000041</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -732,7 +720,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000044</string>
+			<string>00000000-0000-0000-0000-000000000042</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -808,7 +796,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000045</string>
+			<string>00000000-0000-0000-0000-000000000043</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -819,7 +807,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000046</string>
+			<string>00000000-0000-0000-0000-000000000044</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -847,39 +835,39 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000047</string>
+			<string>00000000-0000-0000-0000-000000000045</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
 				<integer>1</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000037</string>
+				<string>00000000-0000-0000-0000-000000000035</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.nothing</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000048</string>
+			<string>00000000-0000-0000-0000-000000000046</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000049</string>
+			<string>00000000-0000-0000-0000-000000000047</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
 				<integer>2</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000037</string>
+				<string>00000000-0000-0000-0000-000000000035</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000050</string>
+			<string>00000000-0000-0000-0000-000000000048</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -890,7 +878,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000051</string>
+			<string>00000000-0000-0000-0000-000000000049</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -1298,15 +1286,9 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -1319,13 +1301,13 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -1338,7 +1320,7 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -1434,7 +1416,7 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -1445,7 +1427,7 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -1473,7 +1455,7 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -1484,7 +1466,7 @@ exports[`compile > should compile a multi-parameter function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -1849,15 +1831,9 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000019</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000020</string>
+			<string>00000000-0000-0000-0000-000000000019</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -1870,7 +1846,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -1891,7 +1867,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
@@ -1901,14 +1877,14 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000021</string>
+				<string>00000000-0000-0000-0000-000000000020</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -1929,7 +1905,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvalueforkey</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
@@ -1940,7 +1916,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -1951,7 +1927,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -1972,7 +1948,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.math</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFMathOperation</key>
@@ -1985,7 +1961,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -1996,7 +1972,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFOutput</key>
@@ -2023,6 +1999,19 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.conditional</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000030</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFControlFlowMode</key>
+				<integer>2</integer>
+				<key>GroupingIdentifier</key>
+				<string>00000000-0000-0000-0000-000000000020</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
 			<string>00000000-0000-0000-0000-000000000031</string>
@@ -2037,25 +2026,6 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>2</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000021</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000033</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.conditional</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000034</string>
-			<key>WFWorkflowActionParameters</key>
-			<dict>
-				<key>WFControlFlowMode</key>
-				<integer>2</integer>
-				<key>GroupingIdentifier</key>
 				<string>00000000-0000-0000-0000-000000000004</string>
 			</dict>
 		</dict>
@@ -2063,7 +2033,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.number</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000035</string>
+			<string>00000000-0000-0000-0000-000000000033</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFNumberActionNumber</key>
@@ -2074,7 +2044,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000036</string>
+			<string>00000000-0000-0000-0000-000000000034</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -2085,7 +2055,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000037</string>
+			<string>00000000-0000-0000-0000-000000000035</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -2161,7 +2131,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000038</string>
+			<string>00000000-0000-0000-0000-000000000036</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -2172,7 +2142,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000039</string>
+			<string>00000000-0000-0000-0000-000000000037</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -2200,7 +2170,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000040</string>
+			<string>00000000-0000-0000-0000-000000000038</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -2211,7 +2181,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000041</string>
+			<string>00000000-0000-0000-0000-000000000039</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -2287,7 +2257,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000042</string>
+			<string>00000000-0000-0000-0000-000000000040</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -2298,7 +2268,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000043</string>
+			<string>00000000-0000-0000-0000-000000000041</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -2326,7 +2296,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000044</string>
+			<string>00000000-0000-0000-0000-000000000042</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -2337,7 +2307,7 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000045</string>
+			<string>00000000-0000-0000-0000-000000000043</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -2853,15 +2823,9 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -2874,13 +2838,13 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -2893,7 +2857,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.number</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFNumberActionNumber</key>
@@ -2904,7 +2868,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -2915,7 +2879,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -3018,7 +2982,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -3029,7 +2993,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -3057,7 +3021,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -3068,7 +3032,7 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -3494,15 +3458,9 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -3515,13 +3473,13 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -3534,7 +3492,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.number</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFNumberActionNumber</key>
@@ -3545,7 +3503,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -3556,7 +3514,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -3659,7 +3617,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -3670,7 +3628,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -3698,7 +3656,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -3709,7 +3667,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -4074,15 +4032,9 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000019</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000020</string>
+			<string>00000000-0000-0000-0000-000000000019</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -4095,13 +4047,13 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000021</string>
+			<string>00000000-0000-0000-0000-000000000020</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -4114,7 +4066,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.number</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFNumberActionNumber</key>
@@ -4125,7 +4077,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -4136,7 +4088,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -4212,7 +4164,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -4223,7 +4175,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -4251,7 +4203,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -4262,7 +4214,7 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -4858,15 +4810,9 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000019</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000020</string>
+			<string>00000000-0000-0000-0000-000000000019</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -4879,13 +4825,13 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000021</string>
+			<string>00000000-0000-0000-0000-000000000020</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -4898,7 +4844,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -4909,7 +4855,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -4930,7 +4876,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
@@ -4938,14 +4884,14 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000025</string>
+				<string>00000000-0000-0000-0000-000000000024</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -4956,7 +4902,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -5032,7 +4978,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -5043,7 +4989,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -5071,39 +5017,39 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
 				<integer>1</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000025</string>
+				<string>00000000-0000-0000-0000-000000000024</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.nothing</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000033</string>
+			<string>00000000-0000-0000-0000-000000000032</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
 				<integer>2</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000025</string>
+				<string>00000000-0000-0000-0000-000000000024</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000034</string>
+			<string>00000000-0000-0000-0000-000000000033</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -5114,7 +5060,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000035</string>
+			<string>00000000-0000-0000-0000-000000000034</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -6342,15 +6288,9 @@ exports[`compile > should compile function calling another function 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000019</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000020</string>
+			<string>00000000-0000-0000-0000-000000000019</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -6363,7 +6303,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -6384,7 +6324,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
@@ -6394,14 +6334,14 @@ exports[`compile > should compile function calling another function 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000021</string>
+				<string>00000000-0000-0000-0000-000000000020</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -6422,7 +6362,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvalueforkey</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
@@ -6433,7 +6373,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6444,7 +6384,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -6520,7 +6460,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6531,7 +6471,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -6559,7 +6499,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6570,7 +6510,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -6646,7 +6586,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6657,7 +6597,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000033</string>
+			<string>00000000-0000-0000-0000-000000000032</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -6685,7 +6625,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000034</string>
+			<string>00000000-0000-0000-0000-000000000033</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6696,7 +6636,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000035</string>
+			<string>00000000-0000-0000-0000-000000000034</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFOutput</key>
@@ -6723,6 +6663,19 @@ exports[`compile > should compile function calling another function 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.conditional</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000035</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFControlFlowMode</key>
+				<integer>2</integer>
+				<key>GroupingIdentifier</key>
+				<string>00000000-0000-0000-0000-000000000020</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
 			<string>00000000-0000-0000-0000-000000000036</string>
@@ -6737,25 +6690,6 @@ exports[`compile > should compile function calling another function 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>2</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000021</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000038</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.conditional</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000039</string>
-			<key>WFWorkflowActionParameters</key>
-			<dict>
-				<key>WFControlFlowMode</key>
-				<integer>2</integer>
-				<key>GroupingIdentifier</key>
 				<string>00000000-0000-0000-0000-000000000004</string>
 			</dict>
 		</dict>
@@ -6763,7 +6697,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000040</string>
+			<string>00000000-0000-0000-0000-000000000038</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -6832,7 +6766,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000041</string>
+			<string>00000000-0000-0000-0000-000000000039</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6843,7 +6777,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000042</string>
+			<string>00000000-0000-0000-0000-000000000040</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -6871,7 +6805,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000043</string>
+			<string>00000000-0000-0000-0000-000000000041</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -6882,7 +6816,7 @@ exports[`compile > should compile function calling another function 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000044</string>
+			<string>00000000-0000-0000-0000-000000000042</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -7234,15 +7168,9 @@ exports[`compile > should compile function declaration and call 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000018</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000019</string>
+			<string>00000000-0000-0000-0000-000000000018</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -7255,13 +7183,13 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000020</string>
+			<string>00000000-0000-0000-0000-000000000019</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000021</string>
+			<string>00000000-0000-0000-0000-000000000020</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -7274,7 +7202,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -7340,7 +7268,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -7351,7 +7279,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -7379,7 +7307,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -7390,7 +7318,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.alert</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFAlertActionTitle</key>
@@ -7850,15 +7778,9 @@ exports[`compile > should compile function using enums and records 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000021</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
+			<string>00000000-0000-0000-0000-000000000021</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -7871,13 +7793,13 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000024</string>
+			<string>00000000-0000-0000-0000-000000000023</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -7890,7 +7812,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -7980,7 +7902,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -7991,7 +7913,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -8019,7 +7941,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -8030,7 +7952,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -8051,7 +7973,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvalueforkey</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
@@ -8062,7 +7984,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -8073,7 +7995,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.alert</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFAlertActionTitle</key>
@@ -8550,15 +8472,9 @@ exports[`compile > should compile function with conditional return 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -8571,13 +8487,13 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -8590,7 +8506,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.number</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFNumberActionNumber</key>
@@ -8601,7 +8517,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.math</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFMathOperation</key>
@@ -8614,7 +8530,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -8625,7 +8541,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000033</string>
+			<string>00000000-0000-0000-0000-000000000032</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -8701,7 +8617,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000034</string>
+			<string>00000000-0000-0000-0000-000000000033</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -8712,7 +8628,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000035</string>
+			<string>00000000-0000-0000-0000-000000000034</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -8740,7 +8656,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000036</string>
+			<string>00000000-0000-0000-0000-000000000035</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -8751,7 +8667,7 @@ exports[`compile > should compile function with conditional return 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000037</string>
+			<string>00000000-0000-0000-0000-000000000036</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
@@ -9565,15 +9481,9 @@ exports[`compile > should compile multiple functions 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000022</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000023</string>
+			<string>00000000-0000-0000-0000-000000000022</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFControlFlowMode</key>
@@ -9586,7 +9496,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000025</string>
+			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -9607,7 +9517,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.conditional</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000026</string>
+			<string>00000000-0000-0000-0000-000000000025</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFCondition</key>
@@ -9617,14 +9527,14 @@ exports[`compile > should compile multiple functions 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>0</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000024</string>
+				<string>00000000-0000-0000-0000-000000000023</string>
 			</dict>
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000027</string>
+			<string>00000000-0000-0000-0000-000000000026</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -9645,7 +9555,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvalueforkey</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000028</string>
+			<string>00000000-0000-0000-0000-000000000027</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFDictionaryKey</key>
@@ -9656,7 +9566,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000029</string>
+			<string>00000000-0000-0000-0000-000000000028</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -9667,7 +9577,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.getvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000030</string>
+			<string>00000000-0000-0000-0000-000000000029</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariable</key>
@@ -9688,7 +9598,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.math</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000031</string>
+			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFMathOperation</key>
@@ -9701,7 +9611,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000032</string>
+			<string>00000000-0000-0000-0000-000000000031</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -9712,7 +9622,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000033</string>
+			<string>00000000-0000-0000-0000-000000000032</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFOutput</key>
@@ -9739,6 +9649,19 @@ exports[`compile > should compile multiple functions 1`] = `
 		</dict>
 		<dict>
 			<key>WFWorkflowActionIdentifier</key>
+			<string>is.workflow.actions.conditional</string>
+			<key>UUID</key>
+			<string>00000000-0000-0000-0000-000000000033</string>
+			<key>WFWorkflowActionParameters</key>
+			<dict>
+				<key>WFControlFlowMode</key>
+				<integer>2</integer>
+				<key>GroupingIdentifier</key>
+				<string>00000000-0000-0000-0000-000000000023</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.output</string>
 			<key>UUID</key>
 			<string>00000000-0000-0000-0000-000000000034</string>
@@ -9753,25 +9676,6 @@ exports[`compile > should compile multiple functions 1`] = `
 				<key>WFControlFlowMode</key>
 				<integer>2</integer>
 				<key>GroupingIdentifier</key>
-				<string>00000000-0000-0000-0000-000000000024</string>
-			</dict>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.output</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000036</string>
-		</dict>
-		<dict>
-			<key>WFWorkflowActionIdentifier</key>
-			<string>is.workflow.actions.conditional</string>
-			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000037</string>
-			<key>WFWorkflowActionParameters</key>
-			<dict>
-				<key>WFControlFlowMode</key>
-				<integer>2</integer>
-				<key>GroupingIdentifier</key>
 				<string>00000000-0000-0000-0000-000000000004</string>
 			</dict>
 		</dict>
@@ -9779,7 +9683,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000038</string>
+			<string>00000000-0000-0000-0000-000000000036</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -9875,7 +9779,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000039</string>
+			<string>00000000-0000-0000-0000-000000000037</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -9886,7 +9790,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000040</string>
+			<string>00000000-0000-0000-0000-000000000038</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -9914,7 +9818,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000041</string>
+			<string>00000000-0000-0000-0000-000000000039</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -9925,7 +9829,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.dictionary</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000042</string>
+			<string>00000000-0000-0000-0000-000000000040</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFItems</key>
@@ -10001,7 +9905,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000043</string>
+			<string>00000000-0000-0000-0000-000000000041</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -10012,7 +9916,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.runworkflow</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000044</string>
+			<string>00000000-0000-0000-0000-000000000042</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFWorkflow</key>
@@ -10040,7 +9944,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.setvariable</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000045</string>
+			<string>00000000-0000-0000-0000-000000000043</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>WFVariableName</key>
@@ -10051,7 +9955,7 @@ exports[`compile > should compile multiple functions 1`] = `
 			<key>WFWorkflowActionIdentifier</key>
 			<string>is.workflow.actions.showresult</string>
 			<key>UUID</key>
-			<string>00000000-0000-0000-0000-000000000046</string>
+			<string>00000000-0000-0000-0000-000000000044</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
 				<key>Text</key>
