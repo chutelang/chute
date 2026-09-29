@@ -1,0 +1,22 @@
+{
+  "name": "tree-sitter-chute",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "description": "Tree-sitter grammar for the Chute programming language",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chutelang/chute.git",
+    "directory": "packages/tree-sitter-chute"
+  },
+  "main": "bindings/node",
+  "types": "bindings/node",
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test",
+    "test:examples": "node test/parse-examples.js",
+    "parse": "tree-sitter parse"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.24.0"
+  }
+}

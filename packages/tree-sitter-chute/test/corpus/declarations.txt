@@ -1,0 +1,317 @@
+================
+Import declaration
+================
+
+import Notification;
+
+---
+
+(program
+  (import_declaration
+    (identifier)))
+
+================
+Const declaration
+================
+
+const x = 5;
+
+---
+
+(program
+  (const_declaration
+    (identifier)
+    (number_literal)))
+
+================
+Const declaration with type annotation
+================
+
+const x: Number = 5;
+
+---
+
+(program
+  (const_declaration
+    (identifier)
+    (named_type
+      (identifier))
+    (number_literal)))
+
+================
+Exported const declaration
+================
+
+export const x = 5;
+
+---
+
+(program
+  (const_declaration
+    (identifier)
+    (number_literal)))
+
+================
+Const destructure
+================
+
+const { a, b } = expr;
+
+---
+
+(program
+  (const_destructure
+    (identifier)
+    (identifier)
+    (identifier)))
+
+================
+Let declaration
+================
+
+let x = 5;
+
+---
+
+(program
+  (let_declaration
+    (identifier)
+    (number_literal)))
+
+================
+Let declaration with type annotation
+================
+
+let x: Number = 5;
+
+---
+
+(program
+  (let_declaration
+    (identifier)
+    (named_type
+      (identifier))
+    (number_literal)))
+
+================
+Let destructure
+================
+
+let { a, b } = expr;
+
+---
+
+(program
+  (let_destructure
+    (identifier)
+    (identifier)
+    (identifier)))
+
+================
+Enum declaration
+================
+
+enum Color { red, blue }
+
+---
+
+(program
+  (enum_declaration
+    (identifier)
+    (enum_case
+      (identifier))
+    (enum_case
+      (identifier))))
+
+================
+Enum declaration with backing values
+================
+
+enum Color { red = "RED", blue = "BLUE" }
+
+---
+
+(program
+  (enum_declaration
+    (identifier)
+    (enum_case
+      (identifier)
+      (string_literal
+        (string_content)))
+    (enum_case
+      (identifier)
+      (string_literal
+        (string_content)))))
+
+================
+Enum declaration with default prefix
+================
+
+enum Color = "lowercase" { red, blue }
+
+---
+
+(program
+  (enum_declaration
+    (identifier)
+    (string_literal
+      (string_content))
+    (enum_case
+      (identifier))
+    (enum_case
+      (identifier))))
+
+================
+Record declaration
+================
+
+record Point { x: Number, y: Number }
+
+---
+
+(program
+  (record_declaration
+    (identifier)
+    (record_field
+      (identifier)
+      (named_type
+        (identifier)))
+    (record_field
+      (identifier)
+      (named_type
+        (identifier)))))
+
+================
+Function declaration
+================
+
+func add(a: Number, b: Number) -> Number {
+  return a;
+}
+
+---
+
+(program
+  (function_declaration
+    (identifier)
+    (function_parameter
+      (identifier)
+      (named_type
+        (identifier)))
+    (function_parameter
+      (identifier)
+      (named_type
+        (identifier)))
+    (named_type
+      (identifier))
+    (block
+      (return_statement
+        (identifier)))))
+
+================
+Function declaration with default parameter value
+================
+
+func greet(name: Text = "World") -> Text {
+  return name;
+}
+
+---
+
+(program
+  (function_declaration
+    (identifier)
+    (function_parameter
+      (identifier)
+      (named_type
+        (identifier))
+      (string_literal
+        (string_content)))
+    (named_type
+      (identifier))
+    (block
+      (return_statement
+        (identifier)))))
+
+================
+Action declaration
+================
+
+action alert(text: Text) = "is.workflow.actions.alert";
+
+---
+
+(program
+  (action_declaration
+    (identifier)
+    (action_parameter
+      (identifier)
+      (named_type
+        (identifier)))
+    (string_literal
+      (string_content))))
+
+================
+Action declaration with labeled parameters, return type, and attribute
+================
+
+action send(to recipient: Text, body: Text) -> Text = "com.example" @retry(enabled: true);
+
+---
+
+(program
+  (action_declaration
+    (identifier)
+    (action_parameter
+      (identifier)
+      (identifier)
+      (named_type
+        (identifier)))
+    (action_parameter
+      (identifier)
+      (named_type
+        (identifier)))
+    (named_type
+      (identifier))
+    (string_literal
+      (string_content))
+    (attribute
+      (identifier)
+      (attribute_argument
+        (identifier)
+        (boolean_literal)))))
+
+================
+Type annotations
+================
+
+record TypeTest {
+  a: Number,
+  b: Text?,
+  c: List<Number>,
+  d: Quantity<km>,
+}
+
+---
+
+(program
+  (record_declaration
+    (identifier)
+    (record_field
+      (identifier)
+      (named_type
+        (identifier)))
+    (record_field
+      (identifier)
+      (optional_type
+        (named_type
+          (identifier))))
+    (record_field
+      (identifier)
+      (list_type
+        (named_type
+          (identifier))))
+    (record_field
+      (identifier)
+      (quantity_type
+        (identifier)))))

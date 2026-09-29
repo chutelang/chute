@@ -1,0 +1,263 @@
+================
+Equality comparison
+================
+
+if (x == 5) {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (number_literal))
+    body: (block)))
+
+================
+Inequality comparison with string
+================
+
+if (x != "hello") {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (string_literal
+        (string_content)))
+    body: (block)))
+
+================
+And condition
+================
+
+if (x > 3 && y < 10) {}
+
+---
+
+(program
+  (if_statement
+    condition: (and_condition
+      left: (comparison
+        left: (identifier)
+        right: (number_literal))
+      right: (comparison
+        left: (identifier)
+        right: (number_literal)))
+    body: (block)))
+
+================
+Or condition
+================
+
+if (x > 3 || y < 10) {}
+
+---
+
+(program
+  (if_statement
+    condition: (or_condition
+      left: (comparison
+        left: (identifier)
+        right: (number_literal))
+      right: (comparison
+        left: (identifier)
+        right: (number_literal)))
+    body: (block)))
+
+================
+Not condition on a boolean reference
+================
+
+if (!done) {}
+
+---
+
+(program
+  (if_statement
+    condition: (not_condition
+      operand: (boolean_reference
+        expression: (identifier)))
+    body: (block)))
+
+================
+Range test
+================
+
+if (x in 1...10) {}
+
+---
+
+(program
+  (if_statement
+    condition: (range_test
+      subject: (identifier)
+      low: (number_literal)
+      high: (number_literal))
+    body: (block)))
+
+================
+Type test
+================
+
+if (x is Number) {}
+
+---
+
+(program
+  (if_statement
+    condition: (type_test
+      subject: (identifier)
+      type: (named_type
+        (identifier)))
+    body: (block)))
+
+================
+Boolean reference
+================
+
+if (x) {}
+
+---
+
+(program
+  (if_statement
+    condition: (boolean_reference
+      expression: (identifier))
+    body: (block)))
+
+================
+Contains comparison
+================
+
+if (x contains "sub") {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (string_literal
+        (string_content)))
+    body: (block)))
+
+================
+Has prefix comparison
+================
+
+if (x hasPrefix "pre") {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (string_literal
+        (string_content)))
+    body: (block)))
+
+================
+Has suffix comparison
+================
+
+if (x hasSuffix "suf") {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (string_literal
+        (string_content)))
+    body: (block)))
+
+================
+Not-contains comparison
+================
+
+if (x !contains "sub") {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (string_literal
+        (string_content)))
+    body: (block)))
+
+================
+Boolean literal condition
+================
+
+if (true) {}
+
+---
+
+(program
+  (if_statement
+    condition: (boolean_literal_condition)
+    body: (block)))
+
+================
+Parenthesized condition
+================
+
+if ((x == 5)) {}
+
+---
+
+(program
+  (if_statement
+    condition: (parenthesized_condition
+      (comparison
+        left: (identifier)
+        right: (number_literal)))
+    body: (block)))
+
+================
+And binds tighter than or
+================
+
+if (a == 1 || b == 2 && c == 3) {}
+
+---
+
+(program
+  (if_statement
+    condition: (or_condition
+      left: (comparison
+        left: (identifier)
+        right: (number_literal))
+      right: (and_condition
+        left: (comparison
+          left: (identifier)
+          right: (number_literal))
+        right: (comparison
+          left: (identifier)
+          right: (number_literal))))
+    body: (block)))
+
+================
+Not binds tighter than and
+================
+
+if (!a && b) {}
+
+---
+
+(program
+  (if_statement
+    condition: (and_condition
+      left: (not_condition
+        operand: (boolean_reference
+          expression: (identifier)))
+      right: (boolean_reference
+        expression: (identifier)))
+    body: (block)))

@@ -1,0 +1,350 @@
+================
+Binary addition
+================
+
+1 + 2;
+
+---
+
+(program
+  (expression_statement
+    (binary_expression
+      left: (number_literal)
+      right: (number_literal))))
+
+================
+Binary precedence: multiplication before addition
+================
+
+a * b + c;
+
+---
+
+(program
+  (expression_statement
+    (binary_expression
+      left: (binary_expression
+        left: (identifier)
+        right: (identifier))
+      right: (identifier))))
+
+================
+Binary precedence: addition then multiplication
+================
+
+a + b * c;
+
+---
+
+(program
+  (expression_statement
+    (binary_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================
+Unary minus
+================
+
+-x;
+
+---
+
+(program
+  (expression_statement
+    (unary_expression
+      operand: (identifier))))
+
+================
+Call expression
+================
+
+alert("hi");
+
+---
+
+(program
+  (expression_statement
+    (call_expression
+      callee: (identifier)
+      (argument
+        value: (string_literal
+          (string_content))))))
+
+================
+Call expression with labeled arguments
+================
+
+add(a: 1, b: 2);
+
+---
+
+(program
+  (expression_statement
+    (call_expression
+      callee: (identifier)
+      (argument
+        label: (identifier)
+        value: (number_literal))
+      (argument
+        label: (identifier)
+        value: (number_literal)))))
+
+================
+Call expression on namespaced member
+================
+
+Notification.showAlert("hi");
+
+---
+
+(program
+  (expression_statement
+    (call_expression
+      callee: (member_expression
+        object: (identifier)
+        property: (identifier))
+      (argument
+        value: (string_literal
+          (string_content))))))
+
+================
+Member expression
+================
+
+p.x;
+
+---
+
+(program
+  (expression_statement
+    (member_expression
+      object: (identifier)
+      property: (identifier))))
+
+================
+Optional member expression
+================
+
+p?.x;
+
+---
+
+(program
+  (expression_statement
+    (optional_member_expression
+      object: (identifier)
+      property: (identifier))))
+
+================
+Subscript expression
+================
+
+list[0];
+
+---
+
+(program
+  (expression_statement
+    (subscript_expression
+      object: (identifier)
+      index: (number_literal))))
+
+================
+Coalesce expression
+================
+
+x ?? 0;
+
+---
+
+(program
+  (expression_statement
+    (coalesce_expression
+      left: (identifier)
+      right: (number_literal))))
+
+================
+Ternary expression
+================
+
+x > 3 ? "big" : "small";
+
+---
+
+(program
+  (expression_statement
+    (ternary_expression
+      condition: (comparison
+        left: (identifier)
+        right: (number_literal))
+      consequent: (string_literal
+        (string_content))
+      alternate: (string_literal
+        (string_content)))))
+
+================
+Coercion expression
+================
+
+x as Number;
+
+---
+
+(program
+  (expression_statement
+    (coercion_expression
+      expression: (identifier)
+      type: (named_type
+        (identifier)))))
+
+================
+List literal
+================
+
+[1, 2, 3];
+
+---
+
+(program
+  (expression_statement
+    (list_literal
+      (number_literal)
+      (number_literal)
+      (number_literal))))
+
+================
+Dictionary literal
+================
+
+{a: 1, b: 2};
+
+---
+
+(program
+  (expression_statement
+    (dictionary_literal
+      (dictionary_entry
+        key: (identifier)
+        value: (number_literal))
+      (dictionary_entry
+        key: (identifier)
+        value: (number_literal)))))
+
+================
+Empty dictionary literal
+================
+
+{:};
+
+---
+
+(program
+  (expression_statement
+    (dictionary_literal)))
+
+================
+Dot name expression
+================
+
+.north;
+
+---
+
+(program
+  (expression_statement
+    (dot_name_expression
+      name: (identifier))))
+
+================
+Hash index
+================
+
+#index;
+
+---
+
+(program
+  (expression_statement
+    (hash_index)))
+
+================
+Placeholder
+================
+
+_;
+
+---
+
+(program
+  (expression_statement
+    (placeholder)))
+
+================
+Assignment
+================
+
+x = 5;
+
+---
+
+(program
+  (assignment
+    left: (identifier)
+    right: (number_literal)))
+
+================
+Assignment to member expression
+================
+
+p.x = 10;
+
+---
+
+(program
+  (assignment
+    left: (member_expression
+      object: (identifier)
+      property: (identifier))
+    right: (number_literal)))
+
+================
+Ternary alternate absorbs a trailing coalesce (not the reverse)
+================
+
+x > 3 ? a : b ?? c;
+
+---
+
+(program
+  (expression_statement
+    (ternary_expression
+      condition: (comparison
+        left: (identifier)
+        right: (number_literal))
+      consequent: (identifier)
+      alternate: (coalesce_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================
+Parenthesized ternary as a coalesce operand
+================
+
+(x > 3 ? a : b) ?? c;
+
+---
+
+(program
+  (expression_statement
+    (coalesce_expression
+      left: (parenthesized_expression
+        (ternary_expression
+          condition: (comparison
+            left: (identifier)
+            right: (number_literal))
+          consequent: (identifier)
+          alternate: (identifier)))
+      right: (identifier))))

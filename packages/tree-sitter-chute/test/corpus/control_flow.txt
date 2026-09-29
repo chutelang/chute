@@ -1,0 +1,142 @@
+================
+If with else
+================
+
+if (x > 3) {} else {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (number_literal))
+    body: (block)
+    else: (else_clause
+      body: (block))))
+
+================
+If with else if and else
+================
+
+if (x > 3) {} else if (x > 1) {} else {}
+
+---
+
+(program
+  (if_statement
+    condition: (comparison
+      left: (identifier)
+      right: (number_literal))
+    body: (block)
+    else: (else_clause
+      body: (if_statement
+        condition: (comparison
+          left: (identifier)
+          right: (number_literal))
+        body: (block)
+        else: (else_clause
+          body: (block))))))
+
+================
+For loop
+================
+
+for item in items {}
+
+---
+
+(program
+  (for_statement
+    variable: (identifier)
+    iterable: (identifier)
+    body: (block)))
+
+================
+Repeat loop
+================
+
+repeat 3 {}
+
+---
+
+(program
+  (repeat_statement
+    count: (number_literal)
+    body: (block)))
+
+================
+Menu with two cases
+================
+
+menu "Choose" { case "A" {} case "B" {} }
+
+---
+
+(program
+  (menu_statement
+    prompt: (string_literal
+      (string_content))
+    (menu_case
+      label: (string_literal
+        (string_content))
+      body: (block))
+    (menu_case
+      label: (string_literal
+        (string_content))
+      body: (block))))
+
+================
+Menu with binding and type
+================
+
+menu expr -> choice: Text { case "A" {} }
+
+---
+
+(program
+  (menu_statement
+    prompt: (identifier)
+    binding: (identifier)
+    type: (named_type
+      (identifier))
+    (menu_case
+      label: (string_literal
+        (string_content))
+      body: (block))))
+
+================
+Menu with dot-name case label
+================
+
+menu "Pick" { case .SomeCase {} }
+
+---
+
+(program
+  (menu_statement
+    prompt: (string_literal
+      (string_content))
+    (menu_case
+      label: (dot_name_expression
+        name: (identifier))
+      body: (block))))
+
+================
+For loop body with statements
+================
+
+for item in items { alert(item); }
+
+---
+
+(program
+  (for_statement
+    variable: (identifier)
+    iterable: (identifier)
+    body: (block
+      (expression_statement
+        (call_expression
+          callee: (identifier)
+          (argument
+            value: (identifier)))))))
