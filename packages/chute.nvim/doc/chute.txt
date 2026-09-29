@@ -1,0 +1,64 @@
+*chute.txt*  Chute language support for Neovim
+
+CONTENTS                                                     *chute-contents*
+
+  1. Introduction ................................ |chute-introduction|
+  2. Requirements ................................ |chute-requirements|
+  3. Configuration ............................... |chute-configuration|
+  4. Tree-sitter ................................. |chute-tree-sitter|
+  5. Health check ................................ |chute-health|
+
+==============================================================================
+1. INTRODUCTION                                          *chute-introduction*
+
+chute.nvim provides Neovim support for the Chute programming language:
+
+- Filetype detection for `.chute` files
+- Syntax highlighting, indentation, folds, and textobjects via tree-sitter
+- LSP integration via `chute lsp`
+- Health check via `:checkhealth chute`
+
+==============================================================================
+2. REQUIREMENTS                                          *chute-requirements*
+
+- Neovim 0.10 or later
+- Chute CLI on `$PATH` (for LSP features)
+- nvim-treesitter (optional, for syntax highlighting)
+
+==============================================================================
+3. CONFIGURATION                                        *chute-configuration*
+
+                                                             *g:chute_cmd*
+g:chute_cmd ~
+    Path to the `chute` binary. The LSP client uses this to start the
+    language server via `{chute_cmd} lsp`.
+
+    Default: `"chute"`
+
+    Example: >lua
+        vim.g.chute_cmd = '/usr/local/bin/chute'
+<
+
+==============================================================================
+4. TREE-SITTER                                            *chute-tree-sitter*
+
+chute.nvim registers a Chute parser with nvim-treesitter. After installing
+both plugins, run: >vim
+    :TSInstall chute
+<
+This enables syntax highlighting, indentation, code folding, and
+textobjects for `.chute` files.
+
+nvim-treesitter is optional. Without it, filetype detection, buffer
+settings, and LSP still work.
+
+==============================================================================
+5. HEALTH CHECK                                              *chute-health*
+
+Run `:checkhealth chute` to verify your setup. The health check reports:
+
+- Whether the `chute` binary is found
+- Whether the tree-sitter parser is installed
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
