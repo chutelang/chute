@@ -1,0 +1,184 @@
+================
+Plain string
+================
+
+"hello";
+
+---
+
+(program
+  (expression_statement
+    (string_literal
+      (string_content))))
+
+================
+String with interpolation
+================
+
+"hello ${name}!";
+
+---
+
+(program
+  (expression_statement
+    (string_literal
+      (string_content)
+      (interpolation
+        (identifier))
+      (string_content))))
+
+================
+String with multiple interpolations
+================
+
+"${a} and ${b}";
+
+---
+
+(program
+  (expression_statement
+    (string_literal
+      (interpolation
+        (identifier))
+      (string_content)
+      (interpolation
+        (identifier)))))
+
+================
+Nested string inside interpolation
+================
+
+"${ "inner ${x}" }";
+
+---
+
+(program
+  (expression_statement
+    (string_literal
+      (interpolation
+        (string_literal
+          (string_content)
+          (interpolation
+            (identifier)))))))
+
+================
+Back-to-back strings
+================
+
+"a";
+"b";
+
+---
+
+(program
+  (expression_statement
+    (string_literal
+      (string_content)))
+  (expression_statement
+    (string_literal
+      (string_content))))
+
+================
+Empty string
+================
+
+"";
+
+---
+
+(program
+  (expression_statement
+    (string_literal)))
+
+================
+String with escapes
+================
+
+"a\"b\\c\n\t\r\$d";
+
+---
+
+(program
+  (expression_statement
+    (string_literal
+      (string_content))))
+
+================
+Raw string
+================
+
+#"hello world"#;
+
+---
+
+(program
+  (expression_statement
+    (raw_string)))
+
+================
+Raw string with quote inside
+================
+
+#"say "hi" to me"#;
+
+---
+
+(program
+  (expression_statement
+    (raw_string)))
+
+================
+Block comment
+================
+
+/* this is a comment */
+42;
+
+---
+
+(program
+  (block_comment)
+  (expression_statement
+    (number_literal)))
+
+================
+Nested block comment
+================
+
+/* outer /* inner */ still outer */
+42;
+
+---
+
+(program
+  (block_comment)
+  (expression_statement
+    (number_literal)))
+
+================
+Doc comment
+================
+
+/** @param x the value */
+42;
+
+---
+
+(program
+  (doc_comment)
+  (expression_statement
+    (number_literal)))
+
+================
+Line comment
+================
+
+// a line comment
+42;
+
+---
+
+(program
+  (line_comment)
+  (expression_statement
+    (number_literal)))

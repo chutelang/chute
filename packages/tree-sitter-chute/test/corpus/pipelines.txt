@@ -1,0 +1,83 @@
+================
+Simple pipeline
+================
+
+5 |> double;
+
+---
+
+(program
+  (expression_statement
+    (pipeline_expression
+      left: (number_literal)
+      right: (pipeline_stage
+        callee: (identifier)))))
+
+================
+Chained pipeline
+================
+
+5 |> double |> triple;
+
+---
+
+(program
+  (expression_statement
+    (pipeline_expression
+      left: (pipeline_expression
+        left: (number_literal)
+        right: (pipeline_stage
+          callee: (identifier)))
+      right: (pipeline_stage
+        callee: (identifier)))))
+
+================
+Nil-short-circuiting pipeline
+================
+
+x |>? double;
+
+---
+
+(program
+  (expression_statement
+    (pipeline_expression
+      left: (identifier)
+      right: (pipeline_stage
+        callee: (identifier)))))
+
+================
+Pipeline with call arguments
+================
+
+5 |> add(10);
+
+---
+
+(program
+  (expression_statement
+    (pipeline_expression
+      left: (number_literal)
+      right: (pipeline_stage
+        callee: (identifier)
+        (argument
+          value: (number_literal))))))
+
+================
+Pipeline with placeholder argument
+================
+
+5 |> add(_, 10);
+
+---
+
+(program
+  (expression_statement
+    (pipeline_expression
+      left: (number_literal)
+      right: (pipeline_stage
+        callee: (identifier)
+        (argument
+          value: (placeholder))
+        (argument
+          value: (number_literal))))))

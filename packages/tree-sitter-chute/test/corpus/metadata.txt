@@ -1,0 +1,92 @@
+================
+Shortcut metadata with name
+================
+
+shortcut { name: "Hello" }
+
+---
+
+(program
+  (shortcut_metadata
+    (metadata_field
+      (identifier)
+      (string_literal
+        (string_content)))))
+
+================
+Shortcut metadata with multiple fields
+================
+
+shortcut { name: "Test", description: "A test" }
+
+---
+
+(program
+  (shortcut_metadata
+    (metadata_field
+      (identifier)
+      (string_literal
+        (string_content)))
+    (metadata_field
+      (identifier)
+      (string_literal
+        (string_content)))))
+
+================
+Shortcut metadata with dot-name value
+================
+
+shortcut { color: .blue }
+
+---
+
+(program
+  (shortcut_metadata
+    (metadata_field
+      (identifier)
+      (dot_name_expression
+        (identifier)))))
+
+================
+Empty shortcut metadata
+================
+
+shortcut {}
+
+---
+
+(program
+  (shortcut_metadata))
+
+================
+Shortcut metadata with trailing comma
+================
+
+shortcut { name: "Hello", }
+
+---
+
+(program
+  (shortcut_metadata
+    (metadata_field
+      (identifier)
+      (string_literal
+        (string_content)))))
+
+================
+Shortcut metadata with list value
+================
+
+shortcut { tags: ["a", "b"] }
+
+---
+
+(program
+  (shortcut_metadata
+    (metadata_field
+      (identifier)
+      (metadata_list
+        (string_literal
+          (string_content))
+        (string_literal
+          (string_content))))))

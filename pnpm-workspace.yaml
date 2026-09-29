@@ -3,3 +3,4 @@ packages:
   - "docs"
 allowBuilds:
   esbuild: true
+  tree-sitter-cli: true

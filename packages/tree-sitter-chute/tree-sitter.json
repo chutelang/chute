@@ -1,0 +1,31 @@
+{
+  "grammars": [
+    {
+      "name": "chute",
+      "camelcase": "Chute",
+      "scope": "source.chute",
+      "path": ".",
+      "file-types": [
+        "chute"
+      ],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "description": "Tree-sitter grammar for the Chute programming language",
+    "links": {
+      "repository": "git+https://github.com/chutelang/chute.git"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true
+  }
+}

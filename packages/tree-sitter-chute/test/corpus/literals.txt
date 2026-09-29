@@ -1,0 +1,35 @@
+================
+Number literal
+================
+
+42;
+
+---
+
+(program
+  (expression_statement
+    (number_literal)))
+
+================
+Boolean literal
+================
+
+true;
+
+---
+
+(program
+  (expression_statement
+    (boolean_literal)))
+
+================
+Nil literal
+================
+
+nil;
+
+---
+
+(program
+  (expression_statement
+    (nil_literal)))
