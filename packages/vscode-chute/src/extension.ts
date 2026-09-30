@@ -51,7 +51,12 @@ export function activate(context: ExtensionContext): void {
   };
 
   client = new LanguageClient("chute", "Chute Language Server", serverOptions, {
-    documentSelector: [{ scheme: "file", language: "chute" }],
+    documentSelector: [
+      {
+        scheme: "file",
+        language: "chute",
+      },
+    ],
   });
 
   client.start();
