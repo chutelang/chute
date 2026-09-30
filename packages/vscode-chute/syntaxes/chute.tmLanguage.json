@@ -1,0 +1,166 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Chute",
+  "scopeName": "source.chute",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#keywords" },
+    { "include": "#operators" },
+    { "include": "#punctuation" },
+    { "include": "#literals" },
+    { "include": "#strings" },
+    { "include": "#types" },
+    { "include": "#declarations" },
+    { "include": "#function-calls" },
+    { "include": "#identifiers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.documentation.chute",
+          "begin": "/\\*\\*(?!/)",
+          "end": "\\*/",
+          "captures": {
+            "0": { "name": "punctuation.definition.comment.chute" }
+          }
+        },
+        {
+          "name": "comment.block.chute",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "captures": {
+            "0": { "name": "punctuation.definition.comment.chute" }
+          }
+        },
+        {
+          "name": "comment.line.documentation.chute",
+          "match": "(///)(.*)$",
+          "captures": {
+            "1": { "name": "punctuation.definition.comment.chute" }
+          }
+        },
+        {
+          "name": "comment.line.double-slash.chute",
+          "match": "(//)(.*)$",
+          "captures": {
+            "1": { "name": "punctuation.definition.comment.chute" }
+          }
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.chute",
+          "match": "\\b(if|else|for|in|repeat|return|menu|case)\\b"
+        },
+        {
+          "name": "keyword.declaration.chute",
+          "match": "\\b(const|let|func|action|enum|record|shortcut)\\b"
+        },
+        {
+          "name": "keyword.other.chute",
+          "match": "\\b(import|export|as|is)\\b"
+        },
+        {
+          "name": "keyword.operator.word.chute",
+          "match": "\\b(contains|hasPrefix|hasSuffix)\\b|!contains\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.pipeline.chute",
+          "match": "\\|>\\??"
+        },
+        {
+          "name": "keyword.operator.logical.chute",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.comparison.chute",
+          "match": "==|!=|<=|>="
+        },
+        {
+          "name": "keyword.operator.arithmetic.chute",
+          "match": "[+\\-*/%]"
+        },
+        {
+          "name": "keyword.operator.assignment.chute",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.spread.chute",
+          "match": "\\.\\.\\."
+        },
+        {
+          "name": "keyword.operator.nil-coalesce.chute",
+          "match": "\\?\\?"
+        },
+        {
+          "name": "keyword.operator.ternary.chute",
+          "match": "\\?|:"
+        },
+        {
+          "name": "keyword.operator.arrow.chute",
+          "match": "->"
+        },
+        {
+          "name": "keyword.operator.optional-chain.chute",
+          "match": "\\?\\."
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.section.braces.chute",
+          "match": "[{}]"
+        },
+        {
+          "name": "punctuation.section.brackets.chute",
+          "match": "[\\[\\]]"
+        },
+        {
+          "name": "punctuation.section.parens.chute",
+          "match": "[()]"
+        },
+        {
+          "name": "punctuation.separator.chute",
+          "match": "[;,.]"
+        },
+        {
+          "name": "punctuation.definition.attribute.chute",
+          "match": "@"
+        }
+      ]
+    },
+    "literals": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.chute",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.chute",
+          "match": "\\b[0-9]+\\b"
+        },
+        {
+          "name": "constant.language.boolean.chute",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.nil.chute",
+          "match": "\\bnil\\b"
+        }
+      ]
+    },
+    "strings": { "patterns": [] },
+    "types": { "patterns": [] },
+    "declarations": { "patterns": [] },
+    "function-calls": { "patterns": [] },
+    "identifiers": { "patterns": [] }
+  }
+}
