@@ -2,6 +2,10 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ["packages/*/src/**/*.test.ts", "packages/chute.nvim/**/*.test.ts"],
+    include: [
+      "packages/*/src/**/*.test.ts",
+      "packages/chute.nvim/**/*.test.ts",
+      "packages/vscode-chute/**/*.test.ts",
+    ],
   },
 });
