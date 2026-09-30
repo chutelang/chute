@@ -304,7 +304,46 @@
         }
       ]
     },
-    "function-calls": { "patterns": [] },
-    "identifiers": { "patterns": [] }
+    "function-calls": {
+      "patterns": [
+        {
+          "comment": "method call: object.method(",
+          "match": "(?<=\\.)([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.member.chute" }
+          }
+        },
+        {
+          "comment": "function call: name(",
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.chute" }
+          }
+        },
+        {
+          "comment": "argument label: label:",
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?=:(?!:))",
+          "captures": {
+            "1": { "name": "variable.parameter.chute" }
+          }
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.language.index.chute",
+          "match": "#index\\b"
+        },
+        {
+          "name": "variable.language.placeholder.chute",
+          "match": "\\b_\\b"
+        },
+        {
+          "name": "variable.other.chute",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
   }
 }
