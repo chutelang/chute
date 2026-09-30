@@ -1,0 +1,13 @@
+// SYNTAX TEST "source.chute"
+
+"hello world"
+// <- string.quoted.double.chute
+
+"interpolation ${x}"
+//              ^ punctuation.section.interpolation.begin.chute
+
+"\n escape"
+// <~- constant.character.escape.chute
+
+#"raw string"#
+// <- string.quoted.other.raw.chute

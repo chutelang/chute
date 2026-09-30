@@ -1,0 +1,16 @@
+// SYNTAX TEST "source.chute"
+
+myFunc()
+// <- entity.name.function.chute
+
+obj.method()
+//  ^ entity.name.function.member.chute
+
+myFunc(label: value)
+//     ^ variable.parameter.chute
+
+#index
+// <- variable.language.index.chute
+
+_
+// <- variable.language.placeholder.chute

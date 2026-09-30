@@ -1,0 +1,20 @@
+// SYNTAX TEST "source.chute"
+
+func myFunc() {}
+//   ^ entity.name.function.chute
+
+action myAction() = "id";
+//     ^ entity.name.function.chute
+
+enum Color { Red, Green, Blue }
+//   ^ entity.name.type.definition.chute
+
+record Point { x: Number, y: Number }
+//     ^ entity.name.type.definition.chute
+
+import Text;
+//     ^ entity.name.namespace.chute
+
+@myAttribute
+// <- punctuation.definition.attribute.chute
+// ^ entity.name.attribute.chute
