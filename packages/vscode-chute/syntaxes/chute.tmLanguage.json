@@ -227,8 +227,83 @@
       "name": "constant.character.escape.chute",
       "match": "\\\\."
     },
-    "types": { "patterns": [] },
-    "declarations": { "patterns": [] },
+    "types": {
+      "patterns": [
+        {
+          "name": "support.type.builtin.chute",
+          "match": "\\b(List|Quantity)\\b"
+        },
+        {
+          "name": "storage.type.chute",
+          "match": "(?<=:\\s*)([A-Z][a-zA-Z0-9_]*)(?:\\.([A-Z][a-zA-Z0-9_]*))?",
+          "captures": {
+            "1": { "name": "entity.name.type.chute" },
+            "2": { "name": "entity.name.type.chute" }
+          }
+        }
+      ]
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "comment": "function declaration",
+          "match": "\\b(func)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.chute" },
+            "2": { "name": "entity.name.function.chute" }
+          }
+        },
+        {
+          "comment": "action declaration",
+          "match": "\\b(action)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.chute" },
+            "2": { "name": "entity.name.function.chute" }
+          }
+        },
+        {
+          "comment": "enum declaration",
+          "match": "\\b(enum)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.chute" },
+            "2": { "name": "entity.name.type.definition.chute" }
+          }
+        },
+        {
+          "comment": "record declaration",
+          "match": "\\b(record)\\s+([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.chute" },
+            "2": { "name": "entity.name.type.definition.chute" }
+          }
+        },
+        {
+          "comment": "import statement",
+          "match": "\\b(import)\\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\\s+(as)\\s+([a-zA-Z_][a-zA-Z0-9_]*))?",
+          "captures": {
+            "1": { "name": "keyword.other.chute" },
+            "2": { "name": "entity.name.namespace.chute" },
+            "3": { "name": "keyword.other.chute" },
+            "4": { "name": "entity.name.namespace.chute" }
+          }
+        },
+        {
+          "comment": "attribute",
+          "match": "(@)([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.definition.attribute.chute" },
+            "2": { "name": "entity.name.attribute.chute" }
+          }
+        },
+        {
+          "comment": "dot-name enum reference (.SomeCase)",
+          "match": "(?<=[^a-zA-Z0-9_])\\.([a-zA-Z_][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "variable.other.enummember.chute" }
+          }
+        }
+      ]
+    },
     "function-calls": { "patterns": [] },
     "identifiers": { "patterns": [] }
   }
