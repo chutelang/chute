@@ -1,0 +1,27 @@
+// SYNTAX TEST "source.chute"
+
+// Line comment
+// ^ comment.line.double-slash.chute
+
+/// Doc comment
+// ^ comment.line.documentation.chute
+
+/* Block comment */
+// ^ comment.block.chute
+
+/** Doc block comment */
+// ^ comment.block.documentation.chute
+
+true false nil
+// <- constant.language.boolean.chute
+//   ^ constant.language.boolean.chute
+//         ^ constant.language.nil.chute
+
+42
+// <- constant.numeric.integer.chute
+
+3.14
+// <- constant.numeric.float.chute
+
+if else for in repeat return menu case
+// <- keyword.control.chute
