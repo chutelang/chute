@@ -14,8 +14,8 @@ Install the `chute` CLI for language server features (diagnostics, completions, 
 
 ## Settings
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `chute.lsp.enabled` | `true` | Enable the language server |
-| `chute.lsp.serverPath` | `""` | Path to the `chute` binary (uses PATH if empty) |
-| `chute.trace.server` | `"off"` | Trace LSP communication (`off`, `messages`, `verbose`) |
+| Setting                | Default | Description                                            |
+| ---------------------- | ------- | ------------------------------------------------------ |
+| `chute.lsp.enabled`    | `true`  | Enable the language server                             |
+| `chute.lsp.serverPath` | `""`    | Path to the `chute` binary (uses PATH if empty)        |
+| `chute.trace.server`   | `"off"` | Trace LSP communication (`off`, `messages`, `verbose`) |
