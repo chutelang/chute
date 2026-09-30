@@ -154,10 +154,7 @@
       ]
     },
     "strings": {
-      "patterns": [
-        { "include": "#raw-string" },
-        { "include": "#string-literal" }
-      ]
+      "patterns": [{ "include": "#raw-string" }, { "include": "#string-literal" }]
     },
     "raw-string": {
       "patterns": [
