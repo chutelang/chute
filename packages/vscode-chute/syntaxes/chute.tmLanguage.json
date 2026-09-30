@@ -157,7 +157,76 @@
         }
       ]
     },
-    "strings": { "patterns": [] },
+    "strings": {
+      "patterns": [
+        { "include": "#raw-string" },
+        { "include": "#string-literal" }
+      ]
+    },
+    "raw-string": {
+      "patterns": [
+        {
+          "name": "string.quoted.other.raw.chute",
+          "begin": "(##+(\"))",
+          "end": "(\"##+)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.chute" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.chute" } }
+        },
+        {
+          "name": "string.quoted.other.raw.chute",
+          "begin": "(#\")",
+          "end": "(\"#)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.chute" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.chute" } }
+        }
+      ]
+    },
+    "string-literal": {
+      "name": "string.quoted.double.chute",
+      "begin": "\"",
+      "end": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.chute" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.chute" }
+      },
+      "patterns": [
+        { "include": "#string-interpolation" },
+        { "include": "#string-escape" },
+        {
+          "name": "string.quoted.double.chute",
+          "match": "[^\"\\\\$]+"
+        }
+      ]
+    },
+    "string-interpolation": {
+      "name": "meta.interpolation.chute",
+      "begin": "(\\$\\{)",
+      "end": "(\\})",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.interpolation.begin.chute" }
+      },
+      "endCaptures": {
+        "1": { "name": "punctuation.section.interpolation.end.chute" }
+      },
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#keywords" },
+        { "include": "#operators" },
+        { "include": "#punctuation" },
+        { "include": "#literals" },
+        { "include": "#strings" },
+        { "include": "#types" },
+        { "include": "#declarations" },
+        { "include": "#function-calls" },
+        { "include": "#identifiers" }
+      ]
+    },
+    "string-escape": {
+      "name": "constant.character.escape.chute",
+      "match": "\\\\."
+    },
     "types": { "patterns": [] },
     "declarations": { "patterns": [] },
     "function-calls": { "patterns": [] },
