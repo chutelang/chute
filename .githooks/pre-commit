@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' || true)
+
+if [ -z "$STAGED" ]; then
+  echo "No staged source files — skipping pre-commit checks"
+  exit 0
+fi
+
+# Stash unstaged changes (including untracked) so lint/format
+# only sees what's actually being committed.
+STASH_NAME="pre-commit-$(date +%s)"
+git stash push --keep-index --include-untracked -m "$STASH_NAME" --quiet
+
+restore_stash() {
+  git stash pop --quiet 2>/dev/null || true
+}
+trap restore_stash EXIT
+
+echo "Typechecking..."
+pnpm run typecheck --silent
+echo "  ✓ typecheck"
+
+echo "Linting (auto-fix)..."
+npx oxlint --fix $STAGED
+echo "  ✓ lint"
+
+echo "Formatting (auto-fix)..."
+npx oxfmt --write $STAGED
+echo "  ✓ format"
+
+# Re-stage any files that lint/format modified
+MODIFIED=$(git diff --name-only -- $STAGED)
+if [ -n "$MODIFIED" ]; then
+  echo "$MODIFIED" | xargs git add
+  echo "  ✓ re-staged auto-fixed files"
+fi
+
+echo "Pre-commit checks passed"
