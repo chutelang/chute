@@ -218,12 +218,25 @@ function findInStatement(stmt: Statement, offset: number): IdentifierAtOffset | 
     case "ExpressionStatement":
       return findInExpression(stmt.expression, offset);
     case "ConstDeclaration":
-    case "LetDeclaration":
+    case "LetDeclaration": {
+      const initResult = findInExpression(stmt.initializer, offset);
+      if (initResult) {
+        return initResult;
+      }
+      if (offset < stmt.initializer.span.start) {
+        return {
+          name: stmt.name,
+          span: stmt.span,
+          context: "definition",
+        };
+      }
+      return undefined;
+    }
     case "ConstDestructure":
     case "LetDestructure":
       return findInExpression(stmt.initializer, offset);
     case "Assignment":
-      return findInExpression(stmt.value, offset);
+      return findInExpression(stmt.value, offset) ?? findInPlace(stmt.place, offset);
     case "IfStatement":
       return findInIfStatement(stmt, offset);
     case "ForStatement":
@@ -296,7 +309,29 @@ function findInForStatement(
     }
   }
 
+  if (offset < stmt.iterable.span.start) {
+    return {
+      name: stmt.variable,
+      span: stmt.span,
+      context: "definition",
+    };
+  }
+
   return undefined;
+}
+
+function findInPlace(
+  place: import("@chutelang/compiler").Place,
+  offset: number,
+): IdentifierAtOffset | undefined {
+  if (!containsOffset(place.span, offset)) {
+    return undefined;
+  }
+  return {
+    name: place.root,
+    span: place.span,
+    context: "reference",
+  };
 }
 
 function findInRepeatStatement(

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { analyze, resolveDefinition, resolveHover, getCompletions } from "./analyzer.ts";
+import { analyze, resolveDefinition, resolveHover, getCompletions, getNamespaceCompletions } from "./analyzer.ts";
 import { buildLineMap, offsetToPosition, positionToOffset } from "./positions.ts";
 import { findIdentifierAtOffset } from "./find-node.ts";
 
@@ -137,10 +137,17 @@ describe("hover", () => {
     expect(hover).toContain("action showAlert");
   });
 
-  it("should return undefined for non-identifiers", () => {
+  it("should show type when hovering on declaration keyword or name", () => {
     const source = "const x = 42;";
     const result = analyze(source);
-    const hover = resolveHover(result, 8);
+    const hover = resolveHover(result, 6);
+    expect(hover).toBe("x: Number");
+  });
+
+  it("should return undefined for positions outside any statement", () => {
+    const source = "const x = 42;";
+    const result = analyze(source);
+    const hover = resolveHover(result, 100);
     expect(hover).toBeUndefined();
   });
 
@@ -186,22 +193,15 @@ describe("doc comment hover", () => {
 });
 
 describe("autocomplete", () => {
-  it("should include keywords", () => {
+  it("should not include language keywords", () => {
     const result = analyze("");
     const items = getCompletions(result);
     const labels = items.map((i) => i.label);
-    expect(labels).toContain("const");
-    expect(labels).toContain("let");
-    expect(labels).toContain("func");
-    expect(labels).toContain("if");
-    expect(labels).toContain("for");
-    expect(labels).toContain("enum");
-    expect(labels).toContain("record");
-    expect(labels).toContain("import");
-    expect(labels).not.toContain("and");
-    expect(labels).not.toContain("or");
-    expect(labels).not.toContain("not");
-    expect(labels).not.toContain("var");
+    expect(labels).not.toContain("const");
+    expect(labels).not.toContain("if");
+    expect(labels).not.toContain("nil");
+    expect(labels).not.toContain("is");
+    expect(labels).not.toContain("hasPrefix");
   });
 
   it("should include imported module alias in completions", () => {
@@ -241,6 +241,22 @@ describe("autocomplete", () => {
     const items = getCompletions(result);
     const labels = items.map((i) => i.label);
     expect(labels).toContain("input");
+  });
+
+  it("should return namespace members for imported module", () => {
+    const source = 'import Text;\nconst f = Text.trimWhitespace(WFInput: "hello");';
+    const result = analyze(source);
+    const items = getNamespaceCompletions(result, "Text");
+    const labels = items.map((i) => i.label);
+    expect(labels).toContain("trimWhitespace");
+    expect(labels.length).toBeGreaterThan(0);
+  });
+
+  it("should return empty for unknown namespace", () => {
+    const source = "import Text;";
+    const result = analyze(source);
+    const items = getNamespaceCompletions(result, "Nonexistent");
+    expect(items).toEqual([]);
   });
 
   it("should not have duplicate entries", () => {
@@ -311,14 +327,27 @@ describe("findIdentifierAtOffset", () => {
     expect(ident?.name).toBe("red");
   });
 
-  it("should return undefined for non-identifier positions", () => {
+  it("should return the declaration name for positions on the keyword or name", () => {
     const source = "const x = 42;";
     const result = analyze(source);
     const ast = result.ast;
     if (!ast) {
       throw new Error("expected AST");
     }
-    const ident = findIdentifierAtOffset(ast, 8);
+    const ident = findIdentifierAtOffset(ast, 6);
+    expect(ident).toBeDefined();
+    expect(ident?.name).toBe("x");
+    expect(ident?.context).toBe("definition");
+  });
+
+  it("should return undefined for positions outside any statement", () => {
+    const source = "const x = 42;";
+    const result = analyze(source);
+    const ast = result.ast;
+    if (!ast) {
+      throw new Error("expected AST");
+    }
+    const ident = findIdentifierAtOffset(ast, 100);
     expect(ident).toBeUndefined();
   });
 });
