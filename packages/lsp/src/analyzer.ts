@@ -1,4 +1,4 @@
-import { Lexer, Parser, checkCollecting, CompileError, describeType } from "@chutelang/compiler";
+import { Lexer, Parser, checkCollecting, CompileError, describeType, getStdlibModuleNames } from "@chutelang/compiler";
 import type { Program, Diagnostic, Span, ChuteType, Scope, DocComment } from "@chutelang/compiler";
 import type { SymbolInfo, IdentifierAtOffset } from "./find-node.ts";
 import { collectDefinitions, findIdentifierAtOffset } from "./find-node.ts";
@@ -305,9 +305,16 @@ export function getEnumCaseCompletions(
   return items;
 }
 
+export function getImportCompletions(): CompletionItem[] {
+  return getStdlibModuleNames().map((name) => ({
+    label: name,
+    kind: "module" as const,
+  }));
+}
+
 export interface CompletionItem {
   label: string;
-  kind: "variable" | "function" | "action" | "enum" | "record" | "keyword" | "enum-case" | "field";
+  kind: "variable" | "function" | "action" | "enum" | "record" | "keyword" | "enum-case" | "field" | "module";
   detail?: string;
 }
 

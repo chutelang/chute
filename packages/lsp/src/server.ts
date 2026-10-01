@@ -24,6 +24,7 @@ import {
   getCompletions,
   getNamespaceCompletions,
   getEnumCaseCompletions,
+  getImportCompletions,
 } from "./analyzer.ts";
 import type { AnalysisResult, CompletionItem } from "./analyzer.ts";
 import { buildLineMap, offsetToPosition, positionToOffset } from "./positions.ts";
@@ -147,6 +148,10 @@ export function startServer(): void {
       const offset = positionToOffset(state.lineMap, params.position);
       const text = doc.getText();
 
+      if (isImportContext(text, offset)) {
+        return getImportCompletions().map(toLspCompletionItem);
+      }
+
       const enumContext = extractEnumContext(text, offset);
       if (enumContext) {
         return getEnumCaseCompletions(
@@ -244,6 +249,17 @@ function extractEnumContext(text: string, offset: number): EnumContext | undefin
   return { callee, namespace, argIndex: commaCount };
 }
 
+function isImportContext(text: string, offset: number): boolean {
+  let i = offset - 1;
+  while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
+    i--;
+  }
+  while (i >= 0 && /\s/.test(text.charAt(i))) {
+    i--;
+  }
+  return i >= 5 && text.slice(i - 5, i + 1) === "import";
+}
+
 function extractNamespacePrefix(text: string, offset: number): string | undefined {
   let i = offset - 1;
   while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
@@ -284,4 +300,5 @@ const completionKindMap: Record<CompletionItem["kind"], CompletionItemKind> = {
   keyword: CompletionItemKind.Keyword,
   "enum-case": CompletionItemKind.EnumMember,
   field: CompletionItemKind.Field,
+  module: CompletionItemKind.Module,
 };
