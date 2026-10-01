@@ -195,9 +195,24 @@ function formatFunctionSignature(type: ChuteType & { kind: "function" }): string
 }
 
 function formatActionSignature(type: ChuteType & { kind: "action" }): string {
-  const params = type.params.map((p) => `${p.label}: ${describeType(p.type)}`).join(", ");
+  const params = type.params
+    .map((p) => {
+      const optional = p.hasDefault ? "?" : "";
+      return `${p.label}${optional}: ${describeType(p.type)}`;
+    })
+    .join(", ");
   const ret = type.returnType ? ` -> ${describeType(type.returnType)}` : "";
-  return `action ${type.name}(${params})${ret}`;
+  let result = `action ${type.name}(${params})${ret}`;
+
+  const enumParams = type.params.filter((p) => p.type.kind === "enum");
+  for (const p of enumParams) {
+    if (p.type.kind === "enum") {
+      const cases = [...p.type.cases.keys()].map((c) => `.${c}`).join(" | ");
+      result += `\n\n${p.label}: ${cases}`;
+    }
+  }
+
+  return result;
 }
 
 function formatEnumType(type: ChuteType & { kind: "enum" }): string {
@@ -240,6 +255,55 @@ const KEYWORDS = [
   "shortcut",
   "true",
 ];
+
+export function getEnumCaseCompletions(
+  result: AnalysisResult,
+  calleeName: string,
+  namespaceName: string | undefined,
+  argIndex: number,
+): CompletionItem[] {
+  if (!result.scope) {
+    return [];
+  }
+
+  let calleeType: ChuteType | undefined;
+  if (namespaceName) {
+    const ns = result.scope.lookupNamespace(namespaceName);
+    if (ns) {
+      calleeType = ns.lookup(calleeName)?.type;
+    }
+  } else {
+    calleeType = result.scope.lookup(calleeName)?.type;
+  }
+
+  if (!calleeType) {
+    return [];
+  }
+
+  let params: Array<{ type: ChuteType }> | undefined;
+  if (calleeType.kind === "action") {
+    params = calleeType.params;
+  } else if (calleeType.kind === "function") {
+    params = calleeType.params;
+  }
+  if (!params) {
+    return [];
+  }
+
+  const param = params.at(argIndex);
+  if (!param || param.type.kind !== "enum") {
+    return [];
+  }
+
+  const items: CompletionItem[] = [];
+  for (const caseName of param.type.cases.keys()) {
+    items.push({
+      label: caseName,
+      kind: "enum-case",
+    });
+  }
+  return items;
+}
 
 export interface CompletionItem {
   label: string;
