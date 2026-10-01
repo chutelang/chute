@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { analyze, resolveDefinition, resolveHover, getCompletions, getNamespaceCompletions } from "./analyzer.ts";
+import {
+  analyze,
+  resolveDefinition,
+  resolveHover,
+  getCompletions,
+  getNamespaceCompletions,
+  getEnumCaseCompletions,
+} from "./analyzer.ts";
 import { buildLineMap, offsetToPosition, positionToOffset } from "./positions.ts";
 import { findIdentifierAtOffset } from "./find-node.ts";
 
@@ -137,6 +144,16 @@ describe("hover", () => {
     expect(hover).toContain("action showAlert");
   });
 
+  it("should show enum cases in action hover for enum parameters", () => {
+    const source = 'import Text;\nText.changeCase(WFInput: "hello", WFCaseType: .uppercase);';
+    const result = analyze(source);
+    const offset = source.indexOf("changeCase");
+    const hover = resolveHover(result, offset);
+    expect(hover).toContain("action changeCase");
+    expect(hover).toContain(".uppercase");
+    expect(hover).toContain(".lowercase");
+  });
+
   it("should show type when hovering on declaration keyword or name", () => {
     const source = "const x = 42;";
     const result = analyze(source);
@@ -250,6 +267,23 @@ describe("autocomplete", () => {
     const labels = items.map((i) => i.label);
     expect(labels).toContain("trimWhitespace");
     expect(labels.length).toBeGreaterThan(0);
+  });
+
+  it("should return enum cases by position for a dot-name in an action call argument", () => {
+    const source = 'import Text;\nconst f = Text.changeCase("hello", .uppercase);';
+    const result = analyze(source);
+    const items = getEnumCaseCompletions(result, "changeCase", "Text", 1);
+    const labels = items.map((i) => i.label);
+    expect(labels).toContain("uppercase");
+    expect(labels).toContain("lowercase");
+    expect(labels.length).toBeGreaterThan(0);
+  });
+
+  it("should return empty for non-enum argument position", () => {
+    const source = 'import Text;\nconst f = Text.changeCase("hello", .uppercase);';
+    const result = analyze(source);
+    const items = getEnumCaseCompletions(result, "changeCase", "Text", 0);
+    expect(items).toEqual([]);
   });
 
   it("should return empty for unknown namespace", () => {

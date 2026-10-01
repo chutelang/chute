@@ -50,6 +50,7 @@ interface StdlibJsonAction {
   intentParameters?: Array<{
     name: string | null;
     type: string | null;
+    default?: unknown;
     enumType?: string | null;
   }>;
   parameterOverrides?: Record<

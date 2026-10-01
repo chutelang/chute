@@ -23,6 +23,7 @@ import {
   resolveHover,
   getCompletions,
   getNamespaceCompletions,
+  getEnumCaseCompletions,
 } from "./analyzer.ts";
 import type { AnalysisResult, CompletionItem } from "./analyzer.ts";
 import { buildLineMap, offsetToPosition, positionToOffset } from "./positions.ts";
@@ -145,6 +146,17 @@ export function startServer(): void {
     if (doc) {
       const offset = positionToOffset(state.lineMap, params.position);
       const text = doc.getText();
+
+      const enumContext = extractEnumContext(text, offset);
+      if (enumContext) {
+        return getEnumCaseCompletions(
+          state.analysis,
+          enumContext.callee,
+          enumContext.namespace,
+          enumContext.argIndex,
+        ).map(toLspCompletionItem);
+      }
+
       const namespaceName = extractNamespacePrefix(text, offset);
       if (namespaceName) {
         return getNamespaceCompletions(state.analysis, namespaceName).map(toLspCompletionItem);
@@ -157,6 +169,79 @@ export function startServer(): void {
 
   documents.listen(connection);
   connection.listen();
+}
+
+interface EnumContext {
+  callee: string;
+  namespace: string | undefined;
+  argIndex: number;
+}
+
+function extractEnumContext(text: string, offset: number): EnumContext | undefined {
+  let i = offset - 1;
+  while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
+    i--;
+  }
+  if (i < 0 || text.charAt(i) !== ".") {
+    return undefined;
+  }
+  i--;
+  while (i >= 0 && /\s/.test(text.charAt(i))) {
+    i--;
+  }
+  if (i < 0 || (text.charAt(i) !== "," && text.charAt(i) !== "(")) {
+    return undefined;
+  }
+
+  let commaCount = 0;
+  let depth = 0;
+  while (i >= 0) {
+    const ch = text.charAt(i);
+    if (ch === ")" || ch === "]" || ch === "}") {
+      depth++;
+    } else if (ch === "[" || ch === "{") {
+      depth--;
+    } else if (ch === "(") {
+      if (depth === 0) {
+        break;
+      }
+      depth--;
+    } else if (ch === "," && depth === 0) {
+      commaCount++;
+    }
+    i--;
+  }
+  if (i < 0 || text.charAt(i) !== "(") {
+    return undefined;
+  }
+  i--;
+
+  while (i >= 0 && /\s/.test(text.charAt(i))) {
+    i--;
+  }
+  const calleeEnd = i + 1;
+  while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
+    i--;
+  }
+  const callee = text.slice(i + 1, calleeEnd);
+  if (callee.length === 0) {
+    return undefined;
+  }
+
+  let namespace: string | undefined;
+  if (i >= 0 && text.charAt(i) === ".") {
+    const dotPos = i;
+    i--;
+    while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
+      i--;
+    }
+    const ns = text.slice(i + 1, dotPos);
+    if (ns.length > 0 && /[A-Z]/.test(ns.charAt(0))) {
+      namespace = ns;
+    }
+  }
+
+  return { callee, namespace, argIndex: commaCount };
 }
 
 function extractNamespacePrefix(text: string, offset: number): string | undefined {
