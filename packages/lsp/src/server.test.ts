@@ -119,46 +119,48 @@ describe("go-to-definition", () => {
 });
 
 describe("hover", () => {
-  it("should show type for a variable", () => {
+  it("should show type for a variable with (const) prefix in code block", () => {
     const source = 'const greeting = "hello";\nshowAlert(text: greeting);';
     const result = analyze(source);
     const offset = source.indexOf("greeting);");
     const hover = resolveHover(result, offset);
-    expect(hover).toBe("greeting: Text");
+    expect(hover).toContain("(const) greeting: Text");
+    expect(hover).toContain("```chute");
   });
 
-  it("should show function signature", () => {
+  it("should show function signature with (function) prefix", () => {
     const source =
       'func greet(name: Text) -> Text {\n  return "hi";\n}\nconst x = greet(name: "world");';
     const result = analyze(source);
     const offset = source.lastIndexOf("greet");
     const hover = resolveHover(result, offset);
-    expect(hover).toBe("func greet(name: Text) -> Text");
+    expect(hover).toContain("(function) greet(name: Text): Text");
   });
 
-  it("should show action signature for stdlib actions", () => {
-    const source = 'import Notification;\nNotification.showAlert(WFAlertActionTitle: "hello");';
+  it("should show action signature with (action) prefix", () => {
+    const source = 'import Notification;\nNotification.showAlert("hello");';
     const result = analyze(source);
     const offset = source.lastIndexOf("showAlert");
     const hover = resolveHover(result, offset);
-    expect(hover).toContain("action showAlert");
+    expect(hover).toContain("(action) showAlert");
   });
 
-  it("should show enum cases in action hover for enum parameters", () => {
-    const source = 'import Text;\nText.changeCase(WFInput: "hello", WFCaseType: .uppercase);';
+  it("should show enum cases inline and description in action hover", () => {
+    const source = 'import Text;\nconst f = Text.changeCase("hello", .uppercase);';
     const result = analyze(source);
     const offset = source.indexOf("changeCase");
     const hover = resolveHover(result, offset);
-    expect(hover).toContain("action changeCase");
+    expect(hover).toContain("(action) changeCase");
     expect(hover).toContain(".uppercase");
     expect(hover).toContain(".lowercase");
+    expect(hover).toContain("Changes the case of the text");
   });
 
   it("should show type when hovering on declaration keyword or name", () => {
     const source = "const x = 42;";
     const result = analyze(source);
     const hover = resolveHover(result, 6);
-    expect(hover).toBe("x: Number");
+    expect(hover).toContain("(const) x: Number");
   });
 
   it("should return undefined for positions outside any statement", () => {
@@ -173,7 +175,7 @@ describe("hover", () => {
     const result = analyze(source);
     const offset = source.lastIndexOf("count");
     const hover = resolveHover(result, offset);
-    expect(hover).toBe("count: Number");
+    expect(hover).toContain("(const) count: Number");
   });
 });
 

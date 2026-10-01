@@ -73,6 +73,7 @@ export type ChuteType =
       params: Array<{ label: string; type: ChuteType; hasDefault: boolean }>;
       returnType: ChuteType | undefined;
       inputLabel?: string;
+      description?: string;
     }
   | { kind: "opaque"; name: string }
   | { kind: "any" };

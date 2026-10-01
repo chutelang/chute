@@ -132,7 +132,7 @@ export function startServer(): void {
     return {
       contents: {
         kind: MarkupKind.Markdown,
-        value: "```chute\n" + hoverText + "\n```",
+        value: hoverText,
       },
     };
   });
