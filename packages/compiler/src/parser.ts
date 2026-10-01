@@ -162,6 +162,70 @@ export class Parser {
     };
   }
 
+  parseCollecting(): { program: Program; diagnostics: Diagnostic[] } {
+    const start = this.peek().span.start;
+    const imports: ImportDeclaration[] = [];
+
+    while (this.check(TokenKind.Import)) {
+      try {
+        imports.push(this.parseImport());
+      } catch (e) {
+        if (e instanceof ParseError) {
+          this.recordError(e);
+          this.synchronize();
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    let metadata: ShortcutMetadata | undefined;
+
+    if (this.check(TokenKind.Shortcut)) {
+      try {
+        metadata = this.parseShortcutMetadata();
+      } catch (e) {
+        if (e instanceof ParseError) {
+          this.recordError(e);
+          this.synchronize();
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    const body: Statement[] = [];
+    while (!this.check(TokenKind.Eof)) {
+      try {
+        if (this.check(TokenKind.Import)) {
+          const tok = this.peek();
+          this.recordError(new ParseError("imports must appear at the top of the file", tok.span));
+          this.synchronize();
+        } else {
+          body.push(this.parseStatement());
+        }
+      } catch (e) {
+        if (e instanceof ParseError) {
+          this.recordError(e);
+          this.synchronize();
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    return {
+      program: {
+        kind: "Program",
+        span: { start, end: this.peek().span.end },
+        imports,
+        metadata,
+        body,
+      },
+      diagnostics: this.diagnostics,
+    };
+  }
+
   private recordError(e: ParseError): void {
     const d: Diagnostic = {
       code: e.code,

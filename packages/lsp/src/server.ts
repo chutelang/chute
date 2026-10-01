@@ -17,7 +17,13 @@ import type {
   CompletionParams,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { analyze, resolveDefinition, resolveHover, getCompletions } from "./analyzer.ts";
+import {
+  analyze,
+  resolveDefinition,
+  resolveHover,
+  getCompletions,
+  getNamespaceCompletions,
+} from "./analyzer.ts";
 import type { AnalysisResult, CompletionItem } from "./analyzer.ts";
 import { buildLineMap, offsetToPosition, positionToOffset } from "./positions.ts";
 import type { LineMap } from "./positions.ts";
@@ -28,7 +34,7 @@ interface DocumentState {
 }
 
 export function startServer(): void {
-  const connection = createConnection(ProposedFeatures.all);
+  const connection = createConnection(process.stdin, process.stdout);
   const documents = new TextDocuments(TextDocument);
   const documentStates = new Map<string, DocumentState>();
 
@@ -135,12 +141,42 @@ export function startServer(): void {
       return [];
     }
 
+    const doc = documents.get(params.textDocument.uri);
+    if (doc) {
+      const offset = positionToOffset(state.lineMap, params.position);
+      const text = doc.getText();
+      const namespaceName = extractNamespacePrefix(text, offset);
+      if (namespaceName) {
+        return getNamespaceCompletions(state.analysis, namespaceName).map(toLspCompletionItem);
+      }
+    }
+
     const items = getCompletions(state.analysis);
     return items.map(toLspCompletionItem);
   });
 
   documents.listen(connection);
   connection.listen();
+}
+
+function extractNamespacePrefix(text: string, offset: number): string | undefined {
+  let i = offset - 1;
+  while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
+    i--;
+  }
+  if (i < 0 || text.charAt(i) !== ".") {
+    return undefined;
+  }
+  const dotPos = i;
+  i--;
+  while (i >= 0 && /[a-zA-Z0-9_]/.test(text.charAt(i))) {
+    i--;
+  }
+  const name = text.slice(i + 1, dotPos);
+  if (name.length === 0 || !/[A-Z]/.test(name.charAt(0))) {
+    return undefined;
+  }
+  return name;
 }
 
 function toLspCompletionItem(item: CompletionItem): LspCompletionItem {

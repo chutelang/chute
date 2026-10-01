@@ -26,28 +26,24 @@ export function analyze(source: string): AnalysisResult {
     throw e;
   }
 
-  let ast: Program;
-  try {
-    ast = new Parser(tokens).parse();
-  } catch (e) {
-    if (e instanceof CompileError) {
-      return {
-        diagnostics: e.diagnostics,
-        ast: undefined,
-        scope: undefined,
-        definitions: [],
-      };
-    }
-    throw e;
-  }
-
-  const checkResult = checkCollecting(ast);
+  const parseResult = new Parser(tokens).parseCollecting();
+  const ast = parseResult.program;
   const definitions = collectDefinitions(ast);
 
+  let checkResult: { diagnostics: Diagnostic[]; scope: Scope } | undefined;
+  try {
+    checkResult = checkCollecting(ast);
+  } catch {
+    // Checker may throw on severely broken ASTs — fall through with no scope
+  }
+
   return {
-    diagnostics: checkResult.diagnostics,
+    diagnostics:
+      parseResult.diagnostics.length > 0
+        ? parseResult.diagnostics
+        : (checkResult?.diagnostics ?? []),
     ast,
-    scope: checkResult.scope,
+    scope: checkResult?.scope,
     definitions,
   };
 }
@@ -251,15 +247,57 @@ export interface CompletionItem {
   detail?: string;
 }
 
-export function getCompletions(result: AnalysisResult): CompletionItem[] {
-  const items: CompletionItem[] = [];
+export function getNamespaceCompletions(
+  result: AnalysisResult,
+  namespaceName: string,
+): CompletionItem[] {
+  if (!result.scope) {
+    return [];
+  }
 
-  for (const kw of KEYWORDS) {
+  const ns = result.scope.lookupNamespace(namespaceName);
+  if (!ns) {
+    return [];
+  }
+
+  const items: CompletionItem[] = [];
+  for (const [name, binding] of ns.allBindings()) {
     items.push({
-      label: kw,
-      kind: "keyword",
+      label: name,
+      kind:
+        binding.type.kind === "function"
+          ? "function"
+          : binding.type.kind === "action"
+            ? "action"
+            : "variable",
+      detail: describeType(binding.type),
     });
   }
+
+  const typeDef = result.scope.lookupType(namespaceName);
+  if (typeDef?.kind === "enum") {
+    for (const caseName of typeDef.cases.keys()) {
+      items.push({
+        label: caseName,
+        kind: "enum-case",
+      });
+    }
+  }
+  if (typeDef?.kind === "record") {
+    for (const [fieldName, fieldType] of typeDef.fields.entries()) {
+      items.push({
+        label: fieldName,
+        kind: "field",
+        detail: describeType(fieldType),
+      });
+    }
+  }
+
+  return deduplicateCompletions(items);
+}
+
+export function getCompletions(result: AnalysisResult): CompletionItem[] {
+  const items: CompletionItem[] = [];
 
   for (const def of result.definitions) {
     if (def.kind === "enum-case" || def.kind === "field") {
