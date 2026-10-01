@@ -38,6 +38,9 @@ interface StdlibJsonAction {
   identifier: string;
   name: string;
   category: string | null;
+  description?: {
+    summary?: string | null;
+  } | null;
   parameters: Array<{
     key: string | null;
     class?: string;
@@ -252,6 +255,8 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
 
   const returnType = inferReturnType(action.output);
 
+  const description = action.description?.summary ?? undefined;
+
   return {
     kind: "action",
     name: action.name,
@@ -259,6 +264,7 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
     params,
     returnType,
     ...(inputLabel !== undefined ? { inputLabel } : {}),
+    ...(description !== undefined ? { description } : {}),
   };
 }
 

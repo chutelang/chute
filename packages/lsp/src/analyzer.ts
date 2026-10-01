@@ -91,43 +91,49 @@ export function resolveHover(result: AnalysisResult, offset: number): string | u
     return undefined;
   }
 
-  let hoverText: string | undefined;
+  let hover: HoverParts | undefined;
 
   if (ident.context === "namespace-member" && ident.namespaceName) {
     const ns = result.scope.lookupNamespace(ident.namespaceName);
     if (ns) {
       const binding = ns.lookup(ident.name);
       if (binding) {
-        hoverText = formatTypeHover(ident.name, binding.type);
+        hover = formatTypeHover(ident.name, binding.type);
       } else {
         const typeDef = ns.lookupType(ident.name);
         if (typeDef) {
-          hoverText = formatTypeHover(ident.name, typeDef);
+          hover = formatTypeHover(ident.name, typeDef);
         }
       }
     }
   } else {
     const binding = result.scope.lookup(ident.name);
     if (binding) {
-      hoverText = formatTypeHover(ident.name, binding.type);
+      hover = formatTypeHover(ident.name, binding.type);
     } else {
       const typeDef = result.scope.lookupType(ident.name);
       if (typeDef) {
-        hoverText = formatTypeHover(ident.name, typeDef);
+        hover = formatTypeHover(ident.name, typeDef);
       }
     }
   }
 
-  if (!hoverText) {
+  if (!hover) {
     return undefined;
+  }
+
+  let markdown = "```chute\n" + hover.signature + "\n```";
+
+  if (hover.description) {
+    markdown += "\n\n" + hover.description;
   }
 
   const docComment = findDocComment(ident, result.definitions);
   if (docComment) {
-    hoverText += formatDocCommentMarkdown(docComment);
+    markdown += formatDocCommentMarkdown(docComment);
   }
 
-  return hoverText;
+  return markdown;
 }
 
 function findDocComment(
@@ -173,58 +179,96 @@ function formatDocCommentMarkdown(doc: DocComment): string {
   return result;
 }
 
-function formatTypeHover(name: string, type: ChuteType): string {
+interface HoverParts {
+  signature: string;
+  description?: string;
+}
+
+function formatTypeHover(name: string, type: ChuteType): HoverParts {
   switch (type.kind) {
     case "function":
-      return formatFunctionSignature(type);
-    case "action":
-      return formatActionSignature(type);
+      return { signature: formatFunctionSignature(type) };
+    case "action": {
+      const parts: HoverParts = { signature: formatActionSignature(type) };
+      if (type.description) {
+        parts.description = type.description;
+      }
+      return parts;
+    }
     case "enum":
-      return formatEnumType(type);
+      return {
+        signature: `(enum) ${type.name}\n\n${[...type.cases.keys()].map((c) => `  .${c}`).join("\n")}`,
+      };
     case "record":
-      return formatRecordType(type);
+      return {
+        signature: `(record) ${type.name}\n\n${[...type.fields.entries()].map(([n, t]) => `  ${n}: ${describeType(t)}`).join("\n")}`,
+      };
     default:
-      return `${name}: ${describeType(type)}`;
+      return { signature: `(${describeTypeKind(type)}) ${name}: ${describeType(type)}` };
   }
+}
+
+function describeTypeKind(type: ChuteType): string {
+  switch (type.kind) {
+    case "opaque":
+      return "const";
+    default:
+      return "const";
+  }
+}
+
+function formatParamType(type: ChuteType): string {
+  if (type.kind === "enum") {
+    return [...type.cases.keys()].map((c) => `.${c}`).join(" | ");
+  }
+  return describeType(type);
 }
 
 function formatFunctionSignature(type: ChuteType & { kind: "function" }): string {
-  const params = type.params.map((p) => `${p.name}: ${describeType(p.type)}`).join(", ");
-  const ret = type.returnType ? ` -> ${describeType(type.returnType)}` : "";
-  return `func ${type.name}(${params})${ret}`;
+  const paramLines = type.params.map((p) => {
+    const optional = p.hasDefault ? "?" : "";
+    return `  ${p.name}${optional}: ${formatParamType(p.type)}`;
+  });
+  const ret = type.returnType ? `: ${describeType(type.returnType)}` : "";
+
+  if (paramLines.length === 0) {
+    return `(function) ${type.name}()${ret}`;
+  }
+  if (paramLines.length === 1) {
+    const p = type.params[0];
+    if (p) {
+      const optional = p.hasDefault ? "?" : "";
+      const inline = `${p.name}${optional}: ${formatParamType(p.type)}`;
+      if (inline.length < 60) {
+        return `(function) ${type.name}(${inline})${ret}`;
+      }
+    }
+  }
+  return `(function) ${type.name}(\n${paramLines.join(",\n")}\n)${ret}`;
 }
 
 function formatActionSignature(type: ChuteType & { kind: "action" }): string {
-  const params = type.params
-    .map((p) => {
-      const optional = p.hasDefault ? "?" : "";
-      return `${p.label}${optional}: ${describeType(p.type)}`;
-    })
-    .join(", ");
-  const ret = type.returnType ? ` -> ${describeType(type.returnType)}` : "";
-  let result = `action ${type.name}(${params})${ret}`;
+  const paramLines = type.params.map((p) => {
+    const optional = p.hasDefault ? "?" : "";
+    return `  ${p.label}${optional}: ${formatParamType(p.type)}`;
+  });
+  const ret = type.returnType ? `: ${describeType(type.returnType)}` : "";
 
-  const enumParams = type.params.filter((p) => p.type.kind === "enum");
-  for (const p of enumParams) {
-    if (p.type.kind === "enum") {
-      const cases = [...p.type.cases.keys()].map((c) => `.${c}`).join(" | ");
-      result += `\n\n${p.label}: ${cases}`;
+  if (paramLines.length === 0) {
+    return `(action) ${type.name}()${ret}`;
+  }
+  if (paramLines.length <= 2) {
+    const inline = type.params
+      .map((p) => {
+        const optional = p.hasDefault ? "?" : "";
+        return `${p.label}${optional}: ${formatParamType(p.type)}`;
+      })
+      .join(", ");
+    if (inline.length < 60) {
+      return `(action) ${type.name}(${inline})${ret}`;
     }
   }
-
-  return result;
-}
-
-function formatEnumType(type: ChuteType & { kind: "enum" }): string {
-  const cases = [...type.cases.keys()].join(", ");
-  return `enum ${type.name} { ${cases} }`;
-}
-
-function formatRecordType(type: ChuteType & { kind: "record" }): string {
-  const fields = [...type.fields.entries()]
-    .map(([name, t]) => `${name}: ${describeType(t)}`)
-    .join(", ");
-  return `record ${type.name} { ${fields} }`;
+  return `(action) ${type.name}(\n${paramLines.join(",\n")}\n)${ret}`;
 }
 
 const KEYWORDS = [
