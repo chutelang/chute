@@ -5,3 +5,6 @@ tools/stdlib-generator/data/actions_sim.json
 tools/stdlib-generator/data/actions_macos.json
 tools/stdlib-generator/data/intents.json
 docs/.vitepress/cache
+*.so
+*.dll
+*.dylib
