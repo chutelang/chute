@@ -1238,6 +1238,44 @@ describe("checker", () => {
     });
   });
 
+  describe("overloaded actions", () => {
+    it("should allow two action declarations with same name and identifier", () => {
+      expect(() =>
+        checkSource(`
+          action doThing(x: Text) = "com.example";
+          action doThing(x: Number) = "com.example";
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject two action declarations with same name but different identifier", () => {
+      expect(() =>
+        checkSource(`
+          action doThing(x: Text) = "com.example.a";
+          action doThing(x: Number) = "com.example.b";
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject action overload colliding with a function", () => {
+      expect(() =>
+        checkSource(`
+          func doThing(x: Text) {}
+          action doThing(x: Number) = "com.example";
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject function overloads", () => {
+      expect(() =>
+        checkSource(`
+          func doThing(x: Text) {}
+          func doThing(x: Number) {}
+        `),
+      ).toThrow(CompileError);
+    });
+  });
+
   describe("input built-in", () => {
     it("should accept input reference in shortcut body", () => {
       expect(() =>

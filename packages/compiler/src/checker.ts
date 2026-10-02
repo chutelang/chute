@@ -75,6 +75,12 @@ export type ChuteType =
       inputLabel?: string;
       description?: string;
     }
+  | {
+      kind: "overloadedAction";
+      name: string;
+      runtimeIdentifier: string;
+      overloads: Array<ChuteType & { kind: "action" }>;
+    }
   | { kind: "opaque"; name: string }
   | { kind: "any" };
 
@@ -1421,6 +1427,10 @@ function namedTypeFromAnnotation(named: NamedType, scope: Scope): ChuteType {
 }
 
 function isAssignable(source: ChuteType, target: ChuteType): boolean {
+  if (source.kind === "overloadedAction" || target.kind === "overloadedAction") {
+    return false;
+  }
+
   if (source.kind === "any" || target.kind === "any") {
     return true;
   }
@@ -1497,6 +1507,8 @@ export function describeType(type: ChuteType): string {
       return `func ${type.name}`;
     case "action":
       return `action ${type.name}`;
+    case "overloadedAction":
+      return `action ${type.name} (${type.overloads.length} overloads)`;
     case "opaque":
       return type.name;
     case "any":
@@ -2236,11 +2248,22 @@ export function checkActionDeclaration(
   context: CheckContext,
 ): void {
   if (scope.hasOwn(decl.name)) {
-    throw new CheckError(
-      `'${decl.name}' is already declared in this scope`,
-      decl.span,
-      DiagnosticCode.DuplicateDeclaration,
-    );
+    const existing = scope.lookup(decl.name);
+    if (existing) {
+      const existingType = existing.type;
+      const isMergeableAction =
+        existingType.kind === "action" && existingType.runtimeIdentifier === decl.runtimeIdentifier;
+      const isMergeableOverload =
+        existingType.kind === "overloadedAction" &&
+        existingType.runtimeIdentifier === decl.runtimeIdentifier;
+      if (!isMergeableAction && !isMergeableOverload) {
+        throw new CheckError(
+          `'${decl.name}' is already declared in this scope`,
+          decl.span,
+          DiagnosticCode.DuplicateDeclaration,
+        );
+      }
+    }
   }
 
   const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
@@ -2279,7 +2302,7 @@ export function checkActionDeclaration(
     ? typeFromAnnotation(decl.returnType, scope, context)
     : undefined;
 
-  const actionType: ChuteType = {
+  const actionType: ChuteType & { kind: "action" } = {
     kind: "action",
     name: decl.name,
     runtimeIdentifier: decl.runtimeIdentifier,
@@ -2287,7 +2310,21 @@ export function checkActionDeclaration(
     returnType,
   };
 
-  scope.define(decl.name, actionType, false);
+  const existing = scope.hasOwn(decl.name) ? scope.lookup(decl.name) : undefined;
+  if (existing?.type.kind === "action") {
+    const overloaded: ChuteType = {
+      kind: "overloadedAction",
+      name: decl.name,
+      runtimeIdentifier: decl.runtimeIdentifier,
+      overloads: [existing.type, actionType],
+    };
+    scope.define(decl.name, overloaded, false);
+  } else if (existing?.type.kind === "overloadedAction") {
+    existing.type.overloads.push(actionType);
+  } else {
+    scope.define(decl.name, actionType, false);
+  }
+
   checkDocComment(
     decl.docComment,
     decl.params.map((p) => p.label),
