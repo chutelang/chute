@@ -2428,6 +2428,94 @@ function resolvedPropertyFromDefinition(prop: PropertyDefinition): ResolvedPrope
   }
 }
 
+export function resolveOverload(
+  overloaded: ChuteType & { kind: "overloadedAction" },
+  args: Array<{ type: ChuteType }>,
+  span: Span,
+): ChuteType & { kind: "action" } {
+  const candidates: Array<{ overload: ChuteType & { kind: "action" }; score: number }> = [];
+
+  for (const overload of overloaded.overloads) {
+    const score = scoreOverload(overload, args);
+    if (score >= 0) {
+      candidates.push({ overload, score });
+    }
+  }
+
+  if (candidates.length === 0) {
+    const signatures = overloaded.overloads
+      .map(
+        (o) =>
+          `  ${o.name}(${o.params.map((p) => `${p.label}: ${describeType(p.type)}`).join(", ")})${o.returnType ? ` -> ${describeType(o.returnType)}` : ""}`,
+      )
+      .join("\n");
+    throw new CheckError(
+      `No matching overload for '${overloaded.name}'. Available overloads:\n${signatures}`,
+      span,
+      DiagnosticCode.TypeMismatch,
+    );
+  }
+
+  candidates.sort((a, b) => b.score - a.score);
+  if (candidates.length > 1 && candidates[0]?.score === candidates[1]?.score) {
+    throw new CheckError(
+      `Ambiguous call to '${overloaded.name}' — multiple overloads match with equal specificity`,
+      span,
+      DiagnosticCode.TypeMismatch,
+    );
+  }
+
+  const best = candidates[0];
+  if (!best) {
+    throw new CheckError(
+      `No matching overload for '${overloaded.name}'`,
+      span,
+      DiagnosticCode.TypeMismatch,
+    );
+  }
+  return best.overload;
+}
+
+export function scoreOverload(
+  overload: ChuteType & { kind: "action" },
+  args: Array<{ type: ChuteType }>,
+): number {
+  const requiredCount = overload.params.filter((p) => !p.hasDefault).length;
+  if (args.length < requiredCount || args.length > overload.params.length) {
+    return -1;
+  }
+
+  let score = 0;
+  for (let i = 0; i < args.length; i++) {
+    const param = overload.params.at(i);
+    const arg = args.at(i);
+    if (!param || !arg) {
+      return -1;
+    }
+
+    if (param.type.kind === "enum" && param.type.cases.size === 1) {
+      if (arg.type.kind === "enum" && arg.type.name === param.type.name) {
+        const pinnedCase = [...param.type.cases.keys()].at(0);
+        if (pinnedCase !== undefined && arg.type.cases.has(pinnedCase)) {
+          score += 3;
+          continue;
+        }
+      }
+      return -1;
+    }
+
+    if (param.type.kind === "any") {
+      score += 1;
+    } else if (isAssignable(arg.type, param.type)) {
+      score += 2;
+    } else {
+      return -1;
+    }
+  }
+
+  return score;
+}
+
 function assertNever(value: never): never {
   throw new Error(`unhandled case: ${JSON.stringify(value)}`);
 }

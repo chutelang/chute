@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
-import { check, type CheckWarning, type FileResolver } from "./checker.ts";
+import {
+  check,
+  resolveOverload,
+  scoreOverload,
+  type ChuteType,
+  type CheckWarning,
+  type FileResolver,
+} from "./checker.ts";
 import { CompileError } from "./diagnostic.ts";
 import type { Program } from "./ast.ts";
 
@@ -1310,6 +1317,239 @@ describe("checker", () => {
           action paint(color: Color.purple) = "com.example";
         `),
       ).toThrow(CompileError);
+    });
+
+    describe("resolveOverload", () => {
+      const propEnum: ChuteType = {
+        kind: "enum",
+        name: "Prop",
+        cases: new Map([
+          ["title", "0"],
+          ["duration", "1"],
+          ["notes", "2"],
+        ]),
+      };
+      const pinned = (caseName: string): ChuteType => {
+        const backing = propEnum.kind === "enum" ? propEnum.cases.get(caseName) : undefined;
+        return {
+          kind: "enum",
+          name: "Prop",
+          cases: new Map(backing !== undefined ? [[caseName, backing]] : []),
+        };
+      };
+      const span = { start: 0, end: 0 };
+
+      const editTitle: ChuteType & { kind: "action" } = {
+        kind: "action",
+        name: "edit",
+        runtimeIdentifier: "com.example",
+        params: [
+          { label: "p", type: pinned("title"), hasDefault: false },
+          { label: "v", type: { kind: "text" }, hasDefault: false },
+        ],
+        returnType: { kind: "text" },
+      };
+      const editDuration: ChuteType & { kind: "action" } = {
+        kind: "action",
+        name: "edit",
+        runtimeIdentifier: "com.example",
+        params: [
+          { label: "p", type: pinned("duration"), hasDefault: false },
+          { label: "v", type: { kind: "number" }, hasDefault: false },
+        ],
+        returnType: { kind: "number" },
+      };
+      const editCatchAll: ChuteType & { kind: "action" } = {
+        kind: "action",
+        name: "edit",
+        runtimeIdentifier: "com.example",
+        params: [
+          { label: "p", type: propEnum, hasDefault: false },
+          { label: "v", type: { kind: "text" }, hasDefault: false },
+        ],
+        returnType: { kind: "text" },
+      };
+
+      it("should resolve overload by pinned enum value", () => {
+        const overloaded: ChuteType & { kind: "overloadedAction" } = {
+          kind: "overloadedAction",
+          name: "edit",
+          runtimeIdentifier: "com.example",
+          overloads: [editTitle, editDuration],
+        };
+        const result = resolveOverload(
+          overloaded,
+          [{ type: pinned("title") }, { type: { kind: "text" } }],
+          span,
+        );
+        expect(result.returnType).toEqual({ kind: "text" });
+      });
+
+      it("should resolve overload to different return type", () => {
+        const overloaded: ChuteType & { kind: "overloadedAction" } = {
+          kind: "overloadedAction",
+          name: "edit",
+          runtimeIdentifier: "com.example",
+          overloads: [editTitle, editDuration],
+        };
+        const result = resolveOverload(
+          overloaded,
+          [{ type: pinned("duration") }, { type: { kind: "number" } }],
+          span,
+        );
+        expect(result.returnType).toEqual({ kind: "number" });
+      });
+
+      it("should resolve catch-all overload when no pinned match", () => {
+        const overloaded: ChuteType & { kind: "overloadedAction" } = {
+          kind: "overloadedAction",
+          name: "edit",
+          runtimeIdentifier: "com.example",
+          overloads: [editTitle, editCatchAll],
+        };
+        const result = resolveOverload(
+          overloaded,
+          [{ type: pinned("notes") }, { type: { kind: "text" } }],
+          span,
+        );
+        expect(result).toBe(editCatchAll);
+      });
+
+      it("should resolve overload by arity", () => {
+        const doThingOne: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          params: [{ label: "x", type: { kind: "text" }, hasDefault: false }],
+          returnType: undefined,
+        };
+        const doThingTwo: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          params: [
+            { label: "x", type: { kind: "text" }, hasDefault: false },
+            { label: "y", type: { kind: "number" }, hasDefault: false },
+          ],
+          returnType: undefined,
+        };
+        const overloaded: ChuteType & { kind: "overloadedAction" } = {
+          kind: "overloadedAction",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          overloads: [doThingOne, doThingTwo],
+        };
+        expect(() => resolveOverload(overloaded, [{ type: { kind: "text" } }], span)).not.toThrow();
+        const result = resolveOverload(overloaded, [{ type: { kind: "text" } }], span);
+        expect(result).toBe(doThingOne);
+      });
+
+      it("should error when no overload matches", () => {
+        const overloaded: ChuteType & { kind: "overloadedAction" } = {
+          kind: "overloadedAction",
+          name: "edit",
+          runtimeIdentifier: "com.example",
+          overloads: [editTitle, editDuration],
+        };
+        expect(() =>
+          resolveOverload(
+            overloaded,
+            [{ type: pinned("title") }, { type: { kind: "number" } }],
+            span,
+          ),
+        ).toThrow("No matching overload");
+      });
+
+      it("should error on ambiguous overloads", () => {
+        const doThingAnyA: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          params: [{ label: "x", type: { kind: "any" }, hasDefault: false }],
+          returnType: undefined,
+        };
+        const doThingAnyB: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          params: [{ label: "x", type: { kind: "any" }, hasDefault: false }],
+          returnType: undefined,
+        };
+        const overloaded: ChuteType & { kind: "overloadedAction" } = {
+          kind: "overloadedAction",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          overloads: [doThingAnyA, doThingAnyB],
+        };
+        expect(() => resolveOverload(overloaded, [{ type: { kind: "text" } }], span)).toThrow();
+      });
+    });
+
+    describe("scoreOverload", () => {
+      const pinnedTitle: ChuteType & { kind: "action" } = {
+        kind: "action",
+        name: "edit",
+        runtimeIdentifier: "com.example",
+        params: [
+          {
+            label: "p",
+            type: { kind: "enum", name: "Prop", cases: new Map([["title", "0"]]) },
+            hasDefault: false,
+          },
+        ],
+        returnType: undefined,
+      };
+
+      it("should score a pinned enum match higher than a generic assignable match", () => {
+        const pinnedScore = scoreOverload(pinnedTitle, [
+          { type: { kind: "enum", name: "Prop", cases: new Map([["title", "0"]]) } },
+        ]);
+        const genericAction: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "edit",
+          runtimeIdentifier: "com.example",
+          params: [{ label: "p", type: { kind: "any" }, hasDefault: false }],
+          returnType: undefined,
+        };
+        const genericScore = scoreOverload(genericAction, [
+          { type: { kind: "enum", name: "Prop", cases: new Map([["title", "0"]]) } },
+        ]);
+        expect(pinnedScore).toBeGreaterThan(genericScore);
+      });
+
+      it("should return -1 when a pinned enum case does not match", () => {
+        const score = scoreOverload(pinnedTitle, [
+          { type: { kind: "enum", name: "Prop", cases: new Map([["duration", "1"]]) } },
+        ]);
+        expect(score).toBe(-1);
+      });
+
+      it("should return -1 when argument count is below the required count", () => {
+        const twoParamAction: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          params: [
+            { label: "x", type: { kind: "text" }, hasDefault: false },
+            { label: "y", type: { kind: "number" }, hasDefault: false },
+          ],
+          returnType: undefined,
+        };
+        expect(scoreOverload(twoParamAction, [{ type: { kind: "text" } }])).toBe(-1);
+      });
+
+      it("should return -1 when argument count exceeds the parameter count", () => {
+        const oneParamAction: ChuteType & { kind: "action" } = {
+          kind: "action",
+          name: "doThing",
+          runtimeIdentifier: "com.example",
+          params: [{ label: "x", type: { kind: "text" }, hasDefault: false }],
+          returnType: undefined,
+        };
+        expect(
+          scoreOverload(oneParamAction, [{ type: { kind: "text" } }, { type: { kind: "number" } }]),
+        ).toBe(-1);
+      });
     });
   });
 
