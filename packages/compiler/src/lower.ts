@@ -65,13 +65,23 @@ interface NamespaceAction {
   inputLabel?: string;
 }
 
+/**
+ * Key a namespace action's overload is stored under in the module's action
+ * map, so a call site can look up the exact overload the checker resolved
+ * via `resolvedOverloadIndex` instead of always getting the last-registered
+ * binding for that name.
+ */
+function namespaceOverloadKey(name: string, overloadIndex: number): string {
+  return `${name}__overload_${overloadIndex}`;
+}
+
 interface LowerContext {
   uuidCounter: number;
   tempCounter: number;
   enums: Map<string, Map<string, string>>;
   records: Set<string>;
   functions: Map<string, FunctionDeclaration>;
-  actions: Map<string, ActionDeclaration>;
+  actions: Map<string, ActionDeclaration[]>;
   namespaceActions: Map<string, Map<string, NamespaceAction>>;
   shortcutName: string;
 }
@@ -82,7 +92,7 @@ export function lower(program: Program): CompilationResult {
   const enums = new Map<string, Map<string, string>>();
   const records = new Set<string>();
   const functions = new Map<string, FunctionDeclaration>();
-  const actionDecls = new Map<string, ActionDeclaration>();
+  const actionDecls = new Map<string, ActionDeclaration[]>();
   const collectedErrors: Diagnostic[] = [];
 
   for (const stmt of program.body) {
@@ -93,7 +103,15 @@ export function lower(program: Program): CompilationResult {
     } else if (stmt.kind === "FunctionDeclaration") {
       functions.set(stmt.name, stmt);
     } else if (stmt.kind === "ActionDeclaration") {
-      actionDecls.set(stmt.name, stmt);
+      // Multiple declarations with the same name are overloads (validated by
+      // the checker); keep them in declaration order so `resolvedOverloadIndex`
+      // set by the checker can index directly into this array.
+      const existing = actionDecls.get(stmt.name);
+      if (existing) {
+        existing.push(stmt);
+      } else {
+        actionDecls.set(stmt.name, [stmt]);
+      }
     }
   }
 
@@ -120,6 +138,26 @@ export function lower(program: Program): CompilationResult {
           paramKeys,
           paramLabels,
           ...(binding.type.inputLabel !== undefined ? { inputLabel: binding.type.inputLabel } : {}),
+        });
+      } else if (binding.type.kind === "overloadedAction") {
+        // Store each overload under an indexed key so a call site with a
+        // `resolvedOverloadIndex` can look up its exact overload; also store
+        // the first overload under the plain name as a fallback for callers
+        // that never went through overload resolution (e.g. none exist yet
+        // today, but this keeps behavior sane if one is looked up directly).
+        binding.type.overloads.forEach((overload, index) => {
+          const paramKeys = new Map<string, string>();
+          for (const p of overload.params) {
+            paramKeys.set(p.label, p.label);
+          }
+          const nsAction: NamespaceAction = {
+            runtimeIdentifier: overload.runtimeIdentifier,
+            paramKeys,
+          };
+          moduleActions.set(namespaceOverloadKey(name, index), nsAction);
+          if (index === 0) {
+            moduleActions.set(name, nsAction);
+          }
         });
       }
     }
@@ -534,7 +572,10 @@ function lowerNamespaceActionCall(
 function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext): ActionIR {
   if (expr.callee.kind === "MemberExpression" && expr.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(expr.callee.object.name);
-    const nsAction = nsActions?.get(expr.callee.property);
+    const nsAction =
+      expr.resolvedOverloadIndex !== undefined
+        ? nsActions?.get(namespaceOverloadKey(expr.callee.property, expr.resolvedOverloadIndex))
+        : nsActions?.get(expr.callee.property);
     if (nsAction) {
       return lowerNamespaceActionCall(expr, nsAction, actions, ctx);
     }
@@ -551,7 +592,7 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     return lowerFunctionCall(expr, funcDecl, actions, ctx);
   }
 
-  const actionDecl = ctx.actions.get(actionName);
+  const actionDecl = ctx.actions.get(actionName)?.at(expr.resolvedOverloadIndex ?? 0);
 
   if (actionDecl) {
     return lowerDeclaredActionCall(expr, actionDecl, actions, ctx);
@@ -1869,7 +1910,10 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
 
   if (stage.callee.kind === "MemberExpression" && stage.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(stage.callee.object.name);
-    const nsAction = nsActions?.get(stage.callee.property);
+    const nsAction =
+      stage.resolvedOverloadIndex !== undefined
+        ? nsActions?.get(namespaceOverloadKey(stage.callee.property, stage.resolvedOverloadIndex))
+        : nsActions?.get(stage.callee.property);
     if (nsAction) {
       lowerPipelineNamespaceActionStage(stage, nsAction, actions, ctx);
       return;
@@ -1884,7 +1928,9 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
     return;
   }
 
-  const actionDecl = calleeName ? ctx.actions.get(calleeName) : undefined;
+  const actionDecl = calleeName
+    ? ctx.actions.get(calleeName)?.at(stage.resolvedOverloadIndex ?? 0)
+    : undefined;
   if (actionDecl) {
     lowerPipelineDeclaredActionStage(stage, actionDecl, actions, ctx);
     return;

@@ -366,6 +366,7 @@ export interface PipelineStage {
   operator: PipelineOperator;
   callee: Expression;
   args: Argument[];
+  resolvedOverloadIndex?: number;
 }
 
 export interface PipelineExpression {

@@ -638,6 +638,41 @@ describe("lower", () => {
     });
   });
 
+  describe("overloaded action declarations", () => {
+    it("should use each call's own resolved overload for its plist parameter keys", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        enum Prop { title, duration }
+        action edit(p: Prop.title, v: Text) -> Text = "com.example.edit";
+        action edit(p: Prop.duration, v amount: Number) -> Number = "com.example.edit";
+        edit(p: .title, v: "hello");
+        edit(p: .duration, v: 42);
+      `);
+      const editActions = result.filter((a) => a.identifier === "com.example.edit");
+      expect(editActions).toHaveLength(2);
+      expect(editActions.at(0)?.parameters.get("v")).toBe("hello");
+      expect(editActions.at(0)?.parameters.has("amount")).toBe(false);
+      expect(editActions.at(1)?.parameters.get("amount")).toBe(42);
+      expect(editActions.at(1)?.parameters.has("v")).toBe(false);
+    });
+
+    it("should use each pipeline stage's own resolved overload for its plist parameter keys", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action tag(v: Text, extra: Text) -> Text = "com.example.tag";
+        action tag(v: Number, extra amount: Number) -> Number = "com.example.tag";
+        const a = "hello" |> tag(extra: "x");
+        const b = 5 |> tag(extra: 1);
+      `);
+      const tagActions = result.filter((a) => a.identifier === "com.example.tag");
+      expect(tagActions).toHaveLength(2);
+      expect(tagActions.at(0)?.parameters.get("extra")).toBe("x");
+      expect(tagActions.at(0)?.parameters.has("amount")).toBe(false);
+      expect(tagActions.at(1)?.parameters.get("amount")).toBe(1);
+      expect(tagActions.at(1)?.parameters.has("extra")).toBe(false);
+    });
+  });
+
   describe("stdlib integration", () => {
     it("should lower showAlert using inline declaration with correct plist key", () => {
       const result = lowerSource(`

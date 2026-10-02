@@ -487,6 +487,37 @@ action tag(v: Number, prop: Prop.duration) -> Number = "com.example.tag";
     const result = compile(source);
     expect(result.main).toContain("com.example.tag");
   });
+
+  it("should emit the resolved overload's own plist key for each pipeline stage", () => {
+    const source = `shortcut {
+  name: "OverloadedPipelineKeys",
+}
+
+action tag(v: Text, extra: Text) -> Text = "com.example.tag";
+action tag(v: Number, extra amount: Number) -> Number = "com.example.tag";
+"hello" |> tag(extra: "x");
+5 |> tag(extra: 1);`;
+
+    const result = compile(source);
+    expect(result.main).toContain("<key>extra</key>");
+    expect(result.main).toContain("<key>amount</key>");
+  });
+
+  it("should emit the resolved overload's own plist key for each direct call", () => {
+    const source = `shortcut {
+  name: "OverloadedCallKeys",
+}
+
+enum Prop { title, duration }
+action edit(p: Prop.title, v: Text) -> Text = "com.example.edit";
+action edit(p: Prop.duration, v amount: Number) -> Number = "com.example.edit";
+edit(p: .title, v: "hello");
+edit(p: .duration, v: 42);`;
+
+    const result = compile(source);
+    expect(result.main).toContain("<key>v</key>");
+    expect(result.main).toContain("<key>amount</key>");
+  });
 });
 
 describe("stdlib smoke tests", () => {

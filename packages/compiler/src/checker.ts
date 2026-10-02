@@ -2137,6 +2137,7 @@ function inferStageType(
   }
   if (binding?.type.kind === "overloadedAction") {
     const resolved = resolveStageOverload(stage, inputType, binding.type, scope, context);
+    stage.resolvedOverloadIndex = binding.type.overloads.indexOf(resolved);
     return inferPipelineActionCall(stage, resolved, scope, context);
   }
 
