@@ -23,64 +23,109 @@ Shortcuts action: `is.workflow.actions.addnewcalendar`
 ## `editCalendarEvent`
 
 ```chute
-editCalendarEvent()
+editCalendarEvent(WFContentItemPropertyName: Enum, WFPropertyValue: Any, WFDurationUnit: Enum) -> CalendarEvent
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \| Location \| Start Date \| End Date \| Calendar \| Is All Day \| Notes \| URL \| Has Alarms \| Duration \| Attendees \| Organizer \| Creation Date \| Last Modified Date \| Time Zone | — |
+| `WFPropertyValue` | Any | — |
+| `WFDurationUnit` | minutes \| hours \| days | — |
 
 Shortcuts action: `is.workflow.actions.setters.calendarevents`
 
 ## `editReminder`
 
 ```chute
-editReminder()
+editReminder(WFContentItemPropertyName: Enum, WFPropertyValue: Any, WFPriorityLevel: Enum) -> Reminder
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \| Is Completed \| Completion Date \| Due Date \| Reminder List \| Has Alarms \| Priority \| Notes \| Creation Date \| Last Modified Date | — |
+| `WFPropertyValue` | Any | — |
+| `WFPriorityLevel` | None \| Low \| Medium \| High | — |
 
 Shortcuts action: `is.workflow.actions.setters.reminders`
 
 ## `filterEventAttendees`
 
 ```chute
-filterEventAttendees()
+filterEventAttendees(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> EventAttendee
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Name \| Email Address \| Is Me \| Role \| Status | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.eventattendees`
 
 ## `findCalendarEvents`
 
 ```chute
-findCalendarEvents()
+findCalendarEvents(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> CalendarEvent
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Title \| Location \| Start Date \| End Date \| Calendar \| Is All Day \| Notes \| URL \| Has Alarms \| Duration \| Attendees \| Organizer \| Creation Date \| Last Modified Date \| Time Zone | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.calendarevents`
 
 ## `findReminders`
 
 ```chute
-findReminders()
+findReminders(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Reminder
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Title \| Is Completed \| Completion Date \| Due Date \| Reminder List \| Has Alarms \| Priority \| Notes \| Creation Date \| Last Modified Date | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.reminders`
 
 ## `getDetailsOfCalendarEvents`
 
 ```chute
-getDetailsOfCalendarEvents()
+getDetailsOfCalendarEvents(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \| Location \| Start Date \| End Date \| Calendar \| Is All Day \| Notes \| URL \| Has Alarms \| Duration \| Attendees \| Organizer \| Creation Date \| Last Modified Date \| Time Zone | — |
 
 Shortcuts action: `is.workflow.actions.properties.calendarevents`
 
 ## `getDetailsOfEventAttendees`
 
 ```chute
-getDetailsOfEventAttendees()
+getDetailsOfEventAttendees(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Name \| Email Address \| Is Me \| Role \| Status | — |
 
 Shortcuts action: `is.workflow.actions.properties.eventattendees`
 
 ## `getDetailsOfReminders`
 
 ```chute
-getDetailsOfReminders()
+getDetailsOfReminders(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \| Is Completed \| Completion Date \| Due Date \| Reminder List \| Has Alarms \| Priority \| Notes \| Creation Date \| Last Modified Date | — |
 
 Shortcuts action: `is.workflow.actions.properties.reminders`
 
@@ -89,7 +134,7 @@ Shortcuts action: `is.workflow.actions.properties.reminders`
 Gets upcoming calendar events, ordered from nearest to farthest away in time.
 
 ```chute
-getUpcomingEvents(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number, WFDateSpecifier: Enum, WFSpecifiedDate: Text) -> Any
+getUpcomingEvents(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number, WFDateSpecifier: Enum, WFSpecifiedDate: Text) -> CalendarEvent
 ```
 
 | Parameter | Type | Default |
@@ -106,7 +151,7 @@ Shortcuts action: `is.workflow.actions.getupcomingevents`
 Gets upcoming reminders, ordered from nearest to farthest away due date.
 
 ```chute
-getUpcomingReminders(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number) -> Any
+getUpcomingReminders(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Number) -> Reminder
 ```
 
 | Parameter | Type | Default |
@@ -121,7 +166,7 @@ Shortcuts action: `is.workflow.actions.getupcomingreminders`
 Creates a new event and adds it to the selected calendar.
 
 ```chute
-newEvent(WFCalendarItemTitle: Text, WFCalendarItemLocation: Text, WFCalendarDescriptor: Text, WFCalendarItemStartDate: Text, WFCalendarItemEndDate: Text, WFCalendarItemAllDay: Boolean, WFAlertTime: Enum, WFAlertCustomTime: Text, WFCalendarItemNotes: Text, ShowWhenRun: Boolean) -> Any
+newEvent(WFCalendarItemTitle: Text, WFCalendarItemLocation: Text, WFCalendarDescriptor: Text, WFCalendarItemStartDate: Text, WFCalendarItemEndDate: Text, WFCalendarItemAllDay: Boolean, WFAlertTime: Enum, WFAlertCustomTime: Text, WFCalendarItemNotes: Text, ShowWhenRun: Boolean) -> CalendarEvent
 ```
 
 | Parameter | Type | Default |
@@ -144,7 +189,7 @@ Shortcuts action: `is.workflow.actions.addnewevent`
 Creates a new reminder and adds it to the selected list of reminders.
 
 ```chute
-newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Enum, WFAlertCondition: Enum, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Enum, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Any, WFParentTask: Any, WFTags: Text, WFCalendarItemNotes: Text) -> Any
+newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Enum, WFAlertCondition: Enum, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Enum, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Any, WFParentTask: Any, WFTags: Text, WFCalendarItemNotes: Text) -> Reminder
 ```
 
 | Parameter | Type | Default |

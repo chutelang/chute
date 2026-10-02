@@ -9,8 +9,15 @@ import Maps;
 ## `filterLocations`
 
 ```chute
-filterLocations()
+filterLocations(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Name \| Street \| City \| State \| ZIP Code \| Country \| Phone Number \| URL \| Latitude \| Longitude \| Altitude | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.locations`
 
@@ -50,7 +57,7 @@ Shortcuts action: `is.workflow.actions.getcurrentlocation`
 Gets the current weather conditions at the specified location.
 
 ```chute
-getCurrentWeather(WFWeatherCustomLocation: Text) -> Any
+getCurrentWeather(WFWeatherCustomLocation: Text) -> Weather
 ```
 
 | Parameter | Type | Default |
@@ -62,8 +69,12 @@ Shortcuts action: `is.workflow.actions.weather.currentconditions`
 ## `getDetailsOfLocations`
 
 ```chute
-getDetailsOfLocations()
+getDetailsOfLocations(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Name \| Street \| City \| State \| ZIP Code \| Country \| Phone Number \| URL \| Latitude \| Longitude \| Altitude | — |
 
 Shortcuts action: `is.workflow.actions.properties.locations`
 
@@ -86,8 +97,12 @@ Shortcuts action: `is.workflow.actions.properties.ridestatus`
 ## `getDetailsOfWeatherConditions`
 
 ```chute
-getDetailsOfWeatherConditions()
+getDetailsOfWeatherConditions(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Date \| Condition \| Temperature \| High Temperature \| Low Temperature \| Feels Like \| Humidity \| Visibility \| Pressure \| Dew Point \| UV Index \| Wind Speed \| Wind Direction \| Precipitation Chance \| Precipitation Amount \| Sunrise Time \| Sunset Time \| Air Quality Index \| Air Quality Category \| Location | — |
 
 Shortcuts action: `is.workflow.actions.properties.weather.conditions`
 
@@ -143,7 +158,7 @@ Shortcuts action: `is.workflow.actions.getmapslink`
 Fetches the details of your Parked Car, as stored in the Maps app.
 
 ```chute
-getParkedCarLocation() -> Any
+getParkedCarLocation() -> ParkedCar
 ```
 
 Shortcuts action: `is.workflow.actions.getparkedcarlocation`
@@ -153,7 +168,7 @@ Shortcuts action: `is.workflow.actions.getparkedcarlocation`
 Estimates the amount of time it will take to travel to the location passed into this action.
 
 ```chute
-getTravelTime(WFGetDirectionsCustomLocation: Text, WFDestination: Text, WFGetDirectionsActionMode: Enum) -> Any
+getTravelTime(WFGetDirectionsCustomLocation: Text, WFDestination: Text, WFGetDirectionsActionMode: Enum) -> RideStatus
 ```
 
 | Parameter | Type | Default |
@@ -171,7 +186,7 @@ Shortcuts action: `is.workflow.actions.gettraveltime`
 Gets an hourly or daily weather forecast at the specified location.
 
 ```chute
-getWeatherForecast(WFWeatherCustomLocation: Text, WFWeatherForecastType: Enum) -> Any
+getWeatherForecast(WFWeatherCustomLocation: Text, WFWeatherForecastType: Enum) -> Weather
 ```
 
 | Parameter | Type | Default |
@@ -232,7 +247,7 @@ Shortcuts action: `is.workflow.actions.searchmaps`
 Requests a ride from the specified pickup location to a specified drop off location.
 
 ```chute
-requestRide(IntentAppDefinition: Text, PickupLocation: Text, DropOffLocation: Text, RideOption: Text, PaymentMethod: Text, PartySize: Number) -> Any
+requestRide(IntentAppDefinition: Text, PickupLocation: Text, DropOffLocation: Text, RideOption: Text, PaymentMethod: Text, PartySize: Number) -> RideStatus
 ```
 
 | Parameter | Type | Default |
@@ -251,7 +266,7 @@ Shortcuts action: `is.workflow.actions.ride.requestride`
 Saves details of your Parked Car in the Maps app.
 
 ```chute
-setParkedCar(WFLocation: Text, WFSetParkedCarNotes: Text, WFImage: Any) -> Any
+setParkedCar(WFLocation: Text, WFSetParkedCarNotes: Text, WFImage: Any) -> ParkedCar
 ```
 
 | Parameter | Type | Default |

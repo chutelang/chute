@@ -81,7 +81,7 @@ Shortcuts action: `is.workflow.actions.pocket.add`
 Creates a new card on the specified list and board in your Trello account.
 
 ```chute
-addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTrelloDueDate: Text, WFTrelloCardPosition: Enum, WFTrelloAttachments: Any, WFTrelloDescription: Text) -> Any
+addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTrelloDueDate: Text, WFTrelloCardPosition: Enum, WFTrelloAttachments: Any, WFTrelloDescription: Text) -> TrelloItem
 ```
 
 | Parameter | Type | Default |
@@ -101,7 +101,7 @@ Shortcuts action: `is.workflow.actions.trello.add.card`
 Adds the text passed as input to the end of the specified file.
 
 ```chute
-appendToDropboxTextFile(WFFilePath: Text, WFAppendFileWriteMode: Enum, WFAppendOnNewLine: Boolean, WFInput: Text) -> Any
+appendToDropboxTextFile(WFFilePath: Text, WFAppendFileWriteMode: Enum, WFAppendOnNewLine: Boolean, WFInput: Text) -> File
 ```
 
 | Parameter | Type | Default |
@@ -120,7 +120,7 @@ Shortcuts action: `is.workflow.actions.dropbox.appendfile`
 Finds a note using the specified criteria and appends the input to the note.
 
 ```chute
-appendToEvernote(WFInput: Any, WFEvernoteNotesTitleSearch: Text, WFEvernoteWriteMode: Enum, WFEvernoteNotesNotebookName: Text) -> Any
+appendToEvernote(WFInput: Any, WFEvernoteNotesTitleSearch: Text, WFEvernoteWriteMode: Enum, WFEvernoteNotesNotebookName: Text) -> EvernoteNote
 ```
 
 | Parameter | Type | Default |
@@ -151,7 +151,7 @@ Shortcuts action: `is.workflow.actions.dropbox.createfolder`
 Saves the input as a note in Evernote.
 
 ```chute
-createNewNote(WFEvernoteNoteTitle: Text, WFEvernoteNotebook: Text, WFEvernoteTags: List<Text>, WFInput: Any) -> Any
+createNewNote(WFEvernoteNoteTitle: Text, WFEvernoteNotebook: Text, WFEvernoteTags: List<Text>, WFInput: Any) -> EvernoteNote
 ```
 
 | Parameter | Type | Default |
@@ -168,7 +168,7 @@ Shortcuts action: `is.workflow.actions.evernote.new`
 Creates a new board in your Trello account.
 
 ```chute
-createTrelloBoard(WFTrelloName: Text, WFTrelloDescription: Text) -> Any
+createTrelloBoard(WFTrelloName: Text, WFTrelloDescription: Text) -> TrelloItem
 ```
 
 | Parameter | Type | Default |
@@ -183,7 +183,7 @@ Shortcuts action: `is.workflow.actions.trello.add.board`
 Creates a new list on the specified board in your Trello account.
 
 ```chute
-createTrelloList(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloPosition: Enum) -> Any
+createTrelloList(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloPosition: Enum) -> TrelloItem
 ```
 
 | Parameter | Type | Default |
@@ -229,7 +229,7 @@ Shortcuts action: `is.workflow.actions.properties.ulysses.sheet`
 Gets files from Dropbox. Turn off “Show Document Picker” to specify a path to retrieve.
 
 ```chute
-getDropboxFile(WFShowFilePicker: Boolean, SelectMultiple: Boolean, WFGetFilePath: Text, WFGetFileInitialDirectoryPath: Text, WFFileErrorIfNotFound: Boolean) -> Any
+getDropboxFile(WFShowFilePicker: Boolean, SelectMultiple: Boolean, WFGetFilePath: Text, WFGetFileInitialDirectoryPath: Text, WFFileErrorIfNotFound: Boolean) -> File
 ```
 
 | Parameter | Type | Default |
@@ -294,7 +294,7 @@ Shortcuts action: `is.workflow.actions.evernote.getlink`
 Gets recent notes from Evernote, optionally filtering based on criteria.
 
 ```chute
-getNotes(WFEvernoteNotesTitleSearch: Text, WFEvernoteNotesTags: List<Text>, WFEvernoteNotesNotebookName: Text, WFEvernoteNotesCount: Number) -> Any
+getNotes(WFEvernoteNotesTitleSearch: Text, WFEvernoteNotesTags: List<Text>, WFEvernoteNotesNotebookName: Text, WFEvernoteNotesCount: Number) -> EvernoteNote
 ```
 
 | Parameter | Type | Default |
@@ -326,7 +326,7 @@ Shortcuts action: `is.workflow.actions.pinboard.get`
 Gets cards, lists, or boards in your Trello account.
 
 ```chute
-getTrelloItems(WFTrelloItemType: Enum, WFTrelloBoard: Text, WFTrelloList: Text) -> Any
+getTrelloItems(WFTrelloItemType: Enum, WFTrelloBoard: Text, WFTrelloList: Text) -> TrelloItem
 ```
 
 | Parameter | Type | Default |
@@ -509,7 +509,7 @@ Shortcuts action: `is.workflow.actions.venmo.request`
 Save files to Dropbox. Turn off “Ask Where to Save” in order to specify a destination path.
 
 ```chute
-saveDropboxFile(WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFileOverwrite: Boolean, WFInput: Any) -> Any
+saveDropboxFile(WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFileOverwrite: Boolean, WFInput: Any) -> File
 ```
 
 | Parameter | Type | Default |

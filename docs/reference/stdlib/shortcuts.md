@@ -9,8 +9,12 @@ import Shortcuts;
 ## `getDetailsOfShortcut`
 
 ```chute
-getDetailsOfShortcut()
+getDetailsOfShortcut(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Name \| Action Count \| File Size \| Creation Date \| Last Modified Date \| Folder \| Icon \| Icon Color \| Icon Glyph | — |
 
 Shortcuts action: `is.workflow.actions.properties.workflow`
 
@@ -19,7 +23,7 @@ Shortcuts action: `is.workflow.actions.properties.workflow`
 Gets the shortcuts stored on this device.
 
 ```chute
-getMyShortcuts(Folder: Text) -> Any
+getMyShortcuts(Folder: Text) -> Shortcut
 ```
 
 | Parameter | Type | Default |

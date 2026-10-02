@@ -1,0 +1,131 @@
+{
+  "NSString": "Text",
+  "WFStringContentItem": "Text",
+  "NSAttributedString": "Text",
+  "public.plain-text": "Text",
+
+  "NSDecimalNumber": "Number",
+  "NSNumber": "Number",
+  "WFNumberContentItem": "Number",
+  "NSMeasurement": "Number",
+
+  "WFBooleanContentItem": "Boolean",
+
+  "NSDictionary": "Dictionary",
+  "WFDictionaryContentItem": "Dictionary",
+
+  "NSURL": "URL",
+  "WFURLContentItem": "URL",
+
+  "WFEmailAddress": "Email",
+  "WFEmailAddressContentItem": "Email",
+
+  "WFPhoneNumber": "Phone",
+  "WFPhoneNumberContentItem": "Phone",
+
+  "WFStreetAddress": "Location",
+  "CLLocation": "Location",
+  "WFLocationContentItem": "Location",
+  "MKMapItem": "Location",
+
+  "NSDate": "Date",
+  "NSDateComponents": "Date",
+  "WFDateContentItem": "Date",
+
+  "WFImage": "Image",
+  "PHAsset": "Image",
+  "WFImageContentItem": "Image",
+  "WFPhotoMediaContentItem": "Image",
+  "public.image": "Image",
+  "WFPDFContentItem": "Image",
+
+  "WFContact": "Contact",
+  "WFContactContentItem": "Contact",
+
+  "WFArticle": "Article",
+  "WFArticleContentItem": "Article",
+
+  "EKEvent": "CalendarEvent",
+  "WFCalendarEventContentItem": "CalendarEvent",
+  "WFEKParticipantContentItem": "EventAttendee",
+  "WFTimeIntervalContentItem": "TimeInterval",
+  "WFTimeInterval": "TimeInterval",
+
+  "REMReminder": "Reminder",
+  "WFReminderContentItem": "Reminder",
+
+  "AVAsset": "Media",
+  "WFAVAssetContentItem": "Media",
+  "MPMediaItem": "Media",
+  "WFMPMediaContentItem": "Media",
+  "WFMediaItemCollectionContentItem": "Media",
+  "public.audio": "Media",
+  "public.mpeg-4": "Media",
+  "com.apple.coreaudio-format": "Media",
+  "com.apple.m4a-audio": "Media",
+  "com.apple.quicktime-movie": "Media",
+  "com.compuserve.gif": "Media",
+
+  "WFGenericFileContentItem": "File",
+  "WFFileSizeContentItem": "File",
+  "WFRichTextContentItem": "RichText",
+  "com.adobe.pdf": "File",
+  "public.data": "File",
+  "public.html": "RichText",
+  "public.folder": "File",
+
+  "WFApp": "App",
+  "WFAppContentItem": "App",
+  "WFAppStoreAppContentItem": "App",
+
+  "WFSafariWebPageContentItem": "WebPage",
+  "WFSafariWebPage": "WebPage",
+
+  "WFWorkflowContentItem": "Shortcut",
+  "WFWorkflowReference": "Shortcut",
+
+  "WFWeatherDataContentItem": "Weather",
+  "WFWeatherData": "Weather",
+
+  "WFHKSampleContentItem": "HealthSample",
+  "WFHKWorkoutContentItem": "HealthSample",
+
+  "WFPodcastEpisodeContentItem": "PodcastEpisode",
+  "WFPodcastShowContentItem": "PodcastShow",
+
+  "WFShazamMediaContentItem": "ShazamMedia",
+  "WFShazamMedia": "ShazamMedia",
+
+  "WFParkedCarContentItem": "ParkedCar",
+  "WFRideStatusContentItem": "RideStatus",
+  "INRideStatus": "RideStatus",
+  "WFTripInfo": "RideStatus",
+
+  "WFDisplayContentItem": "Display",
+  "WFWindowContentItem": "Window",
+  "WFAppearanceSettingContentItem": "AppearanceSetting",
+  "WFFocusModeContentItem": "FocusMode",
+
+  "WFiTunesProductContentItem": "iTunesProduct",
+  "WFiTunesArtistContentItem": "iTunesArtist",
+
+  "ENNoteRef": "EvernoteNote",
+  "WFEvernoteContentItem": "EvernoteNote",
+  "WFTrelloItemContentItem": "TrelloItem",
+  "WFTrelloBoardContentItem": "TrelloItem",
+  "WFTrelloCardContentItem": "TrelloItem",
+  "WFTrelloListContentItem": "TrelloItem",
+  "WFTrelloBoard": "TrelloItem",
+  "WFTrelloCard": "TrelloItem",
+  "WFTrelloList": "TrelloItem",
+  "WFUlyssesSheetContentItem": "UlyssesSheet",
+
+  "WFContentItem": "Any",
+  "WFGeneratedContentItem": "Any",
+  "WFLinkEntityContentItem": "Any",
+  "WFMachineReadableCode": "Barcode",
+  "WFMessageContentItem": "Message",
+  "WFPosterRepresentation": "Poster",
+  "WFGiphyObject": "Media",
+  "UIPrintFormatter": "Any"
+}

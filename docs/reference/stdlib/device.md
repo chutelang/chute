@@ -11,7 +11,7 @@ import Device;
 Connects your computer to the specified file servers on the network. For example, you can connect to SMB/CIFS, NFS, FTP (read-only), or WebDAV servers.
 
 ```chute
-connectToServers(WFInput: Text) -> Any
+connectToServers(WFInput: Text) -> File
 ```
 
 | Parameter | Type | Default |
@@ -53,16 +53,30 @@ Shortcuts action: `is.workflow.actions.ejectdisk`
 ## `findDisplays`
 
 ```chute
-findDisplays()
+findDisplays(WFContentItemSortProperty: Text, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Display
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Text | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.displays`
 
 ## `findWindows`
 
 ```chute
-findWindows()
+findWindows(WFContentItemSortProperty: Text, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Window
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Text | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.windows`
 
@@ -71,7 +85,7 @@ Shortcuts action: `is.workflow.actions.filter.windows`
 Gets all of your Lock Screen wallpapers, and returns them as output so you can use them with other actions.
 
 ```chute
-getAllWallpapers(WFPosterType: Enum) -> Any
+getAllWallpapers(WFPosterType: Enum) -> Poster
 ```
 
 | Parameter | Type | Default |
@@ -111,7 +125,7 @@ Shortcuts action: `is.workflow.actions.getclipboard`
 Gets the current visible app.
 
 ```chute
-getCurrentApp(WFVisibleAppScope: Enum) -> Any
+getCurrentApp(WFVisibleAppScope: Enum) -> App
 ```
 
 | Parameter | Type | Default |
@@ -125,7 +139,7 @@ Shortcuts action: `is.workflow.actions.getcurrentapp`
 Returns the currently active Focus.
 
 ```chute
-getCurrentFocus() -> Any
+getCurrentFocus() -> FocusMode
 ```
 
 > This action returns nothing if no Focus is active.
@@ -190,7 +204,7 @@ Shortcuts action: `is.workflow.actions.getwifi`
 Gets the current content on screen, if available.
 
 ```chute
-getWhat’sOnScreen() -> Any
+getWhat’sOnScreen() -> File
 ```
 
 Shortcuts action: `is.workflow.actions.getonscreencontent`
@@ -398,7 +412,7 @@ Shortcuts action: `is.workflow.actions.dnd.set`
 Sets the wallpaper to the specified image.
 
 ```chute
-setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Enum, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean) -> Any
+setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Enum, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean) -> Poster
 ```
 
 | Parameter | Type | Default |

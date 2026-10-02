@@ -39,8 +39,15 @@ Shortcuts action: `is.workflow.actions.url.expand`
 ## `filterArticles`
 
 ```chute
-filterArticles()
+filterArticles(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Title \| Author \| Published Date \| URL \| Number of Words \| Main Image URL \| Excerpt \| Body | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.articles`
 
@@ -49,7 +56,7 @@ Shortcuts action: `is.workflow.actions.filter.articles`
 Searches the App Store, returning the apps that match the specified search terms. You can get more details about the results using the Get Details of App Store App action.
 
 ```chute
-findAppStoreApps(WFSearchTerm: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> Any
+findAppStoreApps(WFSearchTerm: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> App
 ```
 
 | Parameter | Type | Default |
@@ -67,7 +74,7 @@ Shortcuts action: `is.workflow.actions.searchappstore`
 Searches the iTunes Store, returning the items that match the specified search terms. You can get more details about the results using the Get Details of iTunes Product action.
 
 ```chute
-findItunesStoreItems(WFSearchTerm: Text, WFMediaType: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> Any
+findItunesStoreItems(WFSearchTerm: Text, WFMediaType: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> iTunesProduct
 ```
 
 | Parameter | Type | Default |
@@ -119,7 +126,7 @@ Shortcuts action: `is.workflow.actions.geturlcomponent`
 Gets the contents of URLs passed into the action. Useful for downloading files and web content, or for making API requests.
 
 ```chute
-getContentsOfUrl(WFURL: Text, WFHTTPMethod: Enum, ShowHeaders: Any, WFHTTPHeaders: Dictionary, WFHTTPBodyType: Enum, WFFormValues: Dictionary, WFJSONValues: Dictionary, WFRequestVariable: Any) -> Any
+getContentsOfUrl(WFURL: Text, WFHTTPMethod: Enum, ShowHeaders: Any, WFHTTPHeaders: Dictionary, WFHTTPBodyType: Enum, WFFormValues: Dictionary, WFJSONValues: Dictionary, WFRequestVariable: Any) -> File
 ```
 
 | Parameter | Type | Default |
@@ -156,7 +163,7 @@ Shortcuts action: `is.workflow.actions.getwebpagecontents`
 Gets the web page of the frontmost Safari window.
 
 ```chute
-getCurrentWebPageFromSafari() -> Any
+getCurrentWebPageFromSafari() -> WebPage
 ```
 
 Shortcuts action: `is.workflow.actions.safari.geturl`
@@ -164,16 +171,24 @@ Shortcuts action: `is.workflow.actions.safari.geturl`
 ## `getDetailsOfArticle`
 
 ```chute
-getDetailsOfArticle()
+getDetailsOfArticle(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \| Author \| Published Date \| URL \| Number of Words \| Main Image URL \| Excerpt \| Body | — |
 
 Shortcuts action: `is.workflow.actions.properties.articles`
 
 ## `getDetailsOfSafariWebPage`
 
 ```chute
-getDetailsOfSafariWebPage()
+getDetailsOfSafariWebPage(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Page Contents \| Page Selection \| Page URL \| Name | — |
 
 > Safari Web Page items are only available when running your shortcut as an Action Extension in Safari.
 

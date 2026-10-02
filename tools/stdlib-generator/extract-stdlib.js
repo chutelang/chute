@@ -213,6 +213,378 @@ function mapParameter(raw, unmappedClasses) {
   return result;
 }
 
+const CONTENT_ITEM_PROPERTIES = {
+  WFCalendarEventContentItem: [
+    "Title",
+    "Location",
+    "Start Date",
+    "End Date",
+    "Calendar",
+    "Is All Day",
+    "Notes",
+    "URL",
+    "Has Alarms",
+    "Duration",
+    "Attendees",
+    "Organizer",
+    "Creation Date",
+    "Last Modified Date",
+    "Time Zone",
+  ],
+  WFReminderContentItem: [
+    "Title",
+    "Is Completed",
+    "Completion Date",
+    "Due Date",
+    "Reminder List",
+    "Has Alarms",
+    "Priority",
+    "Notes",
+    "Creation Date",
+    "Last Modified Date",
+  ],
+  WFContactContentItem: [
+    "First Name",
+    "Middle Name",
+    "Last Name",
+    "Birthday",
+    "Prefix",
+    "Suffix",
+    "Nickname",
+    "Company",
+    "Job Title",
+    "Department",
+    "Email Addresses",
+    "Phone Numbers",
+    "URLs",
+    "Notes",
+    "Street Address",
+    "City",
+    "State",
+    "ZIP Code",
+    "Country",
+    "Has Photo",
+    "Photo",
+    "Group",
+  ],
+  WFEKParticipantContentItem: ["Name", "Email Address", "Is Me", "Role", "Status"],
+  WFImageContentItem: [
+    "Width",
+    "Height",
+    "Date Taken",
+    "Camera Make",
+    "Camera Model",
+    "Is a Screenshot",
+    "Location",
+    "Duration",
+    "Frame Rate",
+    "File Size",
+    "File Extension",
+    "Name",
+    "Album",
+    "Media Type",
+    "Photo Type",
+    "Time Taken",
+    "Metadata Dictionary",
+    "Is Favorite",
+    "Is Hidden",
+    "Creation Date",
+    "Last Modified Date",
+  ],
+  WFPhotoMediaContentItem: [
+    "Width",
+    "Height",
+    "Date Taken",
+    "Camera Make",
+    "Camera Model",
+    "Is a Screenshot",
+    "Location",
+    "Duration",
+    "Frame Rate",
+    "File Size",
+    "File Extension",
+    "Name",
+    "Album",
+    "Media Type",
+    "Photo Type",
+    "Time Taken",
+    "Metadata Dictionary",
+    "Is Favorite",
+    "Is Hidden",
+    "Creation Date",
+    "Last Modified Date",
+  ],
+  WFMPMediaContentItem: [
+    "Title",
+    "Artist",
+    "Album Artist",
+    "Album",
+    "Genre",
+    "Composer",
+    "Date Added",
+    "Duration",
+    "Play Count",
+    "Has Album Artwork",
+    "Album Artwork",
+    "Skip Count",
+    "Rating",
+    "Comments",
+    "Is Explicit",
+    "Lyrics",
+    "Release Date",
+    "Last Played Date",
+    "Is Cloud Item",
+    "Album Track Number",
+    "Disc Number",
+  ],
+  WFGenericFileContentItem: [
+    "Name",
+    "File Extension",
+    "File Size",
+    "Creation Date",
+    "Last Modified Date",
+    "File Path",
+  ],
+  WFLocationContentItem: [
+    "Name",
+    "Street",
+    "City",
+    "State",
+    "ZIP Code",
+    "Country",
+    "Phone Number",
+    "URL",
+    "Latitude",
+    "Longitude",
+    "Altitude",
+  ],
+  WFArticleContentItem: [
+    "Title",
+    "Author",
+    "Published Date",
+    "URL",
+    "Number of Words",
+    "Main Image URL",
+    "Excerpt",
+    "Body",
+  ],
+  WFWeatherDataContentItem: [
+    "Date",
+    "Condition",
+    "Temperature",
+    "High Temperature",
+    "Low Temperature",
+    "Feels Like",
+    "Humidity",
+    "Visibility",
+    "Pressure",
+    "Dew Point",
+    "UV Index",
+    "Wind Speed",
+    "Wind Direction",
+    "Precipitation Chance",
+    "Precipitation Amount",
+    "Sunrise Time",
+    "Sunset Time",
+    "Air Quality Index",
+    "Air Quality Category",
+    "Location",
+  ],
+  WFSafariWebPageContentItem: ["Page Contents", "Page Selection", "Page URL", "Name"],
+  WFWorkflowContentItem: [
+    "Name",
+    "Action Count",
+    "File Size",
+    "Creation Date",
+    "Last Modified Date",
+    "Folder",
+    "Icon",
+    "Icon Color",
+    "Icon Glyph",
+  ],
+  WFAppContentItem: ["Name"],
+  WFAppStoreAppContentItem: [
+    "Name",
+    "Artist",
+    "Price",
+    "Store URL",
+    "Store ID",
+    "Rating",
+    "Rating Count",
+    "Release Date",
+    "Artwork",
+    "Artwork URL",
+    "Supported Languages",
+    "Is Universal",
+    "Category",
+    "Description",
+    "Version",
+    "Release Notes",
+    "Content Rating",
+    "Minimum OS Version",
+    "File Size",
+    "Supported Devices",
+    "Currency Code",
+    "Screenshot URLs",
+    "iPad Screenshot URLs",
+  ],
+};
+
+const SETTER_EXTRA_PARAMS = {
+  WFCalendarEventContentItem: [
+    {
+      Key: "WFDurationUnit",
+      Label: "Duration Unit",
+      Class: "WFEnumerationParameter",
+      Items: ["minutes", "hours", "days"],
+      DefaultValue: null,
+      Required: false,
+      RequiredResources: [
+        {
+          WFParameterKey: "WFContentItemPropertyName",
+          WFParameterValue: "Duration",
+          WFResourceClass: "WFParameterRelationResource",
+        },
+      ],
+    },
+  ],
+  WFReminderContentItem: [
+    {
+      Key: "WFPriorityLevel",
+      Label: "Priority Level",
+      Class: "WFEnumerationParameter",
+      Items: ["None", "Low", "Medium", "High"],
+      DefaultValue: null,
+      Required: false,
+      RequiredResources: [
+        {
+          WFParameterKey: "WFContentItemPropertyName",
+          WFParameterValue: "Priority",
+          WFResourceClass: "WFParameterRelationResource",
+        },
+      ],
+    },
+  ],
+};
+
+function synthesizeSpecialActionTypes(raw) {
+  const cls = raw.ActionClass;
+  const contentItemClass = raw.WFContentItemClass;
+  if (!contentItemClass) {
+    return {};
+  }
+
+  const properties = CONTENT_ITEM_PROPERTIES[contentItemClass] ?? [];
+
+  if (cls === "WFContentItemFilterAction") {
+    const params = [
+      {
+        Key: "WFContentItemSortProperty",
+        Label: "Sort by",
+        Class: "WFEnumerationParameter",
+        Items: properties,
+        DefaultValue: null,
+        Required: false,
+      },
+      {
+        Key: "WFContentItemSortOrder",
+        Label: "Order",
+        Class: "WFEnumerationParameter",
+        Items: ["Latest First", "Oldest First"],
+        DefaultValue: null,
+        Required: false,
+      },
+      {
+        Key: "WFContentItemLimit",
+        Label: "Limit",
+        Class: "WFSwitchParameter",
+        DefaultValue: false,
+        Required: false,
+      },
+      {
+        Key: "WFContentItemLimitNumber",
+        Label: "Limit",
+        Class: "WFStepperParameter",
+        DefaultValue: 5,
+        Required: false,
+      },
+    ];
+
+    return {
+      parameters: params,
+      output: {
+        Multiple: true,
+        Types: [contentItemClass],
+      },
+    };
+  }
+
+  if (cls === "WFContentItemPropertiesAction") {
+    const params =
+      properties.length > 0
+        ? [
+            {
+              Key: "WFContentItemPropertyName",
+              Label: "Get",
+              Class: "WFEnumerationParameter",
+              Items: properties,
+              DefaultValue: null,
+              Required: true,
+            },
+          ]
+        : [];
+
+    return {
+      parameters: params,
+      input: {
+        Multiple: true,
+        Required: true,
+        Types: [contentItemClass],
+      },
+    };
+  }
+
+  if (cls === "WFContentItemSetterAction") {
+    const extraParams = SETTER_EXTRA_PARAMS[contentItemClass] ?? [];
+    const params =
+      properties.length > 0
+        ? [
+            {
+              Key: "WFContentItemPropertyName",
+              Label: "Property",
+              Class: "WFEnumerationParameter",
+              Items: properties,
+              DefaultValue: null,
+              Required: true,
+            },
+            {
+              Key: "WFPropertyValue",
+              Label: "Value",
+              Class: "WFVariablePickerParameter",
+              DefaultValue: null,
+              Required: true,
+            },
+            ...extraParams,
+          ]
+        : [];
+
+    return {
+      parameters: params,
+      input: {
+        Multiple: false,
+        Required: true,
+        Types: [contentItemClass],
+      },
+      output: {
+        Multiple: false,
+        Types: [contentItemClass],
+      },
+    };
+  }
+
+  return {};
+}
+
 function mapAction(identifier, raw, unmappedClasses) {
   const displayName = raw.Name || raw._intentTitle || identifier.split(".").pop() || identifier;
 
@@ -221,6 +593,8 @@ function mapAction(identifier, raw, unmappedClasses) {
       ? raw.ActionKeywords.split("|").filter((k) => k.length > 0)
       : raw.ActionKeywords || [];
 
+  const synthesized = synthesizeSpecialActionTypes(raw);
+
   const result = {
     identifier,
     name: toCamelCase(displayName),
@@ -228,9 +602,11 @@ function mapAction(identifier, raw, unmappedClasses) {
     actionClass: raw.ActionClass ?? null,
     description: null,
     keywords,
-    parameters: (raw.Parameters || []).map((p) => mapParameter(p, unmappedClasses)),
-    input: raw.Input ?? null,
-    output: raw.Output ?? null,
+    parameters: (raw.Parameters || synthesized.parameters || []).map((p) =>
+      mapParameter(p, unmappedClasses),
+    ),
+    input: raw.Input ?? synthesized.input ?? null,
+    output: raw.Output ?? synthesized.output ?? null,
     requiredResources: raw.RequiredResources || [],
   };
 

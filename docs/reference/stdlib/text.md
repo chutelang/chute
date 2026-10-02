@@ -129,7 +129,7 @@ Shortcuts action: `is.workflow.actions.getnameofemoji`
 Creates an audio file from text, using text-to-speech.
 
 ```chute
-makeSpokenAudioFromText(WFInput: Text, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text) -> Any
+makeSpokenAudioFromText(WFInput: Text, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text) -> Media
 ```
 
 | Parameter | Type | Default |

@@ -1,4 +1,5 @@
 import stdlibData from "../data/stdlib.json" with { type: "json" };
+import contentTypeNames from "../data/content-types.json" with { type: "json" };
 import { Scope } from "./checker.ts";
 import type { InputSlot } from "./coercion.ts";
 import type { ChuteType } from "./checker.ts";
@@ -83,42 +84,20 @@ const INTENT_TYPE_MAP: Record<string, ChuteType> = {
   DateComponents: { kind: "opaque", name: "Date" },
 };
 
-const CONTENT_TYPE_MAP: Record<string, ChuteType> = {
-  NSString: { kind: "text" },
-  WFStringContentItem: { kind: "text" },
-  NSAttributedString: { kind: "text" },
-  "public.plain-text": { kind: "text" },
-  NSURL: { kind: "opaque", name: "URL" },
-  WFURLContentItem: { kind: "opaque", name: "URL" },
-  WFEmailAddress: { kind: "opaque", name: "Email" },
-  WFEmailAddressContentItem: { kind: "opaque", name: "Email" },
-  WFPhoneNumber: { kind: "opaque", name: "Phone" },
-  WFPhoneNumberContentItem: { kind: "opaque", name: "Phone" },
-  WFStreetAddress: { kind: "opaque", name: "Location" },
-  CLLocation: { kind: "opaque", name: "Location" },
-  WFLocationContentItem: { kind: "opaque", name: "Location" },
-  MKMapItem: { kind: "opaque", name: "Location" },
-  NSDecimalNumber: { kind: "number" },
-  NSNumber: { kind: "number" },
-  WFNumberContentItem: { kind: "number" },
-  NSMeasurement: { kind: "number" },
-  WFBooleanContentItem: { kind: "boolean" },
-  NSDictionary: { kind: "dictionary" },
-  WFDictionaryContentItem: { kind: "dictionary" },
-  NSDate: { kind: "opaque", name: "Date" },
-  NSDateComponents: { kind: "opaque", name: "Date" },
-  WFDateContentItem: { kind: "opaque", name: "Date" },
-  WFImage: { kind: "opaque", name: "Image" },
-  PHAsset: { kind: "opaque", name: "Image" },
-  WFImageContentItem: { kind: "opaque", name: "Image" },
-  WFPhotoMediaContentItem: { kind: "opaque", name: "Image" },
-  "public.image": { kind: "opaque", name: "Image" },
-  WFContact: { kind: "opaque", name: "Contact" },
-  WFContactContentItem: { kind: "opaque", name: "Contact" },
-  WFArticle: { kind: "opaque", name: "Article" },
-  WFArticleContentItem: { kind: "opaque", name: "Article" },
-  WFPDFContentItem: { kind: "opaque", name: "Image" },
+const NAME_TO_CHUTE_TYPE: Record<string, ChuteType> = {
+  Text: { kind: "text" },
+  Number: { kind: "number" },
+  Boolean: { kind: "boolean" },
+  Dictionary: { kind: "dictionary" },
+  Any: { kind: "any" },
 };
+
+const CONTENT_TYPE_MAP: Record<string, ChuteType> = Object.fromEntries(
+  Object.entries(contentTypeNames as Record<string, string>).map(([key, name]) => [
+    key,
+    NAME_TO_CHUTE_TYPE[name] ?? { kind: "opaque" as const, name },
+  ]),
+);
 
 function inferReturnType(output: StdlibJsonAction["output"]): ChuteType | undefined {
   const types = output?.Types;

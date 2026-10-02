@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:simulator": "vitest run --config tools/simulator-test/vitest.config.ts",
+    "stdlib": "node tools/stdlib-generator/extract-stdlib.js && node tools/stdlib-generator/generate-docs.js",
     "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {

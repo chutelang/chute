@@ -71,7 +71,7 @@ Shortcuts action: `is.workflow.actions.ask`
 Encodes or decodes text or files using Base64 encoding.
 
 ```chute
-base64Encode(WFEncodeMode: Enum, WFBase64LineBreakMode: Enum, WFInput: Any) -> Text
+base64Encode(WFEncodeMode: Enum, WFBase64LineBreakMode: Enum, WFInput: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -235,8 +235,15 @@ Shortcuts action: `is.workflow.actions.dismisssiri`
 ## `findApps`
 
 ```chute
-findApps()
+findApps(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> App
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Name | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.apps`
 
@@ -355,8 +362,12 @@ Shortcuts action: `is.workflow.actions.detect.date`
 ## `getDetailsOfAppStoreApp`
 
 ```chute
-getDetailsOfAppStoreApp()
+getDetailsOfAppStoreApp(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Name \| Artist \| Price \| Store URL \| Store ID \| Rating \| Rating Count \| Release Date \| Artwork \| Artwork URL \| Supported Languages \| Is Universal \| Category \| Description \| Version \| Release Notes \| Content Rating \| Minimum OS Version \| File Size \| Supported Devices \| Currency Code \| Screenshot URLs \| iPad Screenshot URLs | — |
 
 Shortcuts action: `is.workflow.actions.properties.appstore`
 
@@ -411,7 +422,7 @@ Shortcuts action: `is.workflow.actions.detect.emailaddress`
 Returns a particular file type from the input.
 
 ```chute
-getFileOfType(WFFileType: Text, WFInput: Any) -> Any
+getFileOfType(WFFileType: Text, WFInput: Any) -> File
 ```
 
 | Parameter | Type | Default |
@@ -650,7 +661,7 @@ Shortcuts action: `is.workflow.actions.nothing`
 Opens the specified app.
 
 ```chute
-openApp(WFSelectedApp: Text, WFAppName: Text, WFWindowingFormat: Enum) -> Any
+openApp(WFSelectedApp: Text, WFAppName: Text, WFWindowingFormat: Enum) -> App
 ```
 
 | Parameter | Type | Default |
@@ -747,7 +758,7 @@ Shortcuts action: `is.workflow.actions.runjavascriptforautomation`
 Runs a script on a remote computer over SSH.
 
 ```chute
-runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser: Text, WFSSHAuthenticationType: Enum, WFSSHPassword: Text, WFSSHKey: Text, WFInput: Any) -> Any
+runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser: Text, WFSSHAuthenticationType: Enum, WFSSHPassword: Text, WFSSHKey: Text, WFInput: Any) -> File
 ```
 
 | Parameter | Type | Default |
@@ -768,7 +779,7 @@ Shortcuts action: `is.workflow.actions.runsshscript`
 This action executes a UNIX shell script. The script will execute starting in your user’s home directory.
 
 ```chute
-runShellScript(Script: Text, Shell: Text, Input: Any, InputMode: Enum, RunAsRoot: Boolean) -> Text
+runShellScript(Script: Text, Shell: Text, Input: Any, InputMode: Enum, RunAsRoot: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -786,7 +797,7 @@ Shortcuts action: `is.workflow.actions.runshellscript`
 Scans a QR code or barcode using the camera, and returns the text/URL that is found.
 
 ```chute
-scanQrOrBarcode() -> Any
+scanQrOrBarcode() -> Barcode
 ```
 
 Shortcuts action: `is.workflow.actions.scanbarcode`

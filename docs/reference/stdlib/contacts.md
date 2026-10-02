@@ -38,8 +38,13 @@ Shortcuts action: `is.workflow.actions.contacts`
 ## `editContact`
 
 ```chute
-editContact()
+editContact(WFContentItemPropertyName: Enum, WFPropertyValue: Any) -> Contact
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | First Name \| Middle Name \| Last Name \| Birthday \| Prefix \| Suffix \| Nickname \| Company \| Job Title \| Department \| Email Addresses \| Phone Numbers \| URLs \| Notes \| Street Address \| City \| State \| ZIP Code \| Country \| Has Photo \| Photo \| Group | — |
+| `WFPropertyValue` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setters.contacts`
 
@@ -76,16 +81,27 @@ Shortcuts action: `com.apple.facetime.facetime`
 ## `findContacts`
 
 ```chute
-findContacts()
+findContacts(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Contact
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | First Name \| Middle Name \| Last Name \| Birthday \| Prefix \| Suffix \| Nickname \| Company \| Job Title \| Department \| Email Addresses \| Phone Numbers \| URLs \| Notes \| Street Address \| City \| State \| ZIP Code \| Country \| Has Photo \| Photo \| Group | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.contacts`
 
 ## `getDetailsOfContacts`
 
 ```chute
-getDetailsOfContacts()
+getDetailsOfContacts(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | First Name \| Middle Name \| Last Name \| Birthday \| Prefix \| Suffix \| Nickname \| Company \| Job Title \| Department \| Email Addresses \| Phone Numbers \| URLs \| Notes \| Street Address \| City \| State \| ZIP Code \| Country \| Has Photo \| Photo \| Group | — |
 
 Shortcuts action: `is.workflow.actions.properties.contacts`
 

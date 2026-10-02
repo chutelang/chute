@@ -83,41 +83,12 @@ function formatTypeSimple(chuteType) {
   return escapeAngleBrackets(chuteType || "Any");
 }
 
-const CONTENT_TYPE_MAP = {
-  NSString: "Text",
-  WFStringContentItem: "Text",
-  NSAttributedString: "Text",
-  "public.plain-text": "Text",
-  NSURL: "URL",
-  WFURLContentItem: "URL",
-  WFEmailAddress: "Email",
-  WFEmailAddressContentItem: "Email",
-  WFPhoneNumber: "Phone",
-  WFPhoneNumberContentItem: "Phone",
-  WFStreetAddress: "Location",
-  CLLocation: "Location",
-  WFLocationContentItem: "Location",
-  MKMapItem: "Location",
-  NSDecimalNumber: "Number",
-  NSNumber: "Number",
-  WFNumberContentItem: "Number",
-  NSMeasurement: "Number",
-  WFBooleanContentItem: "Boolean",
-  NSDictionary: "Dictionary",
-  WFDictionaryContentItem: "Dictionary",
-  NSDate: "Date",
-  NSDateComponents: "Date",
-  WFDateContentItem: "Date",
-  WFImage: "Image",
-  PHAsset: "Image",
-  WFImageContentItem: "Image",
-  WFPhotoMediaContentItem: "Image",
-  "public.image": "Image",
-  WFContact: "Contact",
-  WFContactContentItem: "Contact",
-  WFArticle: "Article",
-  WFArticleContentItem: "Article",
-};
+const CONTENT_TYPE_MAP = JSON.parse(
+  fs.readFileSync(
+    path.join(TOOLS_DIR, "..", "..", "packages", "compiler", "data", "content-types.json"),
+    "utf-8",
+  ),
+);
 
 function inferReturnType(output) {
   const types = output?.Types;

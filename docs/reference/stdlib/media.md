@@ -11,7 +11,7 @@ import Media;
 Adds an image to the existing animated GIF passed as input. If no GIF is passed as input, a new animated GIF is created.
 
 ```chute
-addFrameToGif(WFImage: Any, WFInputGIF: Any, WFGIFDelayTime: Number, WFGIFAutoSize: Boolean, WFGIFManualSizeWidth: Number, WFGIFManualSizeHeight: Number) -> Any
+addFrameToGif(WFImage: Any, WFInputGIF: Any, WFGIFDelayTime: Number, WFGIFAutoSize: Boolean, WFGIFManualSizeWidth: Number, WFGIFManualSizeHeight: Number) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -45,7 +45,7 @@ Shortcuts action: `is.workflow.actions.addmusictoupnext`
 Adds the items passed as input to the specified playlist.
 
 ```chute
-addToPlaylist(WFPlaylistName: Text, WFInput: Any) -> Any
+addToPlaylist(WFPlaylistName: Text, WFInput: Any) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -135,7 +135,7 @@ Shortcuts action: `is.workflow.actions.photos.createalbum`
 Creates a new playlist in the Music app, adding any items passed as input to the new playlist.
 
 ```chute
-createPlaylist(WFPlaylistName: Text, WFPlaylistAuthor: Text, WFPlaylistDescription: Text, WFPlaylistItems: Any) -> Any
+createPlaylist(WFPlaylistName: Text, WFPlaylistAuthor: Text, WFPlaylistDescription: Text, WFPlaylistItems: Any) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -186,7 +186,7 @@ Shortcuts action: `is.workflow.actions.deletephotos`
 Re-encodes the media passed as input at the specified size, optionally converting to audio.
 
 ```chute
-encodeMedia(WFMedia: Any, WFMediaAudioOnly: Boolean, WFMediaAudioFormat: Enum, WFMediaSize: Enum, WFMediaSpeed: Enum, WFMediaPreserveTransparency: Boolean, WFMediaCustomSpeed: Number, Metadata: Any, WFMetadataTitle: Text, WFMetadataArtist: Text, WFMetadataAlbum: Text, WFMetadataGenre: Text, WFMetadataYear: Text, WFMetadataArtwork: Any) -> Any
+encodeMedia(WFMedia: Any, WFMediaAudioOnly: Boolean, WFMediaAudioFormat: Enum, WFMediaSize: Enum, WFMediaSpeed: Enum, WFMediaPreserveTransparency: Boolean, WFMediaCustomSpeed: Number, Metadata: Any, WFMetadataTitle: Text, WFMetadataArtist: Text, WFMetadataAlbum: Text, WFMetadataGenre: Text, WFMetadataYear: Text, WFMetadataArtwork: Any) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -211,8 +211,15 @@ Shortcuts action: `is.workflow.actions.encodemedia`
 ## `filterImages`
 
 ```chute
-filterImages()
+filterImages(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Image
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Width \| Height \| Date Taken \| Camera Make \| Camera Model \| Is a Screenshot \| Location \| Duration \| Frame Rate \| File Size \| File Extension \| Name \| Album \| Media Type \| Photo Type \| Time Taken \| Metadata Dictionary \| Is Favorite \| Is Hidden \| Creation Date \| Last Modified Date | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.images`
 
@@ -236,7 +243,7 @@ Shortcuts action: `is.workflow.actions.image.convert.finder`
 Finds GIFs representing the provided text, using Giphy.
 
 ```chute
-findGiphyGifs(WFGiphyQuery: Text, WFGiphyShowPicker: Boolean, WFGiphyLimit: Number, WFGiphySelectMultiple: Boolean) -> Any
+findGiphyGifs(WFGiphyQuery: Text, WFGiphyShowPicker: Boolean, WFGiphyLimit: Number, WFGiphySelectMultiple: Boolean) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -253,16 +260,30 @@ Shortcuts action: `is.workflow.actions.giphy`
 ## `findMusic`
 
 ```chute
-findMusic()
+findMusic(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Media
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Title \| Artist \| Album Artist \| Album \| Genre \| Composer \| Date Added \| Duration \| Play Count \| Has Album Artwork \| Album Artwork \| Skip Count \| Rating \| Comments \| Is Explicit \| Lyrics \| Release Date \| Last Played Date \| Is Cloud Item \| Album Track Number \| Disc Number | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.music`
 
 ## `findPhotos`
 
 ```chute
-findPhotos()
+findPhotos(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Image
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemSortProperty` | Width \| Height \| Date Taken \| Camera Make \| Camera Model \| Is a Screenshot \| Location \| Duration \| Frame Rate \| File Size \| File Extension \| Name \| Album \| Media Type \| Photo Type \| Time Taken \| Metadata Dictionary \| Is Favorite \| Is Hidden \| Creation Date \| Last Modified Date | — |
+| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.photos`
 
@@ -271,7 +292,7 @@ Shortcuts action: `is.workflow.actions.filter.photos`
 Finds podcasts in the Apple Podcasts catalog, returning the items that match the specified search terms.
 
 ```chute
-findPodcasts(WFSearchTerm: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> Any
+findPodcasts(WFSearchTerm: Text, WFAttribute: Text, WFEntity: Text, WFCountry: Text, WFItemLimit: Number) -> PodcastShow
 ```
 
 | Parameter | Type | Default |
@@ -330,8 +351,12 @@ Shortcuts action: `is.workflow.actions.getcurrentsong`
 ## `getDetailsOfImages`
 
 ```chute
-getDetailsOfImages()
+getDetailsOfImages(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Width \| Height \| Date Taken \| Camera Make \| Camera Model \| Is a Screenshot \| Location \| Duration \| Frame Rate \| File Size \| File Extension \| Name \| Album \| Media Type \| Photo Type \| Time Taken \| Metadata Dictionary \| Is Favorite \| Is Hidden \| Creation Date \| Last Modified Date | — |
 
 Shortcuts action: `is.workflow.actions.properties.images`
 
@@ -354,8 +379,12 @@ Shortcuts action: `is.workflow.actions.properties.itunesstore`
 ## `getDetailsOfMusic`
 
 ```chute
-getDetailsOfMusic()
+getDetailsOfMusic(WFContentItemPropertyName: Enum)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \| Artist \| Album Artist \| Album \| Genre \| Composer \| Date Added \| Duration \| Play Count \| Has Album Artwork \| Album Artwork \| Skip Count \| Rating \| Comments \| Is Explicit \| Lyrics \| Release Date \| Last Played Date \| Is Cloud Item \| Album Track Number \| Disc Number | — |
 
 Shortcuts action: `is.workflow.actions.properties.music`
 
@@ -388,7 +417,7 @@ Shortcuts action: `is.workflow.actions.properties.shazam`
 Returns a list of episodes from a podcast show.
 
 ```chute
-getEpisodesOfPodcast(WFInput: Text) -> Any
+getEpisodesOfPodcast(WFInput: Text) -> PodcastEpisode
 ```
 
 | Parameter | Type | Default |
@@ -497,7 +526,7 @@ Shortcuts action: `is.workflow.actions.getlastvideo`
 Gets every song in the specified playlist.
 
 ```chute
-getPlaylist(WFPlaylistName: Text) -> Any
+getPlaylist(WFPlaylistName: Text) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -511,7 +540,7 @@ Shortcuts action: `is.workflow.actions.get.playlist`
 Gets a list of all shows in your Podcast library.
 
 ```chute
-getPodcastsFromLibrary() -> Any
+getPodcastsFromLibrary() -> PodcastShow
 ```
 
 Shortcuts action: `is.workflow.actions.getpodcastsfromlibrary`
@@ -536,7 +565,7 @@ Shortcuts action: `is.workflow.actions.handoffplayback`
 Imports audio files into Music and compresses them with the chosen encoder.
 
 ```chute
-importAudioFilesIntoMusic(WFInput: Any, WFImportAudioFilesReencode: Boolean, WFImportAudioFilesEncoder: Enum) -> Any
+importAudioFilesIntoMusic(WFInput: Any, WFImportAudioFilesReencode: Boolean, WFImportAudioFilesEncoder: Enum) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -552,7 +581,7 @@ Shortcuts action: `is.workflow.actions.importaudiofiles`
 Creates an animated GIF from the images or video passed into the action.
 
 ```chute
-makeGif(WFMakeGIFActionDelayTime: Number, WFMakeGIFActionLoopEnabled: Boolean, WFMakeGIFActionLoopCount: Number, WFMakeGIFActionAutoSize: Boolean, WFMakeGIFActionManualSizeWidth: Number, WFMakeGIFActionManualSizeHeight: Number, WFInput: Any) -> Any
+makeGif(WFMakeGIFActionDelayTime: Number, WFMakeGIFActionLoopEnabled: Boolean, WFMakeGIFActionLoopCount: Number, WFMakeGIFActionAutoSize: Boolean, WFMakeGIFActionManualSizeWidth: Number, WFMakeGIFActionManualSizeHeight: Number, WFInput: Any) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -572,7 +601,7 @@ Shortcuts action: `is.workflow.actions.makegif`
 Converts an animated GIF into a video.
 
 ```chute
-makeVideoFromGif(WFMakeVideoFromGIFActionLoopCount: Number, WFInputGIF: Any) -> Any
+makeVideoFromGif(WFMakeVideoFromGIFActionLoopCount: Number, WFInputGIF: Any) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -736,7 +765,7 @@ Shortcuts action: `is.workflow.actions.playsound`
 Uses the microphone to listen to and identify nearby media.
 
 ```chute
-recognizeMusic(WFShazamMediaActionShowWhenRun: Boolean, WFShazamMediaActionErrorIfNotRecognized: Boolean) -> Any
+recognizeMusic(WFShazamMediaActionShowWhenRun: Boolean, WFShazamMediaActionErrorIfNotRecognized: Boolean) -> ShazamMedia
 ```
 
 | Parameter | Type | Default |
@@ -751,7 +780,7 @@ Shortcuts action: `com.apple.musicrecognition.RecognizeMusicIntent`
 Uses the microphone to record audio.
 
 ```chute
-recordAudio(WFRecordingCompression: Enum, WFRecordingStart: Enum, WFRecordingEnd: Enum, WFRecordingTimeInterval: Number) -> Any
+recordAudio(WFRecordingCompression: Enum, WFRecordingStart: Enum, WFRecordingEnd: Enum, WFRecordingTimeInterval: Number) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -819,7 +848,7 @@ Shortcuts action: `is.workflow.actions.image.resize`
 Turns an image or video clockwise by a particular number of degrees.
 
 ```chute
-rotateImage/video(WFImageRotateAmount: Number, WFImage: Any) -> Image
+rotateImage/video(WFImageRotateAmount: Number, WFImage: Any) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -867,7 +896,7 @@ Shortcuts action: `is.workflow.actions.seek`
 Prompts to select music from your local music library.
 
 ```chute
-selectMusic(WFExportSongActionSelectMultiple: Boolean) -> Any
+selectMusic(WFExportSongActionSelectMultiple: Boolean) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -896,7 +925,7 @@ Shortcuts action: `is.workflow.actions.selectphoto`
 Uses the microphone to listen to and identify nearby media.
 
 ```chute
-shazamIt(WFShazamMediaActionShowWhenRun: Boolean, WFShazamMediaActionErrorIfNotRecognized: Boolean) -> Any
+shazamIt(WFShazamMediaActionShowWhenRun: Boolean, WFShazamMediaActionErrorIfNotRecognized: Boolean) -> ShazamMedia
 ```
 
 | Parameter | Type | Default |
@@ -956,7 +985,7 @@ Shortcuts action: `is.workflow.actions.takephoto`
 Uses the camera to take a video clip.
 
 ```chute
-takeVideo(WFCameraCaptureDevice: Enum, WFCameraCaptureQuality: Enum, WFRecordingStart: Enum) -> Any
+takeVideo(WFCameraCaptureDevice: Enum, WFCameraCaptureQuality: Enum, WFRecordingStart: Enum) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -972,7 +1001,7 @@ Shortcuts action: `is.workflow.actions.takevideo`
 Presents a view allowing you to trim the media passed into the action.
 
 ```chute
-trimMedia(WFInputMedia: Any) -> Any
+trimMedia(WFInputMedia: Any) -> Media
 ```
 
 | Parameter | Type | Default |
