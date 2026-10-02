@@ -1274,6 +1274,43 @@ describe("checker", () => {
         `),
       ).toThrow(CompileError);
     });
+
+    it("should resolve pinned enum param to single-case enum", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red, green, blue }
+          action paint(color: Color.red) = "com.example";
+          paint(color: .red);
+        `),
+      ).not.toThrow();
+    });
+
+    it("should reject pinned enum call with wrong case", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red, green, blue }
+          action paint(color: Color.red) = "com.example";
+          paint(color: .blue);
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject pinned type referencing nonexistent enum", () => {
+      expect(() =>
+        checkSource(`
+          action paint(color: Nonexistent.red) = "com.example";
+        `),
+      ).toThrow(CompileError);
+    });
+
+    it("should reject pinned type referencing nonexistent case", () => {
+      expect(() =>
+        checkSource(`
+          enum Color { red, green, blue }
+          action paint(color: Color.purple) = "com.example";
+        `),
+      ).toThrow(CompileError);
+    });
   });
 
   describe("input built-in", () => {

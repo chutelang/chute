@@ -1398,6 +1398,33 @@ function baseTypeFromAnnotation(base: BaseType, scope: Scope, context?: CheckCon
 }
 
 function namedTypeFromAnnotation(named: NamedType, scope: Scope): ChuteType {
+  if (named.qualifier) {
+    const enumType = scope.lookupType(named.qualifier);
+    if (!enumType || enumType.kind !== "enum") {
+      throw new CheckError(
+        `'${named.qualifier}' is not an enum type`,
+        named.span,
+        DiagnosticCode.UnknownMember,
+      );
+    }
+    const caseName = named.name;
+    const backingValue = enumType.cases.get(caseName);
+    if (backingValue === undefined) {
+      throw new CheckError(
+        `'${named.qualifier}' has no case '${caseName}'`,
+        named.span,
+        DiagnosticCode.UnknownMember,
+      );
+    }
+    const singleCaseMap = new Map<string, string>();
+    singleCaseMap.set(caseName, backingValue);
+    return {
+      kind: "enum",
+      name: enumType.name,
+      cases: singleCaseMap,
+    };
+  }
+
   switch (named.name) {
     case "Text":
       return { kind: "text" };
