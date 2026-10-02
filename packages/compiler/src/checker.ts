@@ -1200,6 +1200,10 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
       if (binding?.type.kind === "action") {
         return checkActionCall(expr, binding.type, scope, context);
       }
+      if (binding?.type.kind === "overloadedAction") {
+        const resolved = resolveCallOverload(expr, binding.type, scope, context);
+        return checkActionCall(expr, resolved, scope, context);
+      }
       const typeDef = ns.lookupType(expr.callee.property);
       if (typeDef?.kind === "record") {
         return checkRecordConstruction(expr, typeDef, scope, context);
@@ -1224,6 +1228,10 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
     }
     if (binding?.type.kind === "action") {
       return checkActionCall(expr, binding.type, scope, context);
+    }
+    if (binding?.type.kind === "overloadedAction") {
+      const resolved = resolveCallOverload(expr, binding.type, scope, context);
+      return checkActionCall(expr, resolved, scope, context);
     }
   }
 
@@ -2127,6 +2135,10 @@ function inferStageType(
   if (binding?.type.kind === "action") {
     return inferPipelineActionCall(stage, binding.type, scope, context);
   }
+  if (binding?.type.kind === "overloadedAction") {
+    const resolved = resolveStageOverload(stage, inputType, binding.type, scope, context);
+    return inferPipelineActionCall(stage, resolved, scope, context);
+  }
 
   for (const arg of stage.args) {
     if (arg.value.kind !== "PlaceholderExpression") {
@@ -2357,6 +2369,118 @@ export function checkActionDeclaration(
     decl.params.map((p) => p.label),
     context.warnings,
   );
+}
+
+/**
+ * Infers the type of an overloaded-call argument for the purposes of scoring
+ * candidate overloads. Tries each candidate parameter type (drawn from the
+ * overloads that declare a parameter at this position/label) as a hint, so
+ * dot-shorthand enum literals (e.g. `.title`) resolve to the pinned
+ * single-case enum matching whichever overload actually accepts that case,
+ * rather than an unpinned full-enum type that would match every overload.
+ */
+function inferOverloadArgType(
+  argValue: Expression,
+  candidateTypes: ChuteType[],
+  scope: Scope,
+  context: CheckContext,
+): ChuteType {
+  let lastError: CheckError | undefined;
+  for (const candidate of candidateTypes) {
+    try {
+      return inferTypeWithHint(argValue, scope, candidate, context);
+    } catch (err) {
+      if (err instanceof CheckError) {
+        lastError = err;
+        continue;
+      }
+      throw err;
+    }
+  }
+  if (lastError) {
+    throw lastError;
+  }
+  return inferType(argValue, scope, context);
+}
+
+/**
+ * Builds the positional argument-type array `resolveOverload` scores
+ * candidates against. Arguments are matched to the reference overload's
+ * (the first declared overload's) parameters by label, so call sites can
+ * list labeled arguments in any order — `scoreOverload` only compares by
+ * position, so this alignment step is what makes label-based calls work.
+ */
+function inferOverloadArgTypesForArgs(
+  args: import("./ast.ts").Argument[],
+  overloaded: ChuteType & { kind: "overloadedAction" },
+  scope: Scope,
+  context: CheckContext,
+): Array<{ type: ChuteType }> {
+  const reference = overloaded.overloads.at(0);
+  if (!reference) {
+    return args.map((arg) => ({ type: inferType(arg.value, scope, context) }));
+  }
+
+  return reference.params.map((param) => {
+    const arg = args.find((a) => a.label === param.label);
+    if (!arg) {
+      return { type: param.type };
+    }
+    const candidates = overloaded.overloads
+      .map((o) => o.params.find((p) => p.label === param.label)?.type)
+      .filter((t): t is ChuteType => t !== undefined);
+    return { type: inferOverloadArgType(arg.value, candidates, scope, context) };
+  });
+}
+
+function resolveCallOverload(
+  expr: CallExpression,
+  overloaded: ChuteType & { kind: "overloadedAction" },
+  scope: Scope,
+  context: CheckContext,
+): ChuteType & { kind: "action" } {
+  const argTypes = inferOverloadArgTypesForArgs(expr.args, overloaded, scope, context);
+  const resolved = resolveOverload(overloaded, argTypes, expr.span);
+  expr.resolvedOverloadIndex = overloaded.overloads.indexOf(resolved);
+  return resolved;
+}
+
+function resolveStageOverload(
+  stage: import("./ast.ts").PipelineStage,
+  inputType: ChuteType,
+  overloaded: ChuteType & { kind: "overloadedAction" },
+  scope: Scope,
+  context: CheckContext,
+): ChuteType & { kind: "action" } {
+  const explicitArgs = stage.args.filter((a) => a.value.kind !== "PlaceholderExpression");
+  const reference = overloaded.overloads.at(0);
+
+  let argTypes: Array<{ type: ChuteType }>;
+  if (reference) {
+    // The piped input is conventionally bound to the action's first
+    // parameter (mirroring inferPipelineFunctionCall), so it occupies
+    // position 0 and the remaining declared params line up with the
+    // explicit, labeled stage arguments.
+    const restParams = reference.params.slice(1);
+    const rest = restParams.map((param) => {
+      const arg = explicitArgs.find((a) => a.label === param.label);
+      if (!arg) {
+        return { type: param.type };
+      }
+      const candidates = overloaded.overloads
+        .map((o) => o.params.find((p) => p.label === param.label)?.type)
+        .filter((t): t is ChuteType => t !== undefined);
+      return { type: inferOverloadArgType(arg.value, candidates, scope, context) };
+    });
+    argTypes = [{ type: inputType }, ...rest];
+  } else {
+    argTypes = [
+      { type: inputType },
+      ...explicitArgs.map((a) => ({ type: inferType(a.value, scope, context) })),
+    ];
+  }
+
+  return resolveOverload(overloaded, argTypes, stage.span);
 }
 
 function checkActionCall(

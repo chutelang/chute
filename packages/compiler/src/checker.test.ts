@@ -1551,6 +1551,105 @@ describe("checker", () => {
         ).toBe(-1);
       });
     });
+
+    describe("call dispatch", () => {
+      it("should type-check overloaded identifier action calls", () => {
+        expect(() =>
+          checkSource(`
+            action doThing(x: Text) = "com.example";
+            action doThing(x: Number) = "com.example";
+            doThing(x: "hello");
+            doThing(x: 42);
+          `),
+        ).not.toThrow();
+      });
+
+      it("should annotate resolvedOverloadIndex on the matched call", () => {
+        const program = parse(`
+          action doThing(x: Text) = "com.example";
+          action doThing(x: Number) = "com.example";
+          doThing(x: "hello");
+          doThing(x: 42);
+        `);
+        check(program);
+        const calls = program.body.filter(
+          (stmt) =>
+            stmt.kind === "ExpressionStatement" && stmt.expression.kind === "CallExpression",
+        ) as Array<{ expression: { resolvedOverloadIndex?: number } }>;
+        expect(calls).toHaveLength(2);
+        expect(calls[0]?.expression.resolvedOverloadIndex).toBe(0);
+        expect(calls[1]?.expression.resolvedOverloadIndex).toBe(1);
+      });
+
+      it("should reject an overloaded call with no matching overload", () => {
+        expect(() =>
+          checkSource(`
+            action doThing(x: Text) = "com.example";
+            action doThing(x: Number) = "com.example";
+            doThing(x: true);
+          `),
+        ).toThrow(CompileError);
+      });
+
+      it("should resolve overloaded action call using dot-shorthand pinned enum args", () => {
+        expect(() =>
+          checkSource(`
+            enum Prop { title, duration }
+            action edit(prop: Prop.title, value: Text) = "com.example.edit";
+            action edit(prop: Prop.duration, value: Number) = "com.example.edit";
+            edit(prop: .title, value: "hello");
+            edit(prop: .duration, value: 5);
+          `),
+        ).not.toThrow();
+      });
+
+      it("should reject dot-shorthand args that mismatch across every overload", () => {
+        expect(() =>
+          checkSource(`
+            enum Prop { title, duration }
+            action edit(prop: Prop.title, value: Text) = "com.example.edit";
+            action edit(prop: Prop.duration, value: Number) = "com.example.edit";
+            edit(prop: .title, value: 5);
+          `),
+        ).toThrow(CompileError);
+      });
+
+      it("should resolve overloaded action call regardless of labeled argument order", () => {
+        expect(() =>
+          checkSource(`
+            enum Prop { title, duration }
+            action edit(prop: Prop.title, value: Text) = "com.example.edit";
+            action edit(prop: Prop.duration, value: Number) = "com.example.edit";
+            edit(value: "hello", prop: .title);
+          `),
+        ).not.toThrow();
+      });
+
+      it("should type-check overloaded namespace action calls", () => {
+        const resolver: FileResolver = {
+          resolve: (_from, importPath) => importPath,
+          read: (path) => {
+            if (path === "./actions") {
+              return `
+                export action doThing(x: Text) = "com.example";
+                export action doThing(x: Number) = "com.example";
+              `;
+            }
+            throw new Error(`file not found: ${path}`);
+          },
+        };
+        expect(() =>
+          checkSource(
+            `
+              import "./actions" as A;
+              A.doThing(x: "hello");
+              A.doThing(x: 42);
+            `,
+            { resolver, filePath: "main.chute" },
+          ),
+        ).not.toThrow();
+      });
+    });
   });
 
   describe("input built-in", () => {

@@ -446,6 +446,47 @@ doThing();`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
+
+  it("should resolve overloaded action in pipeline", () => {
+    const source = `shortcut {
+  name: "OverloadedPipeline",
+}
+
+action process(v: Text) -> Text = "com.example.process";
+action process(v: Number) -> Number = "com.example.process";
+"hello" |> process();`;
+
+    const result = compile(source);
+    expect(result.main).toContain("com.example.process");
+  });
+
+  it("should resolve overloaded action in pipeline by numeric input", () => {
+    const source = `shortcut {
+  name: "OverloadedPipelineNumber",
+}
+
+action process(v: Text) -> Text = "com.example.process";
+action process(v: Number) -> Number = "com.example.process";
+5 |> process();`;
+
+    const result = compile(source);
+    expect(result.main).toContain("com.example.process");
+  });
+
+  it("should resolve overloaded action in pipeline with dot-shorthand pinned enum arg", () => {
+    const source = `shortcut {
+  name: "OverloadedPipelineEnum",
+}
+
+enum Prop { title, duration }
+action tag(v: Text, prop: Prop.title) -> Text = "com.example.tag";
+action tag(v: Number, prop: Prop.duration) -> Number = "com.example.tag";
+"hello" |> tag(prop: .title);
+5 |> tag(prop: .duration);`;
+
+    const result = compile(source);
+    expect(result.main).toContain("com.example.tag");
+  });
 });
 
 describe("stdlib smoke tests", () => {

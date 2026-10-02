@@ -208,6 +208,7 @@ export interface CallExpression {
   span: Span;
   callee: Expression;
   args: Argument[];
+  resolvedOverloadIndex?: number;
 }
 
 export type ResolvedProperty =
