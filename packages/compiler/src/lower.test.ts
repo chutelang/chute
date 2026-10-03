@@ -645,8 +645,8 @@ describe("lower", () => {
         enum Prop { title, duration }
         action edit(p: Prop.title, v: Text) -> Text = "com.example.edit";
         action edit(p: Prop.duration, v amount: Number) -> Number = "com.example.edit";
-        edit(p: .title, v: "hello");
-        edit(p: .duration, v: 42);
+        edit(.title, "hello");
+        edit(.duration, 42);
       `);
       const editActions = result.filter((a) => a.identifier === "com.example.edit");
       expect(editActions).toHaveLength(2);
@@ -659,10 +659,10 @@ describe("lower", () => {
     it("should use each pipeline stage's own resolved overload for its plist parameter keys", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }
-        action tag(v: Text, extra: Text) -> Text = "com.example.tag";
-        action tag(v: Number, extra amount: Number) -> Number = "com.example.tag";
-        const a = "hello" |> tag(extra: "x");
-        const b = 5 |> tag(extra: 1);
+        action tag(extra: Text) -> Text = "com.example.tag";
+        action tag(extra amount: Number) -> Number = "com.example.tag";
+        const a = "hello" |> tag("x");
+        const b = 5 |> tag(1);
       `);
       const tagActions = result.filter((a) => a.identifier === "com.example.tag");
       expect(tagActions).toHaveLength(2);

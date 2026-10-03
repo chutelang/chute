@@ -454,7 +454,7 @@ doThing();`;
 
 action process(v: Text) -> Text = "com.example.process";
 action process(v: Number) -> Number = "com.example.process";
-"hello" |> process();`;
+"hello" |> process("world");`;
 
     const result = compile(source);
     expect(result.main).toContain("com.example.process");
@@ -467,7 +467,7 @@ action process(v: Number) -> Number = "com.example.process";
 
 action process(v: Text) -> Text = "com.example.process";
 action process(v: Number) -> Number = "com.example.process";
-5 |> process();`;
+5 |> process(42);`;
 
     const result = compile(source);
     expect(result.main).toContain("com.example.process");
@@ -479,10 +479,10 @@ action process(v: Number) -> Number = "com.example.process";
 }
 
 enum Prop { title, duration }
-action tag(v: Text, prop: Prop.title) -> Text = "com.example.tag";
-action tag(v: Number, prop: Prop.duration) -> Number = "com.example.tag";
-"hello" |> tag(prop: .title);
-5 |> tag(prop: .duration);`;
+action tag(prop: Prop.title) -> Text = "com.example.tag";
+action tag(prop: Prop.duration) -> Number = "com.example.tag";
+"hello" |> tag(.title);
+5 |> tag(.duration);`;
 
     const result = compile(source);
     expect(result.main).toContain("com.example.tag");
@@ -494,9 +494,9 @@ action tag(v: Number, prop: Prop.duration) -> Number = "com.example.tag";
 }
 
 enum Prop { title, duration }
-action edit(v: Text, prop: Prop.duration, unit: Text) -> Text = "com.example.edit";
-action edit(v: Text, prop: Prop.title) -> Text = "com.example.edit";
-"hello" |> edit(prop: .duration, unit: "hours");`;
+action edit(prop: Prop.duration, unit: Text) -> Text = "com.example.edit";
+action edit(prop: Prop.title) -> Text = "com.example.edit";
+"hello" |> edit(.duration, "hours");`;
 
     const result = compile(source);
     expect(result.main).toContain("com.example.edit");
@@ -508,9 +508,9 @@ action edit(v: Text, prop: Prop.title) -> Text = "com.example.edit";
 }
 
 enum Prop { title, duration }
-action edit(v: Text, prop: Prop.duration, unit: Text) -> Text = "com.example.edit";
-action edit(v: Text, prop: Prop.title) -> Text = "com.example.edit";
-"hello" |> edit(prop: .title);`;
+action edit(prop: Prop.duration, unit: Text) -> Text = "com.example.edit";
+action edit(prop: Prop.title) -> Text = "com.example.edit";
+"hello" |> edit(.title);`;
 
     const result = compile(source);
     expect(result.main).toContain("com.example.edit");
@@ -521,10 +521,10 @@ action edit(v: Text, prop: Prop.title) -> Text = "com.example.edit";
   name: "OverloadedPipelineKeys",
 }
 
-action tag(v: Text, extra: Text) -> Text = "com.example.tag";
-action tag(v: Number, extra amount: Number) -> Number = "com.example.tag";
-"hello" |> tag(extra: "x");
-5 |> tag(extra: 1);`;
+action tag(extra: Text) -> Text = "com.example.tag";
+action tag(extra amount: Number) -> Number = "com.example.tag";
+"hello" |> tag("x");
+5 |> tag(1);`;
 
     const result = compile(source);
     expect(result.main).toContain("<key>extra</key>");
@@ -539,8 +539,8 @@ action tag(v: Number, extra amount: Number) -> Number = "com.example.tag";
 enum Prop { title, duration }
 action edit(p: Prop.title, v: Text) -> Text = "com.example.edit";
 action edit(p: Prop.duration, v amount: Number) -> Number = "com.example.edit";
-edit(p: .title, v: "hello");
-edit(p: .duration, v: 42);`;
+edit(.title, "hello");
+edit(.duration, 42);`;
 
     const result = compile(source);
     expect(result.main).toContain("<key>v</key>");

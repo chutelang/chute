@@ -2265,7 +2265,7 @@ function inferPipelineActionCall(
       continue;
     }
 
-    const param = actionType.params[i];
+    const param = actionType.params.at(i);
     if (param) {
       const argType = inferTypeWithHint(arg.value, scope, param.type, context);
       if (!isAssignable(argType, param.type)) {
@@ -2442,23 +2442,16 @@ function inferOverloadArgTypesForArgs(
     return { type: inferOverloadArgType(argValue, candidates, scope, context) };
   };
 
-  const consumedLabels = new Set<string>();
   const result: Array<{ type: ChuteType }> = [];
 
-  for (const param of reference.params) {
-    const arg = args.find((a) => a.label === param.label);
+  for (let i = 0; i < args.length; i++) {
+    const arg = args.at(i);
     if (!arg) {
       continue;
     }
-    consumedLabels.add(param.label);
-    result.push(argTypeForLabel(param.label, arg.value));
-  }
-
-  for (const arg of args) {
-    if (!arg.label || consumedLabels.has(arg.label)) {
-      continue;
-    }
-    result.push(argTypeForLabel(arg.label, arg.value));
+    const param = reference.params.at(i);
+    const label = param?.label ?? `__arg${i}`;
+    result.push(argTypeForLabel(label, arg.value));
   }
 
   return result;
@@ -2502,31 +2495,21 @@ function resolveStageOverload(
       return { type: inferOverloadArgType(argValue, candidates, scope, context) };
     };
 
-    const consumedLabels = new Set<string>();
     const rest: Array<{ type: ChuteType }> = [];
 
-    for (const param of reference.params.slice(1)) {
-      const arg = explicitArgs.find((a) => a.label === param.label);
+    for (let i = 0; i < explicitArgs.length; i++) {
+      const arg = explicitArgs.at(i);
       if (!arg) {
         continue;
       }
-      consumedLabels.add(param.label);
-      rest.push(argTypeForLabel(param.label, arg.value));
+      const param = reference.params.at(i);
+      const label = param?.label ?? `__arg${i}`;
+      rest.push(argTypeForLabel(label, arg.value));
     }
 
-    for (const arg of explicitArgs) {
-      if (!arg.label || consumedLabels.has(arg.label)) {
-        continue;
-      }
-      rest.push(argTypeForLabel(arg.label, arg.value));
-    }
-
-    argTypes = [{ type: inputType }, ...rest];
+    argTypes = rest;
   } else {
-    argTypes = [
-      { type: inputType },
-      ...explicitArgs.map((a) => ({ type: inferType(a.value, scope, context) })),
-    ];
+    argTypes = explicitArgs.map((a) => ({ type: inferType(a.value, scope, context) }));
   }
 
   return resolveOverload(overloaded, argTypes, stage.span);

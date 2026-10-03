@@ -1287,7 +1287,7 @@ describe("checker", () => {
         checkSource(`
           enum Color { red, green, blue }
           action paint(color: Color.red) = "com.example";
-          paint(color: .red);
+          paint(.red);
         `),
       ).not.toThrow();
     });
@@ -1297,7 +1297,7 @@ describe("checker", () => {
         checkSource(`
           enum Color { red, green, blue }
           action paint(color: Color.red) = "com.example";
-          paint(color: .blue);
+          paint(.blue);
         `),
       ).toThrow(CompileError);
     });
@@ -1558,8 +1558,8 @@ describe("checker", () => {
           checkSource(`
             action doThing(x: Text) = "com.example";
             action doThing(x: Number) = "com.example";
-            doThing(x: "hello");
-            doThing(x: 42);
+            doThing("hello");
+            doThing(42);
           `),
         ).not.toThrow();
       });
@@ -1568,8 +1568,8 @@ describe("checker", () => {
         const program = parse(`
           action doThing(x: Text) = "com.example";
           action doThing(x: Number) = "com.example";
-          doThing(x: "hello");
-          doThing(x: 42);
+          doThing("hello");
+          doThing(42);
         `);
         check(program);
         const calls = program.body.filter(
@@ -1586,7 +1586,7 @@ describe("checker", () => {
           checkSource(`
             action doThing(x: Text) = "com.example";
             action doThing(x: Number) = "com.example";
-            doThing(x: true);
+            doThing(true);
           `),
         ).toThrow(CompileError);
       });
@@ -1597,8 +1597,8 @@ describe("checker", () => {
             enum Prop { title, duration }
             action edit(prop: Prop.title, value: Text) = "com.example.edit";
             action edit(prop: Prop.duration, value: Number) = "com.example.edit";
-            edit(prop: .title, value: "hello");
-            edit(prop: .duration, value: 5);
+            edit(.title, "hello");
+            edit(.duration, 5);
           `),
         ).not.toThrow();
       });
@@ -1609,18 +1609,18 @@ describe("checker", () => {
             enum Prop { title, duration }
             action edit(prop: Prop.title, value: Text) = "com.example.edit";
             action edit(prop: Prop.duration, value: Number) = "com.example.edit";
-            edit(prop: .title, value: 5);
+            edit(.title, 5);
           `),
         ).toThrow(CompileError);
       });
 
-      it("should resolve overloaded action call regardless of labeled argument order", () => {
+      it("should resolve overloaded action call with positional arguments", () => {
         expect(() =>
           checkSource(`
             enum Prop { title, duration }
             action edit(prop: Prop.title, value: Text) = "com.example.edit";
             action edit(prop: Prop.duration, value: Number) = "com.example.edit";
-            edit(value: "hello", prop: .title);
+            edit(.title, "hello");
           `),
         ).not.toThrow();
       });
@@ -1631,7 +1631,7 @@ describe("checker", () => {
             enum Prop { title, duration }
             action edit(prop: Prop.duration, value: Number, unit: Text) = "com.example.edit";
             action edit(prop: Prop.title, value: Text) = "com.example.edit";
-            edit(prop: .title, value: "hello");
+            edit(.title, "hello");
           `),
         ).not.toThrow();
       });
@@ -1642,7 +1642,7 @@ describe("checker", () => {
             enum Prop { title, duration }
             action edit(prop: Prop.duration, value: Number, unit: Text) = "com.example.edit";
             action edit(prop: Prop.title, value: Text) = "com.example.edit";
-            edit(prop: .duration, value: 5, unit: "hours");
+            edit(.duration, 5, "hours");
           `),
         ).not.toThrow();
       });
@@ -1653,7 +1653,7 @@ describe("checker", () => {
             enum Prop { title, duration }
             action edit(prop: Prop.duration, value: Number, unit: Text) = "com.example.edit";
             action edit(prop: Prop.title, value: Text) = "com.example.edit";
-            edit(prop: .duration, value: 5);
+            edit(.duration, 5);
           `),
         ).toThrow(CompileError);
       });
@@ -1675,8 +1675,8 @@ describe("checker", () => {
           checkSource(
             `
               import "./actions" as A;
-              A.doThing(x: "hello");
-              A.doThing(x: 42);
+              A.doThing("hello");
+              A.doThing(42);
             `,
             { resolver, filePath: "main.chute" },
           ),
