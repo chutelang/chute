@@ -1625,6 +1625,39 @@ describe("checker", () => {
         ).not.toThrow();
       });
 
+      it("should resolve a call matching the shorter of two differently-sized overloads", () => {
+        expect(() =>
+          checkSource(`
+            enum Prop { title, duration }
+            action edit(prop: Prop.duration, value: Number, unit: Text) = "com.example.edit";
+            action edit(prop: Prop.title, value: Text) = "com.example.edit";
+            edit(prop: .title, value: "hello");
+          `),
+        ).not.toThrow();
+      });
+
+      it("should resolve a call matching the longer of two differently-sized overloads", () => {
+        expect(() =>
+          checkSource(`
+            enum Prop { title, duration }
+            action edit(prop: Prop.duration, value: Number, unit: Text) = "com.example.edit";
+            action edit(prop: Prop.title, value: Text) = "com.example.edit";
+            edit(prop: .duration, value: 5, unit: "hours");
+          `),
+        ).not.toThrow();
+      });
+
+      it("should reject a call for the longer overload's shape missing its extra argument", () => {
+        expect(() =>
+          checkSource(`
+            enum Prop { title, duration }
+            action edit(prop: Prop.duration, value: Number, unit: Text) = "com.example.edit";
+            action edit(prop: Prop.title, value: Text) = "com.example.edit";
+            edit(prop: .duration, value: 5);
+          `),
+        ).toThrow(CompileError);
+      });
+
       it("should type-check overloaded namespace action calls", () => {
         const resolver: FileResolver = {
           resolve: (_from, importPath) => importPath,

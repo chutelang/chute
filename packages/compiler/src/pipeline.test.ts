@@ -488,6 +488,34 @@ action tag(v: Number, prop: Prop.duration) -> Number = "com.example.tag";
     expect(result.main).toContain("com.example.tag");
   });
 
+  it("should resolve a pipeline stage matching the longer of two differently-sized overloads", () => {
+    const source = `shortcut {
+  name: "OverloadedPipelineArity",
+}
+
+enum Prop { title, duration }
+action edit(v: Text, prop: Prop.duration, unit: Text) -> Text = "com.example.edit";
+action edit(v: Text, prop: Prop.title) -> Text = "com.example.edit";
+"hello" |> edit(prop: .duration, unit: "hours");`;
+
+    const result = compile(source);
+    expect(result.main).toContain("com.example.edit");
+  });
+
+  it("should resolve a pipeline stage matching the shorter of two differently-sized overloads", () => {
+    const source = `shortcut {
+  name: "OverloadedPipelineArityShort",
+}
+
+enum Prop { title, duration }
+action edit(v: Text, prop: Prop.duration, unit: Text) -> Text = "com.example.edit";
+action edit(v: Text, prop: Prop.title) -> Text = "com.example.edit";
+"hello" |> edit(prop: .title);`;
+
+    const result = compile(source);
+    expect(result.main).toContain("com.example.edit");
+  });
+
   it("should emit the resolved overload's own plist key for each pipeline stage", () => {
     const source = `shortcut {
   name: "OverloadedPipelineKeys",

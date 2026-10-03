@@ -2410,6 +2410,19 @@ function inferOverloadArgType(
  * (the first declared overload's) parameters by label, so call sites can
  * list labeled arguments in any order — `scoreOverload` only compares by
  * position, so this alignment step is what makes label-based calls work.
+ *
+ * Overloads aren't required to share the reference's exact param count
+ * (e.g. a stdlib setter overload with an extra pinned-property param
+ * alongside a shorter catch-all overload), so a label the call site didn't
+ * actually supply is skipped rather than padded with the reference's own
+ * param type — padding would force every candidate's arg count to match
+ * the reference's regardless of what was really passed, spuriously
+ * disqualifying any differently-shaped overload via `scoreOverload`'s
+ * length check. Any supplied label the reference doesn't declare (because
+ * the reference happens to be the shorter overload) is appended afterward
+ * so it isn't silently dropped — `checkActionCall` performs the actual
+ * authoritative validation against whichever candidate is chosen, so this
+ * function only needs to be a good-enough filter, not a fully precise one.
  */
 function inferOverloadArgTypesForArgs(
   args: import("./ast.ts").Argument[],
@@ -2422,16 +2435,33 @@ function inferOverloadArgTypesForArgs(
     return args.map((arg) => ({ type: inferType(arg.value, scope, context) }));
   }
 
-  return reference.params.map((param) => {
+  const argTypeForLabel = (label: string, argValue: Expression): { type: ChuteType } => {
+    const candidates = overloaded.overloads
+      .map((o) => o.params.find((p) => p.label === label)?.type)
+      .filter((t): t is ChuteType => t !== undefined);
+    return { type: inferOverloadArgType(argValue, candidates, scope, context) };
+  };
+
+  const consumedLabels = new Set<string>();
+  const result: Array<{ type: ChuteType }> = [];
+
+  for (const param of reference.params) {
     const arg = args.find((a) => a.label === param.label);
     if (!arg) {
-      return { type: param.type };
+      continue;
     }
-    const candidates = overloaded.overloads
-      .map((o) => o.params.find((p) => p.label === param.label)?.type)
-      .filter((t): t is ChuteType => t !== undefined);
-    return { type: inferOverloadArgType(arg.value, candidates, scope, context) };
-  });
+    consumedLabels.add(param.label);
+    result.push(argTypeForLabel(param.label, arg.value));
+  }
+
+  for (const arg of args) {
+    if (!arg.label || consumedLabels.has(arg.label)) {
+      continue;
+    }
+    result.push(argTypeForLabel(arg.label, arg.value));
+  }
+
+  return result;
 }
 
 function resolveCallOverload(
@@ -2461,18 +2491,36 @@ function resolveStageOverload(
     // The piped input is conventionally bound to the action's first
     // parameter (mirroring inferPipelineFunctionCall), so it occupies
     // position 0 and the remaining declared params line up with the
-    // explicit, labeled stage arguments.
-    const restParams = reference.params.slice(1);
-    const rest = restParams.map((param) => {
+    // explicit, labeled stage arguments. As in `inferOverloadArgTypesForArgs`,
+    // a reference param the stage didn't supply is skipped rather than
+    // padded (overloads may have different shapes), and any supplied label
+    // the reference doesn't declare is appended afterward.
+    const argTypeForLabel = (label: string, argValue: Expression): { type: ChuteType } => {
+      const candidates = overloaded.overloads
+        .map((o) => o.params.find((p) => p.label === label)?.type)
+        .filter((t): t is ChuteType => t !== undefined);
+      return { type: inferOverloadArgType(argValue, candidates, scope, context) };
+    };
+
+    const consumedLabels = new Set<string>();
+    const rest: Array<{ type: ChuteType }> = [];
+
+    for (const param of reference.params.slice(1)) {
       const arg = explicitArgs.find((a) => a.label === param.label);
       if (!arg) {
-        return { type: param.type };
+        continue;
       }
-      const candidates = overloaded.overloads
-        .map((o) => o.params.find((p) => p.label === param.label)?.type)
-        .filter((t): t is ChuteType => t !== undefined);
-      return { type: inferOverloadArgType(arg.value, candidates, scope, context) };
-    });
+      consumedLabels.add(param.label);
+      rest.push(argTypeForLabel(param.label, arg.value));
+    }
+
+    for (const arg of explicitArgs) {
+      if (!arg.label || consumedLabels.has(arg.label)) {
+        continue;
+      }
+      rest.push(argTypeForLabel(arg.label, arg.value));
+    }
+
     argTypes = [{ type: inputType }, ...rest];
   } else {
     argTypes = [
