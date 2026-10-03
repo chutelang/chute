@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { Scope, type ChuteType } from "@chutelang/compiler";
+import type { AnalysisResult } from "./analyzer.ts";
 import {
   analyze,
   resolveDefinition,
@@ -177,6 +179,22 @@ describe("hover", () => {
     const hover = resolveHover(result, offset);
     expect(hover).toContain("(const) count: Number");
   });
+
+  it("should show all overload signatures on hover", () => {
+    const source = `
+      enum Prop { title, duration }
+      action edit(p: Prop.title, v: Text) -> Text = "com.example.edit";
+      action edit(p: Prop.duration, v amount: Number) -> Number = "com.example.edit";
+      edit(p: .title, v: "hello");
+    `;
+    const result = analyze(source);
+    const offset = source.lastIndexOf("edit");
+    const hover = resolveHover(result, offset);
+    expect(hover).toContain("(1/2)");
+    expect(hover).toContain("(2/2)");
+    expect(hover).toContain("action edit(p: Prop, v: Text) -> Text");
+    expect(hover).toContain("action edit(p: Prop, v: Number) -> Number");
+  });
 });
 
 describe("doc comment hover", () => {
@@ -301,6 +319,43 @@ describe("autocomplete", () => {
     const labels = items.map((i) => i.label);
     const unique = new Set(labels);
     expect(labels.length).toBe(unique.size);
+  });
+
+  it("should tag an overloaded action as an action completion", () => {
+    const overloadedEdit: ChuteType = {
+      kind: "overloadedAction",
+      name: "edit",
+      runtimeIdentifier: "com.example.edit",
+      overloads: [
+        {
+          kind: "action",
+          name: "edit",
+          runtimeIdentifier: "com.example.edit",
+          params: [{ label: "v", type: { kind: "text" }, hasDefault: false }],
+          returnType: { kind: "text" },
+        },
+        {
+          kind: "action",
+          name: "edit",
+          runtimeIdentifier: "com.example.edit",
+          params: [{ label: "amount", type: { kind: "number" }, hasDefault: false }],
+          returnType: { kind: "number" },
+        },
+      ],
+    };
+    const scope = new Scope(undefined);
+    scope.define("edit", overloadedEdit, false);
+    const result: AnalysisResult = {
+      diagnostics: [],
+      ast: undefined,
+      scope,
+      definitions: [],
+    };
+
+    const items = getCompletions(result);
+    const edit = items.find((i) => i.label === "edit");
+    expect(edit).toBeDefined();
+    expect(edit?.kind).toBe("action");
   });
 });
 

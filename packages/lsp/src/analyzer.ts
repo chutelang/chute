@@ -195,6 +195,8 @@ function formatTypeHover(name: string, type: ChuteType): HoverParts {
       }
       return parts;
     }
+    case "overloadedAction":
+      return formatOverloadedActionSignature(type);
     case "enum":
       return {
         signature: `(enum) ${type.name}\n\n${[...type.cases.keys()].map((c) => `  .${c}`).join("\n")}`,
@@ -269,6 +271,14 @@ function formatActionSignature(type: ChuteType & { kind: "action" }): string {
     }
   }
   return `(action) ${type.name}(\n${paramLines.join(",\n")}\n)${ret}`;
+}
+
+function formatOverloadedActionSignature(type: ChuteType & { kind: "overloadedAction" }): HoverParts {
+  const count = type.overloads.length;
+  const signature = type.overloads
+    .map((overload, i) => `(${i + 1}/${count}) ${formatActionSignature(overload)}`)
+    .join("\n\n");
+  return { signature };
 }
 
 const KEYWORDS = [
@@ -443,7 +453,7 @@ function addScopeCompletions(scope: Scope, items: CompletionItem[]): void {
       kind:
         binding.type.kind === "function"
           ? "function"
-          : binding.type.kind === "action"
+          : binding.type.kind === "action" || binding.type.kind === "overloadedAction"
             ? "action"
             : "variable",
       detail: describeType(binding.type),
