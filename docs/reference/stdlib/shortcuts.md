@@ -14,7 +14,7 @@ getDetailsOfShortcut(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \| Action Count \| File Size \| Creation Date \| Last Modified Date \| Folder \| Icon \| Icon Color \| Icon Glyph | — |
+| `WFContentItemPropertyName` | Name \\| Action Count \\| File Size \\| Creation Date \\| Last Modified Date \\| Folder \\| Icon \\| Icon Color \\| Icon Glyph | — |
 
 Shortcuts action: `is.workflow.actions.properties.workflow`
 

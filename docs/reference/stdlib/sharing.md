@@ -167,8 +167,8 @@ uploadToImgur(WFInput: Any, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolea
 | `WFImgurAnonymous` | Boolean | true |
 | `WFImgurDirectLink` | Boolean | — |
 | `WFImgurAlbum` | Boolean | false |
-| `WFImgurAlbumLayout` | Blog \| Grid \| Horizontal \| Vertical | `"Blog"` |
-| `WFImgurAlbumPrivacy` | Public \| Hidden \| Secret | `"Hidden"` |
+| `WFImgurAlbumLayout` | Blog \\| Grid \\| Horizontal \\| Vertical | `"Blog"` |
+| `WFImgurAlbumPrivacy` | Public \\| Hidden \\| Secret | `"Hidden"` |
 | `WFImgurTitle` | Text | — |
 | `WFImgurDescription` | Text | — |
 

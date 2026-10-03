@@ -14,8 +14,8 @@ filterLocations(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, W
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Name \| Street \| City \| State \| ZIP Code \| Country \| Phone Number \| URL \| Latitude \| Longitude \| Altitude | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | Name \\| Street \\| City \\| State \\| ZIP Code \\| Country \\| Phone Number \\| URL \\| Latitude \\| Longitude \\| Altitude | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -34,7 +34,7 @@ findPlaces(WFInput: Text, WFSearchQuery: Text, WFSearchRadius: Number, WFSearchS
 | `WFInput` | Text | — |
 | `WFSearchQuery` | Text | — |
 | `WFSearchRadius` | Number | — |
-| `WFSearchSortOrder` | Relevance \| Distance | `"Relevance"` |
+| `WFSearchSortOrder` | Relevance \\| Distance | `"Relevance"` |
 
 Shortcuts action: `is.workflow.actions.searchlocalbusinesses`
 
@@ -74,7 +74,7 @@ getDetailsOfLocations(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \| Street \| City \| State \| ZIP Code \| Country \| Phone Number \| URL \| Latitude \| Longitude \| Altitude | — |
+| `WFContentItemPropertyName` | Name \\| Street \\| City \\| State \\| ZIP Code \\| Country \\| Phone Number \\| URL \\| Latitude \\| Longitude \\| Altitude | — |
 
 Shortcuts action: `is.workflow.actions.properties.locations`
 
@@ -102,7 +102,7 @@ getDetailsOfWeatherConditions(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Date \| Condition \| Temperature \| High Temperature \| Low Temperature \| Feels Like \| Humidity \| Visibility \| Pressure \| Dew Point \| UV Index \| Wind Speed \| Wind Direction \| Precipitation Chance \| Precipitation Amount \| Sunrise Time \| Sunset Time \| Air Quality Index \| Air Quality Category \| Location | — |
+| `WFContentItemPropertyName` | Date \\| Condition \\| Temperature \\| High Temperature \\| Low Temperature \\| Feels Like \\| Humidity \\| Visibility \\| Pressure \\| Dew Point \\| UV Index \\| Wind Speed \\| Wind Direction \\| Precipitation Chance \\| Precipitation Amount \\| Sunrise Time \\| Sunset Time \\| Air Quality Index \\| Air Quality Category \\| Location | — |
 
 Shortcuts action: `is.workflow.actions.properties.weather.conditions`
 
@@ -118,7 +118,7 @@ getDistance(WFGetDirectionsCustomLocation: Text, WFGetDistanceDestination: Text,
 | --- | --- | --- |
 | `WFGetDirectionsCustomLocation` | Text | — |
 | `WFGetDistanceDestination` | Text | — |
-| `WFGetDirectionsActionMode` | Direct \| Driving \| Walking \| Biking | `"Direct"` |
+| `WFGetDirectionsActionMode` | Direct \\| Driving \\| Walking \\| Biking | `"Direct"` |
 | `WFDistanceUnit` | Text | — |
 | `Accuracy` | Text | — |
 
@@ -175,7 +175,7 @@ getTravelTime(WFGetDirectionsCustomLocation: Text, WFDestination: Text, WFGetDir
 | --- | --- | --- |
 | `WFGetDirectionsCustomLocation` | Text | — |
 | `WFDestination` | Text | — |
-| `WFGetDirectionsActionMode` | Driving \| Walking \| Transit \| Biking | `"Driving"` |
+| `WFGetDirectionsActionMode` | Driving \\| Walking \\| Transit \\| Biking | `"Driving"` |
 
 > Travel times are provided by Apple Maps and take into account current traffic conditions.
 
@@ -192,7 +192,7 @@ getWeatherForecast(WFWeatherCustomLocation: Text, WFWeatherForecastType: Enum) -
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFWeatherCustomLocation` | Text | — |
-| `WFWeatherForecastType` | Hourly \| Daily | `"Daily"` |
+| `WFWeatherForecastType` | Hourly \\| Daily | `"Daily"` |
 
 Shortcuts action: `is.workflow.actions.weather.forecast`
 

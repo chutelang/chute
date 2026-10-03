@@ -28,9 +28,18 @@ editCalendarEvent(WFContentItemPropertyName: Enum, WFPropertyValue: Any, WFDurat
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Title \| Location \| Start Date \| End Date \| Calendar \| Is All Day \| Notes \| URL \| Has Alarms \| Duration \| Attendees \| Organizer \| Creation Date \| Last Modified Date \| Time Zone | — |
+| `WFContentItemPropertyName` | Duration | — |
 | `WFPropertyValue` | Any | — |
-| `WFDurationUnit` | minutes \| hours \| days | — |
+| `WFDurationUnit` | minutes \\| hours \\| days | — |
+
+```chute
+editCalendarEvent(WFContentItemPropertyName: Enum, WFPropertyValue: Any) -> CalendarEvent
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \\| Location \\| Start Date \\| End Date \\| Calendar \\| Is All Day \\| Notes \\| URL \\| Has Alarms \\| Attendees \\| Organizer \\| Creation Date \\| Last Modified Date \\| Time Zone | — |
+| `WFPropertyValue` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setters.calendarevents`
 
@@ -42,9 +51,18 @@ editReminder(WFContentItemPropertyName: Enum, WFPropertyValue: Any, WFPriorityLe
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Title \| Is Completed \| Completion Date \| Due Date \| Reminder List \| Has Alarms \| Priority \| Notes \| Creation Date \| Last Modified Date | — |
+| `WFContentItemPropertyName` | Priority | — |
 | `WFPropertyValue` | Any | — |
-| `WFPriorityLevel` | None \| Low \| Medium \| High | — |
+| `WFPriorityLevel` | None \\| Low \\| Medium \\| High | — |
+
+```chute
+editReminder(WFContentItemPropertyName: Enum, WFPropertyValue: Any) -> Reminder
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFContentItemPropertyName` | Title \\| Is Completed \\| Completion Date \\| Due Date \\| Reminder List \\| Has Alarms \\| Notes \\| Creation Date \\| Last Modified Date | — |
+| `WFPropertyValue` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setters.reminders`
 
@@ -56,8 +74,8 @@ filterEventAttendees(WFContentItemSortProperty: Enum, WFContentItemSortOrder: En
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Name \| Email Address \| Is Me \| Role \| Status | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | Name \\| Email Address \\| Is Me \\| Role \\| Status | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -71,8 +89,8 @@ findCalendarEvents(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Title \| Location \| Start Date \| End Date \| Calendar \| Is All Day \| Notes \| URL \| Has Alarms \| Duration \| Attendees \| Organizer \| Creation Date \| Last Modified Date \| Time Zone | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | Title \\| Location \\| Start Date \\| End Date \\| Calendar \\| Is All Day \\| Notes \\| URL \\| Has Alarms \\| Duration \\| Attendees \\| Organizer \\| Creation Date \\| Last Modified Date \\| Time Zone | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -86,8 +104,8 @@ findReminders(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFC
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Title \| Is Completed \| Completion Date \| Due Date \| Reminder List \| Has Alarms \| Priority \| Notes \| Creation Date \| Last Modified Date | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | Title \\| Is Completed \\| Completion Date \\| Due Date \\| Reminder List \\| Has Alarms \\| Priority \\| Notes \\| Creation Date \\| Last Modified Date | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -101,7 +119,7 @@ getDetailsOfCalendarEvents(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Title \| Location \| Start Date \| End Date \| Calendar \| Is All Day \| Notes \| URL \| Has Alarms \| Duration \| Attendees \| Organizer \| Creation Date \| Last Modified Date \| Time Zone | — |
+| `WFContentItemPropertyName` | Title \\| Location \\| Start Date \\| End Date \\| Calendar \\| Is All Day \\| Notes \\| URL \\| Has Alarms \\| Duration \\| Attendees \\| Organizer \\| Creation Date \\| Last Modified Date \\| Time Zone | — |
 
 Shortcuts action: `is.workflow.actions.properties.calendarevents`
 
@@ -113,7 +131,7 @@ getDetailsOfEventAttendees(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \| Email Address \| Is Me \| Role \| Status | — |
+| `WFContentItemPropertyName` | Name \\| Email Address \\| Is Me \\| Role \\| Status | — |
 
 Shortcuts action: `is.workflow.actions.properties.eventattendees`
 
@@ -125,7 +143,7 @@ getDetailsOfReminders(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Title \| Is Completed \| Completion Date \| Due Date \| Reminder List \| Has Alarms \| Priority \| Notes \| Creation Date \| Last Modified Date | — |
+| `WFContentItemPropertyName` | Title \\| Is Completed \\| Completion Date \\| Due Date \\| Reminder List \\| Has Alarms \\| Priority \\| Notes \\| Creation Date \\| Last Modified Date | — |
 
 Shortcuts action: `is.workflow.actions.properties.reminders`
 
@@ -141,7 +159,7 @@ getUpcomingEvents(WFGetUpcomingItemCalendar: Text, WFGetUpcomingItemCount: Numbe
 | --- | --- | --- |
 | `WFGetUpcomingItemCalendar` | Text | — |
 | `WFGetUpcomingItemCount` | Number | 1 |
-| `WFDateSpecifier` | Any Day \| Today \| Tomorrow \| Specified Day | `"Any Day"` |
+| `WFDateSpecifier` | Any Day \\| Today \\| Tomorrow \\| Specified Day | `"Any Day"` |
 | `WFSpecifiedDate` | Text | — |
 
 Shortcuts action: `is.workflow.actions.getupcomingevents`
@@ -177,7 +195,7 @@ newEvent(WFCalendarItemTitle: Text, WFCalendarItemLocation: Text, WFCalendarDesc
 | `WFCalendarItemStartDate` | Text | — |
 | `WFCalendarItemEndDate` | Text | — |
 | `WFCalendarItemAllDay` | Boolean | — |
-| `WFAlertTime` | None \| At time of event \| 5 minutes before \| 15 minutes before \| 30 minutes before \| 1 hour before \| 2 hours before \| 1 day before \| 2 days before \| 1 week before \| Custom | — |
+| `WFAlertTime` | None \\| At time of event \\| 5 minutes before \\| 15 minutes before \\| 30 minutes before \\| 1 hour before \\| 2 hours before \\| 1 day before \\| 2 days before \\| 1 week before \\| Custom | — |
 | `WFAlertCustomTime` | Text | — |
 | `WFCalendarItemNotes` | Text | — |
 | `ShowWhenRun` | Boolean | true |
@@ -196,13 +214,13 @@ newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnable
 | --- | --- | --- |
 | `WFCalendarItemTitle` | Text | — |
 | `WFCalendarDescriptor` | Text | — |
-| `WFAlertEnabled` | No Alert \| Alert | `"No Alert"` |
-| `WFAlertCondition` | At Time \| When I Arrive \| When I Leave \| When Messaging | `"At Time"` |
+| `WFAlertEnabled` | No Alert \\| Alert | `"No Alert"` |
+| `WFAlertCondition` | At Time \\| When I Arrive \\| When I Leave \\| When Messaging | `"At Time"` |
 | `WFAlertLocation` | Text | — |
 | `WFAlertPerson` | Text | — |
 | `WFAlertLocationRadius` | Number | 1000 |
 | `WFAlertCustomTime` | Text | — |
-| `WFPriority` | None \| Low \| Medium \| High | `"None"` |
+| `WFPriority` | None \\| Low \\| Medium \\| High | `"None"` |
 | `WFUrgent` | Boolean | — |
 | `WFFlag` | Boolean | — |
 | `WFURL` | Text | — |

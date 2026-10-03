@@ -44,8 +44,8 @@ filterArticles(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WF
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Title \| Author \| Published Date \| URL \| Number of Words \| Main Image URL \| Excerpt \| Body | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | Title \\| Author \\| Published Date \\| URL \\| Number of Words \\| Main Image URL \\| Excerpt \\| Body | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -115,7 +115,7 @@ getComponentOfUrl(WFURL: Text, WFURLComponent: Enum) -> Text
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFURL` | Text | — |
-| `WFURLComponent` | Scheme \| User \| Password \| Host \| Port \| Path \| Query \| Fragment | `"Scheme"` |
+| `WFURLComponent` | Scheme \\| User \\| Password \\| Host \\| Port \\| Path \\| Query \\| Fragment | `"Scheme"` |
 
 > URLs are structured as follows: scheme://user:password@host:port/path?query#fragment
 
@@ -132,10 +132,10 @@ getContentsOfUrl(WFURL: Text, WFHTTPMethod: Enum, ShowHeaders: Any, WFHTTPHeader
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFURL` | Text | — |
-| `WFHTTPMethod` | GET \| POST \| PUT \| PATCH \| DELETE | `"GET"` |
+| `WFHTTPMethod` | GET \\| POST \\| PUT \\| PATCH \\| DELETE | `"GET"` |
 | `ShowHeaders` | Any | — |
 | `WFHTTPHeaders` | Dictionary | — |
-| `WFHTTPBodyType` | JSON \| Form \| File | `"JSON"` |
+| `WFHTTPBodyType` | JSON \\| Form \\| File | `"JSON"` |
 | `WFFormValues` | Dictionary | — |
 | `WFJSONValues` | Dictionary | — |
 | `WFRequestVariable` | Any | — |
@@ -176,7 +176,7 @@ getDetailsOfArticle(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Title \| Author \| Published Date \| URL \| Number of Words \| Main Image URL \| Excerpt \| Body | — |
+| `WFContentItemPropertyName` | Title \\| Author \\| Published Date \\| URL \\| Number of Words \\| Main Image URL \\| Excerpt \\| Body | — |
 
 Shortcuts action: `is.workflow.actions.properties.articles`
 
@@ -188,7 +188,7 @@ getDetailsOfSafariWebPage(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Page Contents \| Page Selection \| Page URL \| Name | — |
+| `WFContentItemPropertyName` | Page Contents \\| Page Selection \\| Page URL \\| Name | — |
 
 > Safari Web Page items are only available when running your shortcut as an Action Extension in Safari.
 
@@ -309,7 +309,7 @@ searchWeb(WFSearchWebDestination: Enum, WFInputText: Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSearchWebDestination` | Amazon \| Bing \| DuckDuckGo \| eBay \| Google \| Reddit \| Twitter \| Yahoo! \| YouTube | `"Google"` |
+| `WFSearchWebDestination` | Amazon \\| Bing \\| DuckDuckGo \\| eBay \\| Google \\| Reddit \\| Twitter \\| Yahoo! \\| YouTube | `"Google"` |
 | `WFInputText` | Text | — |
 
 Shortcuts action: `is.workflow.actions.searchweb`
@@ -367,7 +367,7 @@ urlEncode(WFEncodeMode: Enum, WFInput: Text) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEncodeMode` | Encode \| Decode | `"Encode"` |
+| `WFEncodeMode` | Encode \\| Decode | `"Encode"` |
 | `WFInput` | Text | — |
 
 Shortcuts action: `is.workflow.actions.urlencode`

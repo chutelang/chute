@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-05T14:56:31.447Z",
+  "extractedAt": "2026-09-05T17:42:03.246Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -23097,61 +23097,7 @@
       "actionClass": "WFContentItemSetterAction",
       "description": null,
       "keywords": [],
-      "parameters": [
-        {
-          "key": "WFContentItemPropertyName",
-          "label": "Property",
-          "class": "WFEnumerationParameter",
-          "chuteType": "Enum",
-          "required": true,
-          "defaultValue": null,
-          "items": [
-            "Title",
-            "Location",
-            "Start Date",
-            "End Date",
-            "Calendar",
-            "Is All Day",
-            "Notes",
-            "URL",
-            "Has Alarms",
-            "Duration",
-            "Attendees",
-            "Organizer",
-            "Creation Date",
-            "Last Modified Date",
-            "Time Zone"
-          ]
-        },
-        {
-          "key": "WFPropertyValue",
-          "label": "Value",
-          "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
-          "required": true,
-          "defaultValue": null
-        },
-        {
-          "key": "WFDurationUnit",
-          "label": "Duration Unit",
-          "class": "WFEnumerationParameter",
-          "chuteType": "Enum",
-          "required": false,
-          "defaultValue": null,
-          "items": [
-            "minutes",
-            "hours",
-            "days"
-          ],
-          "requiredResources": [
-            {
-              "WFParameterKey": "WFContentItemPropertyName",
-              "WFParameterValue": "Duration",
-              "WFResourceClass": "WFParameterRelationResource"
-            }
-          ]
-        }
-      ],
+      "parameters": [],
       "input": {
         "Multiple": false,
         "Required": true,
@@ -23168,6 +23114,92 @@
       "requiredResources": [
         "WFCalendarAccessResource",
         "WFContactAccessResource"
+      ],
+      "overloads": [
+        {
+          "parameters": [
+            {
+              "key": "WFContentItemPropertyName",
+              "label": "Property",
+              "class": "WFEnumerationParameter",
+              "chuteType": "Enum",
+              "required": true,
+              "defaultValue": null,
+              "items": [
+                "Duration"
+              ]
+            },
+            {
+              "key": "WFPropertyValue",
+              "label": "Value",
+              "class": "WFVariablePickerParameter",
+              "chuteType": "Any",
+              "required": true,
+              "defaultValue": null
+            },
+            {
+              "key": "WFDurationUnit",
+              "label": "Duration Unit",
+              "class": "WFEnumerationParameter",
+              "chuteType": "Enum",
+              "required": false,
+              "defaultValue": null,
+              "items": [
+                "minutes",
+                "hours",
+                "days"
+              ]
+            }
+          ],
+          "output": {
+            "Multiple": false,
+            "Types": [
+              "WFCalendarEventContentItem"
+            ]
+          }
+        },
+        {
+          "parameters": [
+            {
+              "key": "WFContentItemPropertyName",
+              "label": "Property",
+              "class": "WFEnumerationParameter",
+              "chuteType": "Enum",
+              "required": true,
+              "defaultValue": null,
+              "items": [
+                "Title",
+                "Location",
+                "Start Date",
+                "End Date",
+                "Calendar",
+                "Is All Day",
+                "Notes",
+                "URL",
+                "Has Alarms",
+                "Attendees",
+                "Organizer",
+                "Creation Date",
+                "Last Modified Date",
+                "Time Zone"
+              ]
+            },
+            {
+              "key": "WFPropertyValue",
+              "label": "Value",
+              "class": "WFVariablePickerParameter",
+              "chuteType": "Any",
+              "required": true,
+              "defaultValue": null
+            }
+          ],
+          "output": {
+            "Multiple": false,
+            "Types": [
+              "WFCalendarEventContentItem"
+            ]
+          }
+        }
       ],
       "residentCompatible": true,
       "category": "Calendar"
@@ -23247,57 +23279,7 @@
       "actionClass": "WFContentItemSetterAction",
       "description": null,
       "keywords": [],
-      "parameters": [
-        {
-          "key": "WFContentItemPropertyName",
-          "label": "Property",
-          "class": "WFEnumerationParameter",
-          "chuteType": "Enum",
-          "required": true,
-          "defaultValue": null,
-          "items": [
-            "Title",
-            "Is Completed",
-            "Completion Date",
-            "Due Date",
-            "Reminder List",
-            "Has Alarms",
-            "Priority",
-            "Notes",
-            "Creation Date",
-            "Last Modified Date"
-          ]
-        },
-        {
-          "key": "WFPropertyValue",
-          "label": "Value",
-          "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
-          "required": true,
-          "defaultValue": null
-        },
-        {
-          "key": "WFPriorityLevel",
-          "label": "Priority Level",
-          "class": "WFEnumerationParameter",
-          "chuteType": "Enum",
-          "required": false,
-          "defaultValue": null,
-          "items": [
-            "None",
-            "Low",
-            "Medium",
-            "High"
-          ],
-          "requiredResources": [
-            {
-              "WFParameterKey": "WFContentItemPropertyName",
-              "WFParameterValue": "Priority",
-              "WFResourceClass": "WFParameterRelationResource"
-            }
-          ]
-        }
-      ],
+      "parameters": [],
       "input": {
         "Multiple": false,
         "Required": true,
@@ -23313,6 +23295,88 @@
       },
       "requiredResources": [
         "WFReminderAccessResource"
+      ],
+      "overloads": [
+        {
+          "parameters": [
+            {
+              "key": "WFContentItemPropertyName",
+              "label": "Property",
+              "class": "WFEnumerationParameter",
+              "chuteType": "Enum",
+              "required": true,
+              "defaultValue": null,
+              "items": [
+                "Priority"
+              ]
+            },
+            {
+              "key": "WFPropertyValue",
+              "label": "Value",
+              "class": "WFVariablePickerParameter",
+              "chuteType": "Any",
+              "required": true,
+              "defaultValue": null
+            },
+            {
+              "key": "WFPriorityLevel",
+              "label": "Priority Level",
+              "class": "WFEnumerationParameter",
+              "chuteType": "Enum",
+              "required": false,
+              "defaultValue": null,
+              "items": [
+                "None",
+                "Low",
+                "Medium",
+                "High"
+              ]
+            }
+          ],
+          "output": {
+            "Multiple": false,
+            "Types": [
+              "WFReminderContentItem"
+            ]
+          }
+        },
+        {
+          "parameters": [
+            {
+              "key": "WFContentItemPropertyName",
+              "label": "Property",
+              "class": "WFEnumerationParameter",
+              "chuteType": "Enum",
+              "required": true,
+              "defaultValue": null,
+              "items": [
+                "Title",
+                "Is Completed",
+                "Completion Date",
+                "Due Date",
+                "Reminder List",
+                "Has Alarms",
+                "Notes",
+                "Creation Date",
+                "Last Modified Date"
+              ]
+            },
+            {
+              "key": "WFPropertyValue",
+              "label": "Value",
+              "class": "WFVariablePickerParameter",
+              "chuteType": "Any",
+              "required": true,
+              "defaultValue": null
+            }
+          ],
+          "output": {
+            "Multiple": false,
+            "Types": [
+              "WFReminderContentItem"
+            ]
+          }
+        }
       ],
       "residentCompatible": true,
       "category": "Calendar"

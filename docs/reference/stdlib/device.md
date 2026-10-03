@@ -59,7 +59,7 @@ findDisplays(WFContentItemSortProperty: Text, WFContentItemSortOrder: Enum, WFCo
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFContentItemSortProperty` | Text | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -74,7 +74,7 @@ findWindows(WFContentItemSortProperty: Text, WFContentItemSortOrder: Enum, WFCon
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFContentItemSortProperty` | Text | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -90,7 +90,7 @@ getAllWallpapers(WFPosterType: Enum) -> Poster
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPosterType` | All \| Current | `"All"` |
+| `WFPosterType` | All \\| Current | `"All"` |
 
 Shortcuts action: `is.workflow.actions.posters.get`
 
@@ -104,7 +104,7 @@ getBatteryStatus(Subject: Enum) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Subject` | Battery Level \| Is Charging \| Is Connected to Charger \| Charge Limit | `"Battery Level"` |
+| `Subject` | Battery Level \\| Is Charging \\| Is Connected to Charger \\| Charge Limit | `"Battery Level"` |
 
 > You can use this action to fetch the current battery percentage, whether your device is plugged into a charger or is charging, or get the current battery charge limit if one is enabled.
 
@@ -130,7 +130,7 @@ getCurrentApp(WFVisibleAppScope: Enum) -> App
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVisibleAppScope` | Current \| Visible | `"Current"` |
+| `WFVisibleAppScope` | Current \\| Visible | `"Current"` |
 
 Shortcuts action: `is.workflow.actions.getcurrentapp`
 
@@ -156,8 +156,8 @@ getCurrentIpAddress(WFIPAddressSourceOption: Enum, WFIPAddressTypeOption: Enum) 
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFIPAddressSourceOption` | External \| Local | `"External"` |
-| `WFIPAddressTypeOption` | IPv4 \| IPv6 | `"IPv4"` |
+| `WFIPAddressSourceOption` | External \\| Local | `"External"` |
+| `WFIPAddressTypeOption` | IPv4 \\| IPv6 | `"IPv4"` |
 
 Shortcuts action: `is.workflow.actions.getipaddress`
 
@@ -179,7 +179,7 @@ getDeviceDetails(WFDeviceDetail: Enum) -> Any
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDeviceDetail` | Device Name \| Device Hostname \| Device Model \| Device Is Watch \| System Version \| System Build Number \| Screen Width \| Screen Height \| Current Volume \| Current Brightness \| Current Appearance \| Device Is Locked | `"Device Name"` |
+| `WFDeviceDetail` | Device Name \\| Device Hostname \\| Device Model \\| Device Is Watch \\| System Version \\| System Build Number \\| Screen Width \\| Screen Height \\| Current Volume \\| Current Brightness \\| Current Appearance \\| Device Is Locked | `"Device Name"` |
 
 Shortcuts action: `is.workflow.actions.getdevicedetails`
 
@@ -194,8 +194,8 @@ getNetworkDetails(WFNetworkDetailsNetwork: Text, WFWiFiDetail: Enum, WFCellularD
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFNetworkDetailsNetwork` | Text | — |
-| `WFWiFiDetail` | Network Name \| BSSID \| Wi-Fi Standard \| RX Rate \| TX Rate \| RSSI \| Noise \| Channel Number \| Hardware MAC Address | `"Network Name"` |
-| `WFCellularDetail` | Carrier Name \| Radio Technology \| Country Code \| Is Roaming Abroad \| Number of Signal Bars | `"Carrier Name"` |
+| `WFWiFiDetail` | Network Name \\| BSSID \\| Wi-Fi Standard \\| RX Rate \\| TX Rate \\| RSSI \\| Noise \\| Channel Number \\| Hardware MAC Address | `"Network Name"` |
+| `WFCellularDetail` | Carrier Name \\| Radio Technology \\| Country Code \\| Is Roaming Abroad \\| Number of Signal Bars | `"Carrier Name"` |
 
 Shortcuts action: `is.workflow.actions.getwifi`
 
@@ -229,7 +229,7 @@ hideApp(WFHideAppMode: Enum, WFApp: Text, WFAppsExcept: Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHideAppMode` | App \| All Apps | `"App"` |
+| `WFHideAppMode` | App \\| All Apps | `"App"` |
 | `WFApp` | Text | — |
 | `WFAppsExcept` | Text | — |
 
@@ -245,7 +245,7 @@ lockApp(WFLockAppOperation: Enum, WFApp: Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFLockAppOperation` | Lock \| Unlock \| Toggle | `"Lock"` |
+| `WFLockAppOperation` | Lock \\| Unlock \\| Toggle | `"Lock"` |
 | `WFApp` | Text | — |
 
 Shortcuts action: `is.workflow.actions.lock.app`
@@ -280,7 +280,7 @@ moveWindow(WFPosition: Enum, WFXCoordinate: Number, WFYCoordinate: Number, WFWin
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPosition` | Top Left \| Top Center \| Top Right \| Middle Left \| Center \| Middle Right \| Bottom Left \| Bottom Center \| Bottom Right \| Coordinates | `"Center"` |
+| `WFPosition` | Top Left \\| Top Center \\| Top Right \\| Middle Left \\| Center \\| Middle Right \\| Bottom Left \\| Bottom Center \\| Bottom Right \\| Coordinates | `"Center"` |
 | `WFXCoordinate` | Number | — |
 | `WFYCoordinate` | Number | — |
 | `WFWindow` | Any | — |
@@ -333,7 +333,7 @@ quitApp(WFQuitAppMode: Enum, WFAppsExcept: Text, WFApp: Text, WFAskToSaveChanges
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFQuitAppMode` | App \| All Apps | `"App"` |
+| `WFQuitAppMode` | App \\| All Apps | `"App"` |
 | `WFAppsExcept` | Text | — |
 | `WFApp` | Text | — |
 | `WFAskToSaveChanges` | Boolean | true |
@@ -350,7 +350,7 @@ resizeWindow(WFConfiguration: Enum, WFWidth: Number, WFHeight: Number, WFWindow:
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFConfiguration` | Fit Screen \| Top Half \| Bottom Half \| Left Half \| Right Half \| Top Left Quarter \| Top Right Quarter \| Bottom Left Quarter \| Bottom Right Quarter \| Dimensions | `"Fit Screen"` |
+| `WFConfiguration` | Fit Screen \\| Top Half \\| Bottom Half \\| Left Half \\| Right Half \\| Top Left Quarter \\| Top Right Quarter \\| Bottom Left Quarter \\| Bottom Right Quarter \\| Dimensions | `"Fit Screen"` |
 | `WFWidth` | Number | — |
 | `WFHeight` | Number | — |
 | `WFWindow` | Any | — |
@@ -398,9 +398,9 @@ setFocus(Operation: Enum, Enabled: Boolean, AssertionType: Enum, Event: Any, Tim
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Operation` | Turn \| Toggle | `"Turn"` |
+| `Operation` | Turn \\| Toggle | `"Turn"` |
 | `Enabled` | Boolean | false |
-| `AssertionType` | Turned Off \| Time \| I Leave \| Event Ends | `"Turned Off"` |
+| `AssertionType` | Turned Off \\| Time \\| I Leave \\| Event Ends | `"Turned Off"` |
 | `Event` | Any | — |
 | `Time` | Text | — |
 | `FocusModes` | Text | — |
@@ -418,7 +418,7 @@ setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Enum, WFWallpaperShowPrevie
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Any | — |
-| `WFWallpaperLocation` | Lock Screen \| Home Screen | Lock Screen,Home Screen |
+| `WFWallpaperLocation` | Lock Screen \\| Home Screen | Lock Screen,Home Screen |
 | `WFWallpaperShowPreview` | Boolean | true |
 | `WFWallpaperPerspectiveZoom` | Boolean | false |
 | `WFSelectedPoster` | Text | — |
@@ -437,7 +437,7 @@ shutDown(WFShutdownMode: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFShutdownMode` | Shut Down \| Restart | `"Shut Down"` |
+| `WFShutdownMode` | Shut Down \\| Restart | `"Shut Down"` |
 
 Shortcuts action: `is.workflow.actions.reboot`
 
@@ -463,7 +463,7 @@ splitScreenApps(WFPrimaryAppIdentifier: Text, WFSecondaryAppIdentifier: Text, WF
 | --- | --- | --- |
 | `WFPrimaryAppIdentifier` | Text | — |
 | `WFSecondaryAppIdentifier` | Text | — |
-| `WFAppRatio` | ½ + ½ \| ⅔ + ⅓ | `"½ + ½"` |
+| `WFAppRatio` | ½ + ½ \\| ⅔ + ⅓ | `"½ + ½"` |
 
 Shortcuts action: `is.workflow.actions.splitscreen`
 
@@ -518,8 +518,8 @@ takeScreenshot(WFTakeScreenshotScreenshotType: Enum, WFTakeScreenshotActionInter
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFTakeScreenshotScreenshotType` | Full Screen \| Interactive | `"Full Screen"` |
-| `WFTakeScreenshotActionInteractiveSelectionType` | Window \| Custom | `"Window"` |
+| `WFTakeScreenshotScreenshotType` | Full Screen \\| Interactive | `"Full Screen"` |
+| `WFTakeScreenshotActionInteractiveSelectionType` | Window \\| Custom | `"Window"` |
 | `WFTakeScreenshotMainMonitorOnly` | Boolean | false |
 | `WFTakeScreenshotIgnoreContextualAssistanceLayers` | Boolean | false |
 
@@ -535,7 +535,7 @@ vibrateDevice(WFVibrateHapticType: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVibrateHapticType` | Default \| Up Direction \| Down Direction \| Success \| Failure \| Retry \| Start \| Stop \| Click | `"Default"` |
+| `WFVibrateHapticType` | Default \\| Up Direction \\| Down Direction \\| Success \\| Failure \\| Retry \\| Start \\| Stop \\| Click | `"Default"` |
 
 Shortcuts action: `is.workflow.actions.vibrate`
 

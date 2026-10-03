@@ -20,8 +20,8 @@ addTodoistItem(WFTodoistContent: Text, WFTodoistProject: Text, WFTodoistDueDate:
 | `WFTodoistProject` | Text | `"Inbox"` |
 | `WFTodoistDueDate` | Text | — |
 | `WFTodoistReminder` | Text | — |
-| `WFTodoistReminderType` | Email \| Push Notification \| Text Message | `"Email"` |
-| `WFTodoistPriority` | 4 \| 3 \| 2 \| 1 | `"4"` |
+| `WFTodoistReminderType` | Email \\| Push Notification \\| Text Message | `"Email"` |
+| `WFTodoistPriority` | 4 \\| 3 \\| 2 \\| 1 | `"4"` |
 | `WFTodoistNotes` | Text | — |
 | `WFTodoistFile` | Any | — |
 
@@ -90,7 +90,7 @@ addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTre
 | `WFTrelloBoard` | Text | — |
 | `WFTrelloList` | Text | — |
 | `WFTrelloDueDate` | Text | — |
-| `WFTrelloCardPosition` | Top \| Bottom | `"Top"` |
+| `WFTrelloCardPosition` | Top \\| Bottom | `"Top"` |
 | `WFTrelloAttachments` | Any | — |
 | `WFTrelloDescription` | Text | — |
 
@@ -107,7 +107,7 @@ appendToDropboxTextFile(WFFilePath: Text, WFAppendFileWriteMode: Enum, WFAppendO
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFFilePath` | Text | — |
-| `WFAppendFileWriteMode` | Append \| Prepend | `"Append"` |
+| `WFAppendFileWriteMode` | Append \\| Prepend | `"Append"` |
 | `WFAppendOnNewLine` | Boolean | true |
 | `WFInput` | Text | — |
 
@@ -127,7 +127,7 @@ appendToEvernote(WFInput: Any, WFEvernoteNotesTitleSearch: Text, WFEvernoteWrite
 | --- | --- | --- |
 | `WFInput` | Any | — |
 | `WFEvernoteNotesTitleSearch` | Text | — |
-| `WFEvernoteWriteMode` | Append \| Prepend | `"Append"` |
+| `WFEvernoteWriteMode` | Append \\| Prepend | `"Append"` |
 | `WFEvernoteNotesNotebookName` | Text | — |
 
 Shortcuts action: `is.workflow.actions.evernote.append`
@@ -190,7 +190,7 @@ createTrelloList(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloPosition: Enum
 | --- | --- | --- |
 | `WFTrelloName` | Text | — |
 | `WFTrelloBoard` | Text | — |
-| `WFTrelloPosition` | Top \| Bottom | `"Top"` |
+| `WFTrelloPosition` | Top \\| Bottom | `"Top"` |
 
 Shortcuts action: `is.workflow.actions.trello.add.list`
 
@@ -268,7 +268,7 @@ getItemsFromPocket(WFPocketItemCount: Number, WFPocketItemState: Enum, WFPocketI
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFPocketItemCount` | Number | — |
-| `WFPocketItemState` | Unread \| Archived \| All | `"All"` |
+| `WFPocketItemState` | Unread \\| Archived \\| All | `"All"` |
 | `WFPocketItemSearchTerm` | Text | — |
 | `WFPocketItemSearchTags` | Text | — |
 
@@ -331,7 +331,7 @@ getTrelloItems(WFTrelloItemType: Enum, WFTrelloBoard: Text, WFTrelloList: Text) 
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFTrelloItemType` | Boards \| Lists \| Cards | `"Boards"` |
+| `WFTrelloItemType` | Boards \\| Lists \\| Cards | `"Boards"` |
 | `WFTrelloBoard` | Text | — |
 | `WFTrelloList` | Text | — |
 
@@ -348,7 +348,7 @@ importToLightroom(applyPreset: Boolean, presetGroup: Enum, preset: Text, WFInput
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `applyPreset` | Boolean | false |
-| `presetGroup` | B&W \| Color \| Creative \| Curve \| Grain \| Sharpening \| Vignetting | `"Color"` |
+| `presetGroup` | B&W \\| Color \\| Creative \\| Curve \\| Grain \\| Sharpening \\| Vignetting | `"Color"` |
 | `preset` | Text | — |
 | `WFInput` | Any | — |
 
@@ -437,7 +437,7 @@ postToTumblr(WFInput: Any, WFComposeInApp: Boolean, WFBlogName: Text, WFPostType
 | `WFComposeInApp` | Boolean | — |
 | `WFBlogName` | Text | — |
 | `WFPostType` | Text | — |
-| `WFPostState` | Post Now \| Add to Queue \| Save as Draft \| Post Privately | `"Post Now"` |
+| `WFPostState` | Post Now \\| Add to Queue \\| Save as Draft \\| Post Privately | `"Post Now"` |
 | `WFPostTitle` | Text | — |
 | `WFPostSource` | Text | — |
 | `WFPostCaption` | Text | — |
@@ -529,7 +529,7 @@ saveWithTransmit(TransmitSaveTo: Enum, TransmitFavoriteName: Text, TransmitPath:
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `TransmitSaveTo` | Local \| Remote | `"Remote"` |
+| `TransmitSaveTo` | Local \\| Remote | `"Remote"` |
 | `TransmitFavoriteName` | Text | — |
 | `TransmitPath` | Text | — |
 
@@ -603,7 +603,7 @@ uploadToCloudapp(WFCloudAppPrivacyType: Enum, WFInput: Any) -> URL
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCloudAppPrivacyType` | Private \| Public | `"Private"` |
+| `WFCloudAppPrivacyType` | Private \\| Public | `"Private"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.cloudapp.upload`

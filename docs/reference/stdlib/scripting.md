@@ -34,7 +34,7 @@ adjustDate(WFDate: Text, WFAdjustOperation: Enum, WFDuration: Number) -> Date
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFDate` | Text | — |
-| `WFAdjustOperation` | Add \| Subtract \| Get Start of Minute \| Get Start of Hour \| Get Start of Day \| Get Start of Week \| Get Start of Month \| Get Start of Year | `"Add"` |
+| `WFAdjustOperation` | Add \\| Subtract \\| Get Start of Minute \\| Get Start of Hour \\| Get Start of Day \\| Get Start of Week \\| Get Start of Month \\| Get Start of Year | `"Add"` |
 | `WFDuration` | Number | — |
 
 > This action supports decimal numbers when adding or subtracting seconds, minutes, hours, or days. Otherwise only integers are supported.
@@ -52,7 +52,7 @@ askForInput(WFAskActionPrompt: Any, WFInputType: AskForInputType, WFAskActionDef
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFAskActionPrompt` | Any | — |
-| `WFInputType` | Text \| Number \| URL \| Date \| Time \| Date and Time | — |
+| `WFInputType` | Text \\| Number \\| URL \\| Date \\| Time \\| Date and Time | — |
 | `WFAskActionDefaultAnswer` | Any | — |
 | `WFAskActionDefaultAnswerNumber` | Any | — |
 | `urlAnswer` | Any | — |
@@ -76,8 +76,8 @@ base64Encode(WFEncodeMode: Enum, WFBase64LineBreakMode: Enum, WFInput: Any) -> A
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEncodeMode` | Encode \| Decode | `"Encode"` |
-| `WFBase64LineBreakMode` | None \| Every 64 Characters \| Every 76 Characters | `"Every 76 Characters"` |
+| `WFEncodeMode` | Encode \\| Decode | `"Encode"` |
+| `WFBase64LineBreakMode` | None \\| Every 64 Characters \\| Every 76 Characters | `"Every 76 Characters"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.base64encode`
@@ -164,7 +164,7 @@ count(WFCountType: Enum, Input: Any) -> Number
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFCountType` | Items \| Characters \| Words \| Sentences \| Lines | `"Items"` |
+| `WFCountType` | Items \\| Characters \\| Words \\| Sentences \\| Lines | `"Items"` |
 | `Input` | Any | — |
 
 > This is just like the Count in Sesame Street, but instead of a vampire, it's a Shortcuts action.
@@ -185,7 +185,7 @@ createQrCode(WFText: Text, WFQRForegroundColor: Text, WFQRBackgroundColor: Text,
 | `WFQRForegroundColor` | Text | [object Object] |
 | `WFQRBackgroundColor` | Text | [object Object] |
 | `WFQRRounded` | Boolean | false |
-| `WFQRErrorCorrectionLevel` | Low \| Medium \| Quartile \| High | `"Medium"` |
+| `WFQRErrorCorrectionLevel` | Low \\| Medium \\| Quartile \\| High | `"Medium"` |
 
 Shortcuts action: `is.workflow.actions.generatebarcode`
 
@@ -201,7 +201,7 @@ date(WFDateActionMode: Text, WFDateActionDate: Text, WFEventOccurrenceMode: Enum
 | --- | --- | --- |
 | `WFDateActionMode` | Text | `"Current Date"` |
 | `WFDateActionDate` | Text | — |
-| `WFEventOccurrenceMode` | Next Occurrence \| Specified Year | `"Next Occurrence"` |
+| `WFEventOccurrenceMode` | Next Occurrence \\| Specified Year | `"Next Occurrence"` |
 | `WFEventOccurrenceSpecifiedYear` | Text | — |
 
 Shortcuts action: `is.workflow.actions.date`
@@ -241,7 +241,7 @@ findApps(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFConten
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFContentItemSortProperty` | Name | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -257,9 +257,9 @@ formatDate(WFDateFormatStyle: Enum, WFRelativeDateFormatStyle: Enum, WFTimeForma
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDateFormatStyle` | None \| Short \| Medium \| Long \| Relative \| RFC 2822 \| ISO 8601 \| Custom | `"Short"` |
-| `WFRelativeDateFormatStyle` | Short \| Medium \| Long | `"Medium"` |
-| `WFTimeFormatStyle` | None \| Short \| Medium \| Long \| Relative | `"Short"` |
+| `WFDateFormatStyle` | None \\| Short \\| Medium \\| Long \\| Relative \\| RFC 2822 \\| ISO 8601 \\| Custom | `"Short"` |
+| `WFRelativeDateFormatStyle` | Short \\| Medium \\| Long | `"Medium"` |
+| `WFTimeFormatStyle` | None \\| Short \\| Medium \\| Long \\| Relative | `"Short"` |
 | `WFISO8601IncludeTime` | Boolean | — |
 | `WFDateFormat` | Text | — |
 | `WFDate` | Text | — |
@@ -279,7 +279,7 @@ formatFileSize(WFFileSizeFormat: Enum, WFFileSizeIncludeUnits: Boolean, WFFileSi
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFileSizeFormat` | Automatic \| Bytes \| KB \| MB \| GB \| TB \| PB \| EB \| ZB \| YB or Higher | `"Automatic"` |
+| `WFFileSizeFormat` | Automatic \\| Bytes \\| KB \\| MB \\| GB \\| TB \\| PB \\| EB \\| ZB \\| YB or Higher | `"Automatic"` |
 | `WFFileSizeIncludeUnits` | Boolean | true |
 | `WFFileSize` | Number | — |
 
@@ -312,7 +312,7 @@ generateHash(WFHashType: Enum, WFInput: Any) -> Text
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHashType` | MD5 \| SHA1 \| SHA256 \| SHA512 | `"MD5"` |
+| `WFHashType` | MD5 \\| SHA1 \\| SHA256 \\| SHA512 | `"MD5"` |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.hash`
@@ -367,7 +367,7 @@ getDetailsOfAppStoreApp(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \| Artist \| Price \| Store URL \| Store ID \| Rating \| Rating Count \| Release Date \| Artwork \| Artwork URL \| Supported Languages \| Is Universal \| Category \| Description \| Version \| Release Notes \| Content Rating \| Minimum OS Version \| File Size \| Supported Devices \| Currency Code \| Screenshot URLs \| iPad Screenshot URLs | — |
+| `WFContentItemPropertyName` | Name \\| Artist \\| Price \\| Store URL \\| Store ID \\| Rating \\| Rating Count \\| Release Date \\| Artwork \\| Artwork URL \\| Supported Languages \\| Is Universal \\| Category \\| Description \\| Version \\| Release Notes \\| Content Rating \\| Minimum OS Version \\| File Size \\| Supported Devices \\| Currency Code \\| Screenshot URLs \\| iPad Screenshot URLs | — |
 
 Shortcuts action: `is.workflow.actions.properties.appstore`
 
@@ -395,7 +395,7 @@ getDictionaryValue(WFGetDictionaryValueType: Enum, WFDictionaryKey: Text, WFInpu
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFGetDictionaryValueType` | Value \| All Keys \| All Values | `"Value"` |
+| `WFGetDictionaryValueType` | Value \\| All Keys \\| All Values | `"Value"` |
 | `WFDictionaryKey` | Text | — |
 | `WFInput` | Any | — |
 
@@ -458,7 +458,7 @@ getItemFromList(WFItemSpecifier: Enum, WFItemIndex: Number, WFItemRangeStart: Nu
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFItemSpecifier` | First Item \| Last Item \| Random Item \| Item At Index \| Items in Range | `"First Item"` |
+| `WFItemSpecifier` | First Item \\| Last Item \\| Random Item \\| Item At Index \\| Items in Range | `"First Item"` |
 | `WFItemIndex` | Number | — |
 | `WFItemRangeStart` | Number | — |
 | `WFItemRangeEnd` | Number | — |
@@ -554,7 +554,7 @@ getTimeBetweenDates(WFTimeUntilFromDate: Text, WFInput: Text, WFTimeUntilUnit: E
 | --- | --- | --- |
 | `WFTimeUntilFromDate` | Text | — |
 | `WFInput` | Text | — |
-| `WFTimeUntilUnit` | Total Time \| Seconds \| Minutes \| Hours \| Days \| Weeks \| Months \| Years | `"Minutes"` |
+| `WFTimeUntilUnit` | Total Time \\| Seconds \\| Minutes \\| Hours \\| Days \\| Weeks \\| Months \\| Years | `"Minutes"` |
 
 > This action outputs a negative number if the input date takes place before the specified date.
 
@@ -624,9 +624,9 @@ input(WFInputType: Text, WFInputSurface: Text, WFNoInputBehavior: Enum, WFStopAn
 | --- | --- | --- |
 | `WFInputType` | Text | — |
 | `WFInputSurface` | Text | `""` |
-| `WFNoInputBehavior` | Stop and Respond \| Ask For \| Get Clipboard \| Continue | `"Stop and Respond"` |
+| `WFNoInputBehavior` | Stop and Respond \\| Ask For \\| Get Clipboard \\| Continue | `"Stop and Respond"` |
 | `WFStopAndRespondResponse` | Text | — |
-| `WFAskForType` | Files \| Text \| Date \| Photos \| Contacts \| Email Address \| Music \| Phone Number | `"Photos"` |
+| `WFAskForType` | Files \\| Text \\| Date \\| Photos \\| Contacts \\| Email Address \\| Music \\| Phone Number | `"Photos"` |
 
 Shortcuts action: `is.workflow.actions.input`
 
@@ -668,7 +668,7 @@ openApp(WFSelectedApp: Text, WFAppName: Text, WFWindowingFormat: Enum) -> App
 | --- | --- | --- |
 | `WFSelectedApp` | Text | — |
 | `WFAppName` | Text | — |
-| `WFWindowingFormat` | Full Screen \| Left \| Right \| Top \| Bottom \| Top Leading \| Top Trailing \| Bottom Leading \| Bottom Trailing \| Left Third \| Middle Third \| Right Third | `"Full Screen"` |
+| `WFWindowingFormat` | Full Screen \\| Left \\| Right \\| Top \\| Bottom \\| Top Leading \\| Top Trailing \\| Bottom Leading \\| Bottom Trailing \\| Left Third \\| Middle Third \\| Right Third | `"Full Screen"` |
 
 Shortcuts action: `is.workflow.actions.openapp`
 
@@ -767,7 +767,7 @@ runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser:
 | `WFSSHHost` | Text | — |
 | `WFSSHPort` | Text | `"22"` |
 | `WFSSHUser` | Text | — |
-| `WFSSHAuthenticationType` | Password \| SSH Key | `"Password"` |
+| `WFSSHAuthenticationType` | Password \\| SSH Key | `"Password"` |
 | `WFSSHPassword` | Text | — |
 | `WFSSHKey` | Text | — |
 | `WFInput` | Any | — |
@@ -787,7 +787,7 @@ runShellScript(Script: Text, Shell: Text, Input: Any, InputMode: Enum, RunAsRoot
 | `Script` | Text | — |
 | `Shell` | Text | — |
 | `Input` | Any | — |
-| `InputMode` | to stdin \| as arguments | `"to stdin"` |
+| `InputMode` | to stdin \\| as arguments | `"to stdin"` |
 | `RunAsRoot` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.runshellscript`
@@ -880,7 +880,7 @@ stopAndOutput(WFOutput: Text, WFNoOutputSurfaceBehavior: Enum, WFResponse: Text)
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFOutput` | Text | `""` |
-| `WFNoOutputSurfaceBehavior` | Respond \| Do Nothing \| Copy to Clipboard | `"Do Nothing"` |
+| `WFNoOutputSurfaceBehavior` | Respond \\| Do Nothing \\| Copy to Clipboard | `"Do Nothing"` |
 | `WFResponse` | Text | `""` |
 
 Shortcuts action: `is.workflow.actions.output`

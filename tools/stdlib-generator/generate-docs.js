@@ -124,33 +124,14 @@ function formatDefault(value) {
   return String(value);
 }
 
-function generateActionDoc(action) {
+function formatTypeForTableCell(param) {
+  const raw = formatType(param);
+  return raw.replaceAll("|", "\\|");
+}
+
+function renderSignature(action, params, output) {
   const lines = [];
-
-  lines.push(`## \`${action.name}\``);
-  lines.push("");
-
-  if (action.description?.summary) {
-    lines.push(action.description.summary);
-    lines.push("");
-  }
-
-  let params = action.parameters.filter((p) => p.key);
-  if (params.length === 0 && action.intentParameters) {
-    const overrides = action.parameterOverrides ?? {};
-    params = action.intentParameters
-      .filter((p) => p.name)
-      .map((p) => ({
-        key: overrides[p.name]?.Key ?? p.name,
-        chuteType:
-          p.enumType ??
-          (p.type === "Boolean" ? "Boolean" : p.type === "Integer" ? "Number" : "Any"),
-        enumType: p.enumType ?? undefined,
-        required: false,
-        defaultValue: null,
-      }));
-  }
-  const returnType = inferReturnType(action.output);
+  const returnType = inferReturnType(output);
   const returnSuffix = returnType ? ` -> ${returnType}` : "";
   const signature =
     params.length > 0
@@ -166,9 +147,49 @@ function generateActionDoc(action) {
     lines.push("| Parameter | Type | Default |");
     lines.push("| --- | --- | --- |");
     for (const p of params) {
-      lines.push(`| \`${p.key}\` | ${formatType(p)} | ${formatDefault(p.defaultValue)} |`);
+      lines.push(
+        `| \`${p.key}\` | ${formatTypeForTableCell(p)} | ${formatDefault(p.defaultValue)} |`,
+      );
     }
     lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
+function generateActionDoc(action) {
+  const lines = [];
+
+  lines.push(`## \`${action.name}\``);
+  lines.push("");
+
+  if (action.description?.summary) {
+    lines.push(action.description.summary);
+    lines.push("");
+  }
+
+  if (action.overloads && action.overloads.length > 0) {
+    for (const overload of action.overloads) {
+      const params = overload.parameters.filter((p) => p.key);
+      lines.push(renderSignature(action, params, overload.output ?? action.output));
+    }
+  } else {
+    let params = action.parameters.filter((p) => p.key);
+    if (params.length === 0 && action.intentParameters) {
+      const overrides = action.parameterOverrides ?? {};
+      params = action.intentParameters
+        .filter((p) => p.name)
+        .map((p) => ({
+          key: overrides[p.name]?.Key ?? p.name,
+          chuteType:
+            p.enumType ??
+            (p.type === "Boolean" ? "Boolean" : p.type === "Integer" ? "Number" : "Any"),
+          enumType: p.enumType ?? undefined,
+          required: false,
+          defaultValue: null,
+        }));
+    }
+    lines.push(renderSignature(action, params, action.output));
   }
 
   if (action.description?.note) {

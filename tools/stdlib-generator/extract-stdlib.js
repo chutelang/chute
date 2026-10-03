@@ -433,34 +433,30 @@ const CONTENT_ITEM_PROPERTIES = {
 const SETTER_EXTRA_PARAMS = {
   WFCalendarEventContentItem: [
     {
-      Key: "WFDurationUnit",
-      Label: "Duration Unit",
-      Class: "WFEnumerationParameter",
-      Items: ["minutes", "hours", "days"],
-      DefaultValue: null,
-      Required: false,
-      RequiredResources: [
+      property: "Duration",
+      params: [
         {
-          WFParameterKey: "WFContentItemPropertyName",
-          WFParameterValue: "Duration",
-          WFResourceClass: "WFParameterRelationResource",
+          Key: "WFDurationUnit",
+          Label: "Duration Unit",
+          Class: "WFEnumerationParameter",
+          Items: ["minutes", "hours", "days"],
+          DefaultValue: null,
+          Required: false,
         },
       ],
     },
   ],
   WFReminderContentItem: [
     {
-      Key: "WFPriorityLevel",
-      Label: "Priority Level",
-      Class: "WFEnumerationParameter",
-      Items: ["None", "Low", "Medium", "High"],
-      DefaultValue: null,
-      Required: false,
-      RequiredResources: [
+      property: "Priority",
+      params: [
         {
-          WFParameterKey: "WFContentItemPropertyName",
-          WFParameterValue: "Priority",
-          WFResourceClass: "WFParameterRelationResource",
+          Key: "WFPriorityLevel",
+          Label: "Priority Level",
+          Class: "WFEnumerationParameter",
+          Items: ["None", "Low", "Medium", "High"],
+          DefaultValue: null,
+          Required: false,
         },
       ],
     },
@@ -545,31 +541,67 @@ function synthesizeSpecialActionTypes(raw) {
   }
 
   if (cls === "WFContentItemSetterAction") {
-    const extraParams = SETTER_EXTRA_PARAMS[contentItemClass] ?? [];
-    const params =
-      properties.length > 0
-        ? [
-            {
-              Key: "WFContentItemPropertyName",
-              Label: "Property",
-              Class: "WFEnumerationParameter",
-              Items: properties,
-              DefaultValue: null,
-              Required: true,
-            },
-            {
-              Key: "WFPropertyValue",
-              Label: "Value",
-              Class: "WFVariablePickerParameter",
-              DefaultValue: null,
-              Required: true,
-            },
-            ...extraParams,
-          ]
-        : [];
+    const extraParamDefs = SETTER_EXTRA_PARAMS[contentItemClass] ?? [];
+    const specializedProperties = extraParamDefs.map((e) => e.property);
+
+    const overloads = [];
+
+    for (const extra of extraParamDefs) {
+      overloads.push({
+        parameters: [
+          {
+            Key: "WFContentItemPropertyName",
+            Label: "Property",
+            Class: "WFEnumerationParameter",
+            Items: [extra.property],
+            DefaultValue: null,
+            Required: true,
+          },
+          {
+            Key: "WFPropertyValue",
+            Label: "Value",
+            Class: "WFVariablePickerParameter",
+            DefaultValue: null,
+            Required: true,
+          },
+          ...extra.params,
+        ],
+        output: {
+          Multiple: false,
+          Types: [contentItemClass],
+        },
+      });
+    }
+
+    const catchAllProperties = properties.filter((p) => !specializedProperties.includes(p));
+
+    if (catchAllProperties.length > 0 || properties.length === 0) {
+      overloads.push({
+        parameters: [
+          {
+            Key: "WFContentItemPropertyName",
+            Label: "Property",
+            Class: "WFEnumerationParameter",
+            Items: catchAllProperties.length > 0 ? catchAllProperties : properties,
+            DefaultValue: null,
+            Required: true,
+          },
+          {
+            Key: "WFPropertyValue",
+            Label: "Value",
+            Class: "WFVariablePickerParameter",
+            DefaultValue: null,
+            Required: true,
+          },
+        ],
+        output: {
+          Multiple: false,
+          Types: [contentItemClass],
+        },
+      });
+    }
 
     return {
-      parameters: params,
       input: {
         Multiple: false,
         Required: true,
@@ -579,6 +611,8 @@ function synthesizeSpecialActionTypes(raw) {
         Multiple: false,
         Types: [contentItemClass],
       },
+      overloads: overloads.length > 1 ? overloads : undefined,
+      parameters: overloads.length <= 1 && overloads[0] ? overloads[0].parameters : undefined,
     };
   }
 
@@ -609,6 +643,13 @@ function mapAction(identifier, raw, unmappedClasses) {
     output: raw.Output ?? synthesized.output ?? null,
     requiredResources: raw.RequiredResources || [],
   };
+
+  if (synthesized.overloads) {
+    result.overloads = synthesized.overloads.map((overload) => ({
+      parameters: overload.parameters.map((p) => mapParameter(p, unmappedClasses)),
+      output: overload.output,
+    }));
+  }
 
   if (raw.Description) {
     if (typeof raw.Description === "string") {

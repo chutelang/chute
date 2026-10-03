@@ -116,4 +116,39 @@ describe("stdlib modules", () => {
       ).not.toThrow();
     });
   });
+
+  describe("overloaded stdlib actions", () => {
+    it("should load editCalendarEvent as an overloadedAction", () => {
+      const cal = getStdlibModule("Calendar");
+      expect(cal).toBeDefined();
+      const binding = cal?.lookup("editCalendarEvent");
+      expect(binding).toBeDefined();
+      expect(binding?.type.kind).toBe("overloadedAction");
+      if (binding?.type.kind === "overloadedAction") {
+        expect(binding.type.overloads.length).toBe(2);
+        expect(binding.type.runtimeIdentifier).toBe("is.workflow.actions.setters.calendarevents");
+      }
+    });
+
+    it("should have a pinned Duration overload with single-case enum", () => {
+      const cal = getStdlibModule("Calendar");
+      const binding = cal?.lookup("editCalendarEvent");
+      if (binding?.type.kind === "overloadedAction") {
+        const durationOverload = binding.type.overloads.find((o) => {
+          const propParam = o.params.at(0);
+          return propParam?.type.kind === "enum" && propParam.type.cases.size === 1;
+        });
+        expect(durationOverload).toBeDefined();
+        expect(durationOverload?.params.length).toBe(3);
+      }
+    });
+
+    it("should load editContact as a plain action (no specialized properties)", () => {
+      const contacts = getStdlibModule("Contacts");
+      expect(contacts).toBeDefined();
+      const binding = contacts?.lookup("editContact");
+      expect(binding).toBeDefined();
+      expect(binding?.type.kind).toBe("action");
+    });
+  });
 });

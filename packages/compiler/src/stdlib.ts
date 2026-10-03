@@ -63,6 +63,10 @@ interface StdlibJsonAction {
   >;
   input?: { ParameterKey?: string } | null;
   output?: { Types?: string[] } | null;
+  overloads?: Array<{
+    parameters: StdlibJsonAction["parameters"];
+    output?: StdlibJsonAction["output"];
+  }>;
 }
 
 const CHUTE_TYPE_MAP: Record<string, ChuteType> = {
@@ -247,6 +251,59 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
   };
 }
 
+function buildParamsFromArray(
+  parameters: StdlibJsonAction["parameters"],
+): Array<{ label: string; type: ChuteType; hasDefault: boolean }> {
+  const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
+  for (const p of parameters) {
+    if (!p.key) {
+      continue;
+    }
+    let type: ChuteType;
+    if (p.chuteType === "Enum" && p.items) {
+      type = enumTypeFromItems(p.key, p.items);
+    } else {
+      type = CHUTE_TYPE_MAP[p.chuteType] ?? { kind: "any" };
+    }
+    params.push({
+      label: p.key,
+      type,
+      hasDefault: p.defaultValue !== null || !p.required,
+    });
+  }
+  return params;
+}
+
+function buildOverloadedType(action: StdlibJsonAction): ChuteType {
+  const overloads = action.overloads ?? [];
+  const actionOverloads: Array<ChuteType & { kind: "action" }> = [];
+  const description = action.description?.summary ?? undefined;
+
+  for (const overload of overloads) {
+    const params = buildParamsFromArray(overload.parameters);
+    const returnType = inferReturnType(overload.output ?? action.output);
+    actionOverloads.push({
+      kind: "action",
+      name: action.name,
+      runtimeIdentifier: action.identifier,
+      params,
+      returnType,
+      ...(description !== undefined ? { description } : {}),
+    });
+  }
+
+  if (actionOverloads.length === 1 && actionOverloads[0]) {
+    return actionOverloads[0];
+  }
+
+  return {
+    kind: "overloadedAction",
+    name: action.name,
+    runtimeIdentifier: action.identifier,
+    overloads: actionOverloads,
+  };
+}
+
 const stdlibJson = stdlibData as { actions: Record<string, StdlibJsonAction> };
 
 let cachedModules: Map<string, Scope> | undefined;
@@ -273,7 +330,11 @@ function ensureModules(): Map<string, Scope> {
   for (const [category, actions] of byCategory) {
     const scope = new Scope(undefined);
     for (const action of actions) {
-      scope.define(action.name, actionTypeFromJson(action), false);
+      const type =
+        action.overloads && action.overloads.length > 0
+          ? buildOverloadedType(action)
+          : actionTypeFromJson(action);
+      scope.define(action.name, type, false);
     }
     cachedModules.set(category, scope);
   }

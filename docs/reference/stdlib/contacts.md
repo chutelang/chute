@@ -43,7 +43,7 @@ editContact(WFContentItemPropertyName: Enum, WFPropertyValue: Any) -> Contact
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | First Name \| Middle Name \| Last Name \| Birthday \| Prefix \| Suffix \| Nickname \| Company \| Job Title \| Department \| Email Addresses \| Phone Numbers \| URLs \| Notes \| Street Address \| City \| State \| ZIP Code \| Country \| Has Photo \| Photo \| Group | — |
+| `WFContentItemPropertyName` | First Name \\| Middle Name \\| Last Name \\| Birthday \\| Prefix \\| Suffix \\| Nickname \\| Company \\| Job Title \\| Department \\| Email Addresses \\| Phone Numbers \\| URLs \\| Notes \\| Street Address \\| City \\| State \\| ZIP Code \\| Country \\| Has Photo \\| Photo \\| Group | — |
 | `WFPropertyValue` | Any | — |
 
 Shortcuts action: `is.workflow.actions.setters.contacts`
@@ -73,7 +73,7 @@ facetime(IntentAppDefinition: Text, WFFaceTimeType: Enum, WFFaceTimeContact: Tex
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `IntentAppDefinition` | Text | [object Object] |
-| `WFFaceTimeType` | Video \| Audio | `"Video"` |
+| `WFFaceTimeType` | Video \\| Audio | `"Video"` |
 | `WFFaceTimeContact` | Text | — |
 
 Shortcuts action: `com.apple.facetime.facetime`
@@ -86,8 +86,8 @@ findContacts(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFCo
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | First Name \| Middle Name \| Last Name \| Birthday \| Prefix \| Suffix \| Nickname \| Company \| Job Title \| Department \| Email Addresses \| Phone Numbers \| URLs \| Notes \| Street Address \| City \| State \| ZIP Code \| Country \| Has Photo \| Photo \| Group | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | First Name \\| Middle Name \\| Last Name \\| Birthday \\| Prefix \\| Suffix \\| Nickname \\| Company \\| Job Title \\| Department \\| Email Addresses \\| Phone Numbers \\| URLs \\| Notes \\| Street Address \\| City \\| State \\| ZIP Code \\| Country \\| Has Photo \\| Photo \\| Group | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -101,7 +101,7 @@ getDetailsOfContacts(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | First Name \| Middle Name \| Last Name \| Birthday \| Prefix \| Suffix \| Nickname \| Company \| Job Title \| Department \| Email Addresses \| Phone Numbers \| URLs \| Notes \| Street Address \| City \| State \| ZIP Code \| Country \| Has Photo \| Photo \| Group | — |
+| `WFContentItemPropertyName` | First Name \\| Middle Name \\| Last Name \\| Birthday \\| Prefix \\| Suffix \\| Nickname \\| Company \\| Job Title \\| Department \\| Email Addresses \\| Phone Numbers \\| URLs \\| Notes \\| Street Address \\| City \\| State \\| ZIP Code \\| Country \\| Has Photo \\| Photo \\| Group | — |
 
 Shortcuts action: `is.workflow.actions.properties.contacts`
 

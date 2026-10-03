@@ -38,7 +38,7 @@ setAirplaneMode(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.airplanemode.set`
@@ -53,7 +53,7 @@ setAlwaysOnDisplay(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.display.always-on.set`
@@ -68,7 +68,7 @@ setAnnounceNotifications(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.announcenotifications.set`
@@ -81,8 +81,8 @@ setAppearance(operation: BooleanSettingOperation, style: DeviceAppearanceType)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
-| `style` | Light \| Dark | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
+| `style` | Light \\| Dark | — |
 
 Shortcuts action: `is.workflow.actions.appearance`
 
@@ -96,7 +96,7 @@ setBluetooth(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.bluetooth.set`
@@ -125,7 +125,7 @@ setCellularData(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.cellulardata.set`
@@ -140,7 +140,7 @@ setFlashlight(operation: BooleanSettingOperation, state: Boolean, WFFlashlightLe
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `state` | Boolean | — |
 | `WFFlashlightLevel` | Any | — |
 
@@ -168,7 +168,7 @@ setLowPowerMode(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.lowpowermode.set`
@@ -183,7 +183,7 @@ setNightShift(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.nightshift.set`
@@ -213,7 +213,7 @@ setOrientationLock(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.orientationlock.set`
@@ -228,7 +228,7 @@ setPersonalHotspot(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 > When turning Personal Hotspot on, this action will make the hotspot discoverable for only a short period of time, in order to preserve battery life.
@@ -245,7 +245,7 @@ setSilenceUnknownCallers(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.silenceunknowncallers.set`
@@ -260,7 +260,7 @@ setStageManager(operation: BooleanSettingOperation, state: Boolean, showDock: Bo
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `state` | Boolean | — |
 | `showDock` | Boolean | — |
 | `showRecentApps` | Boolean | — |
@@ -277,7 +277,7 @@ setTrueTone(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.truetone.set`
@@ -292,7 +292,7 @@ setVolume(WFVolumeSetting: Enum, WFVolume: Number)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVolumeSetting` | Media \| Ringtone | `"Media"` |
+| `WFVolumeSetting` | Media \\| Ringtone | `"Media"` |
 | `WFVolume` | Number | 0.5 |
 
 Shortcuts action: `is.workflow.actions.setvolume`
@@ -307,7 +307,7 @@ setVpn(WFVPNOperation: Enum, WFOnDemandValue: Boolean, WFVPN: Text)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVPNOperation` | Connect \| Disconnect \| Toggle \| Set On Demand \| Toggle On Demand | `"Connect"` |
+| `WFVPNOperation` | Connect \\| Disconnect \\| Toggle \\| Set On Demand \\| Toggle On Demand | `"Connect"` |
 | `WFOnDemandValue` | Boolean | true |
 | `WFVPN` | Text | — |
 
@@ -325,7 +325,7 @@ setWiFi(operation: BooleanSettingOperation, OnValue: Boolean)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `operation` | Turn On \| Turn Off \| Toggle | — |
+| `operation` | Turn On \\| Turn Off \\| Toggle | — |
 | `OnValue` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.wifi.set`

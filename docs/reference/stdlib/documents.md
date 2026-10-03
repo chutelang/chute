@@ -18,7 +18,7 @@ appendToTextFile(WFFile: Any, WFFilePath: Text, WFAppendFileWriteMode: Enum, WFA
 | --- | --- | --- |
 | `WFFile` | Any | — |
 | `WFFilePath` | Text | — |
-| `WFAppendFileWriteMode` | Append \| Prepend | `"Append"` |
+| `WFAppendFileWriteMode` | Append \\| Prepend | `"Append"` |
 | `WFAppendOnNewLine` | Boolean | true |
 | `WFInput` | Text | — |
 
@@ -92,8 +92,8 @@ filterFiles(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFCon
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Name \| File Extension \| File Size \| Creation Date \| Last Modified Date \| File Path | — |
-| `WFContentItemSortOrder` | Latest First \| Oldest First | — |
+| `WFContentItemSortProperty` | Name \\| File Extension \\| File Size \\| Creation Date \\| Last Modified Date \\| File Path | — |
+| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -122,7 +122,7 @@ getDetailsOfFiles(WFContentItemPropertyName: Enum)
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \| File Extension \| File Size \| Creation Date \| Last Modified Date \| File Path | — |
+| `WFContentItemPropertyName` | Name \\| File Extension \\| File Size \\| Creation Date \\| Last Modified Date \\| File Path | — |
 
 Shortcuts action: `is.workflow.actions.properties.files`
 
@@ -192,7 +192,7 @@ getTextFromPdf(WFInput: Any, WFGetTextFromPDFTextType: Enum, WFGetTextFromPDFPag
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Any | — |
-| `WFGetTextFromPDFTextType` | Text \| Rich Text | `"Text"` |
+| `WFGetTextFromPDFTextType` | Text \\| Rich Text | `"Text"` |
 | `WFGetTextFromPDFPageHeader` | Text | — |
 | `WFGetTextFromPDFPageFooter` | Text | — |
 | `WFCombinePages` | Boolean | true |
@@ -321,12 +321,12 @@ makePdf(WFPDFIncludeMargin: Boolean, WFPDFIncludedPages: Enum, WFPDFSinglePage: 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFPDFIncludeMargin` | Boolean | false |
-| `WFPDFIncludedPages` | All Pages \| Single Page \| Page Range | `"All Pages"` |
+| `WFPDFIncludedPages` | All Pages \\| Single Page \\| Page Range | `"All Pages"` |
 | `WFPDFSinglePage` | Number | — |
 | `WFPDFPageRangeStart` | Number | — |
 | `WFPDFPageRangeEnd` | Number | — |
 | `WFInput` | Any | — |
-| `WFPDFDocumentMergeBehavior` | Append \| Shuffle | `"Append"` |
+| `WFPDFDocumentMergeBehavior` | Append \\| Shuffle | `"Append"` |
 
 Shortcuts action: `is.workflow.actions.makepdf`
 
@@ -490,7 +490,7 @@ selectFile(WFPickingMode: Enum, SelectMultiple: Boolean) -> File
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPickingMode` | Files \| Folders | `"Files"` |
+| `WFPickingMode` | Files \\| Folders | `"Files"` |
 | `SelectMultiple` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.select`
