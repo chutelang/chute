@@ -11,7 +11,7 @@ import Apps;
 Adds a new item to Todoist.
 
 ```chute
-addTodoistItem(WFTodoistContent: Text, WFTodoistProject: Text, WFTodoistDueDate: Text, WFTodoistReminder: Text, WFTodoistReminderType: Enum, WFTodoistPriority: Enum, WFTodoistNotes: Text, WFTodoistFile: Any) -> URL
+addTodoistItem(WFTodoistContent: Text, WFTodoistProject: Text, WFTodoistDueDate: Text, WFTodoistReminder: Text, WFTodoistReminderType: Enum, WFTodoistPriority: Enum, WFTodoistNotes: Text, WFTodoistFile: File) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -23,7 +23,7 @@ addTodoistItem(WFTodoistContent: Text, WFTodoistProject: Text, WFTodoistDueDate:
 | `WFTodoistReminderType` | Email \\| Push Notification \\| Text Message | `"Email"` |
 | `WFTodoistPriority` | 4 \\| 3 \\| 2 \\| 1 | `"4"` |
 | `WFTodoistNotes` | Text | — |
-| `WFTodoistFile` | Any | — |
+| `WFTodoistFile` | File | — |
 
 Shortcuts action: `is.workflow.actions.todoist.add`
 
@@ -81,7 +81,7 @@ Shortcuts action: `is.workflow.actions.pocket.add`
 Creates a new card on the specified list and board in your Trello account.
 
 ```chute
-addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTrelloDueDate: Text, WFTrelloCardPosition: Enum, WFTrelloAttachments: Any, WFTrelloDescription: Text) -> TrelloItem
+addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTrelloDueDate: Text, WFTrelloCardPosition: Enum, WFTrelloAttachments: File, WFTrelloDescription: Text) -> TrelloItem
 ```
 
 | Parameter | Type | Default |
@@ -91,7 +91,7 @@ addTrelloCard(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloList: Text, WFTre
 | `WFTrelloList` | Text | — |
 | `WFTrelloDueDate` | Text | — |
 | `WFTrelloCardPosition` | Top \\| Bottom | `"Top"` |
-| `WFTrelloAttachments` | Any | — |
+| `WFTrelloAttachments` | File | — |
 | `WFTrelloDescription` | Text | — |
 
 Shortcuts action: `is.workflow.actions.trello.add.card`
@@ -199,12 +199,12 @@ Shortcuts action: `is.workflow.actions.trello.add.list`
 Deletes the notes passed as input from Evernote.
 
 ```chute
-deleteNotes(WFInput: Any)
+deleteNotes(WFInput: EvernoteNote)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | EvernoteNote | — |
 
 Shortcuts action: `is.workflow.actions.evernote.delete`
 
@@ -279,13 +279,13 @@ Shortcuts action: `is.workflow.actions.pocket.get`
 Gets a link to the Evernote note passed into the action, which can be shared.
 
 ```chute
-getNoteLink(WFEvernoteShareInAppLink: Boolean, WFInput: Any) -> URL
+getNoteLink(WFEvernoteShareInAppLink: Boolean, WFInput: EvernoteNote) -> URL
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFEvernoteShareInAppLink` | Boolean | false |
-| `WFInput` | Any | — |
+| `WFInput` | EvernoteNote | — |
 
 Shortcuts action: `is.workflow.actions.evernote.getlink`
 
@@ -342,7 +342,7 @@ Shortcuts action: `is.workflow.actions.trello.get`
 Imports the photos passed as input into Lightroom.
 
 ```chute
-importToLightroom(applyPreset: Boolean, presetGroup: Enum, preset: Text, WFInput: Any)
+importToLightroom(applyPreset: Boolean, presetGroup: Enum, preset: Text, WFInput: Image)
 ```
 
 | Parameter | Type | Default |
@@ -350,7 +350,7 @@ importToLightroom(applyPreset: Boolean, presetGroup: Enum, preset: Text, WFInput
 | `applyPreset` | Boolean | false |
 | `presetGroup` | B&W \\| Color \\| Creative \\| Curve \\| Grain \\| Sharpening \\| Vignetting | `"Color"` |
 | `preset` | Text | — |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.lightroom.import`
 
@@ -390,12 +390,12 @@ Shortcuts action: `is.workflow.actions.showinblindsquare`
 Opens a file in GoodReader.
 
 ```chute
-openInGoodreader(WFInput: Any)
+openInGoodreader(WFInput: File)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 
 Shortcuts action: `is.workflow.actions.goodreader.open`
 
@@ -451,7 +451,7 @@ Shortcuts action: `is.workflow.actions.tumblr.post`
 Posts the input to a WordPress blog as a new post or page.
 
 ```chute
-postToWordpress(WFAccount: Text, Blog: Text, Title: Text, Type: Text, Format: Text, Status: Text, Categories: Text, Tags: Text, Advanced: Any, AllowComments: Boolean, Slug: Text, Excerpt: Text, Date: Text, Template: Text, ThumbnailImage: Any, ShowCustomFields: Any, CustomFields: Dictionary, WFInput: Any) -> URL
+postToWordpress(WFAccount: Text, Blog: Text, Title: Text, Type: Text, Format: Text, Status: Text, Categories: Text, Tags: Text, Advanced: Any, AllowComments: Boolean, Slug: Text, Excerpt: Text, Date: Text, Template: Text, ThumbnailImage: Image, ShowCustomFields: Any, CustomFields: Dictionary, WFInput: Any) -> URL
 ```
 
 | Parameter | Type | Default |
@@ -470,7 +470,7 @@ postToWordpress(WFAccount: Text, Blog: Text, Title: Text, Type: Text, Format: Te
 | `Excerpt` | Text | — |
 | `Date` | Text | — |
 | `Template` | Text | — |
-| `ThumbnailImage` | Any | — |
+| `ThumbnailImage` | Image | — |
 | `ShowCustomFields` | Any | — |
 | `CustomFields` | Dictionary | — |
 | `WFInput` | Any | — |
@@ -509,7 +509,7 @@ Shortcuts action: `is.workflow.actions.venmo.request`
 Save files to Dropbox. Turn off “Ask Where to Save” in order to specify a destination path.
 
 ```chute
-saveDropboxFile(WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFileOverwrite: Boolean, WFInput: Any) -> File
+saveDropboxFile(WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFileOverwrite: Boolean, WFInput: File) -> File
 ```
 
 | Parameter | Type | Default |
@@ -517,7 +517,7 @@ saveDropboxFile(WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFi
 | `WFAskWhereToSave` | Boolean | true |
 | `WFFileDestinationPath` | Text | — |
 | `WFSaveFileOverwrite` | Boolean | — |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 
 Shortcuts action: `is.workflow.actions.dropbox.savefile`
 

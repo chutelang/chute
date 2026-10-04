@@ -19,6 +19,16 @@ const OUTPUT_PATH = path.join(TOOLS_DIR, "..", "..", "packages", "compiler", "da
 
 const CATEGORY_MAP_PATH = path.join(TOOLS_DIR, "data", "category-map.json");
 
+const CONTENT_TYPES_PATH = path.join(
+  TOOLS_DIR,
+  "..",
+  "..",
+  "packages",
+  "compiler",
+  "data",
+  "content-types.json",
+);
+
 const TYPE_MAP = {
   WFTextInputParameter: "Text",
   WFNumberFieldParameter: "Number",
@@ -54,14 +64,14 @@ const TYPE_MAP = {
   WFCustomDateFormatParameter: "Text",
   WFCountryFieldParameter: "Text",
   WFNetworkPickerParameter: "Text",
-  WFFilePickerParameter: "Any",
+  WFFilePickerParameter: "File",
   WFMediaRoutePickerParameter: "Text",
   WFDurationQuantityFieldParameter: "Number",
   WFColorPickerParameter: "Text",
   WFUnitQuantityFieldParameter: "Number",
   WFHealthQuantityFieldParameter: "Number",
   WFCurrencyQuantityFieldParameter: "Number",
-  WFVariableFieldParameter: "Any",
+  WFVariableFieldParameter: "Text",
   WFPlaylistPickerParameter: "Text",
   WFPodcastPickerParameter: "Text",
   WFRemindersListPickerParameter: "Text",
@@ -81,7 +91,7 @@ const TYPE_MAP = {
   WFMeasurementUnitPickerParameter: "Text",
   WFDisplayPickerParameter: "Text",
   WFFontPickerParameter: "Text",
-  WFMediaPickerParameter: "Any",
+  WFMediaPickerParameter: "Media",
   WFOSAScriptEditorParameter: "Text",
   WFTagFieldParameter: "Text",
   WFDynamicTagFieldParameter: "Text",
@@ -132,6 +142,33 @@ const TYPE_MAP = {
   WFVPNPickerParameter: "Text",
 };
 
+const PICKER_KEY_TYPE_MAP = {
+  WFImage: "Image",
+  WFMusic: "Media",
+  WFInputGIF: "Media",
+  WFContactPhoto: "Image",
+  WFImages: "Image",
+  WFPlaylistItems: "Media",
+  WFMetadataArtwork: "Image",
+  WFCustomMaskImage: "Image",
+  WFInputMedia: "Media",
+  WFMedia: "Media",
+  WFHTML: "RichText",
+  WFArchive: "File",
+  WFDocument: "File",
+  WFDictionary: "Dictionary",
+  WFWindow: "Window",
+  WFEvent: "CalendarEvent",
+  WFProduct: "App",
+  WFInputEvents: "CalendarEvent",
+  WFInputReminders: "Reminder",
+  ImageInput: "Image",
+  ThumbnailImage: "Image",
+  WFParentTask: "Reminder",
+  WFTrelloAttachments: "File",
+  WFMediaItems: "Media",
+};
+
 function toCamelCase(name) {
   return name
     .split(/[\s\-_]+/)
@@ -170,11 +207,20 @@ function mapParameter(raw, unmappedClasses) {
 
   const isEnum = cls === "WFEnumerationParameter" && raw.Items && raw.Items.length > 0;
 
+  let chuteType;
+  if (isEnum) {
+    chuteType = "Enum";
+  } else if (cls === "WFVariablePickerParameter" && raw.Key && PICKER_KEY_TYPE_MAP[raw.Key]) {
+    chuteType = PICKER_KEY_TYPE_MAP[raw.Key];
+  } else {
+    chuteType = TYPE_MAP[cls] ?? "Any";
+  }
+
   const result = {
     key: raw.Key ?? null,
     label: raw.Label ?? null,
     class: cls,
-    chuteType: isEnum ? "Enum" : (TYPE_MAP[cls] ?? "Any"),
+    chuteType,
     required: raw.Required === true,
     defaultValue: raw.DefaultValue ?? null,
   };
@@ -726,15 +772,47 @@ if (fs.existsSync(CATEGORY_MAP_PATH)) {
 } else {
   console.warn("No category-map.json found — all actions will be Uncategorized.");
 }
+
+const contentTypes = JSON.parse(fs.readFileSync(CONTENT_TYPES_PATH, "utf-8"));
 console.log();
 
 const unmappedClasses = new Set();
 const actions = {};
 
+function inferPickerTypeFromInput(raw, param) {
+  const inputKey = raw.Input?.ParameterKey;
+  if (!inputKey || inputKey !== param.key) {
+    return null;
+  }
+  const inputTypes = raw.Input?.Types;
+  if (!inputTypes || inputTypes.length === 0) {
+    return null;
+  }
+  const mapped = inputTypes.map((t) => contentTypes[t]).filter(Boolean);
+  if (mapped.length === 0) {
+    return null;
+  }
+  const unique = [...new Set(mapped)];
+  if (unique.length === 1 && unique[0] !== "Any") {
+    return unique[0];
+  }
+  return null;
+}
+
 for (const identifier of Object.keys(rawActions).sort()) {
   const raw = rawActions[identifier];
   const mapped = mapAction(identifier, raw, unmappedClasses);
   mapped.category = categoryMap[identifier] ?? null;
+
+  for (const p of mapped.parameters) {
+    if (p.class === "WFVariablePickerParameter" && p.chuteType === "Any" && p.key) {
+      const inferred = inferPickerTypeFromInput(raw, p);
+      if (inferred) {
+        p.chuteType = inferred;
+      }
+    }
+  }
+
   actions[identifier] = mapped;
 }
 

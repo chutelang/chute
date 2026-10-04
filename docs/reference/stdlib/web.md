@@ -276,7 +276,7 @@ Shortcuts action: `is.workflow.actions.openxcallbackurl`
 Runs JavaScript on a Safari web page passed in as input
 
 ```chute
-runjavascriptonwebpage(WFJavaScript: Text, WFInput: Any) -> Any
+runjavascriptonwebpage(WFJavaScript: Text, WFInput: WebPage) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -293,7 +293,7 @@ for (let element of elements) {
 
 // Call completion to finish
 completion(result);"` |
-| `WFInput` | Any | — |
+| `WFInput` | WebPage | — |
 
 > Safari Web Page items are only available when running your shortcut as an Action Extension in Safari.
 
@@ -319,12 +319,12 @@ Shortcuts action: `is.workflow.actions.searchweb`
 Shows the iTunes products or App Store apps passed as input in a store sheet. This is useful with the Find iTunes Store Items and Find App Store Apps actions.
 
 ```chute
-showInItunesStore(WFProduct: Any)
+showInItunesStore(WFProduct: App)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFProduct` | Any | — |
+| `WFProduct` | App | — |
 
 Shortcuts action: `is.workflow.actions.showinstore`
 

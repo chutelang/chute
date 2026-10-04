@@ -110,7 +110,7 @@ Shortcuts action: `is.workflow.actions.properties.contacts`
 Creates a new contact.
 
 ```chute
-newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Any, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean) -> Contact
+newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: Text, WFContactPhoto: Image, WFContactPhoneNumbers: Text, WFContactEmails: Text, WFContactNotes: Text, ShowWhenRun: Boolean) -> Contact
 ```
 
 | Parameter | Type | Default |
@@ -118,7 +118,7 @@ newContact(WFContactFirstName: Text, WFContactLastName: Text, WFContactCompany: 
 | `WFContactFirstName` | Text | — |
 | `WFContactLastName` | Text | — |
 | `WFContactCompany` | Text | — |
-| `WFContactPhoto` | Any | — |
+| `WFContactPhoto` | Image | — |
 | `WFContactPhoneNumbers` | Text | — |
 | `WFContactEmails` | Text | — |
 | `WFContactNotes` | Text | — |

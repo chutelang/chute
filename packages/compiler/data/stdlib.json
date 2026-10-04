@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-05T17:42:03.246Z",
+  "extractedAt": "2026-09-05T20:22:52.859Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -304,7 +304,7 @@
           "key": "ImageInput",
           "label": "Images",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Images"
@@ -535,7 +535,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -544,7 +544,7 @@
           "key": "WFInputGIF",
           "label": "GIF",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "GIF"
@@ -665,7 +665,7 @@
           "key": "WFMusic",
           "label": "Music",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "Music"
@@ -787,7 +787,7 @@
           "key": "WFContactPhoto",
           "label": "Photo",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Choose"
@@ -1247,7 +1247,7 @@
           "key": "WFImages",
           "label": "Images",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "description": "An optional set of images to attach to this reminder. Use a variable to get the images."
@@ -1256,7 +1256,7 @@
           "key": "WFParentTask",
           "label": "Parent Reminder",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Reminder",
           "required": false,
           "defaultValue": null,
           "description": "Optionally, a parent reminder to add this reminder to."
@@ -2076,7 +2076,7 @@
           "key": "WFVariableName",
           "label": "Variable",
           "class": "WFVariableFieldParameter",
-          "chuteType": "Any",
+          "chuteType": "Text",
           "required": false,
           "defaultValue": null,
           "placeholder": "Variable Name"
@@ -2486,7 +2486,7 @@
           "key": "WFDocument",
           "label": "Document",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Document"
@@ -3108,7 +3108,7 @@
           "key": "WFInput",
           "label": "PDF",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Document"
@@ -3504,7 +3504,7 @@
           "key": "WFPlaylistItems",
           "label": "Music",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "Music"
@@ -3842,7 +3842,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Location",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -3899,7 +3899,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Contact",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -3950,7 +3950,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Date",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -4008,7 +4008,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Dictionary",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -4121,7 +4121,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -4984,7 +4984,7 @@
           "key": "WFFile",
           "label": "Folder",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         },
@@ -5063,7 +5063,7 @@
           "key": "WFInput",
           "label": "File",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "File"
@@ -5072,7 +5072,7 @@
           "key": "WFFolder",
           "label": "Folder",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "requiredResources": [
@@ -5701,7 +5701,7 @@
           "key": "WFInput",
           "label": "File",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "File"
@@ -5762,7 +5762,7 @@
           "key": "WFInput",
           "label": "Disk",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         }
@@ -5855,7 +5855,7 @@
           "key": "WFMedia",
           "label": "Media",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "Media"
@@ -6056,7 +6056,7 @@
           "key": "WFMetadataArtwork",
           "label": "Artwork",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "requiredResources": [
@@ -6201,7 +6201,7 @@
           "key": "WFInput",
           "label": "Notes",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "EvernoteNote",
           "required": false,
           "defaultValue": null,
           "placeholder": "Notes"
@@ -6328,7 +6328,7 @@
           "key": "WFInput",
           "label": "Note",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "EvernoteNote",
           "required": false,
           "defaultValue": null,
           "placeholder": "Note"
@@ -6544,7 +6544,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -6640,7 +6640,7 @@
           "key": "WFFile",
           "label": "File",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         }
@@ -6695,7 +6695,7 @@
           "key": "WFFile",
           "label": "Folder",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         },
@@ -6795,7 +6795,7 @@
           "key": "WFFolder",
           "label": "Folder",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Folder"
@@ -6841,7 +6841,7 @@
           "key": "WFInput",
           "label": "Files",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Files"
@@ -6895,7 +6895,7 @@
           "key": "WFFolder",
           "label": "Folder",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Folder"
@@ -6954,7 +6954,7 @@
           "key": "WFFile",
           "label": "File",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "File"
@@ -7008,7 +7008,7 @@
           "key": "WFInput",
           "label": "Files",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Files"
@@ -7069,7 +7069,7 @@
           "key": "WFFile",
           "label": "File",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         },
@@ -7077,7 +7077,7 @@
           "key": "WFFolder",
           "label": "Folder",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         },
@@ -7150,7 +7150,7 @@
           "key": "WFFile",
           "label": "File",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         },
@@ -7219,7 +7219,7 @@
           "key": "WFFile",
           "label": "Files",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         }
@@ -9694,7 +9694,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -9948,7 +9948,7 @@
           "key": "WFInput",
           "label": "Rich Text",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "RichText",
           "required": false,
           "defaultValue": null,
           "placeholder": "Rich Text"
@@ -10687,7 +10687,7 @@
           "key": "WFInput",
           "label": "Rich Text",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "RichText",
           "required": false,
           "defaultValue": null,
           "placeholder": "Rich Text"
@@ -10866,7 +10866,7 @@
           "key": "WFInput",
           "label": "Files",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         }
@@ -10987,7 +10987,7 @@
           "key": "WFHTML",
           "label": "HTML",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "RichText",
           "required": false,
           "defaultValue": null,
           "placeholder": "HTML"
@@ -11041,7 +11041,7 @@
           "key": "WFInput",
           "label": "Markdown Text",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Text",
           "required": false,
           "defaultValue": null,
           "placeholder": "Markdown Text"
@@ -11140,7 +11140,7 @@
           "key": "WFInput",
           "label": "PDF",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Document"
@@ -11816,7 +11816,7 @@
           "key": "WFInput",
           "label": "Dictionary",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Dictionary",
           "required": false,
           "defaultValue": null,
           "placeholder": "Dictionary"
@@ -12259,7 +12259,7 @@
           "key": "WFInput",
           "label": "File",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "File"
@@ -12418,7 +12418,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         }
@@ -12904,7 +12904,7 @@
           "key": "WFInput",
           "label": "Images",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Images"
@@ -13012,7 +13012,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13064,7 +13064,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13142,7 +13142,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13276,7 +13276,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13332,7 +13332,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13376,7 +13376,7 @@
           "key": "WFCustomMaskImage",
           "label": "Custom Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "requiredResources": [
@@ -13484,7 +13484,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13622,7 +13622,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13722,7 +13722,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -13778,7 +13778,7 @@
           "key": "WFInput",
           "label": "Images",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Images"
@@ -13930,7 +13930,7 @@
           "key": "WFInput",
           "label": "Audio Files",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Audio Files"
@@ -14354,7 +14354,7 @@
           "key": "WFInput",
           "label": "Photos",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Photos"
@@ -14789,7 +14789,7 @@
           "key": "WFInput",
           "label": "Files",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         },
@@ -15009,7 +15009,7 @@
           "key": "WFInput",
           "label": "PDF",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "PDF"
@@ -15401,7 +15401,7 @@
           "key": "WFInputGIF",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -15753,7 +15753,7 @@
           "key": "WFInput",
           "label": "Measurement",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Number",
           "required": false,
           "defaultValue": null,
           "placeholder": "Measurement"
@@ -15889,7 +15889,7 @@
           "key": "WFInput",
           "label": "File",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null
         }
@@ -15990,7 +15990,7 @@
           "key": "WFWindow",
           "label": "Window",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Window",
           "required": false,
           "defaultValue": null,
           "placeholder": "Window"
@@ -16475,7 +16475,7 @@
           "key": "WFInput",
           "label": "File",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "File"
@@ -16922,7 +16922,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -16931,7 +16931,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -17139,7 +17139,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Image"
@@ -18286,7 +18286,7 @@
           "key": "WFMediaItems",
           "label": "Music",
           "class": "WFMediaPickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "description": "Selects music to start playing."
@@ -18420,7 +18420,7 @@
           "key": "WFInput",
           "label": "Sound File",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "Choose Variable"
@@ -18823,7 +18823,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -20132,7 +20132,7 @@
           "key": "WFInputEvents",
           "label": "Events",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "CalendarEvent",
           "required": false,
           "defaultValue": null,
           "placeholder": "Events"
@@ -20191,7 +20191,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -20241,7 +20241,7 @@
           "key": "WFInputReminders",
           "label": "Reminders",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Reminder",
           "required": false,
           "defaultValue": null,
           "placeholder": "Reminders"
@@ -20441,7 +20441,7 @@
           "key": "WFWindow",
           "label": "Window",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Window",
           "required": false,
           "defaultValue": null,
           "placeholder": "Window"
@@ -20956,7 +20956,7 @@
           "key": "Input",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -21087,7 +21087,7 @@
           "key": "Input",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -21171,7 +21171,7 @@
           "key": "WFInput",
           "label": "Web Page",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "WebPage",
           "required": false,
           "defaultValue": null,
           "requiredResources": [
@@ -21251,7 +21251,7 @@
           "key": "Input",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -21440,7 +21440,7 @@
           "key": "WFInput",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Choose Variable"
@@ -22943,7 +22943,7 @@
           "key": "WFImage",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "description": "An optional image of the location where you parked the car.",
@@ -23429,7 +23429,7 @@
           "key": "WFDictionary",
           "label": "Dictionary",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Dictionary",
           "required": false,
           "defaultValue": null,
           "placeholder": "Dictionary"
@@ -23490,7 +23490,7 @@
           "key": "WFVariableName",
           "label": "Variable",
           "class": "WFVariableFieldParameter",
-          "chuteType": "Any",
+          "chuteType": "Text",
           "required": false,
           "defaultValue": null,
           "placeholder": "Variable Name"
@@ -23844,7 +23844,7 @@
           "key": "WFEvent",
           "label": "Event",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "CalendarEvent",
           "required": false,
           "defaultValue": null,
           "placeholder": "Event"
@@ -23898,7 +23898,7 @@
           "key": "WFProduct",
           "label": "Product",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "App",
           "required": false,
           "defaultValue": null,
           "placeholder": "Product"
@@ -24450,7 +24450,7 @@
           "key": "WFInput",
           "label": "PDF",
           "class": "WFFilePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Document"
@@ -24756,7 +24756,7 @@
           "key": "Input",
           "label": "Input",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Number",
           "required": false,
           "defaultValue": null,
           "placeholder": "Input"
@@ -25793,7 +25793,7 @@
           "key": "WFTodoistFile",
           "label": "Files",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Choose Variable"
@@ -25940,7 +25940,7 @@
           "key": "WFTrelloAttachments",
           "label": "Attachments",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "description": "A list of items to be attached to the new card as files.",
@@ -26136,7 +26136,7 @@
           "key": "WFInputMedia",
           "label": "Media",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Media",
           "required": false,
           "defaultValue": null,
           "placeholder": "Media"
@@ -26512,7 +26512,7 @@
           "key": "WFArchive",
           "label": "Archive",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "File",
           "required": false,
           "defaultValue": null,
           "placeholder": "Archive"
@@ -27288,7 +27288,7 @@
           "key": "WFInput",
           "label": "Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null
         },
@@ -27878,7 +27878,7 @@
           "key": "ThumbnailImage",
           "label": "Featured Image",
           "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
+          "chuteType": "Image",
           "required": false,
           "defaultValue": null,
           "requiredResources": [

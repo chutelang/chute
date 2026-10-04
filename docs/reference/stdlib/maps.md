@@ -266,14 +266,14 @@ Shortcuts action: `is.workflow.actions.ride.requestride`
 Saves details of your Parked Car in the Maps app.
 
 ```chute
-setParkedCar(WFLocation: Text, WFSetParkedCarNotes: Text, WFImage: Any) -> ParkedCar
+setParkedCar(WFLocation: Text, WFSetParkedCarNotes: Text, WFImage: Image) -> ParkedCar
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFLocation` | Text | — |
 | `WFSetParkedCarNotes` | Text | — |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 
 Shortcuts action: `is.workflow.actions.setparkedcar`
 

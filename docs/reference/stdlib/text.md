@@ -85,12 +85,12 @@ Shortcuts action: `is.workflow.actions.dictatetext`
 Uses OCR to extract text from an image.
 
 ```chute
-extractTextFromImage(WFImage: Any) -> Text
+extractTextFromImage(WFImage: Image) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 
 Shortcuts action: `is.workflow.actions.extracttextfromimage`
 

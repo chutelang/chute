@@ -207,7 +207,7 @@ Shortcuts action: `is.workflow.actions.addnewevent`
 Creates a new reminder and adds it to the selected list of reminders.
 
 ```chute
-newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Enum, WFAlertCondition: Enum, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Enum, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Any, WFParentTask: Any, WFTags: Text, WFCalendarItemNotes: Text) -> Reminder
+newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnabled: Enum, WFAlertCondition: Enum, WFAlertLocation: Text, WFAlertPerson: Text, WFAlertLocationRadius: Number, WFAlertCustomTime: Text, WFPriority: Enum, WFUrgent: Boolean, WFFlag: Boolean, WFURL: Text, WFImages: Image, WFParentTask: Reminder, WFTags: Text, WFCalendarItemNotes: Text) -> Reminder
 ```
 
 | Parameter | Type | Default |
@@ -224,8 +224,8 @@ newReminder(WFCalendarItemTitle: Text, WFCalendarDescriptor: Text, WFAlertEnable
 | `WFUrgent` | Boolean | — |
 | `WFFlag` | Boolean | — |
 | `WFURL` | Text | — |
-| `WFImages` | Any | — |
-| `WFParentTask` | Any | — |
+| `WFImages` | Image | — |
+| `WFParentTask` | Reminder | — |
 | `WFTags` | Text | — |
 | `WFCalendarItemNotes` | Text | — |
 
@@ -236,12 +236,12 @@ Shortcuts action: `is.workflow.actions.addnewreminder`
 Shows the date or calendar event passed as input in the Calendar app.
 
 ```chute
-openInCalendar(WFEvent: Any)
+openInCalendar(WFEvent: CalendarEvent)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFEvent` | Any | — |
+| `WFEvent` | CalendarEvent | — |
 
 Shortcuts action: `is.workflow.actions.showincalendar`
 
@@ -264,13 +264,13 @@ Shortcuts action: `is.workflow.actions.reminders.showlist`
 Removes all events passed into the action from the calendars they are contained in.
 
 ```chute
-removeEvents(WFCalendarIncludeFutureEvents: Boolean, WFInputEvents: Any)
+removeEvents(WFCalendarIncludeFutureEvents: Boolean, WFInputEvents: CalendarEvent)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFCalendarIncludeFutureEvents` | Boolean | false |
-| `WFInputEvents` | Any | — |
+| `WFInputEvents` | CalendarEvent | — |
 
 > This is a destructive and permanent action. You will be asked to confirm before events are removed.
 
@@ -281,12 +281,12 @@ Shortcuts action: `is.workflow.actions.removeevents`
 Removes all reminders passed into the action from the lists they are contained in.
 
 ```chute
-removeReminders(WFInputReminders: Any)
+removeReminders(WFInputReminders: Reminder)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInputReminders` | Any | — |
+| `WFInputReminders` | Reminder | — |
 
 > This is a destructive and permanent action. You will be asked to confirm before reminders are removed.
 

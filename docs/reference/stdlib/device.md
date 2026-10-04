@@ -41,12 +41,12 @@ Shortcuts action: `is.workflow.actions.setclipboard`
 This action ejects a mounted disk or volume.
 
 ```chute
-ejectDisk(WFInput: Any)
+ejectDisk(WFInput: File)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 
 Shortcuts action: `is.workflow.actions.ejectdisk`
 
@@ -275,7 +275,7 @@ Shortcuts action: `is.workflow.actions.logout`
 Moves one or more windows to the specified location.
 
 ```chute
-moveWindow(WFPosition: Enum, WFXCoordinate: Number, WFYCoordinate: Number, WFWindow: Any, WFBringToFront: Boolean, Display: Text)
+moveWindow(WFPosition: Enum, WFXCoordinate: Number, WFYCoordinate: Number, WFWindow: Window, WFBringToFront: Boolean, Display: Text)
 ```
 
 | Parameter | Type | Default |
@@ -283,7 +283,7 @@ moveWindow(WFPosition: Enum, WFXCoordinate: Number, WFYCoordinate: Number, WFWin
 | `WFPosition` | Top Left \\| Top Center \\| Top Right \\| Middle Left \\| Center \\| Middle Right \\| Bottom Left \\| Bottom Center \\| Bottom Right \\| Coordinates | `"Center"` |
 | `WFXCoordinate` | Number | — |
 | `WFYCoordinate` | Number | — |
-| `WFWindow` | Any | — |
+| `WFWindow` | Window | — |
 | `WFBringToFront` | Boolean | true |
 | `Display` | Text | — |
 
@@ -345,7 +345,7 @@ Shortcuts action: `is.workflow.actions.quit.app`
 Resizes one or more windows to the specified width and height.
 
 ```chute
-resizeWindow(WFConfiguration: Enum, WFWidth: Number, WFHeight: Number, WFWindow: Any, WFBringToFront: Boolean)
+resizeWindow(WFConfiguration: Enum, WFWidth: Number, WFHeight: Number, WFWindow: Window, WFBringToFront: Boolean)
 ```
 
 | Parameter | Type | Default |
@@ -353,7 +353,7 @@ resizeWindow(WFConfiguration: Enum, WFWidth: Number, WFHeight: Number, WFWindow:
 | `WFConfiguration` | Fit Screen \\| Top Half \\| Bottom Half \\| Left Half \\| Right Half \\| Top Left Quarter \\| Top Right Quarter \\| Bottom Left Quarter \\| Bottom Right Quarter \\| Dimensions | `"Fit Screen"` |
 | `WFWidth` | Number | — |
 | `WFHeight` | Number | — |
-| `WFWindow` | Any | — |
+| `WFWindow` | Window | — |
 | `WFBringToFront` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.resizewindow`
@@ -412,12 +412,12 @@ Shortcuts action: `is.workflow.actions.dnd.set`
 Sets the wallpaper to the specified image.
 
 ```chute
-setWallpaperPhoto(WFInput: Any, WFWallpaperLocation: Enum, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean) -> Poster
+setWallpaperPhoto(WFInput: Image, WFWallpaperLocation: Enum, WFWallpaperShowPreview: Boolean, WFWallpaperPerspectiveZoom: Boolean, WFSelectedPoster: Text, WFWallpaperSmartCrop: Boolean, WFWallpaperLegibilityBlur: Boolean) -> Poster
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 | `WFWallpaperLocation` | Lock Screen \\| Home Screen | Lock Screen,Home Screen |
 | `WFWallpaperShowPreview` | Boolean | true |
 | `WFWallpaperPerspectiveZoom` | Boolean | false |

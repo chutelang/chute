@@ -53,13 +53,13 @@ Shortcuts action: `is.workflow.actions.calculateexpression`
 Calculates statistics on the numbers that are provided as input.
 
 ```chute
-calculateStatistics(WFStatisticsOperation: Enum, Input: Any) -> Number
+calculateStatistics(WFStatisticsOperation: Enum, Input: Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFStatisticsOperation` | Average \\| Minimum \\| Maximum \\| Sum \\| Median \\| Mode \\| Range \\| Standard Deviation | `"Average"` |
-| `Input` | Any | — |
+| `Input` | Number | — |
 
 Shortcuts action: `is.workflow.actions.statistics`
 
@@ -68,14 +68,14 @@ Shortcuts action: `is.workflow.actions.statistics`
 Converts the measurements passed into the action to the specified unit.
 
 ```chute
-convertMeasurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Text, WFInput: Any) -> Number
+convertMeasurement(WFMeasurementUnitType: Text, WFMeasurementUnit: Text, WFInput: Number) -> Number
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFMeasurementUnitType` | Text | `"Length"` |
 | `WFMeasurementUnit` | Text | — |
-| `WFInput` | Any | — |
+| `WFInput` | Number | — |
 
 Shortcuts action: `is.workflow.actions.measurement.convert`
 

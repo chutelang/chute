@@ -37,12 +37,12 @@ Shortcuts action: `is.workflow.actions.postonfacebook`
 ## `postToSharedAlbum`
 
 ```chute
-postToSharedAlbum(ImageInput: Any)
+postToSharedAlbum(ImageInput: Image)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `ImageInput` | Any | — |
+| `ImageInput` | Image | — |
 
 Shortcuts action: `com.apple.mobileslideshow.StreamShareService`
 
@@ -158,12 +158,12 @@ Shortcuts action: `is.workflow.actions.tweet`
 Uploads the input to Imgur.
 
 ```chute
-uploadToImgur(WFInput: Any, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolean, WFImgurAlbum: Boolean, WFImgurAlbumLayout: Enum, WFImgurAlbumPrivacy: Enum, WFImgurTitle: Text, WFImgurDescription: Text) -> URL
+uploadToImgur(WFInput: Image, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolean, WFImgurAlbum: Boolean, WFImgurAlbumLayout: Enum, WFImgurAlbumPrivacy: Enum, WFImgurTitle: Text, WFImgurDescription: Text) -> URL
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 | `WFImgurAnonymous` | Boolean | true |
 | `WFImgurDirectLink` | Boolean | — |
 | `WFImgurAlbum` | Boolean | false |

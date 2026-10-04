@@ -13,12 +13,12 @@ Appends this action's input to the specified variable, creating the variable if 
 This allows you to make a variable hold multiple items.
 
 ```chute
-addToVariable(WFVariableName: Any, WFInput: Any) -> Any
+addToVariable(WFVariableName: Text, WFInput: Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVariableName` | Any | — |
+| `WFVariableName` | Text | — |
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.appendvariable`
@@ -307,13 +307,13 @@ Shortcuts action: `is.workflow.actions.format.number`
 Generates a MD5/SHA1 hash from the input.
 
 ```chute
-generateHash(WFHashType: Enum, WFInput: Any) -> Text
+generateHash(WFHashType: Enum, WFInput: File) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFHashType` | MD5 \\| SHA1 \\| SHA256 \\| SHA512 | `"MD5"` |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 
 Shortcuts action: `is.workflow.actions.hash`
 
@@ -322,12 +322,12 @@ Shortcuts action: `is.workflow.actions.hash`
 Returns any street addresses found in the output from the previous action.
 
 ```chute
-getAddressesFromInput(WFInput: Any) -> Location
+getAddressesFromInput(WFInput: Location) -> Location
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Location | — |
 
 Shortcuts action: `is.workflow.actions.detect.address`
 
@@ -336,12 +336,12 @@ Shortcuts action: `is.workflow.actions.detect.address`
 Gets contacts from the result of the previous action.
 
 ```chute
-getContactsFromInput(WFInput: Any) -> Contact
+getContactsFromInput(WFInput: Contact) -> Contact
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Contact | — |
 
 Shortcuts action: `is.workflow.actions.detect.contacts`
 
@@ -350,12 +350,12 @@ Shortcuts action: `is.workflow.actions.detect.contacts`
 Returns any dates found in the output from the previous action.
 
 ```chute
-getDatesFromInput(WFInput: Any) -> Date
+getDatesFromInput(WFInput: Date) -> Date
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Date | — |
 
 Shortcuts action: `is.workflow.actions.detect.date`
 
@@ -376,12 +376,12 @@ Shortcuts action: `is.workflow.actions.properties.appstore`
 Makes a dictionary from the text passed as input. JSON (like {"foo": "bar"}), key-value pairs (like foo=bar&baz=biz), and XML-based plist are supported.
 
 ```chute
-getDictionaryFromInput(WFInput: Any) -> Dictionary
+getDictionaryFromInput(WFInput: Dictionary) -> Dictionary
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Dictionary | — |
 
 Shortcuts action: `is.workflow.actions.detect.dictionary`
 
@@ -390,14 +390,14 @@ Shortcuts action: `is.workflow.actions.detect.dictionary`
 Gets the value for the specified key in the dictionary passed into the action.
 
 ```chute
-getDictionaryValue(WFGetDictionaryValueType: Enum, WFDictionaryKey: Text, WFInput: Any) -> Any
+getDictionaryValue(WFGetDictionaryValueType: Enum, WFDictionaryKey: Text, WFInput: Dictionary) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFGetDictionaryValueType` | Value \\| All Keys \\| All Values | `"Value"` |
 | `WFDictionaryKey` | Text | — |
-| `WFInput` | Any | — |
+| `WFInput` | Dictionary | — |
 
 > You can reference values deep inside of a dictionary by providing multiple keys separated by dots. For example, to get the value "soup" from the dictionary {"beverages": [{"favorite": "soup"}]}, you can specify the key path "beverages.1.favorite".
 
@@ -439,12 +439,12 @@ Gets images from the result of the previous action.
 For example, this action can get the album art of a song, or all the images on a web page.
 
 ```chute
-getImagesFromInput(WFInput: Any) -> Image
+getImagesFromInput(WFInput: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.detect.images`
 
@@ -677,7 +677,7 @@ Shortcuts action: `is.workflow.actions.openapp`
 Opens the input as a file in the specified app.
 
 ```chute
-openFile(WFOpenInAskWhenRun: Boolean, WFSelectedApp: Text, WFAppName: Text, WFInput: Any)
+openFile(WFOpenInAskWhenRun: Boolean, WFSelectedApp: Text, WFAppName: Text, WFInput: File)
 ```
 
 | Parameter | Type | Default |
@@ -685,7 +685,7 @@ openFile(WFOpenInAskWhenRun: Boolean, WFSelectedApp: Text, WFAppName: Text, WFIn
 | `WFOpenInAskWhenRun` | Boolean | false |
 | `WFSelectedApp` | Text | — |
 | `WFAppName` | Text | — |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 
 Shortcuts action: `is.workflow.actions.openin`
 
@@ -722,12 +722,12 @@ Shortcuts action: `is.workflow.actions.repeat.each`
 This action executes an AppleScript.
 
 ```chute
-runApplescript(Input: Any, Script: Text) -> Any
+runApplescript(Input: File, Script: Text) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Input` | Any | — |
+| `Input` | File | — |
 | `Script` | Text | `"on run {input, parameters}
     (* Your script goes here *)
     return input
@@ -740,12 +740,12 @@ Shortcuts action: `is.workflow.actions.runapplescript`
 This action executes a JavaScript for Automation (JXA) script.
 
 ```chute
-runJavascriptForMacAutomation(Input: Any, Script: Text) -> Any
+runJavascriptForMacAutomation(Input: File, Script: Text) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Input` | Any | — |
+| `Input` | File | — |
 | `Script` | Text | `"function run(input, parameters) {
     // Your script goes here
     return input;
@@ -758,7 +758,7 @@ Shortcuts action: `is.workflow.actions.runjavascriptforautomation`
 Runs a script on a remote computer over SSH.
 
 ```chute
-runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser: Text, WFSSHAuthenticationType: Enum, WFSSHPassword: Text, WFSSHKey: Text, WFInput: Any) -> File
+runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser: Text, WFSSHAuthenticationType: Enum, WFSSHPassword: Text, WFSSHKey: Text, WFInput: File) -> File
 ```
 
 | Parameter | Type | Default |
@@ -770,7 +770,7 @@ runScriptOverSsh(WFSSHScript: Text, WFSSHHost: Text, WFSSHPort: Text, WFSSHUser:
 | `WFSSHAuthenticationType` | Password \\| SSH Key | `"Password"` |
 | `WFSSHPassword` | Text | — |
 | `WFSSHKey` | Text | — |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 
 Shortcuts action: `is.workflow.actions.runsshscript`
 
@@ -779,14 +779,14 @@ Shortcuts action: `is.workflow.actions.runsshscript`
 This action executes a UNIX shell script. The script will execute starting in your user’s home directory.
 
 ```chute
-runShellScript(Script: Text, Shell: Text, Input: Any, InputMode: Enum, RunAsRoot: Boolean) -> Any
+runShellScript(Script: Text, Shell: Text, Input: File, InputMode: Enum, RunAsRoot: Boolean) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `Script` | Text | — |
 | `Shell` | Text | — |
-| `Input` | Any | — |
+| `Input` | File | — |
 | `InputMode` | to stdin \\| as arguments | `"to stdin"` |
 | `RunAsRoot` | Boolean | false |
 
@@ -807,14 +807,14 @@ Shortcuts action: `is.workflow.actions.scanbarcode`
 Sets a value in the dictionary passed into the action. 
 
 ```chute
-setDictionaryValue(WFDictionaryKey: Text, WFDictionaryValue: Text, WFDictionary: Any) -> Dictionary
+setDictionaryValue(WFDictionaryKey: Text, WFDictionaryValue: Text, WFDictionary: Dictionary) -> Dictionary
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFDictionaryKey` | Text | — |
 | `WFDictionaryValue` | Text | — |
-| `WFDictionary` | Any | — |
+| `WFDictionary` | Dictionary | — |
 
 Shortcuts action: `is.workflow.actions.setvalueforkey`
 
@@ -839,13 +839,13 @@ Shortcuts action: `is.workflow.actions.setitemname`
 Sets the value of the specified variable to the input of this action.
 
 ```chute
-setVariable(WFInput: Any, WFVariableName: Any)
+setVariable(WFInput: Any, WFVariableName: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFInput` | Any | — |
-| `WFVariableName` | Any | — |
+| `WFVariableName` | Text | — |
 
 Shortcuts action: `is.workflow.actions.setvariable`
 

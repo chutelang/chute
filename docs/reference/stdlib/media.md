@@ -11,13 +11,13 @@ import Media;
 Adds an image to the existing animated GIF passed as input. If no GIF is passed as input, a new animated GIF is created.
 
 ```chute
-addFrameToGif(WFImage: Any, WFInputGIF: Any, WFGIFDelayTime: Number, WFGIFAutoSize: Boolean, WFGIFManualSizeWidth: Number, WFGIFManualSizeHeight: Number) -> Media
+addFrameToGif(WFImage: Image, WFInputGIF: Media, WFGIFDelayTime: Number, WFGIFAutoSize: Boolean, WFGIFManualSizeWidth: Number, WFGIFManualSizeHeight: Number) -> Media
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImage` | Any | — |
-| `WFInputGIF` | Any | — |
+| `WFImage` | Image | — |
+| `WFInputGIF` | Media | — |
 | `WFGIFDelayTime` | Number | 0.25 |
 | `WFGIFAutoSize` | Boolean | true |
 | `WFGIFManualSizeWidth` | Number | — |
@@ -30,13 +30,13 @@ Shortcuts action: `is.workflow.actions.addframetogif`
 Adds the music passed as input to your Playing Next queue.
 
 ```chute
-addToPlayingNext(WFWhenToPlay: Enum, WFMusic: Any)
+addToPlayingNext(WFWhenToPlay: Enum, WFMusic: Media)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFWhenToPlay` | Next \\| Later | `"Next"` |
-| `WFMusic` | Any | — |
+| `WFMusic` | Media | — |
 
 Shortcuts action: `is.workflow.actions.addmusictoupnext`
 
@@ -87,14 +87,14 @@ Shortcuts action: `is.workflow.actions.clearupnext`
 Combines the images passed into the action horizontally, vertically, or in a grid.
 
 ```chute
-combineImages(WFImageCombineMode: Enum, WFImageCombineSpacing: Number, WFInput: Any) -> Image
+combineImages(WFImageCombineMode: Enum, WFImageCombineSpacing: Number, WFInput: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFImageCombineMode` | Horizontally \\| Vertically \\| In a Grid | `"Horizontally"` |
 | `WFImageCombineSpacing` | Number | 0 |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.image.combine`
 
@@ -103,7 +103,7 @@ Shortcuts action: `is.workflow.actions.image.combine`
 Converts the images passed into the action to the specified image format.
 
 ```chute
-convertImage(WFImageFormat: Text, WFImageCompressionQuality: Number, WFImagePreserveMetadata: Boolean, WFInput: Any) -> Image
+convertImage(WFImageFormat: Text, WFImageCompressionQuality: Number, WFImagePreserveMetadata: Boolean, WFInput: Image) -> Image
 ```
 
 | Parameter | Type | Default |
@@ -111,7 +111,7 @@ convertImage(WFImageFormat: Text, WFImageCompressionQuality: Number, WFImagePres
 | `WFImageFormat` | Text | `"JPEG"` |
 | `WFImageCompressionQuality` | Number | 0.75 |
 | `WFImagePreserveMetadata` | Boolean | true |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.image.convert`
 
@@ -135,7 +135,7 @@ Shortcuts action: `is.workflow.actions.photos.createalbum`
 Creates a new playlist in the Music app, adding any items passed as input to the new playlist.
 
 ```chute
-createPlaylist(WFPlaylistName: Text, WFPlaylistAuthor: Text, WFPlaylistDescription: Text, WFPlaylistItems: Any) -> Media
+createPlaylist(WFPlaylistName: Text, WFPlaylistAuthor: Text, WFPlaylistDescription: Text, WFPlaylistItems: Media) -> Media
 ```
 
 | Parameter | Type | Default |
@@ -143,7 +143,7 @@ createPlaylist(WFPlaylistName: Text, WFPlaylistAuthor: Text, WFPlaylistDescripti
 | `WFPlaylistName` | Text | — |
 | `WFPlaylistAuthor` | Text | — |
 | `WFPlaylistDescription` | Text | — |
-| `WFPlaylistItems` | Any | — |
+| `WFPlaylistItems` | Media | — |
 
 Shortcuts action: `is.workflow.actions.createplaylist`
 
@@ -152,12 +152,12 @@ Shortcuts action: `is.workflow.actions.createplaylist`
 Crops images to a smaller rectangle.
 
 ```chute
-cropImage(WFInput: Any, WFImageCropPosition: Enum, WFImageCropX: Number, WFImageCropY: Number, WFImageCropWidth: Number, WFImageCropHeight: Number) -> Image
+cropImage(WFInput: Image, WFImageCropPosition: Enum, WFImageCropX: Number, WFImageCropY: Number, WFImageCropWidth: Number, WFImageCropHeight: Number) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 | `WFImageCropPosition` | Center \\| Top Left \\| Top Right \\| Bottom Left \\| Bottom Right \\| Custom | `"Center"` |
 | `WFImageCropX` | Number | — |
 | `WFImageCropY` | Number | — |
@@ -186,12 +186,12 @@ Shortcuts action: `is.workflow.actions.deletephotos`
 Re-encodes the media passed as input at the specified size, optionally converting to audio.
 
 ```chute
-encodeMedia(WFMedia: Any, WFMediaAudioOnly: Boolean, WFMediaAudioFormat: Enum, WFMediaSize: Enum, WFMediaSpeed: Enum, WFMediaPreserveTransparency: Boolean, WFMediaCustomSpeed: Number, Metadata: Any, WFMetadataTitle: Text, WFMetadataArtist: Text, WFMetadataAlbum: Text, WFMetadataGenre: Text, WFMetadataYear: Text, WFMetadataArtwork: Any) -> Media
+encodeMedia(WFMedia: Media, WFMediaAudioOnly: Boolean, WFMediaAudioFormat: Enum, WFMediaSize: Enum, WFMediaSpeed: Enum, WFMediaPreserveTransparency: Boolean, WFMediaCustomSpeed: Number, Metadata: Any, WFMetadataTitle: Text, WFMetadataArtist: Text, WFMetadataAlbum: Text, WFMetadataGenre: Text, WFMetadataYear: Text, WFMetadataArtwork: Image) -> Media
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMedia` | Any | — |
+| `WFMedia` | Media | — |
 | `WFMediaAudioOnly` | Boolean | false |
 | `WFMediaAudioFormat` | M4A \\| AIFF | `"M4A"` |
 | `WFMediaSize` | 640x480 \\| 960x540 \\| 1280x720 \\| 1920x1080 \\| 3840x2160 \\| HEVC 1920x1080 \\| HEVC 3840x2160 \\| ProRes 422 \\| Passthrough | `"Passthrough"` |
@@ -204,7 +204,7 @@ encodeMedia(WFMedia: Any, WFMediaAudioOnly: Boolean, WFMediaAudioFormat: Enum, W
 | `WFMetadataAlbum` | Text | — |
 | `WFMetadataGenre` | Text | — |
 | `WFMetadataYear` | Text | — |
-| `WFMetadataArtwork` | Any | — |
+| `WFMetadataArtwork` | Image | — |
 
 Shortcuts action: `is.workflow.actions.encodemedia`
 
@@ -226,13 +226,13 @@ Shortcuts action: `is.workflow.actions.filter.images`
 ## `finderConvertImage`
 
 ```chute
-finderConvertImage(WFPreserveMetadata: Boolean, WFImage: Any, WFFileFormat: Enum, WFSize: Enum) -> Image
+finderConvertImage(WFPreserveMetadata: Boolean, WFImage: Image, WFFileFormat: Enum, WFSize: Enum) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFPreserveMetadata` | Boolean | — |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 | `WFFileFormat` | JPEG \\| PNG \\| HEIF | `"JPEG"` |
 | `WFSize` | Small \\| Medium \\| Large \\| Original | `"Small"` |
 
@@ -310,13 +310,13 @@ Shortcuts action: `is.workflow.actions.searchpodcasts`
 Reverses the direction of images either horizontally or vertically.
 
 ```chute
-flipImage(WFImageFlipDirection: Enum, WFInput: Any) -> Image
+flipImage(WFImageFlipDirection: Enum, WFInput: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFImageFlipDirection` | Horizontal \\| Vertical | `"Horizontal"` |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.image.flip`
 
@@ -431,12 +431,12 @@ Shortcuts action: `is.workflow.actions.getepisodesforpodcast`
 Splits an animated GIF or a photo burst into individual frames.
 
 ```chute
-getFramesFromImage(WFImage: Any) -> Image
+getFramesFromImage(WFImage: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 
 Shortcuts action: `is.workflow.actions.getframesfromimage`
 
@@ -565,12 +565,12 @@ Shortcuts action: `is.workflow.actions.handoffplayback`
 Imports audio files into Music and compresses them with the chosen encoder.
 
 ```chute
-importAudioFilesIntoMusic(WFInput: Any, WFImportAudioFilesReencode: Boolean, WFImportAudioFilesEncoder: Enum) -> Media
+importAudioFilesIntoMusic(WFInput: File, WFImportAudioFilesReencode: Boolean, WFImportAudioFilesEncoder: Enum) -> Media
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | File | — |
 | `WFImportAudioFilesReencode` | Boolean | false |
 | `WFImportAudioFilesEncoder` | Default \\| AAC \\| AIFF \\| Lossless \\| MP3 \\| WAV | `"Default"` |
 
@@ -601,13 +601,13 @@ Shortcuts action: `is.workflow.actions.makegif`
 Converts an animated GIF into a video.
 
 ```chute
-makeVideoFromGif(WFMakeVideoFromGIFActionLoopCount: Number, WFInputGIF: Any) -> Media
+makeVideoFromGif(WFMakeVideoFromGIFActionLoopCount: Number, WFInputGIF: Media) -> Media
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFMakeVideoFromGIFActionLoopCount` | Number | 1 |
-| `WFInputGIF` | Any | — |
+| `WFInputGIF` | Media | — |
 
 Shortcuts action: `is.workflow.actions.makevideofromgif`
 
@@ -616,12 +616,12 @@ Shortcuts action: `is.workflow.actions.makevideofromgif`
 Edits an image or PDF with Markup.
 
 ```chute
-markup(WFDocument: Any) -> Image
+markup(WFDocument: File) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFDocument` | Any | — |
+| `WFDocument` | File | — |
 
 Shortcuts action: `is.workflow.actions.avairyeditphoto`
 
@@ -630,15 +630,15 @@ Shortcuts action: `is.workflow.actions.avairyeditphoto`
 Applies a mask to each image passed into the action. For example, you can cut images into a rounded rectangle, ellipse or icon shape, or provide a custom alpha mask.
 
 ```chute
-maskImage(WFInput: Any, WFMaskType: Enum, WFMaskCornerRadius: Number, WFCustomMaskImage: Any) -> Image
+maskImage(WFInput: Image, WFMaskType: Enum, WFMaskCornerRadius: Number, WFCustomMaskImage: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 | `WFMaskType` | Rounded Rectangle \\| Ellipse \\| Icon \\| Custom Image | `"Rounded Rectangle"` |
 | `WFMaskCornerRadius` | Number | — |
-| `WFCustomMaskImage` | Any | — |
+| `WFCustomMaskImage` | Image | — |
 
 Shortcuts action: `is.workflow.actions.image.mask`
 
@@ -647,13 +647,13 @@ Shortcuts action: `is.workflow.actions.image.mask`
 Overlays an image on top of another image.
 
 ```chute
-overlayImage(WFImage: Any, WFInput: Any, WFShouldShowImageEditor: Boolean, WFImagePosition: Enum, WFImageWidth: Number, WFImageHeight: Number, WFImageX: Number, WFImageY: Number, WFRotation: Number, WFOverlayImageOpacity: Number) -> Image
+overlayImage(WFImage: Image, WFInput: Image, WFShouldShowImageEditor: Boolean, WFImagePosition: Enum, WFImageWidth: Number, WFImageHeight: Number, WFImageX: Number, WFImageY: Number, WFRotation: Number, WFOverlayImageOpacity: Number) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImage` | Any | — |
-| `WFInput` | Any | — |
+| `WFImage` | Image | — |
+| `WFInput` | Image | — |
 | `WFShouldShowImageEditor` | Boolean | true |
 | `WFImagePosition` | Center \\| Top Left \\| Top Right \\| Bottom Left \\| Bottom Right \\| Custom | `"Center"` |
 | `WFImageWidth` | Number | — |
@@ -670,13 +670,13 @@ Shortcuts action: `is.workflow.actions.overlayimageonimage`
 Overlays text onto the image passed as input.
 
 ```chute
-overlayText(WFText: Text, WFImage: Any, WFTextPosition: Enum, WFTextX: Number, WFPercentageTextX: Number, WFTextY: Number, WFPercentageTextY: Number, WFTextOffset: Number, WFPercentageTextOffset: Number, WFFont: Text, WFFontSize: Number, WFPercentageFontSize: Number, WFTextAlignment: Enum, WFTextColor: Text, WFTextRotation: Number, WFTextOutlineEnabled: Boolean, WFTextStrokeWidth: Number, WFPercentageTextStrokeWidth: Number, WFTextStrokeColor: Text, WFTextBoxWidth: Number, WFPercentageTextBoxWidth: Number, WFSizingMethod: Enum) -> Image
+overlayText(WFText: Text, WFImage: Image, WFTextPosition: Enum, WFTextX: Number, WFPercentageTextX: Number, WFTextY: Number, WFPercentageTextY: Number, WFTextOffset: Number, WFPercentageTextOffset: Number, WFFont: Text, WFFontSize: Number, WFPercentageFontSize: Number, WFTextAlignment: Enum, WFTextColor: Text, WFTextRotation: Number, WFTextOutlineEnabled: Boolean, WFTextStrokeWidth: Number, WFPercentageTextStrokeWidth: Number, WFTextStrokeColor: Text, WFTextBoxWidth: Number, WFPercentageTextBoxWidth: Number, WFSizingMethod: Enum) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFText` | Text | — |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 | `WFTextPosition` | Top Left \\| Top Center \\| Top Right \\| Middle Left \\| Center \\| Middle Right \\| Bottom Left \\| Bottom Center \\| Bottom Right \\| Custom Position | `"Center"` |
 | `WFTextX` | Number | — |
 | `WFPercentageTextX` | Number | — |
@@ -720,12 +720,12 @@ Shortcuts action: `is.workflow.actions.pausemusic`
 Plays music using the Music app.
 
 ```chute
-playMusic(WFMediaItems: Any, WFPlayMusicActionShuffle: Enum, WFPlayMusicActionRepeat: Enum)
+playMusic(WFMediaItems: Media, WFPlayMusicActionShuffle: Enum, WFPlayMusicActionRepeat: Enum)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMediaItems` | Any | — |
+| `WFMediaItems` | Media | — |
 | `WFPlayMusicActionShuffle` | Off \\| Songs | — |
 | `WFPlayMusicActionRepeat` | None \\| One \\| All | — |
 
@@ -751,12 +751,12 @@ Shortcuts action: `is.workflow.actions.playpodcast`
 Plays the audio file passed as input, or a default notification sound if no audio file was passed.
 
 ```chute
-playSound(WFInput: Any)
+playSound(WFInput: Media)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `WFInput` | Media | — |
 
 Shortcuts action: `is.workflow.actions.playsound`
 
@@ -797,13 +797,13 @@ Shortcuts action: `is.workflow.actions.recordaudio`
 Removes the photos or videos passed as input from the specified photo album.
 
 ```chute
-removeFromPhotoAlbum(WFRemoveAlbumSelectedGroup: Text, WFInput: Any) -> Image
+removeFromPhotoAlbum(WFRemoveAlbumSelectedGroup: Text, WFInput: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFRemoveAlbumSelectedGroup` | Text | — |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.removefromalbum`
 
@@ -812,13 +812,13 @@ Shortcuts action: `is.workflow.actions.removefromalbum`
 Removes the background from an image, keeping the subjects.
 
 ```chute
-removeImageBackground(WFCropToBounds: Boolean, WFInput: Any) -> Image
+removeImageBackground(WFCropToBounds: Boolean, WFInput: Image) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFCropToBounds` | Boolean | false |
-| `WFInput` | Any | — |
+| `WFInput` | Image | — |
 
 Shortcuts action: `is.workflow.actions.image.removebackground`
 
@@ -827,7 +827,7 @@ Shortcuts action: `is.workflow.actions.image.removebackground`
 Scales images to a particular width and height.
 
 ```chute
-resizeImage(WFImageResizeKey: Enum, WFImageResizeWidth: Number, WFImageResizeHeight: Number, WFImageResizePercentage: Number, WFImageResizeLength: Number, WFImage: Any) -> Image
+resizeImage(WFImageResizeKey: Enum, WFImageResizeWidth: Number, WFImageResizeHeight: Number, WFImageResizePercentage: Number, WFImageResizeLength: Number, WFImage: Image) -> Image
 ```
 
 | Parameter | Type | Default |
@@ -837,7 +837,7 @@ resizeImage(WFImageResizeKey: Enum, WFImageResizeWidth: Number, WFImageResizeHei
 | `WFImageResizeHeight` | Number | — |
 | `WFImageResizePercentage` | Number | — |
 | `WFImageResizeLength` | Number | — |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 
 > If the width or height is not set, that dimension is automatically calculated to maintain the original image's aspect ratio.
 
@@ -848,13 +848,13 @@ Shortcuts action: `is.workflow.actions.image.resize`
 Turns an image or video clockwise by a particular number of degrees.
 
 ```chute
-rotateImage/video(WFImageRotateAmount: Number, WFImage: Any) -> Any
+rotateImage/video(WFImageRotateAmount: Number, WFImage: Image) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFImageRotateAmount` | Number | 90 |
-| `WFImage` | Any | — |
+| `WFImage` | Image | — |
 
 Shortcuts action: `is.workflow.actions.image.rotate`
 
@@ -1001,11 +1001,11 @@ Shortcuts action: `is.workflow.actions.takevideo`
 Presents a view allowing you to trim the media passed into the action.
 
 ```chute
-trimMedia(WFInputMedia: Any) -> Media
+trimMedia(WFInputMedia: Media) -> Media
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInputMedia` | Any | — |
+| `WFInputMedia` | Media | — |
 
 Shortcuts action: `is.workflow.actions.trimvideo`
