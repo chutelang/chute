@@ -48,7 +48,7 @@ When the expected type is known (from a type annotation, function parameter, or 
 
 ```text
 const c: Color = .red;            // instead of Color.red
-paint(c: .blue);                // in a function argument
+paint(.blue);                   // in a function argument
 
 let dir: Direction = .north;
 dir = .south;                   // in reassignment
@@ -137,6 +137,6 @@ Records compile to dictionaries. `Point(x: 10, y: 20)` becomes a dictionary with
 
 ## Related
 
-- [Variables and bindings](/reference/variables): destructuring with `let { ... }`
+- [Variables and bindings](/reference/variables): destructuring with `const { ... }`
 - [Types](/reference/types): using enums and records as type annotations
 - [Functions](/reference/functions): enums and records as parameter types
