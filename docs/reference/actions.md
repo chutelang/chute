@@ -1,8 +1,8 @@
 # Actions
 
-Actions are Chute's bridge to Siri Shortcuts. Each action declaration maps a function-like call to a specific Shortcuts action identifier.
+An action declaration maps a Chute function call to a Shortcuts action identifier.
 
-Chute ships with a [standard library](/reference/stdlib/scripting) of ~50 built-in actions covering scripting, text, web, sharing, documents, calendar, contacts, maps, media, settings, and health. You can also declare your own actions for Shortcuts actions not yet in the standard library.
+The [standard library](/reference/stdlib/) contains 390 actions in 17 modules. You can declare other actions that the standard library doesn't include.
 
 ## Declaring actions
 
@@ -34,7 +34,7 @@ In the Shortcuts app, each action parameter has an internal key like `WFAlertAct
 
 ### Multiple parameters
 
-Actions can have multiple parameters, each with their own name and internal key:
+Actions can have multiple parameters. Each parameter has its own name and internal key:
 
 ```text
 action notify(
@@ -45,7 +45,7 @@ action notify(
 
 ### Default values
 
-Parameters can have defaults, making them optional at the call site:
+A default value makes a parameter optional at the call site:
 
 ```text
 action notify(
@@ -78,7 +78,7 @@ action sendMessage(to: Text, body: Text) = "com.example.send";
 
 ## Attributes
 
-Actions can have attributes that provide extra metadata:
+Attributes attach metadata to an action declaration:
 
 ```text
 action doThing() = "com.example.dothing"
@@ -124,6 +124,6 @@ export action fetchData(url WFURL: Text) -> Text = "is.workflow.actions.download
 
 ## Related
 
-- [Standard library](/reference/stdlib/scripting): built-in actions available in every Chute file
-- [Functions](/reference/functions): user-defined logic (compiles to sub-shortcuts, not Shortcuts actions)
-- [Pipelines](/reference/pipelines): chaining actions with `|>`
+- [Standard library](/reference/stdlib/scripting) lists built-in actions.
+- [Functions](/reference/functions) describes user-defined logic with typed parameters and return values.
+- [Pipelines](/reference/pipelines) explains how to chain actions with `|>`.
