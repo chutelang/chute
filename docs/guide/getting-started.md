@@ -44,12 +44,14 @@ shortcut {
   description: "A shortcut created with Chute",
 }
 
-showAlert("Hello from Chute!");
+import Scripting;
+
+Scripting.showAlert("Hello from Chute!");
 ```
 
 Every Chute file starts with an optional `shortcut` metadata block that sets the shortcut's name and description. After that comes the body. The body is a sequence of statements that become the shortcut's actions.
 
-`showAlert` is a built-in action from the [standard library](/reference/stdlib/scripting). In the Shortcuts app, this is the "Show Alert" action. In Chute, you call it like a function.
+`Scripting.showAlert` is a built-in action from the [standard library](/reference/stdlib/scripting). In the Shortcuts app, this is the "Show Alert" action. You import a stdlib module and call its actions like functions.
 
 ## Build and run
 
@@ -65,7 +67,7 @@ This produces a signed `.shortcut` file in the `build/` directory. To compile an
 chute run src/main.chute
 ```
 
-The Shortcuts app will prompt you to add the shortcut. Tap "Add Shortcut" and run it. You.ll see the "Hello from Chute!" alert.
+The Shortcuts app prompts you to add the shortcut. Select **Add Shortcut**, then run it. The shortcut displays the "Hello from Chute!" alert.
 
 ## Add some logic
 
@@ -77,14 +79,16 @@ shortcut {
   description: "Asks for your name and greets you",
 }
 
-const name = ask("What's your name?");
-showAlert("Hello, ${name}!");
+import Scripting;
+
+const name = Scripting.askForInput("What's your name?");
+Scripting.showAlert("Hello, ${name}!");
 ```
 
-This introduces two concepts:
+The example uses two language features:
 
-- **Variables** — `const name = ...` binds the result of `ask()` to a variable. In Shortcuts, this is equivalent to setting a variable from the output of the "Ask for Input" action.
-- **String interpolation** — `"Hello, ${name}!"` embeds the value of `name` into the string. This compiles to the same thing as dragging a magic variable into a text field in Shortcuts.
+- `const name = ...` binds the result of `Scripting.askForInput()` to a variable. This corresponds to setting a variable from the output of the "Ask for Input" action in Shortcuts.
+- `"Hello, ${name}!"` inserts the value of `name` into the string. This corresponds to placing a magic variable in a text field in Shortcuts.
 
 Build and run it again:
 
@@ -104,27 +108,32 @@ shortcut {
   description: "Do something with your clipboard",
 }
 
-const text = getClipboard();
+import Device;
+import Sharing;
+import Text;
+import Scripting;
+
+const text = Device.getClipboard();
 
 menu "What do you want to do?" {
   case "Share" {
-    share(text);
+    Sharing.share(text);
   }
   case "Make Uppercase" {
-    const upper = changeCase(text, "UPPERCASE");
-    setClipboard(upper);
-    showAlert("Copied uppercase text!");
+    const upper = Text.changeCase(text, "UPPERCASE");
+    Device.copyToClipboard(upper);
+    Scripting.showAlert("Copied uppercase text!");
   }
 }
 ```
 
-In the Shortcuts app, `menu` compiles to a "Choose from Menu" action, but you get to write it with real syntax instead of dragging blocks around.
+The compiler converts `menu` to a "Choose from Menu" action.
 
 ## What's next
 
 Now that you've built and run your first shortcuts, explore the rest of the documentation:
 
-- [Core Concepts](/guide/core-concepts) — how Chute maps to Shortcuts under the hood
-- [Variables & Bindings](/reference/variables) — `const`, `let`, destructuring, and type annotations
-- [Functions](/reference/functions) — define reusable logic that compiles to sub-shortcuts
-- [Standard Library](/reference/stdlib/scripting) — every built-in action available in Chute
+- [Core concepts](/guide/core-concepts) explains how Chute maps to Shortcuts.
+- [Variables and bindings](/reference/variables) covers `const`, `let`, destructuring, and type annotations.
+- [Functions](/reference/functions) explains typed parameters and return values.
+- [Standard library](/reference/stdlib/scripting) lists the built-in actions available in Chute.
