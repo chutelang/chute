@@ -28,7 +28,7 @@ Compile `.chute` files to signed `.shortcut` files.
 chute build [files...]
 ```
 
-Each input file produces a `.shortcut` file (or `.plist` if unsigned) in the same directory as the source file. If a shortcut contains functions, Chute compiles each function to a separate sub-shortcut file alongside the main output.
+Each input file produces a `.shortcut` file (or `.plist` if unsigned) in the same directory as the source file. Functions are compiled into the same shortcut file using self-referential Run Shortcut calls.
 
 | Flag | Description |
 | --- | --- |
