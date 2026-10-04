@@ -1,6 +1,6 @@
 # Functions
 
-Functions let you define reusable logic. Each function compiles to its own sub-shortcut, and calling the function compiles to a "Run Shortcut" action.
+Functions define reusable logic with typed parameters and return values. The compiler converts each call to a "Run Shortcut" action that targets the current shortcut.
 
 ## Declaring a function
 
@@ -47,7 +47,7 @@ func double(n: Number) -> Number {
 }
 ```
 
-If a function has a return type, every `return` statement must include a value of that type. If no return type is specified, the function doesn't return a value (and `return` without a value or reaching the end of the body is valid).
+If a function declares a return type, every `return` statement must provide a value of that type. A function without a return type can use an empty `return` or reach the end of its body.
 
 ## Calling functions
 
@@ -68,7 +68,7 @@ func quadruple(n: Number) -> Number { return double(double(n)); }
 
 ## Recursion
 
-Chute supports recursive and mutually recursive functions, but emits a warning. Siri Shortcuts has a limited call stack, so deep recursion may fail at runtime.
+The compiler warns about recursive and mutually recursive functions. Siri Shortcuts limits the call stack, so deep recursion may fail at runtime.
 
 ```text
 func countdown(n: Number) {
@@ -93,12 +93,10 @@ See [Imports & Modules](/reference/imports) for how to use exported functions.
 
 ## How it maps to Shortcuts
 
-Each `func` declaration compiles to a separate `.shortcut` file (a sub-shortcut). Calling the function compiles to a "Run Shortcut" action that invokes the sub-shortcut and passes arguments through the shortcut input.
-
-This means your functions are real, self-contained shortcuts that can be tested and debugged independently in the Shortcuts app.
+Functions compile into the same shortcut file. The compiler adds dispatch logic at the top of the shortcut, and each function call compiles to a "Run Shortcut" action that calls the shortcut itself (`isSelf: true`) with a dispatch parameter. Arguments are passed as a dictionary through the shortcut input, and extracted with "Get Value for Key" actions inside the function body.
 
 ## Related
 
-- [Pipelines](/reference/pipelines): chain function calls with `|>`
-- [Actions](/reference/actions): built-in Shortcuts actions (similar to functions but map directly to Shortcuts actions)
-- [Variables and bindings](/reference/variables): binding function results to names
+- [Pipelines](/reference/pipelines) explains how to chain function calls with `|>`.
+- [Actions](/reference/actions) describes declarations that map directly to Shortcuts actions.
+- [Variables and bindings](/reference/variables) explains how to bind function results to names.
