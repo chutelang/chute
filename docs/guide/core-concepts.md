@@ -21,8 +21,10 @@ In Shortcuts, every action's output becomes a *magic variable* that later action
 ```chute
 shortcut { name: "Variables" }
 
+import Scripting;
+
 const greeting = "Hello";
-showAlert(greeting);
+Scripting.showAlert(greeting);
 ```
 
 `const` creates an immutable binding. The compiler translates it into a "Set Variable" action, and any reference to `greeting` becomes a "Get Variable" action that retrieves the stored value.
@@ -36,34 +38,34 @@ count = count + 1;
 
 For more details, see [Variables and bindings](/reference/variables).
 
-## Functions become sub-shortcuts
+## Functions compile to self-referential calls
 
-Each `func` declaration compiles to a separate shortcut file. When you call the function, Chute emits a "Run Shortcut" action that invokes the sub-shortcut.
+Each `func` declaration compiles into the same shortcut file. When you call the function, Chute emits a "Run Shortcut" action that calls the shortcut itself with a dispatch parameter to select the right function body.
 
 ```chute
 shortcut { name: "Functions" }
+
+import Scripting;
 
 func double(n: Number) -> Number {
   return n * 2;
 }
 
 const result = double(5);
-showResult("${result}");
+Scripting.showResult("${result}");
 ```
 
-Under the hood, the compiler does three things:
+Under the hood, the compiler:
 
-1. Generates a separate plist file for the `double` function.
-2. Passes parameters as a dictionary through the "Shortcut Input" variable.
-3. Inside the sub-shortcut, extracts each parameter with a "Get Value for Key" action.
-
-This gives you reusable logic without duplicating actions, something that isn't possible in the Shortcuts editor without manually managing sub-shortcuts.
+1. Wraps function parameters as a dictionary passed through the "Shortcut Input" variable.
+2. Emits a "Run Shortcut" action targeting the shortcut itself (`isSelf: true`).
+3. Uses dispatch logic at the top of the shortcut to route to the correct function body.
 
 For more details, see [Functions](/reference/functions).
 
 ## Actions map to Shortcuts actions
 
-The `action` keyword declares a binding to a real Shortcuts action identifier. Every built-in function you call, `showAlert`, `ask`, `getClipboard`, is an action declaration behind the scenes.
+The `action` keyword binds a Chute function name to a Shortcuts action identifier. Standard library functions such as `Scripting.showAlert` and `Device.getClipboard` use action declarations.
 
 Here's what the standard library's `showAlert` looks like internally:
 
@@ -93,9 +95,11 @@ Chute's control flow statements map directly to their Shortcuts equivalents:
 ```chute
 shortcut { name: "ControlFlow" }
 
+import Scripting;
+
 const items = ["apples", "bananas", "cherries"];
 for item in items {
-  showAlert(item);
+  Scripting.showAlert(item);
 }
 ```
 
@@ -105,7 +109,7 @@ For more details, see [Control flow](/reference/control-flow).
 
 ## The type system catches errors at compile time
 
-Shortcuts has no type checking. If you connect an incompatible output to an action's input, you find out at runtime, or sometimes not at all.
+Shortcuts doesn't check these types before running an action. An incompatible output can therefore cause a runtime error.
 
 Chute's type system catches these mistakes before the shortcut is compiled. The built-in types are:
 
@@ -132,8 +136,10 @@ shortcut { name: "Pipelines" }
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 
+import Scripting;
+
 const x = 5 |> double |> triple;
-showResult("${x}");
+Scripting.showResult("${x}");
 ```
 
 The value `5` flows into `double`, and the result flows into `triple`. You can also use `|>?` for optional values. If the value is `nil`, the pipeline short-circuits and the result is `nil`.
@@ -142,7 +148,7 @@ For more details, see [Pipelines](/reference/pipelines).
 
 ## Enums and records give you structured data
 
-Shortcuts doesn't have a concept of custom types. In Chute, you can define enums and records to organize your data.
+Chute adds enums and records for data that Shortcuts represents without custom types.
 
 **Enums** represent a fixed set of values. Each case can have a backing string value:
 
@@ -183,14 +189,14 @@ For more details, see [Imports & Modules](/reference/imports).
 
 ## The standard library wraps common Shortcuts actions
 
-Chute ships with a standard library of action declarations covering the most common Shortcuts actions. These are organized into categories:
+Chute includes 390 standard library action declarations in 17 modules. Import a module before calling its actions:
 
-- [Scripting](/reference/stdlib/scripting): `showAlert`, `ask`, `getClipboard`, `wait`, and more.
-- [Text](/reference/stdlib/text): `getText`, `replaceText`, `splitText`, and more.
-- [Web](/reference/stdlib/web): `openURL`, `getContentsOfURL`, `searchWeb`, and more.
-- [Documents](/reference/stdlib/documents): `getFile`, `saveFile`, `createFolder`, and more.
-- [Calendar](/reference/stdlib/calendar): `addNewEvent`, `getUpcomingEvents`, and more.
-- [Media](/reference/stdlib/media): `takePicture`, `selectPhotos`, and more.
-- [Settings](/reference/stdlib/settings): `setVolume`, `setBrightness`, `setWiFi`, and more.
+```chute
+import Scripting;
+import Notification;
 
-Each action declaration specifies the parameter names, types, defaults, and the underlying Shortcuts action identifier. When you call a standard library function, the compiler emits the correct action with the correct parameter keys. You don.t need to look up internal identifiers yourself.
+Scripting.askForInput("What is your name?");
+Notification.showAlert("Hello!");
+```
+
+The [standard library reference](/reference/stdlib/) lists every module and action. Each declaration defines its parameters, types, defaults, and Shortcuts identifier. The compiler uses that declaration to emit the action and its parameter keys.
