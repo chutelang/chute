@@ -1,13 +1,15 @@
-# share clipboard
+# Share clipboard
 
 A shortcut that reads your clipboard, lets you choose what to do with it, and acts on your choice.
 
 ## What you'll learn
 
-- [Variables and bindings](/reference/variables) — storing action results with `const` and `let`
-- [Control flow](/reference/control-flow) — presenting choices with `menu`
-- [String interpolation](/reference/expressions) — embedding values in text with `${}`
-- [Standard library actions](/reference/stdlib/scripting) — `getClipboard`, `setClipboard`, `share`, `showAlert`
+- [Variables and bindings](/reference/variables) with `const` and `let`
+- [Control flow](/reference/control-flow) with `menu`
+- [String interpolation](/reference/expressions) with `${}`
+- [Device actions](/reference/stdlib/device), including `Device.getClipboard` and `Device.copyToClipboard`
+- [Sharing actions](/reference/stdlib/sharing), including `Sharing.share`
+- [Text actions](/reference/stdlib/text), including `Text.changeCase`
 
 ## Source
 
@@ -17,29 +19,34 @@ shortcut {
   description: "Read clipboard and share or transform it",
 }
 
-const text = getClipboard();
+import Device;
+import Sharing;
+import Text;
+import Scripting;
+
+const text = Device.getClipboard();
 
 menu "What do you want to do?" {
   case "Share" {
-    share(text);
+    Sharing.share(text);
   }
   case "Copy Uppercase" {
-    const upper = changeCase(text, "UPPERCASE");
-    setClipboard(upper);
-    showAlert("Copied to clipboard!");
+    const upper = Text.changeCase(text, "UPPERCASE");
+    Device.copyToClipboard(upper);
+    Scripting.showAlert("Copied to clipboard!");
   }
   case "Show" {
-    showAlert("Clipboard: ${text}");
+    Scripting.showAlert("Clipboard: ${text}");
   }
 }
 ```
 
 ## How it works
 
-The shortcut starts by reading the clipboard into a `text` variable with `getClipboard()`. In the Shortcuts app, this is the "Get Clipboard" action, and `text` becomes its output, the equivalent of a magic variable.
+`Device.getClipboard()` reads the clipboard into `text`. The compiler emits a "Get Clipboard" action and binds its magic-variable output to `text`.
 
-The `menu` block presents a "Choose from Menu" dialog with three options:
+The `menu` block provides three options:
 
-- **Share** passes the clipboard text to the system share sheet with `share()`.
-- **Copy Uppercase** transforms the text with `changeCase()`, writes the result back to the clipboard with `setClipboard()`, and confirms with an alert.
-- **Show** displays the clipboard contents in an alert, using string interpolation to embed the `text` variable.
+- `Share` passes the clipboard text to the system share sheet with `Sharing.share()`.
+- `Copy Uppercase` transforms the text with `Text.changeCase()`, writes it to the clipboard, and displays a confirmation.
+- `Show` inserts `text` into an alert with string interpolation.
