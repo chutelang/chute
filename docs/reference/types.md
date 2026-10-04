@@ -109,12 +109,33 @@ These types represent Shortcuts content items. They're returned by stdlib action
 |------|-------------|
 | `Date` | A date and time |
 | `URL` | A web address |
-| `Image` | An image |
+| `Image` | An image or photo |
 | `Email` | An email address |
 | `Phone` | A phone number |
 | `Contact` | A contact |
 | `Location` | A street address or coordinate |
 | `Article` | A web article |
+| `CalendarEvent` | A calendar event |
+| `Reminder` | A reminder |
+| `EventAttendee` | A calendar event attendee |
+| `TimeInterval` | A time interval |
+| `Media` | Audio, video, or GIF content |
+| `File` | A file or document |
+| `RichText` | Rich text or HTML content |
+| `App` | An app |
+| `WebPage` | A Safari web page |
+| `Shortcut` | A shortcut |
+| `Weather` | Weather conditions |
+| `HealthSample` | A health data sample |
+| `PodcastEpisode` | A podcast episode |
+| `PodcastShow` | A podcast show |
+| `ShazamMedia` | A Shazam result |
+| `Display` | A display |
+| `Window` | A window |
+| `FocusMode` | A Focus mode |
+| `iTunesProduct` | An iTunes product |
+| `Barcode` | A barcode or QR code |
+| `Message` | A message |
 
 Access their properties with dot notation:
 
@@ -122,8 +143,8 @@ Access their properties with dot notation:
 import Scripting
 
 let d = Scripting.date();
-let year = d.year;      // Number
-let month = d.month;    // Number
+let year = d.year;      // Text
+let month = d.month;    // Text
 ```
 
 See [Expressions](/reference/expressions) for the full property list per type.
