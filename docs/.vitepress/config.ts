@@ -1,11 +1,18 @@
 import { defineConfig } from "vitepress";
 import { chuteMarkdownPlugin } from "./chute-plugin";
+import chuteGrammar from "../../packages/vscode-chute/syntaxes/chute.tmLanguage.json";
+
+const chuteLanguage = {
+  ...chuteGrammar,
+  aliases: ["chute"],
+};
 
 export default defineConfig({
   title: "Chute",
   description: "Siri Shortcuts as Code",
 
   markdown: {
+    languages: [chuteLanguage as never],
     config(md) {
       md.use(chuteMarkdownPlugin);
     },

@@ -26,6 +26,11 @@ export function chuteMarkdownPlugin(md: MarkdownIt): void {
     }
 
     const source = token.content.trimEnd();
-    return `<ChuteCode source="${escapeHtml(source)}" />`;
+
+    const highlighted = md.options.highlight
+      ? md.options.highlight(source, "chute", "")
+      : `<pre><code>${escapeHtml(source)}</code></pre>`;
+
+    return `<ChuteCode source="${escapeHtml(source)}">${highlighted}</ChuteCode>`;
   };
 }

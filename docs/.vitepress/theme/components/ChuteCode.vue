@@ -56,11 +56,8 @@ function selectTab(tab: Tab) {
       </button>
     </div>
     <div class="chute-code-content">
-      <div v-show="activeTab === 'chute'" class="chute-code-panel">
-        <div class="language-chute vp-adaptive-theme">
-          <button class="copy" title="Copy Code" />
-          <pre><code>{{ source }}</code></pre>
-        </div>
+      <div v-show="activeTab === 'chute'" class="chute-code-panel chute-highlighted">
+        <slot />
       </div>
       <div v-show="activeTab === 'plist'" class="chute-code-panel">
         <div v-if="compiled.error" class="chute-code-error">{{ compiled.error }}</div>
