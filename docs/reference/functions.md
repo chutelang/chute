@@ -6,9 +6,11 @@ Functions define reusable logic with typed parameters and return values. The com
 
 Use `func` followed by the name, parameters, an optional return type, and a body:
 
-```text
+```chute
+import Scripting;
+
 func greet(name: Text) {
-  showAlert("Hello, ${name}!");
+  Scripting.showAlert("Hello, ${name}!");
 }
 ```
 
@@ -73,8 +75,8 @@ The compiler warns about recursive and mutually recursive functions. Siri Shortc
 ```text
 func countdown(n: Number) {
   if (n > 0) {
-    showAlert("${n}");
-    countdown(n - 1); // warning: recursive call detected
+    Scripting.showAlert("${n}");
+    countdown(n - 1);
   }
 }
 ```
@@ -90,10 +92,6 @@ export func formatName(first: Text, last: Text) -> Text {
 ```
 
 See [Imports & Modules](/reference/imports) for how to use exported functions.
-
-## How it maps to Shortcuts
-
-Functions compile into the same shortcut file. The compiler adds dispatch logic at the top of the shortcut, and each function call compiles to a "Run Shortcut" action that calls the shortcut itself (`isSelf: true`) with a dispatch parameter. Arguments are passed as a dictionary through the shortcut input, and extracted with "Get Value for Key" actions inside the function body.
 
 ## Related
 

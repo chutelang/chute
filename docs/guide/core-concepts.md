@@ -1,18 +1,6 @@
 # Core concepts
 
-This page explains how Chute maps to Siri Shortcuts. If you already know how Shortcuts work, this is the fastest way to build a mental model of what Chute does under the hood.
-
-## The compiler pipeline
-
-When you run `chute build`, your source code passes through five stages:
-
-1. **Lexer.** Splits the source text into tokens (keywords, identifiers, operators, literals).
-2. **Parser.** Assembles tokens into an abstract syntax tree (AST) that represents the program's structure.
-3. **Type checker.** Validates the AST, resolving types, checking function signatures, and reporting errors with diagnostic codes.
-4. **Lowering.** Transforms the checked AST into an intermediate representation (IR) of Shortcuts actions.
-5. **Codegen.** Serializes the IR into Apple's plist XML format, producing a `.shortcut` file.
-
-The output is the same plist XML that the Shortcuts app writes when you export a shortcut. If signing is enabled, the file is passed through the macOS `shortcuts sign` CLI to produce a signed `.shortcut` file that can be imported directly.
+This page explains how Chute language features map to Siri Shortcuts actions and data.
 
 ## Variables are magic variables
 
@@ -38,9 +26,9 @@ count = count + 1;
 
 For more details, see [Variables and bindings](/reference/variables).
 
-## Functions compile to self-referential calls
+## Functions
 
-Each `func` declaration compiles into the same shortcut file. When you call the function, Chute emits a "Run Shortcut" action that calls the shortcut itself with a dispatch parameter to select the right function body.
+Chute functions have typed parameters and return values. The compiler includes each function in the same shortcut file. A function call becomes a "Run Shortcut" action that targets that shortcut.
 
 ```chute
 shortcut { name: "Functions" }
@@ -54,12 +42,6 @@ func double(n: Number) -> Number {
 const result = double(5);
 Scripting.showResult("${result}");
 ```
-
-Under the hood, the compiler:
-
-1. Wraps function parameters as a dictionary passed through the "Shortcut Input" variable.
-2. Emits a "Run Shortcut" action targeting the shortcut itself (`isSelf: true`).
-3. Uses dispatch logic at the top of the shortcut to route to the correct function body.
 
 For more details, see [Functions](/reference/functions).
 
