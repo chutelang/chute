@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T00:21:15.851Z",
+  "extractedAt": "2026-09-06T00:30:43.120Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -3047,8 +3047,8 @@
     },
     "is.workflow.actions.compresspdf": {
       "identifier": "is.workflow.actions.compresspdf",
-      "name": "optimizeFileSizeOfPdf",
-      "displayName": "Optimize File Size of PDF",
+      "name": "compressPdf",
+      "displayName": "Compress PDF",
       "actionClass": "WFCompressPDFAction",
       "description": {
         "summary": "Optimizes the file size of the provided PDF file by compressing its images.\n\nIf the images contained in the PDF are already compressed, this action might not have a measurable effect on file size.",
@@ -4455,8 +4455,8 @@
     },
     "is.workflow.actions.dismisssiri": {
       "identifier": "is.workflow.actions.dismisssiri",
-      "name": "dismissSiriAndContinue",
-      "displayName": "Dismiss Siri and Continue",
+      "name": "dismissSiri",
+      "displayName": "Dismiss Siri",
       "actionClass": "WFHandoffAction",
       "description": {
         "summary": "Switches into the Shortcuts app and continues to the next action.",
@@ -6094,8 +6094,8 @@
     },
     "is.workflow.actions.evernote.delete": {
       "identifier": "is.workflow.actions.evernote.delete",
-      "name": "deleteNotes",
-      "displayName": "Delete Notes",
+      "name": "deleteEvernoteNotes",
+      "displayName": "Delete Evernote Notes",
       "actionClass": "WFEvernoteDeleteAction",
       "description": {
         "summary": "Deletes the notes passed as input from Evernote.",
@@ -6143,8 +6143,8 @@
     },
     "is.workflow.actions.evernote.get": {
       "identifier": "is.workflow.actions.evernote.get",
-      "name": "getNotes",
-      "displayName": "Get Notes",
+      "name": "getEvernoteNotes",
+      "displayName": "Get Evernote Notes",
       "actionClass": "WFEvernoteGetNotesAction",
       "description": {
         "summary": "Gets recent notes from Evernote, optionally filtering based on criteria.",
@@ -6215,8 +6215,8 @@
     },
     "is.workflow.actions.evernote.getlink": {
       "identifier": "is.workflow.actions.evernote.getlink",
-      "name": "getNoteLink",
-      "displayName": "Get Note Link",
+      "name": "getEvernoteNoteLink",
+      "displayName": "Get Evernote Note Link",
       "actionClass": "WFEvernoteGetLinkAction",
       "description": {
         "summary": "Gets a link to the Evernote note passed into the action, which can be shared.",
@@ -6275,8 +6275,8 @@
     },
     "is.workflow.actions.evernote.new": {
       "identifier": "is.workflow.actions.evernote.new",
-      "name": "createNewNote",
-      "displayName": "Create New Note",
+      "name": "createEvernoteNote",
+      "displayName": "Create Evernote Note",
       "actionClass": "WFEvernoteCreateAction",
       "description": {
         "summary": "Saves the input as a note in Evernote.",
@@ -6533,8 +6533,8 @@
     },
     "is.workflow.actions.file": {
       "identifier": "is.workflow.actions.file",
-      "name": "file",
-      "displayName": "File",
+      "name": "specifyFile",
+      "displayName": "Specify File",
       "actionClass": "WFFileAction",
       "description": {
         "summary": "Passes the specified files or folders as output.",
@@ -8919,8 +8919,8 @@
     },
     "is.workflow.actions.getclassaction": {
       "identifier": "is.workflow.actions.getclassaction",
-      "name": "getObjectOfClass",
-      "displayName": "Get Object of Class",
+      "name": "getContentOfType",
+      "displayName": "Get Content of Type",
       "actionClass": "WFGetClassAction",
       "description": {
         "summary": "Returns a particular object class from the input.",
@@ -11407,8 +11407,8 @@
     },
     "is.workflow.actions.gettypeaction": {
       "identifier": "is.workflow.actions.gettypeaction",
-      "name": "getFileOfType",
-      "displayName": "Get File of Type",
+      "name": "convertToFileType",
+      "displayName": "Convert to File Type",
       "actionClass": "WFGetTypeAction",
       "description": {
         "summary": "Returns a particular file type from the input.",
@@ -12211,8 +12211,8 @@
     },
     "is.workflow.actions.handoff": {
       "identifier": "is.workflow.actions.handoff",
-      "name": "continueInShortcutsApp",
-      "displayName": "Continue in Shortcuts App",
+      "name": "handoff",
+      "displayName": "Handoff",
       "actionClass": "WFHandoffAction",
       "description": {
         "summary": "Switches into the Shortcuts app and continues to the next action.",
@@ -23860,8 +23860,8 @@
     },
     "is.workflow.actions.showresult": {
       "identifier": "is.workflow.actions.showresult",
-      "name": "showContent",
-      "displayName": "Show Content",
+      "name": "showResult",
+      "displayName": "Show Result",
       "actionClass": "WFShowResultAction",
       "description": {
         "summary": "Shows a preview of the provided content. If run from Siri, speaks the provided text.",
@@ -26966,8 +26966,8 @@
     },
     "is.workflow.actions.viewresult": {
       "identifier": "is.workflow.actions.viewresult",
-      "name": "showContentGraph",
-      "displayName": "Show Content Graph",
+      "name": "viewContentGraph",
+      "displayName": "View Content Graph",
       "actionClass": "WFViewContentGraphAction",
       "description": {
         "summary": "Shows the results of the previous action in the Content Graph.",

@@ -22,34 +22,6 @@ showAlert(WFAlertActionTitle: Text, WFAlertActionMessage: Text, WFAlertActionCan
 
 Shortcuts action: `is.workflow.actions.alert`
 
-## `showContent`
-
-Shows a preview of the provided content. If run from Siri, speaks the provided text.
-
-```chute
-showContent(Text: Text)
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `Text` | Text | `""` |
-
-Shortcuts action: `is.workflow.actions.showresult`
-
-## `showContentGraph`
-
-Shows the results of the previous action in the Content Graph.
-
-```chute
-showContentGraph(WFInput: Any)
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFInput` | Any | — |
-
-Shortcuts action: `is.workflow.actions.viewresult`
-
 ## `showNotification`
 
 Displays a local notification.
@@ -66,3 +38,31 @@ showNotification(WFNotificationActionTitle: Text, WFNotificationActionBody: Text
 | `WFInput` | Any | — |
 
 Shortcuts action: `is.workflow.actions.notification`
+
+## `showResult`
+
+Shows a preview of the provided content. If run from Siri, speaks the provided text.
+
+```chute
+showResult(Text: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `Text` | Text | `""` |
+
+Shortcuts action: `is.workflow.actions.showresult`
+
+## `viewContentGraph`
+
+Shows the results of the previous action in the Content Graph.
+
+```chute
+viewContentGraph(WFInput: Any)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFInput` | Any | — |
+
+Shortcuts action: `is.workflow.actions.viewresult`

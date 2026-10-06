@@ -146,12 +146,12 @@ createDropboxFolder(WFFilePath: Text)
 
 Shortcuts action: `is.workflow.actions.dropbox.createfolder`
 
-## `createNewNote`
+## `createEvernoteNote`
 
 Saves the input as a note in Evernote.
 
 ```chute
-createNewNote(WFEvernoteNoteTitle: Text, WFEvernoteNotebook: Text, WFEvernoteTags: List<Text>, WFInput: Any) -> EvernoteNote
+createEvernoteNote(WFEvernoteNoteTitle: Text, WFEvernoteNotebook: Text, WFEvernoteTags: List<Text>, WFInput: Any) -> EvernoteNote
 ```
 
 | Parameter | Type | Default |
@@ -194,12 +194,12 @@ createTrelloList(WFTrelloName: Text, WFTrelloBoard: Text, WFTrelloPosition: Enum
 
 Shortcuts action: `is.workflow.actions.trello.add.list`
 
-## `deleteNotes`
+## `deleteEvernoteNotes`
 
 Deletes the notes passed as input from Evernote.
 
 ```chute
-deleteNotes(WFInput: EvernoteNote)
+deleteEvernoteNotes(WFInput: EvernoteNote)
 ```
 
 | Parameter | Type | Default |
@@ -242,6 +242,38 @@ getDropboxFile(WFShowFilePicker: Boolean, SelectMultiple: Boolean, WFGetFilePath
 
 Shortcuts action: `is.workflow.actions.dropbox.open`
 
+## `getEvernoteNoteLink`
+
+Gets a link to the Evernote note passed into the action, which can be shared.
+
+```chute
+getEvernoteNoteLink(WFEvernoteShareInAppLink: Boolean, WFInput: EvernoteNote) -> URL
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFEvernoteShareInAppLink` | Boolean | false |
+| `WFInput` | EvernoteNote | — |
+
+Shortcuts action: `is.workflow.actions.evernote.getlink`
+
+## `getEvernoteNotes`
+
+Gets recent notes from Evernote, optionally filtering based on criteria.
+
+```chute
+getEvernoteNotes(WFEvernoteNotesTitleSearch: Text, WFEvernoteNotesTags: List<Text>, WFEvernoteNotesNotebookName: Text, WFEvernoteNotesCount: Number) -> EvernoteNote
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFEvernoteNotesTitleSearch` | Text | — |
+| `WFEvernoteNotesTags` | List&lt;Text&gt; | — |
+| `WFEvernoteNotesNotebookName` | Text | — |
+| `WFEvernoteNotesCount` | Number | 1 |
+
+Shortcuts action: `is.workflow.actions.evernote.get`
+
 ## `getInstapaperBookmarks`
 
 Gets the contents of a folder in Instapaper. Requires Instapaper Premium.
@@ -273,38 +305,6 @@ getItemsFromPocket(WFPocketItemCount: Number, WFPocketItemState: Enum, WFPocketI
 | `WFPocketItemSearchTags` | Text | — |
 
 Shortcuts action: `is.workflow.actions.pocket.get`
-
-## `getNoteLink`
-
-Gets a link to the Evernote note passed into the action, which can be shared.
-
-```chute
-getNoteLink(WFEvernoteShareInAppLink: Boolean, WFInput: EvernoteNote) -> URL
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFEvernoteShareInAppLink` | Boolean | false |
-| `WFInput` | EvernoteNote | — |
-
-Shortcuts action: `is.workflow.actions.evernote.getlink`
-
-## `getNotes`
-
-Gets recent notes from Evernote, optionally filtering based on criteria.
-
-```chute
-getNotes(WFEvernoteNotesTitleSearch: Text, WFEvernoteNotesTags: List<Text>, WFEvernoteNotesNotebookName: Text, WFEvernoteNotesCount: Number) -> EvernoteNote
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFEvernoteNotesTitleSearch` | Text | — |
-| `WFEvernoteNotesTags` | List&lt;Text&gt; | — |
-| `WFEvernoteNotesNotebookName` | Text | — |
-| `WFEvernoteNotesCount` | Number | 1 |
-
-Shortcuts action: `is.workflow.actions.evernote.get`
 
 ## `getPinboardBookmarks`
 

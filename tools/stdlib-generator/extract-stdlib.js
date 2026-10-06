@@ -685,6 +685,22 @@ const NAME_OVERRIDES = {
   "com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent": "Create Alarm",
   "com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent": "Get Alarms",
   "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent": "Toggle Alarm",
+  // Evernote actions — disambiguate from generic-sounding names
+  "is.workflow.actions.evernote.new": "Create Evernote Note",
+  "is.workflow.actions.evernote.delete": "Delete Evernote Notes",
+  "is.workflow.actions.evernote.get": "Get Evernote Notes",
+  "is.workflow.actions.evernote.getlink": "Get Evernote Note Link",
+  // Notification actions — match Shortcuts UI names
+  "is.workflow.actions.showresult": "Show Result",
+  "is.workflow.actions.viewresult": "View Content Graph",
+  // Scripting — clearer names
+  "is.workflow.actions.handoff": "Handoff",
+  "is.workflow.actions.dismisssiri": "Dismiss Siri",
+  "is.workflow.actions.getclassaction": "Get Content of Type",
+  "is.workflow.actions.gettypeaction": "Convert to File Type",
+  // Documents — clearer names
+  "is.workflow.actions.file": "Specify File",
+  "is.workflow.actions.compresspdf": "Compress PDF",
 };
 
 function mapAction(identifier, raw, unmappedClasses) {

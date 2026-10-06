@@ -26,6 +26,22 @@ appendToTextFile(WFFile: File, WFFilePath: Text, WFAppendFileWriteMode: Enum, WF
 
 Shortcuts action: `is.workflow.actions.file.append`
 
+## `compressPdf`
+
+Optimizes the file size of the provided PDF file by compressing its images.
+
+If the images contained in the PDF are already compressed, this action might not have a measurable effect on file size.
+
+```chute
+compressPdf(WFInput: File) -> File
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFInput` | File | — |
+
+Shortcuts action: `is.workflow.actions.compresspdf`
+
 ## `createFolder`
 
 Makes a new folder.
@@ -69,20 +85,6 @@ extractArchive(WFArchive: File) -> File
 | `WFArchive` | File | — |
 
 Shortcuts action: `is.workflow.actions.unzip`
-
-## `file`
-
-Passes the specified files or folders as output.
-
-```chute
-file(WFFile: File) -> File
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFFile` | File | — |
-
-Shortcuts action: `is.workflow.actions.file`
 
 ## `filterFiles`
 
@@ -388,22 +390,6 @@ moveFile(WFFile: File, WFFolder: File, WFReplaceExisting: Boolean) -> File
 
 Shortcuts action: `is.workflow.actions.file.move`
 
-## `optimizeFileSizeOfPdf`
-
-Optimizes the file size of the provided PDF file by compressing its images.
-
-If the images contained in the PDF are already compressed, this action might not have a measurable effect on file size.
-
-```chute
-optimizeFileSizeOfPdf(WFInput: File) -> File
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFInput` | File | — |
-
-Shortcuts action: `is.workflow.actions.compresspdf`
-
 ## `print`
 
 Prints the input using AirPrint.
@@ -494,6 +480,20 @@ selectFile(WFPickingMode: Enum, SelectMultiple: Boolean) -> File
 | `SelectMultiple` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.select`
+
+## `specifyFile`
+
+Passes the specified files or folders as output.
+
+```chute
+specifyFile(WFFile: File) -> File
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFFile` | File | — |
+
+Shortcuts action: `is.workflow.actions.file`
 
 ## `splitPdfIntoPages`
 

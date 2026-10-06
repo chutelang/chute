@@ -114,16 +114,6 @@ chooseFromMenu(WFMenuPrompt: Text, WFMenuItems: List<Any>)
 
 Shortcuts action: `is.workflow.actions.choosefrommenu`
 
-## `continueInShortcutsApp`
-
-Switches into the Shortcuts app and continues to the next action.
-
-```chute
-continueInShortcutsApp()
-```
-
-Shortcuts action: `is.workflow.actions.handoff`
-
 ## `convertTimeZone`
 
 Converts the specified date and time from one time zone to another.
@@ -139,6 +129,21 @@ convertTimeZone(Date: Text, SourceTimeZone: Text, DestinationTimeZone: Text) -> 
 | `DestinationTimeZone` | Text | — |
 
 Shortcuts action: `is.workflow.actions.converttimezone`
+
+## `convertToFileType`
+
+Returns a particular file type from the input.
+
+```chute
+convertToFileType(WFFileType: Text, WFInput: Any) -> File
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFFileType` | Text | `"public.rtf"` |
+| `WFInput` | Any | — |
+
+Shortcuts action: `is.workflow.actions.gettypeaction`
 
 ## `count`
 
@@ -208,12 +213,12 @@ dictionary(WFItems: Dictionary) -> Dictionary
 
 Shortcuts action: `is.workflow.actions.dictionary`
 
-## `dismissSiriAndContinue`
+## `dismissSiri`
 
 Switches into the Shortcuts app and continues to the next action.
 
 ```chute
-dismissSiriAndContinue()
+dismissSiri()
 ```
 
 Shortcuts action: `is.workflow.actions.dismisssiri`
@@ -331,6 +336,21 @@ getContactsFromInput(WFInput: Contact) -> Contact
 
 Shortcuts action: `is.workflow.actions.detect.contacts`
 
+## `getContentOfType`
+
+Returns a particular object class from the input.
+
+```chute
+getContentOfType(Class: Text, Input: Any) -> Any
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `Class` | Text | — |
+| `Input` | Any | — |
+
+Shortcuts action: `is.workflow.actions.getclassaction`
+
 ## `getDatesFromInput`
 
 Returns any dates found in the output from the previous action.
@@ -403,21 +423,6 @@ getEmailAddressesFromInput(WFInput: Text) -> Email
 
 Shortcuts action: `is.workflow.actions.detect.emailaddress`
 
-## `getFileOfType`
-
-Returns a particular file type from the input.
-
-```chute
-getFileOfType(WFFileType: Text, WFInput: Any) -> File
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFFileType` | Text | `"public.rtf"` |
-| `WFInput` | Any | — |
-
-Shortcuts action: `is.workflow.actions.gettypeaction`
-
 ## `getImagesFromInput`
 
 Gets images from the result of the previous action.
@@ -482,21 +487,6 @@ getNumbersFromInput(WFInput: Number) -> Number
 | `WFInput` | Number | — |
 
 Shortcuts action: `is.workflow.actions.detect.number`
-
-## `getObjectOfClass`
-
-Returns a particular object class from the input.
-
-```chute
-getObjectOfClass(Class: Text, Input: Any) -> Any
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `Class` | Text | — |
-| `Input` | Any | — |
-
-Shortcuts action: `is.workflow.actions.getclassaction`
 
 ## `getPhoneNumbersFromInput`
 
@@ -587,6 +577,16 @@ getVariable(WFVariable: Any) -> Any
 | `WFVariable` | Any | — |
 
 Shortcuts action: `is.workflow.actions.getvariable`
+
+## `handoff`
+
+Switches into the Shortcuts app and continues to the next action.
+
+```chute
+handoff()
+```
+
+Shortcuts action: `is.workflow.actions.handoff`
 
 ## `if`
 
