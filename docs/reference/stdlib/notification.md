@@ -11,14 +11,14 @@ import Notification;
 Displays an alert with a title, a message, and two buttons. If the user selects the OK button, the shortcut continues. The cancel button stops the shortcut.
 
 ```chute
-showAlert(WFAlertActionTitle: Text, WFAlertActionMessage: Text, WFAlertActionCancelButtonShown: Boolean)
+showAlert(title: Text, message: Text, showCancelButton: Boolean)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFAlertActionTitle` | Text | — |
-| `WFAlertActionMessage` | Text | `"Do you want to continue?"` |
-| `WFAlertActionCancelButtonShown` | Boolean | true |
+| `title` | Text | — |
+| `message` | Text | `"Do you want to continue?"` |
+| `showCancelButton` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.alert`
 
@@ -27,15 +27,15 @@ Shortcuts action: `is.workflow.actions.alert`
 Displays a local notification.
 
 ```chute
-showNotification(WFNotificationActionTitle: Text, WFNotificationActionBody: Text, WFNotificationActionSound: Boolean, WFInput: Any)
+showNotification(title: Text, body: Text, playSound: Boolean, attachment: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFNotificationActionTitle` | Text | — |
-| `WFNotificationActionBody` | Text | — |
-| `WFNotificationActionSound` | Boolean | true |
-| `WFInput` | Any | — |
+| `title` | Text | — |
+| `body` | Text | — |
+| `playSound` | Boolean | true |
+| `attachment` | Any | — |
 
 Shortcuts action: `is.workflow.actions.notification`
 
@@ -44,12 +44,12 @@ Shortcuts action: `is.workflow.actions.notification`
 Shows a preview of the provided content. If run from Siri, speaks the provided text.
 
 ```chute
-showResult(Text: Text)
+showResult(content: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Text` | Text | `""` |
+| `content` | Text | `""` |
 
 Shortcuts action: `is.workflow.actions.showresult`
 
@@ -58,11 +58,11 @@ Shortcuts action: `is.workflow.actions.showresult`
 Shows the results of the previous action in the Content Graph.
 
 ```chute
-viewContentGraph(WFInput: Any)
+viewContentGraph(input: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.viewresult`

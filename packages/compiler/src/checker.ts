@@ -70,7 +70,7 @@ export type ChuteType =
       kind: "action";
       name: string;
       runtimeIdentifier: string;
-      params: Array<{ label: string; type: ChuteType; hasDefault: boolean }>;
+      params: Array<{ label: string; runtimeKey?: string; type: ChuteType; hasDefault: boolean }>;
       returnType: ChuteType | undefined;
       inputLabel?: string;
       description?: string;

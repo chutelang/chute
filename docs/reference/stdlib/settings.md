@@ -19,12 +19,12 @@ Shortcuts action: `is.workflow.actions.personalhotspot.password.get`
 ## `setAirdropReceiving`
 
 ```chute
-setAirdropReceiving(WFAirDropState: Text)
+setAirdropReceiving(state: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFAirDropState` | Text | — |
+| `state` | Text | — |
 
 Shortcuts action: `is.workflow.actions.setairdropreceiving`
 
@@ -151,12 +151,12 @@ Shortcuts action: `is.workflow.actions.flashlight`
 Sets the Personal Hotspot password.
 
 ```chute
-setHotspotPassword(WFInput: Text)
+setHotspotPassword(password: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Text | — |
+| `password` | Text | — |
 
 Shortcuts action: `is.workflow.actions.personalhotspot.password.set`
 
@@ -193,13 +193,13 @@ Shortcuts action: `is.workflow.actions.nightshift.set`
 Sets a Noise Control mode on your selected device
 
 ```chute
-setNoiseControlMode(WFRoute: Text, WFListeningMode: Text)
+setNoiseControlMode(device: Text, noiseControlMode: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFRoute` | Text | — |
-| `WFListeningMode` | Text | — |
+| `device` | Text | — |
+| `noiseControlMode` | Text | — |
 
 Shortcuts action: `is.workflow.actions.listeningmode.set`
 
@@ -287,13 +287,13 @@ Shortcuts action: `is.workflow.actions.truetone.set`
 Sets the volume of the device.
 
 ```chute
-setVolume(WFVolumeSetting: Enum, WFVolume: Number)
+setVolume(volumeSetting: Enum, volume: Number)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVolumeSetting` | Media \\| Ringtone | `"Media"` |
-| `WFVolume` | Number | 0.5 |
+| `volumeSetting` | Media \\| Ringtone | `"Media"` |
+| `volume` | Number | 0.5 |
 
 Shortcuts action: `is.workflow.actions.setvolume`
 
@@ -302,14 +302,14 @@ Shortcuts action: `is.workflow.actions.setvolume`
 Connects, disconnects or changes the On Demand setting for a VPN Configuration on this device.
 
 ```chute
-setVpn(WFVPNOperation: Enum, WFOnDemandValue: Boolean, WFVPN: Text)
+setVpn(operation: Enum, setOnDemandTo: Boolean, vpn: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFVPNOperation` | Connect \\| Disconnect \\| Toggle \\| Set On Demand \\| Toggle On Demand | `"Connect"` |
-| `WFOnDemandValue` | Boolean | true |
-| `WFVPN` | Text | — |
+| `operation` | Connect \\| Disconnect \\| Toggle \\| Set On Demand \\| Toggle On Demand | `"Connect"` |
+| `setOnDemandTo` | Boolean | true |
+| `vpn` | Text | — |
 
 > VPN Configurations can be set up in the Settings app. On macOS, you must authenticate as an administrator to change the On Demand setting for a VPN Configuration.
 

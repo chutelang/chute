@@ -44,6 +44,7 @@ interface StdlibJsonAction {
   } | null;
   parameters: Array<{
     key: string | null;
+    chuteKey?: string | null;
     class?: string;
     chuteType: string;
     required: boolean;
@@ -172,7 +173,12 @@ function enumTypeFromItems(paramKey: string, items: string[]): ChuteType {
 }
 
 function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
-  const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
+  const params: Array<{
+    label: string;
+    runtimeKey?: string;
+    type: ChuteType;
+    hasDefault: boolean;
+  }> = [];
   let inputLabel: string | undefined;
 
   if (action.parameters.length > 0) {
@@ -180,14 +186,16 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
       if (!p.key) {
         continue;
       }
+      const label = p.chuteKey ?? p.key;
       let type: ChuteType;
       if (p.chuteType === "Enum" && p.items) {
-        type = enumTypeFromItems(p.key, p.items);
+        type = enumTypeFromItems(label, p.items);
       } else {
         type = CHUTE_TYPE_MAP[p.chuteType] ?? { kind: "any" };
       }
       params.push({
-        label: p.key,
+        label,
+        ...(label !== p.key ? { runtimeKey: p.key } : {}),
         type,
         hasDefault: p.defaultValue !== null || !p.required,
       });
@@ -226,7 +234,7 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
 
   const inputKey = action.input?.ParameterKey;
   if (inputKey) {
-    const idx = params.findIndex((p) => p.label === inputKey);
+    const idx = params.findIndex((p) => (p.runtimeKey ?? p.label) === inputKey);
     if (idx > 0) {
       const removed = params.splice(idx, 1);
       const inputParam = removed[0];
@@ -253,20 +261,27 @@ function actionTypeFromJson(action: StdlibJsonAction): ChuteType {
 
 function buildParamsFromArray(
   parameters: StdlibJsonAction["parameters"],
-): Array<{ label: string; type: ChuteType; hasDefault: boolean }> {
-  const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
+): Array<{ label: string; runtimeKey?: string; type: ChuteType; hasDefault: boolean }> {
+  const params: Array<{
+    label: string;
+    runtimeKey?: string;
+    type: ChuteType;
+    hasDefault: boolean;
+  }> = [];
   for (const p of parameters) {
     if (!p.key) {
       continue;
     }
+    const label = p.chuteKey ?? p.key;
     let type: ChuteType;
     if (p.chuteType === "Enum" && p.items) {
-      type = enumTypeFromItems(p.key, p.items);
+      type = enumTypeFromItems(label, p.items);
     } else {
       type = CHUTE_TYPE_MAP[p.chuteType] ?? { kind: "any" };
     }
     params.push({
-      label: p.key,
+      label,
+      ...(label !== p.key ? { runtimeKey: p.key } : {}),
       type,
       hasDefault: p.defaultValue !== null || !p.required,
     });

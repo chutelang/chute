@@ -56,12 +56,12 @@ Shortcuts action: `is.workflow.actions.correctspelling`
 Detects the language of the text provided as input.
 
 ```chute
-detectLanguage(WFInput: Text) -> Text
+detectLanguage(text: Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Text | — |
+| `text` | Text | — |
 
 Shortcuts action: `is.workflow.actions.detectlanguage`
 
@@ -70,13 +70,13 @@ Shortcuts action: `is.workflow.actions.detectlanguage`
 Transcribes what you say aloud into text and passes the result to the next action.
 
 ```chute
-dictateText(WFSpeechLanguage: Text, WFDictateTextStopListening: Enum) -> Text
+dictateText(language: Text, stopListening: Enum) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSpeechLanguage` | Text | — |
-| `WFDictateTextStopListening` | After Pause \\| After Short Pause \\| On Tap | `"After Pause"` |
+| `language` | Text | — |
+| `stopListening` | After Pause \\| After Short Pause \\| On Tap | `"After Pause"` |
 
 Shortcuts action: `is.workflow.actions.dictatetext`
 
@@ -85,12 +85,12 @@ Shortcuts action: `is.workflow.actions.dictatetext`
 Uses OCR to extract text from an image.
 
 ```chute
-extractTextFromImage(WFImage: Image) -> Text
+extractTextFromImage(image: Image) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFImage` | Image | — |
+| `image` | Image | — |
 
 Shortcuts action: `is.workflow.actions.extracttextfromimage`
 
@@ -115,12 +115,12 @@ Shortcuts action: `is.workflow.actions.text.match.getgroup`
 Gets the names of emoji passed into the action.
 
 ```chute
-getNameOfEmoji(WFInput: Text) -> Text
+getNameOfEmoji(text: Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Text | — |
+| `text` | Text | — |
 
 Shortcuts action: `is.workflow.actions.getnameofemoji`
 
@@ -129,16 +129,16 @@ Shortcuts action: `is.workflow.actions.getnameofemoji`
 Creates an audio file from text, using text-to-speech.
 
 ```chute
-makeSpokenAudioFromText(WFInput: Text, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text) -> Media
+makeSpokenAudioFromText(text: Text, rate: Number, pitch: Number, language: Text, voice: Text) -> Media
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Text | — |
-| `WFSpeakTextRate` | Number | 0.5 |
-| `WFSpeakTextPitch` | Number | 1 |
-| `WFSpeakTextLanguage` | Text | `"Default"` |
-| `WFSpeakTextVoice` | Text | `"Default"` |
+| `text` | Text | — |
+| `rate` | Number | 0.5 |
+| `pitch` | Number | 1 |
+| `language` | Text | `"Default"` |
+| `voice` | Text | `"Default"` |
 
 Shortcuts action: `is.workflow.actions.makespokenaudiofromtext`
 
@@ -161,16 +161,16 @@ Shortcuts action: `is.workflow.actions.text.match`
 Replaces all occurrences of the given text with other text.
 
 ```chute
-replaceText(WFReplaceTextFind: Text, WFReplaceTextReplace: Text, WFReplaceTextCaseSensitive: Boolean, WFReplaceTextRegularExpression: Boolean, WFInput: Text) -> Text
+replaceText(findText: Text, replaceWith: Text, caseSensitive: Boolean, regularExpression: Boolean, text: Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFReplaceTextFind` | Text | — |
-| `WFReplaceTextReplace` | Text | — |
-| `WFReplaceTextCaseSensitive` | Boolean | true |
-| `WFReplaceTextRegularExpression` | Boolean | false |
-| `WFInput` | Text | — |
+| `findText` | Text | — |
+| `replaceWith` | Text | — |
+| `caseSensitive` | Boolean | true |
+| `regularExpression` | Boolean | false |
+| `text` | Text | — |
 
 Shortcuts action: `is.workflow.actions.text.replace`
 
@@ -179,12 +179,12 @@ Shortcuts action: `is.workflow.actions.text.replace`
 Shows the definition of the word passed into the action.
 
 ```chute
-showDefinition(Word: Text)
+showDefinition(word: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Word` | Text | — |
+| `word` | Text | — |
 
 Shortcuts action: `is.workflow.actions.showdefinition`
 
@@ -193,17 +193,17 @@ Shortcuts action: `is.workflow.actions.showdefinition`
 Speaks the inputted text aloud.
 
 ```chute
-speakText(WFSpeakTextWait: Boolean, WFSpeakTextRate: Number, WFSpeakTextPitch: Number, WFSpeakTextLanguage: Text, WFSpeakTextVoice: Text, WFText: Text)
+speakText(waitUntilFinished: Boolean, rate: Number, pitch: Number, language: Text, voice: Text, text: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSpeakTextWait` | Boolean | true |
-| `WFSpeakTextRate` | Number | 0.5 |
-| `WFSpeakTextPitch` | Number | 1 |
-| `WFSpeakTextLanguage` | Text | `"Default"` |
-| `WFSpeakTextVoice` | Text | `"Default"` |
-| `WFText` | Text | — |
+| `waitUntilFinished` | Boolean | true |
+| `rate` | Number | 0.5 |
+| `pitch` | Number | 1 |
+| `language` | Text | `"Default"` |
+| `voice` | Text | `"Default"` |
+| `text` | Text | — |
 
 Shortcuts action: `is.workflow.actions.speaktext`
 
@@ -228,12 +228,12 @@ Shortcuts action: `is.workflow.actions.text.split`
 Passes the specified text to the next action.
 
 ```chute
-text(WFTextActionText: Text) -> Text
+text(text: Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFTextActionText` | Text | `""` |
+| `text` | Text | `""` |
 
 Shortcuts action: `is.workflow.actions.gettext`
 
@@ -242,14 +242,14 @@ Shortcuts action: `is.workflow.actions.gettext`
 Translates the text passed into the action into another language.
 
 ```chute
-translateText(WFSelectedFromLanguage: Text, WFSelectedLanguage: Text, WFInputText: Text) -> Text
+translateText(language: Text, to: Text, text: Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFSelectedFromLanguage` | Text | — |
-| `WFSelectedLanguage` | Text | — |
-| `WFInputText` | Text | — |
+| `language` | Text | — |
+| `to` | Text | — |
+| `text` | Text | — |
 
 Shortcuts action: `is.workflow.actions.text.translate`
 
@@ -258,11 +258,11 @@ Shortcuts action: `is.workflow.actions.text.translate`
 Removes whitespace and newlines from both ends of the text passed into the action.
 
 ```chute
-trimWhitespace(WFInput: Text) -> Text
+trimWhitespace(text: Text) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Text | — |
+| `text` | Text | — |
 
 Shortcuts action: `is.workflow.actions.text.trimwhitespace`

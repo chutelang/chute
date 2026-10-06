@@ -130,7 +130,7 @@ export function lower(program: Program): CompilationResult {
         const paramKeys = new Map<string, string>();
         const paramLabels: string[] = [];
         for (const p of binding.type.params) {
-          paramKeys.set(p.label, p.label);
+          paramKeys.set(p.label, p.runtimeKey ?? p.label);
           paramLabels.push(p.label);
         }
         moduleActions.set(name, {
@@ -148,7 +148,7 @@ export function lower(program: Program): CompilationResult {
         binding.type.overloads.forEach((overload, index) => {
           const paramKeys = new Map<string, string>();
           for (const p of overload.params) {
-            paramKeys.set(p.label, p.label);
+            paramKeys.set(p.label, p.runtimeKey ?? p.label);
           }
           const paramLabels = overload.params.map((p) => p.label);
           const nsAction: NamespaceAction = {

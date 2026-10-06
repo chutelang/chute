@@ -11,12 +11,12 @@ import Sharing;
 Prompts to share the specified content via AirDrop.
 
 ```chute
-airdrop(WFInput: Any)
+airdrop(content: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `content` | Any | — |
 
 Shortcuts action: `is.workflow.actions.airdropdocument`
 
@@ -25,24 +25,24 @@ Shortcuts action: `is.workflow.actions.airdropdocument`
 Shares the input on Facebook.
 
 ```chute
-postOnFacebook(FacebookContent: Any)
+postOnFacebook(content: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `FacebookContent` | Any | — |
+| `content` | Any | — |
 
 Shortcuts action: `is.workflow.actions.postonfacebook`
 
 ## `postToSharedAlbum`
 
 ```chute
-postToSharedAlbum(ImageInput: Image)
+postToSharedAlbum(images: Image)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `ImageInput` | Image | — |
+| `images` | Image | — |
 
 Shortcuts action: `com.apple.mobileslideshow.StreamShareService`
 
@@ -51,20 +51,20 @@ Shortcuts action: `com.apple.mobileslideshow.StreamShareService`
 Pass text into the action to set the email body. Other types of input are added as attachments.
 
 ```chute
-sendEmail(WFEmailAccountActionSelectedAccount: Text, WFSendEmailActionFrom: Text, WFSendEmailActionToRecipients: Text, WFSendEmailActionCcRecipients: Text, WFSendEmailActionBccRecipients: Text, WFSendEmailActionSubject: Text, WFSendEmailActionInputAttachments: Text, WFSendEmailActionSaveAsDraft: Boolean, WFSendEmailActionShowComposeSheet: Boolean)
+sendEmail(WFEmailAccountActionSelectedAccount: Text, WFSendEmailActionFrom: Text, recipients: Text, cc: Text, bcc: Text, subject: Text, message: Text, saveAsDraft: Boolean, showComposeSheet: Boolean)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `WFEmailAccountActionSelectedAccount` | Text | — |
 | `WFSendEmailActionFrom` | Text | — |
-| `WFSendEmailActionToRecipients` | Text | — |
-| `WFSendEmailActionCcRecipients` | Text | — |
-| `WFSendEmailActionBccRecipients` | Text | — |
-| `WFSendEmailActionSubject` | Text | — |
-| `WFSendEmailActionInputAttachments` | Text | — |
-| `WFSendEmailActionSaveAsDraft` | Boolean | — |
-| `WFSendEmailActionShowComposeSheet` | Boolean | true |
+| `recipients` | Text | — |
+| `cc` | Text | — |
+| `bcc` | Text | — |
+| `subject` | Text | — |
+| `message` | Text | — |
+| `saveAsDraft` | Boolean | — |
+| `showComposeSheet` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.sendemail`
 
@@ -73,16 +73,16 @@ Shortcuts action: `is.workflow.actions.sendemail`
 Sends a message. Pass images, videos, or other files as input to include attachments.
 
 ```chute
-sendMessage(IntentAppDefinition: Text, ShowWhenRun: Boolean, WFSendMessageActionRecipients: Text, WFSendMessageContent: Text, WFSendMessagePrefix: Text)
+sendMessage(app: Text, showComposeSheet: Boolean, recipients: Text, message: Text, prefix: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `IntentAppDefinition` | Text | [object Object] |
-| `ShowWhenRun` | Boolean | false |
-| `WFSendMessageActionRecipients` | Text | — |
-| `WFSendMessageContent` | Text | — |
-| `WFSendMessagePrefix` | Text | — |
+| `app` | Text | [object Object] |
+| `showComposeSheet` | Boolean | false |
+| `recipients` | Text | — |
+| `message` | Text | — |
+| `prefix` | Text | — |
 
 Shortcuts action: `is.workflow.actions.sendmessage`
 
@@ -91,12 +91,12 @@ Shortcuts action: `is.workflow.actions.sendmessage`
 Sends the input to another device via DeskConnect. DeskConnect makes it easy to send web pages, documents, pictures, and anything else between your devices.
 
 ```chute
-sendViaDeskconnect(WFInput: Any)
+sendViaDeskconnect(content: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `content` | Any | — |
 
 Shortcuts action: `is.workflow.actions.deskconnect.send`
 
@@ -115,12 +115,12 @@ Shortcuts action: `is.workflow.actions.facebook.messenger.send`
 Prompts to share the specified content.
 
 ```chute
-share(WFInput: Any)
+share(content: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `content` | Any | — |
 
 Shortcuts action: `is.workflow.actions.share`
 
@@ -129,13 +129,13 @@ Shortcuts action: `is.workflow.actions.share`
 Prompts to share the specified content using action extensions and sharing extensions provided by other apps.
 
 ```chute
-shareWithApps(WFInput: Any, WFApp: Text)
+shareWithApps(content: Any, app: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
-| `WFApp` | Text | — |
+| `content` | Any | — |
+| `app` | Text | — |
 
 Shortcuts action: `is.workflow.actions.runextension`
 
@@ -144,12 +144,12 @@ Shortcuts action: `is.workflow.actions.runextension`
 Tweets the input.
 
 ```chute
-tweet(TweetInput: Text)
+tweet(tweet: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `TweetInput` | Text | — |
+| `tweet` | Text | — |
 
 Shortcuts action: `is.workflow.actions.tweet`
 
@@ -158,19 +158,19 @@ Shortcuts action: `is.workflow.actions.tweet`
 Uploads the input to Imgur.
 
 ```chute
-uploadToImgur(WFInput: Image, WFImgurAnonymous: Boolean, WFImgurDirectLink: Boolean, WFImgurAlbum: Boolean, WFImgurAlbumLayout: Enum, WFImgurAlbumPrivacy: Enum, WFImgurTitle: Text, WFImgurDescription: Text) -> URL
+uploadToImgur(images: Image, uploadAnonymously: Boolean, directLink: Boolean, createAlbum: Boolean, albumLayout: Enum, albumPrivacy: Enum, title: Text, description: Text) -> URL
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Image | — |
-| `WFImgurAnonymous` | Boolean | true |
-| `WFImgurDirectLink` | Boolean | — |
-| `WFImgurAlbum` | Boolean | false |
-| `WFImgurAlbumLayout` | Blog \\| Grid \\| Horizontal \\| Vertical | `"Blog"` |
-| `WFImgurAlbumPrivacy` | Public \\| Hidden \\| Secret | `"Hidden"` |
-| `WFImgurTitle` | Text | — |
-| `WFImgurDescription` | Text | — |
+| `images` | Image | — |
+| `uploadAnonymously` | Boolean | true |
+| `directLink` | Boolean | — |
+| `createAlbum` | Boolean | false |
+| `albumLayout` | Blog \\| Grid \\| Horizontal \\| Vertical | `"Blog"` |
+| `albumPrivacy` | Public \\| Hidden \\| Secret | `"Hidden"` |
+| `title` | Text | — |
+| `description` | Text | — |
 
 > Powered by Imgur (imgur.com)
 

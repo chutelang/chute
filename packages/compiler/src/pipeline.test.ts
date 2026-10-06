@@ -21,7 +21,7 @@ shortcut {
 }
 
 Notification.showAlert("first");
-Notification.showContent("second");`;
+Notification.showResult("second");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -47,7 +47,7 @@ shortcut {
 const a = 10;
 const b = 20;
 const c = a + b;
-Notification.showContent("done");`;
+Notification.showResult("done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -72,7 +72,7 @@ shortcut {
 
 const x: Number? = nil;
 const y = x ?? 42;
-Notification.showContent("done");`;
+Notification.showResult("done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });
@@ -227,7 +227,7 @@ shortcut {
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 const x = add(3, 4);
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -243,7 +243,7 @@ func add(a: Number, b: Number) -> Number { return a + b; }
 func double(n: Number) -> Number { return n * 2; }
 const x = add(3, 4);
 const y = double(x);
-Notification.showContent("\${y}");`;
+Notification.showResult("\${y}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -262,7 +262,7 @@ func abs(n: Number) -> Number {
   return n;
 }
 const x = abs(-5);
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -277,7 +277,7 @@ shortcut {
 func double(n: Number) -> Number { return n * 2; }
 func quadruple(n: Number) -> Number { return double(double(n)); }
 const x = quadruple(3);
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -309,7 +309,7 @@ shortcut {
 
 func double(n: Number) -> Number { return n * 2; }
 const x = 5 |> double;
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -324,7 +324,7 @@ shortcut {
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 const x = 5 |> double |> triple;
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -339,7 +339,7 @@ shortcut {
 func double(n: Number) -> Number { return n * 2; }
 const x: Number? = nil;
 const y = x |>? double;
-Notification.showContent("done");`;
+Notification.showResult("done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -353,7 +353,7 @@ shortcut {
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 const x = 5 |> add(10);
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -367,7 +367,7 @@ shortcut {
 
 func add(a: Number, b: Number) -> Number { return a + b; }
 const x = 5 |> add(_, 10);
-Notification.showContent("\${x}");`;
+Notification.showResult("\${x}");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -395,7 +395,7 @@ func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 const x: Number? = nil;
 const y = x |>? double |> triple;
-Notification.showContent("done");`;
+Notification.showResult("done");`;
 
     const result = compile(source);
     expect(result.main).toMatchSnapshot();
@@ -420,7 +420,7 @@ shortcut {
 
 action search(in: Text, for: Text) -> List<Text> = "com.example.search";
 const results = search("inbox", "urgent");
-Notification.showContent("done");`;
+Notification.showResult("done");`;
 
     expect(compile(source).main).toMatchSnapshot();
   });

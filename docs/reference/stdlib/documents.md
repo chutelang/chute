@@ -11,16 +11,16 @@ import Documents;
 Adds the text passed as input to the end of the specified text file.
 
 ```chute
-appendToTextFile(WFFile: File, WFFilePath: Text, WFAppendFileWriteMode: Enum, WFAppendOnNewLine: Boolean, WFInput: Text) -> File
+appendToTextFile(folder: File, filePath: Text, mode: Enum, makeNewLine: Boolean, text: Text) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFile` | File | — |
-| `WFFilePath` | Text | — |
-| `WFAppendFileWriteMode` | Append \\| Prepend | `"Append"` |
-| `WFAppendOnNewLine` | Boolean | true |
-| `WFInput` | Text | — |
+| `folder` | File | — |
+| `filePath` | Text | — |
+| `mode` | Append \\| Prepend | `"Append"` |
+| `makeNewLine` | Boolean | true |
+| `text` | Text | — |
 
 > If no file exists yet at the specified path, a new file will be created. Make sure to include a file extension (usually .txt) at the end of your path.
 
@@ -33,12 +33,12 @@ Optimizes the file size of the provided PDF file by compressing its images.
 If the images contained in the PDF are already compressed, this action might not have a measurable effect on file size.
 
 ```chute
-compressPdf(WFInput: File) -> File
+compressPdf(pdf: File) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
+| `pdf` | File | — |
 
 Shortcuts action: `is.workflow.actions.compresspdf`
 
@@ -47,13 +47,13 @@ Shortcuts action: `is.workflow.actions.compresspdf`
 Makes a new folder.
 
 ```chute
-createFolder(WFFilePath: Text, WFFolder: File) -> File
+createFolder(path: Text, folder: File) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFilePath` | Text | — |
-| `WFFolder` | File | — |
+| `path` | Text | — |
+| `folder` | File | — |
 
 Shortcuts action: `is.workflow.actions.file.createfolder`
 
@@ -62,13 +62,13 @@ Shortcuts action: `is.workflow.actions.file.createfolder`
 Deletes the files passed in as input.
 
 ```chute
-deleteFiles(WFInput: File, WFDeleteImmediatelyDelete: Boolean)
+deleteFiles(files: File, deleteImmediately: Boolean)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `WFDeleteImmediatelyDelete` | Boolean | false |
+| `files` | File | — |
+| `deleteImmediately` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.delete`
 
@@ -77,25 +77,25 @@ Shortcuts action: `is.workflow.actions.file.delete`
 Extracts files from the archive passed as input. Many archive formats are supported, including zip, rar, tar.gz, tar.bz2, tar, gzip, cpio, cab, and iso archives.
 
 ```chute
-extractArchive(WFArchive: File) -> File
+extractArchive(archive: File) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFArchive` | File | — |
+| `archive` | File | — |
 
 Shortcuts action: `is.workflow.actions.unzip`
 
 ## `filterFiles`
 
 ```chute
-filterFiles(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> File
+filterFiles(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemSortProperty` | Name \\| File Extension \\| File Size \\| Creation Date \\| Last Modified Date \\| File Path | — |
-| `WFContentItemSortOrder` | Latest First \\| Oldest First | — |
+| `sortBy` | Name \\| File Extension \\| File Size \\| Creation Date \\| Last Modified Date \\| File Path | — |
+| `order` | Latest First \\| Oldest First | — |
 | `WFContentItemLimit` | Boolean | false |
 | `WFContentItemLimitNumber` | Number | 5 |
 
@@ -106,25 +106,25 @@ Shortcuts action: `is.workflow.actions.filter.files`
 This action gets the files inside of the specified folder.
 
 ```chute
-getContentsOfFolder(WFFolder: File, Recursive: Boolean) -> File
+getContentsOfFolder(folder: File, recursive: Boolean) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFolder` | File | — |
-| `Recursive` | Boolean | false |
+| `folder` | File | — |
+| `recursive` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.getfoldercontents`
 
 ## `getDetailsOfFiles`
 
 ```chute
-getDetailsOfFiles(WFContentItemPropertyName: Enum) -> Any
+getDetailsOfFiles(get: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \\| File Extension \\| File Size \\| Creation Date \\| Last Modified Date \\| File Path | — |
+| `get` | Name \\| File Extension \\| File Size \\| Creation Date \\| Last Modified Date \\| File Path | — |
 
 Shortcuts action: `is.workflow.actions.properties.files`
 
@@ -133,15 +133,15 @@ Shortcuts action: `is.workflow.actions.properties.files`
 Gets a file or folder by a relative path, starting at a folder you choose.
 
 ```chute
-getFileFromFolder(WFFileErrorIfNotFound: Boolean, WFGetFolderContents: Boolean, WFFile: File, WFGetFilePath: Text) -> File
+getFileFromFolder(errorIfNotFound: Boolean, ifFolder,FetchContents: Boolean, folder: File, path: Text) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFileErrorIfNotFound` | Boolean | true |
-| `WFGetFolderContents` | Boolean | false |
-| `WFFile` | File | — |
-| `WFGetFilePath` | Text | — |
+| `errorIfNotFound` | Boolean | true |
+| `ifFolder,FetchContents` | Boolean | false |
+| `folder` | File | — |
+| `path` | Text | — |
 
 Shortcuts action: `is.workflow.actions.documentpicker.open`
 
@@ -150,12 +150,12 @@ Shortcuts action: `is.workflow.actions.documentpicker.open`
 Gets a public iCloud link to the file passed into the action. The specified file must already be uploaded to iCloud.
 
 ```chute
-getLinkToFile(WFFile: File) -> URL
+getLinkToFile(file: File) -> URL
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFile` | File | — |
+| `file` | File | — |
 
 Shortcuts action: `is.workflow.actions.file.getlink`
 
@@ -164,12 +164,12 @@ Shortcuts action: `is.workflow.actions.file.getlink`
 Gets the common parent directory of the files passed in.
 
 ```chute
-getParentDirectory(WFInput: File) -> File
+getParentDirectory(files: File) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
+| `files` | File | — |
 
 Shortcuts action: `is.workflow.actions.getparentdirectory`
 
@@ -188,16 +188,16 @@ Shortcuts action: `is.workflow.actions.finder.getselectedfiles`
 Gets text from the provided PDF file.
 
 ```chute
-getTextFromPdf(WFInput: File, WFGetTextFromPDFTextType: Enum, WFGetTextFromPDFPageHeader: Text, WFGetTextFromPDFPageFooter: Text, WFCombinePages: Boolean) -> Text
+getTextFromPdf(pdf: File, type: Enum, pageHeaderText: Text, pageFooterText: Text, combinePages: Boolean) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `WFGetTextFromPDFTextType` | Text \\| Rich Text | `"Text"` |
-| `WFGetTextFromPDFPageHeader` | Text | — |
-| `WFGetTextFromPDFPageFooter` | Text | — |
-| `WFCombinePages` | Boolean | true |
+| `pdf` | File | — |
+| `type` | Text \\| Rich Text | `"Text"` |
+| `pageHeaderText` | Text | — |
+| `pageFooterText` | Text | — |
+| `combinePages` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.gettextfrompdf`
 
@@ -206,13 +206,13 @@ Shortcuts action: `is.workflow.actions.gettextfrompdf`
 Applies a label to the specified files.
 
 ```chute
-labelFiles(WFInput: File, WFLabelColorNumber: Text)
+labelFiles(files: File, labelColor: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `WFLabelColorNumber` | Text | — |
+| `files` | File | — |
+| `labelColor` | Text | — |
 
 Shortcuts action: `is.workflow.actions.file.label`
 
@@ -221,14 +221,14 @@ Shortcuts action: `is.workflow.actions.file.label`
 Makes an archive out of the files passed as input. Supports creating zip, tar.gz, tar.bz2, tar.xz, tar, gzip, cpio, or iso archives.
 
 ```chute
-makeArchive(WFZIPName: Text, WFArchiveFormat: Text, WFInput: Any) -> File
+makeArchive(archiveName: Text, format: Text, input: Any) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFZIPName` | Text | — |
-| `WFArchiveFormat` | Text | — |
-| `WFInput` | Any | — |
+| `archiveName` | Text | — |
+| `format` | Text | — |
+| `input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.makezip`
 
@@ -237,16 +237,16 @@ Shortcuts action: `is.workflow.actions.makezip`
 Creates a new disk image (.dmg) file. The disk image will contain any files passed as input.
 
 ```chute
-makeDiskImage(WFInput: File, VolumeName: Text, EncryptImage: Boolean, SizeToFit: Boolean, ImageSize: Number) -> File
+makeDiskImage(files: File, volumeName: Text, encrypt: Boolean, sizeToFitContents: Boolean, imageSize: Number) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `VolumeName` | Text | — |
-| `EncryptImage` | Boolean | — |
-| `SizeToFit` | Boolean | false |
-| `ImageSize` | Number | 1 |
+| `files` | File | — |
+| `volumeName` | Text | — |
+| `encrypt` | Boolean | — |
+| `sizeToFitContents` | Boolean | false |
+| `imageSize` | Number | 1 |
 
 Shortcuts action: `is.workflow.actions.makediskimage`
 
@@ -255,13 +255,13 @@ Shortcuts action: `is.workflow.actions.makediskimage`
 Converts the rich text passed as input to HTML text.
 
 ```chute
-makeHtmlFromRichText(WFMakeFullDocument: Boolean, WFInput: RichText) -> Text
+makeHtmlFromRichText(makeFullDocument: Boolean, richText: RichText) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFMakeFullDocument` | Boolean | — |
-| `WFInput` | RichText | — |
+| `makeFullDocument` | Boolean | — |
+| `richText` | RichText | — |
 
 Shortcuts action: `is.workflow.actions.gethtmlfromrichtext`
 
@@ -270,15 +270,15 @@ Shortcuts action: `is.workflow.actions.gethtmlfromrichtext`
 Creates images from the pages in the PDF passed into the action.
 
 ```chute
-makeImageFromPdfPage(WFInput: File, WFMakeImageFromPDFPageImageFormat: Text, WFMakeImageFromPDFPageColorspace: Text, WFMakeImageFromPDFPageResolution: Number) -> Image
+makeImageFromPdfPage(pdf: File, imageFormat: Text, color: Text, resolution(dotsPerInch): Number) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `WFMakeImageFromPDFPageImageFormat` | Text | — |
-| `WFMakeImageFromPDFPageColorspace` | Text | — |
-| `WFMakeImageFromPDFPageResolution` | Number | 300 |
+| `pdf` | File | — |
+| `imageFormat` | Text | — |
+| `color` | Text | — |
+| `resolution(dotsPerInch)` | Number | 300 |
 
 Shortcuts action: `is.workflow.actions.makeimagefrompdfpage`
 
@@ -287,14 +287,14 @@ Shortcuts action: `is.workflow.actions.makeimagefrompdfpage`
 Creates an image from the rich text, web content, or URL passed in as input.
 
 ```chute
-makeImageFromRichText(WFInput: Any, WFWidth: Number, WFHeight: Number) -> Image
+makeImageFromRichText(richText: Any, width: Number, height: Number) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
-| `WFWidth` | Number | 1024 |
-| `WFHeight` | Number | 768 |
+| `richText` | Any | — |
+| `width` | Number | 1024 |
+| `height` | Number | 768 |
 
 Shortcuts action: `is.workflow.actions.makeimagefromrichtext`
 
@@ -303,12 +303,12 @@ Shortcuts action: `is.workflow.actions.makeimagefromrichtext`
 Converts the rich text passed as input to Markdown text (comparable to Aaron Swartz's html2text script).
 
 ```chute
-makeMarkdownFromRichText(WFInput: RichText) -> Text
+makeMarkdownFromRichText(richText: RichText) -> Text
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | RichText | — |
+| `richText` | RichText | — |
 
 Shortcuts action: `is.workflow.actions.getmarkdownfromrichtext`
 
@@ -317,18 +317,18 @@ Shortcuts action: `is.workflow.actions.getmarkdownfromrichtext`
 Makes a PDF out of the input. The resulting PDF can optionally include a quarter-inch margin for better printing.
 
 ```chute
-makePdf(WFPDFIncludeMargin: Boolean, WFPDFIncludedPages: Enum, WFPDFSinglePage: Number, WFPDFPageRangeStart: Number, WFPDFPageRangeEnd: Number, WFInput: Any, WFPDFDocumentMergeBehavior: Enum) -> Image
+makePdf(includeMargin: Boolean, include: Enum, page#: Number, startPage#: Number, endPage#: Number, input: Any, mergeBehavior: Enum) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPDFIncludeMargin` | Boolean | false |
-| `WFPDFIncludedPages` | All Pages \\| Single Page \\| Page Range | `"All Pages"` |
-| `WFPDFSinglePage` | Number | — |
-| `WFPDFPageRangeStart` | Number | — |
-| `WFPDFPageRangeEnd` | Number | — |
-| `WFInput` | Any | — |
-| `WFPDFDocumentMergeBehavior` | Append \\| Shuffle | `"Append"` |
+| `includeMargin` | Boolean | false |
+| `include` | All Pages \\| Single Page \\| Page Range | `"All Pages"` |
+| `page#` | Number | — |
+| `startPage#` | Number | — |
+| `endPage#` | Number | — |
+| `input` | Any | — |
+| `mergeBehavior` | Append \\| Shuffle | `"Append"` |
 
 Shortcuts action: `is.workflow.actions.makepdf`
 
@@ -337,12 +337,12 @@ Shortcuts action: `is.workflow.actions.makepdf`
 Takes the inputted HTML and turns it into rich text, which can then be converted to other formats.
 
 ```chute
-makeRichTextFromHtml(WFHTML: RichText) -> RichText
+makeRichTextFromHtml(html: RichText) -> RichText
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFHTML` | RichText | — |
+| `html` | RichText | — |
 
 Shortcuts action: `is.workflow.actions.getrichtextfromhtml`
 
@@ -351,12 +351,12 @@ Shortcuts action: `is.workflow.actions.getrichtextfromhtml`
 Takes the inputted Markdown and turns it into rich text, which can then be converted to other formats.
 
 ```chute
-makeRichTextFromMarkdown(WFInput: Text) -> RichText
+makeRichTextFromMarkdown(markdownText: Text) -> RichText
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Text | — |
+| `markdownText` | Text | — |
 
 Shortcuts action: `is.workflow.actions.getrichtextfrommarkdown`
 
@@ -365,12 +365,12 @@ Shortcuts action: `is.workflow.actions.getrichtextfrommarkdown`
 Mounts a disk image (.dmg) file on your desktop.
 
 ```chute
-mountDiskImage(WFInput: File) -> File
+mountDiskImage(file: File) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
+| `file` | File | — |
 
 Shortcuts action: `is.workflow.actions.mountdiskimage`
 
@@ -379,14 +379,14 @@ Shortcuts action: `is.workflow.actions.mountdiskimage`
 Moves the specified file to a new location.
 
 ```chute
-moveFile(WFFile: File, WFFolder: File, WFReplaceExisting: Boolean) -> File
+moveFile(file: File, folder: File, replaceExistingFiles: Boolean) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFile` | File | — |
-| `WFFolder` | File | — |
-| `WFReplaceExisting` | Boolean | false |
+| `file` | File | — |
+| `folder` | File | — |
+| `replaceExistingFiles` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.move`
 
@@ -395,12 +395,12 @@ Shortcuts action: `is.workflow.actions.file.move`
 Prints the input using AirPrint.
 
 ```chute
-print(WFInput: Any)
+print(input: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | Any | — |
+| `input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.print`
 
@@ -409,13 +409,13 @@ Shortcuts action: `is.workflow.actions.print`
 Displays a preview of the input using the system Quick Look.
 
 ```chute
-quickLook(WFInput: File, WFQuickLookActionFullScreen: Boolean)
+quickLook(input: File, fullScreen: Boolean)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `WFQuickLookActionFullScreen` | Boolean | — |
+| `input` | File | — |
+| `fullScreen` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.previewdocument`
 
@@ -424,13 +424,13 @@ Shortcuts action: `is.workflow.actions.previewdocument`
 Renames the specified file.
 
 ```chute
-renameFile(WFFile: File, WFNewFilename: Text) -> File
+renameFile(file: File, name: Text) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFile` | File | — |
-| `WFNewFilename` | Text | — |
+| `file` | File | — |
+| `name` | Text | — |
 
 Shortcuts action: `is.workflow.actions.file.rename`
 
@@ -439,12 +439,12 @@ Shortcuts action: `is.workflow.actions.file.rename`
 Opens windows in the Finder with the specified files selected.
 
 ```chute
-revealFilesInFinder(WFFile: File)
+revealFilesInFinder(files: File)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFile` | File | — |
+| `files` | File | — |
 
 Shortcuts action: `is.workflow.actions.file.reveal`
 
@@ -453,16 +453,16 @@ Shortcuts action: `is.workflow.actions.file.reveal`
 Saves files to a specified folder. You can also use this action to copy a file.
 
 ```chute
-saveFile(WFInput: File, WFFolder: File, WFAskWhereToSave: Boolean, WFFileDestinationPath: Text, WFSaveFileOverwrite: Boolean) -> File
+saveFile(file: File, folder: File, askWhereToSave: Boolean, subpath: Text, overwriteIfFileExists: Boolean) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
-| `WFFolder` | File | — |
-| `WFAskWhereToSave` | Boolean | true |
-| `WFFileDestinationPath` | Text | — |
-| `WFSaveFileOverwrite` | Boolean | false |
+| `file` | File | — |
+| `folder` | File | — |
+| `askWhereToSave` | Boolean | true |
+| `subpath` | Text | — |
+| `overwriteIfFileExists` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.documentpicker.save`
 
@@ -471,13 +471,13 @@ Shortcuts action: `is.workflow.actions.documentpicker.save`
 Prompts to select files or folders.
 
 ```chute
-selectFile(WFPickingMode: Enum, SelectMultiple: Boolean) -> File
+selectFile(type: Enum, selectMultiple: Boolean) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFPickingMode` | Files \\| Folders | `"Files"` |
-| `SelectMultiple` | Boolean | false |
+| `type` | Files \\| Folders | `"Files"` |
+| `selectMultiple` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.file.select`
 
@@ -486,12 +486,12 @@ Shortcuts action: `is.workflow.actions.file.select`
 Passes the specified files or folders as output.
 
 ```chute
-specifyFile(WFFile: File) -> File
+specifyFile(file: File) -> File
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFFile` | File | — |
+| `file` | File | — |
 
 Shortcuts action: `is.workflow.actions.file`
 
@@ -500,11 +500,11 @@ Shortcuts action: `is.workflow.actions.file`
 Splits the input document by creating a PDF for each page.
 
 ```chute
-splitPdfIntoPages(WFInput: File) -> Image
+splitPdfIntoPages(pdf: File) -> Image
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFInput` | File | — |
+| `pdf` | File | — |
 
 Shortcuts action: `is.workflow.actions.splitpdf`

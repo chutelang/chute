@@ -217,9 +217,17 @@ function mapParameter(raw, unmappedClasses) {
     chuteType = TYPE_MAP[cls] ?? "Any";
   }
 
+  const label = raw.Label ?? null;
+  const key = raw.Key ?? null;
+  let chuteKey = key;
+  if (label && label !== "None") {
+    chuteKey = toCamelCase(label);
+  }
+
   const result = {
-    key: raw.Key ?? null,
-    label: raw.Label ?? null,
+    key,
+    chuteKey,
+    label,
     class: cls,
     chuteType,
     required: raw.Required === true,
@@ -703,6 +711,29 @@ const NAME_OVERRIDES = {
   "is.workflow.actions.compresspdf": "Compress PDF",
 };
 
+function deduplicateChuteKeys(params) {
+  const seen = new Map();
+  for (const p of params) {
+    if (!p.chuteKey) {
+      continue;
+    }
+    const existing = seen.get(p.chuteKey);
+    if (existing) {
+      existing.push(p);
+    } else {
+      seen.set(p.chuteKey, [p]);
+    }
+  }
+  for (const [, group] of seen) {
+    if (group.length > 1) {
+      for (const p of group) {
+        p.chuteKey = p.key;
+      }
+    }
+  }
+  return params;
+}
+
 function mapAction(identifier, raw, unmappedClasses) {
   const displayName =
     NAME_OVERRIDES[identifier] ||
@@ -725,8 +756,8 @@ function mapAction(identifier, raw, unmappedClasses) {
     actionClass: raw.ActionClass ?? null,
     description: null,
     keywords,
-    parameters: (raw.Parameters || synthesized.parameters || []).map((p) =>
-      mapParameter(p, unmappedClasses),
+    parameters: deduplicateChuteKeys(
+      (raw.Parameters || synthesized.parameters || []).map((p) => mapParameter(p, unmappedClasses)),
     ),
     input: raw.Input ?? synthesized.input ?? null,
     output: raw.Output?.Types ? raw.Output : (synthesized.output ?? raw.Output ?? null),

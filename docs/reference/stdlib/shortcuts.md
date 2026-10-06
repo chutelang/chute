@@ -9,12 +9,12 @@ import Shortcuts;
 ## `getDetailsOfShortcut`
 
 ```chute
-getDetailsOfShortcut(WFContentItemPropertyName: Enum) -> Any
+getDetailsOfShortcut(get: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFContentItemPropertyName` | Name \\| Action Count \\| File Size \\| Creation Date \\| Last Modified Date \\| Folder \\| Icon \\| Icon Color \\| Icon Glyph | — |
+| `get` | Name \\| Action Count \\| File Size \\| Creation Date \\| Last Modified Date \\| Folder \\| Icon \\| Icon Color \\| Icon Glyph | — |
 
 Shortcuts action: `is.workflow.actions.properties.workflow`
 
@@ -23,12 +23,12 @@ Shortcuts action: `is.workflow.actions.properties.workflow`
 Gets the shortcuts stored on this device.
 
 ```chute
-getMyShortcuts(Folder: Text) -> Shortcut
+getMyShortcuts(folder: Text) -> Shortcut
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `Folder` | Text | — |
+| `folder` | Text | — |
 
 Shortcuts action: `is.workflow.actions.getmyworkflows`
 
@@ -37,12 +37,12 @@ Shortcuts action: `is.workflow.actions.getmyworkflows`
 Runs a shortcut from your shortcut.
 
 ```chute
-runShortcut(WFWorkflow: Text, WFInput: Any) -> Any
+runShortcut(shortcut: Text, input: Any) -> Any
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `WFWorkflow` | Text | — |
-| `WFInput` | Any | — |
+| `shortcut` | Text | — |
+| `input` | Any | — |
 
 Shortcuts action: `is.workflow.actions.runworkflow`

@@ -62,7 +62,7 @@ describe("stdlib modules", () => {
       const binding = scope?.lookup("getContentsOfUrl");
       expect(binding).toBeDefined();
       if (binding?.type.kind === "action") {
-        const urlParam = binding.type.params.find((p) => p.label === "WFURL");
+        const urlParam = binding.type.params.find((p) => p.label === "url");
         expect(urlParam).toBeDefined();
         expect(urlParam?.type.kind).toBe("text");
       }

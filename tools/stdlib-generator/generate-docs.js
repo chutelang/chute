@@ -135,7 +135,7 @@ function renderSignature(action, params, output) {
   const returnSuffix = returnType ? ` -> ${returnType}` : "";
   const signature =
     params.length > 0
-      ? `${action.name}(${params.map((p) => `${p.key}: ${p.chuteType || "Any"}`).join(", ")})${returnSuffix}`
+      ? `${action.name}(${params.map((p) => `${p.chuteKey || p.key}: ${p.chuteType || "Any"}`).join(", ")})${returnSuffix}`
       : `${action.name}()${returnSuffix}`;
 
   lines.push("```chute");
@@ -148,7 +148,7 @@ function renderSignature(action, params, output) {
     lines.push("| --- | --- | --- |");
     for (const p of params) {
       lines.push(
-        `| \`${p.key}\` | ${formatTypeForTableCell(p)} | ${formatDefault(p.defaultValue)} |`,
+        `| \`${p.chuteKey || p.key}\` | ${formatTypeForTableCell(p)} | ${formatDefault(p.defaultValue)} |`,
       );
     }
     lines.push("");
@@ -170,11 +170,11 @@ function generateActionDoc(action) {
 
   if (action.overloads && action.overloads.length > 0) {
     for (const overload of action.overloads) {
-      const params = overload.parameters.filter((p) => p.key);
+      const params = overload.parameters.filter((p) => p.chuteKey || p.key);
       lines.push(renderSignature(action, params, overload.output ?? action.output));
     }
   } else {
-    let params = action.parameters.filter((p) => p.key);
+    let params = action.parameters.filter((p) => p.chuteKey || p.key);
     if (params.length === 0 && action.intentParameters) {
       const overrides = action.parameterOverrides ?? {};
       params = action.intentParameters
