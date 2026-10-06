@@ -677,6 +677,7 @@ const NAME_OVERRIDES = {
   "com.apple.TVRemoteUIService.ToggleCaptionsIntent": "Toggle Captions",
   "com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent": "Toggle Apple TV Appearance",
   "com.apple.TVRemoteUIService.WakeAppleTVIntent": "Wake Apple TV",
+  "is.workflow.actions.image.convert.finder": "Quick Convert Image",
   "com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent": "Create Alarm",
   "com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent": "Get Alarms",
   "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent": "Toggle Alarm",
@@ -798,6 +799,11 @@ if (fs.existsSync(CATEGORY_MAP_PATH)) {
 const contentTypes = JSON.parse(fs.readFileSync(CONTENT_TYPES_PATH, "utf-8"));
 console.log();
 
+const SKIP_IDENTIFIERS = new Set([
+  // Duplicate of com.apple.musicrecognition.RecognizeMusicIntent (same action, legacy identifier)
+  "is.workflow.actions.shazamMedia",
+]);
+
 const unmappedClasses = new Set();
 const actions = {};
 
@@ -822,6 +828,9 @@ function inferPickerTypeFromInput(raw, param) {
 }
 
 for (const identifier of Object.keys(rawActions).sort()) {
+  if (SKIP_IDENTIFIERS.has(identifier)) {
+    continue;
+  }
   const raw = rawActions[identifier];
   const mapped = mapAction(identifier, raw, unmappedClasses);
   mapped.category = categoryMap[identifier] ?? null;

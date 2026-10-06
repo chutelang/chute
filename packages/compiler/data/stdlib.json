@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-05T23:38:22.830Z",
+  "extractedAt": "2026-09-05T23:57:22.187Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -13046,8 +13046,8 @@
     },
     "is.workflow.actions.image.convert.finder": {
       "identifier": "is.workflow.actions.image.convert.finder",
-      "name": "finderConvertImage",
-      "displayName": "Convert Image",
+      "name": "quickConvertImage",
+      "displayName": "Quick Convert Image",
       "actionClass": "WFFinderImageConvertAction",
       "description": null,
       "keywords": [],
@@ -23642,70 +23642,6 @@
       "iconSymbol": "square.and.arrow.up",
       "inputPassthrough": true,
       "category": "Sharing"
-    },
-    "is.workflow.actions.shazamMedia": {
-      "identifier": "is.workflow.actions.shazamMedia",
-      "name": "shazamIt",
-      "displayName": "Shazam It",
-      "actionClass": "WFShazamMediaAction",
-      "description": {
-        "summary": "Uses the microphone to listen to and identify nearby media.",
-        "input": null,
-        "result": null,
-        "note": null
-      },
-      "keywords": [
-        "song",
-        "identification",
-        "shazam",
-        "music"
-      ],
-      "parameters": [
-        {
-          "key": "WFShazamMediaActionShowWhenRun",
-          "label": "Show When Run",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": true
-        },
-        {
-          "key": "WFShazamMediaActionErrorIfNotRecognized",
-          "label": "Error If Not Recognized",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": true
-        }
-      ],
-      "input": null,
-      "output": {
-        "DisclosureLevel": "Public",
-        "Multiple": false,
-        "OutputName": "Shazam Media",
-        "Types": [
-          "WFShazamMedia"
-        ]
-      },
-      "requiredResources": [
-        "WFMicrophoneAccessResource",
-        "WFRemoteServerAccessResource",
-        {
-          "RequiredResources": [
-            {
-              "WFParameterKey": "WFShazamMediaActionShowWhenRun",
-              "WFParameterValue": true,
-              "WFResourceClass": "WFParameterRelationResource"
-            }
-          ],
-          "WFResourceClass": "WFUserInteractionResource"
-        }
-      ],
-      "parameterSummary": {
-        "__class": "WFActionParameterSummary",
-        "singleFormatString": "Shazam it"
-      },
-      "category": "Media"
     },
     "is.workflow.actions.showdefinition": {
       "identifier": "is.workflow.actions.showdefinition",

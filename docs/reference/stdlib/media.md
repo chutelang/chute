@@ -223,21 +223,6 @@ filterImages(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFCo
 
 Shortcuts action: `is.workflow.actions.filter.images`
 
-## `finderConvertImage`
-
-```chute
-finderConvertImage(WFPreserveMetadata: Boolean, WFImage: Image, WFFileFormat: Enum, WFSize: Enum) -> Image
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFPreserveMetadata` | Boolean | — |
-| `WFImage` | Image | — |
-| `WFFileFormat` | JPEG \\| PNG \\| HEIF | `"JPEG"` |
-| `WFSize` | Small \\| Medium \\| Large \\| Original | `"Small"` |
-
-Shortcuts action: `is.workflow.actions.image.convert.finder`
-
 ## `findGiphyGifs`
 
 Finds GIFs representing the provided text, using Giphy.
@@ -760,6 +745,21 @@ playSound(WFInput: Media)
 
 Shortcuts action: `is.workflow.actions.playsound`
 
+## `quickConvertImage`
+
+```chute
+quickConvertImage(WFPreserveMetadata: Boolean, WFImage: Image, WFFileFormat: Enum, WFSize: Enum) -> Image
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFPreserveMetadata` | Boolean | — |
+| `WFImage` | Image | — |
+| `WFFileFormat` | JPEG \\| PNG \\| HEIF | `"JPEG"` |
+| `WFSize` | Small \\| Medium \\| Large \\| Original | `"Small"` |
+
+Shortcuts action: `is.workflow.actions.image.convert.finder`
+
 ## `recognizeMusic`
 
 Uses the microphone to listen to and identify nearby media.
@@ -919,21 +919,6 @@ selectPhotos(WFPhotoPickerTypes: Enum, WFSelectMultiplePhotos: Boolean) -> Image
 | `WFSelectMultiplePhotos` | Boolean | — |
 
 Shortcuts action: `is.workflow.actions.selectphoto`
-
-## `shazamIt`
-
-Uses the microphone to listen to and identify nearby media.
-
-```chute
-shazamIt(WFShazamMediaActionShowWhenRun: Boolean, WFShazamMediaActionErrorIfNotRecognized: Boolean) -> ShazamMedia
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFShazamMediaActionShowWhenRun` | Boolean | true |
-| `WFShazamMediaActionErrorIfNotRecognized` | Boolean | true |
-
-Shortcuts action: `is.workflow.actions.shazamMedia`
 
 ## `skipBack`
 

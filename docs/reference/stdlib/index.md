@@ -23,7 +23,7 @@ Notification.showAlert("Hello!");
 | [HomeKit](homekit.md) | 3 | Home automation. |
 | [Maps](maps.md) | 20 | Location, directions, and weather. |
 | [Math](math.md) | 8 | Calculations, measurements, and unit conversion. |
-| [Media](media.md) | 66 | Photos, video, audio, camera, and image processing. |
+| [Media](media.md) | 65 | Photos, video, audio, camera, and image processing. |
 | [Notification](notification.md) | 4 | Alerts, notifications, and banners. |
 | [Scripting](scripting.md) | 62 | Control flow, variables, logic, prompts, and general shortcut utilities. |
 | [Settings](settings.md) | 22 | System toggles and device settings. |
