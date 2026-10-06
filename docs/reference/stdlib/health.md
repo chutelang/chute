@@ -33,7 +33,7 @@ Shortcuts action: `is.workflow.actions.filter.health.quantity`
 ## `getDetailsOfHealthSample`
 
 ```chute
-getDetailsOfHealthSample()
+getDetailsOfHealthSample() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.health.quantity`

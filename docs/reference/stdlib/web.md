@@ -39,7 +39,7 @@ Shortcuts action: `is.workflow.actions.url.expand`
 ## `filterArticles`
 
 ```chute
-filterArticles(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number)
+filterArticles(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Article
 ```
 
 | Parameter | Type | Default |
@@ -171,7 +171,7 @@ Shortcuts action: `is.workflow.actions.safari.geturl`
 ## `getDetailsOfArticle`
 
 ```chute
-getDetailsOfArticle(WFContentItemPropertyName: Enum)
+getDetailsOfArticle(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -183,7 +183,7 @@ Shortcuts action: `is.workflow.actions.properties.articles`
 ## `getDetailsOfSafariWebPage`
 
 ```chute
-getDetailsOfSafariWebPage(WFContentItemPropertyName: Enum)
+getDetailsOfSafariWebPage(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

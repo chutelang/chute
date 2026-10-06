@@ -96,7 +96,7 @@ Shortcuts action: `is.workflow.actions.filter.contacts`
 ## `getDetailsOfContacts`
 
 ```chute
-getDetailsOfContacts(WFContentItemPropertyName: Enum)
+getDetailsOfContacts(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

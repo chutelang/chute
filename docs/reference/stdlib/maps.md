@@ -9,7 +9,7 @@ import Maps;
 ## `filterLocations`
 
 ```chute
-filterLocations(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number)
+filterLocations(WFContentItemSortProperty: Enum, WFContentItemSortOrder: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Location
 ```
 
 | Parameter | Type | Default |
@@ -69,7 +69,7 @@ Shortcuts action: `is.workflow.actions.weather.currentconditions`
 ## `getDetailsOfLocations`
 
 ```chute
-getDetailsOfLocations(WFContentItemPropertyName: Enum)
+getDetailsOfLocations(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -81,7 +81,7 @@ Shortcuts action: `is.workflow.actions.properties.locations`
 ## `getDetailsOfParkedCar`
 
 ```chute
-getDetailsOfParkedCar()
+getDetailsOfParkedCar() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.parkedcar`
@@ -89,7 +89,7 @@ Shortcuts action: `is.workflow.actions.properties.parkedcar`
 ## `getDetailsOfRideStatus`
 
 ```chute
-getDetailsOfRideStatus()
+getDetailsOfRideStatus() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.ridestatus`
@@ -97,7 +97,7 @@ Shortcuts action: `is.workflow.actions.properties.ridestatus`
 ## `getDetailsOfWeatherConditions`
 
 ```chute
-getDetailsOfWeatherConditions(WFContentItemPropertyName: Enum)
+getDetailsOfWeatherConditions(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

@@ -584,6 +584,10 @@ function synthesizeSpecialActionTypes(raw) {
         Required: true,
         Types: [contentItemClass],
       },
+      output: {
+        Multiple: false,
+        Types: ["WFContentItem"],
+      },
     };
   }
 
@@ -709,7 +713,7 @@ function mapAction(identifier, raw, unmappedClasses) {
       mapParameter(p, unmappedClasses),
     ),
     input: raw.Input ?? synthesized.input ?? null,
-    output: raw.Output ?? synthesized.output ?? null,
+    output: raw.Output?.Types ? raw.Output : (synthesized.output ?? raw.Output ?? null),
     requiredResources: raw.RequiredResources || [],
   };
 
@@ -799,6 +803,15 @@ if (fs.existsSync(CATEGORY_MAP_PATH)) {
 const contentTypes = JSON.parse(fs.readFileSync(CONTENT_TYPES_PATH, "utf-8"));
 console.log();
 
+const OUTPUT_OVERRIDES = {
+  "is.workflow.actions.text.changecase": { Types: ["NSString"] },
+  "is.workflow.actions.text.combine": { Types: ["NSString"] },
+  "is.workflow.actions.text.match": { Multiple: true, Types: ["NSString"] },
+  "is.workflow.actions.text.match.getgroup": { Types: ["NSString"] },
+  "is.workflow.actions.text.split": { Multiple: true, Types: ["NSString"] },
+  "is.workflow.actions.correctspelling": { Types: ["NSString"] },
+};
+
 const SKIP_IDENTIFIERS = new Set([
   // Duplicate of com.apple.musicrecognition.RecognizeMusicIntent (same action, legacy identifier)
   "is.workflow.actions.shazamMedia",
@@ -834,6 +847,10 @@ for (const identifier of Object.keys(rawActions).sort()) {
   const raw = rawActions[identifier];
   const mapped = mapAction(identifier, raw, unmappedClasses);
   mapped.category = categoryMap[identifier] ?? null;
+
+  if (OUTPUT_OVERRIDES[identifier]) {
+    mapped.output = OUTPUT_OVERRIDES[identifier];
+  }
 
   for (const p of mapped.parameters) {
     if (p.class === "WFVariablePickerParameter" && p.chuteType === "Any" && p.key) {

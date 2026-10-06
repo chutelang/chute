@@ -9,7 +9,7 @@ import Shortcuts;
 ## `getDetailsOfShortcut`
 
 ```chute
-getDetailsOfShortcut(WFContentItemPropertyName: Enum)
+getDetailsOfShortcut(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

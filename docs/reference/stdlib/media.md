@@ -336,7 +336,7 @@ Shortcuts action: `is.workflow.actions.getcurrentsong`
 ## `getDetailsOfImages`
 
 ```chute
-getDetailsOfImages(WFContentItemPropertyName: Enum)
+getDetailsOfImages(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -348,7 +348,7 @@ Shortcuts action: `is.workflow.actions.properties.images`
 ## `getDetailsOfItunesArtist`
 
 ```chute
-getDetailsOfItunesArtist()
+getDetailsOfItunesArtist() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.itunesartist`
@@ -356,7 +356,7 @@ Shortcuts action: `is.workflow.actions.properties.itunesartist`
 ## `getDetailsOfItunesProduct`
 
 ```chute
-getDetailsOfItunesProduct()
+getDetailsOfItunesProduct() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.itunesstore`
@@ -364,7 +364,7 @@ Shortcuts action: `is.workflow.actions.properties.itunesstore`
 ## `getDetailsOfMusic`
 
 ```chute
-getDetailsOfMusic(WFContentItemPropertyName: Enum)
+getDetailsOfMusic(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -376,7 +376,7 @@ Shortcuts action: `is.workflow.actions.properties.music`
 ## `getDetailsOfPodcast`
 
 ```chute
-getDetailsOfPodcast()
+getDetailsOfPodcast() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.podcastshow`
@@ -384,7 +384,7 @@ Shortcuts action: `is.workflow.actions.properties.podcastshow`
 ## `getDetailsOfPodcastEpisode`
 
 ```chute
-getDetailsOfPodcastEpisode()
+getDetailsOfPodcastEpisode() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.podcast`
@@ -392,7 +392,7 @@ Shortcuts action: `is.workflow.actions.properties.podcast`
 ## `getDetailsOfShazam`
 
 ```chute
-getDetailsOfShazam()
+getDetailsOfShazam() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.shazam`

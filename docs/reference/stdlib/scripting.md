@@ -362,7 +362,7 @@ Shortcuts action: `is.workflow.actions.detect.date`
 ## `getDetailsOfAppStoreApp`
 
 ```chute
-getDetailsOfAppStoreApp(WFContentItemPropertyName: Enum)
+getDetailsOfAppStoreApp(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

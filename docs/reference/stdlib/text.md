@@ -11,7 +11,7 @@ import Text;
 Changes the case of the text passed into the action to UPPERCASE, lowercase, or Title Case.
 
 ```chute
-changeCase(text: Any, WFCaseType: ChangeCaseType)
+changeCase(text: Any, WFCaseType: ChangeCaseType) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -26,7 +26,7 @@ Shortcuts action: `is.workflow.actions.text.changecase`
 Joins the text together, inserting the separator between each join.
 
 ```chute
-combineText(text: Any, WFTextSeparator: CombineTextSeparator, WFTextCustomSeparator: Any)
+combineText(text: Any, WFTextSeparator: CombineTextSeparator, WFTextCustomSeparator: Any) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -42,7 +42,7 @@ Shortcuts action: `is.workflow.actions.text.combine`
 Autocorrects the spelling of text passed into the action.
 
 ```chute
-correctSpelling(text: Any)
+correctSpelling(text: Any) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -99,7 +99,7 @@ Shortcuts action: `is.workflow.actions.extracttextfromimage`
 Gets the text that matched a particular capture group or all of the capture groups from the output of a Match Text action.
 
 ```chute
-getGroupFromMatchedText(matches: Any, WFGetGroupType: MatchTextGetGroupType, WFGroupIndex: Number)
+getGroupFromMatchedText(matches: Any, WFGetGroupType: MatchTextGetGroupType, WFGroupIndex: Number) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -145,7 +145,7 @@ Shortcuts action: `is.workflow.actions.makespokenaudiofromtext`
 ## `matchText`
 
 ```chute
-matchText(text: Any, WFMatchTextPattern: Any, WFMatchTextCaseSensitive: Boolean)
+matchText(text: Any, WFMatchTextPattern: Any, WFMatchTextCaseSensitive: Boolean) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -212,7 +212,7 @@ Shortcuts action: `is.workflow.actions.speaktext`
 Separates text passed into the action into a list.
 
 ```chute
-splitText(text: Any, WFTextSeparator: SplitTextSeparator, WFTextCustomSeparator: Any)
+splitText(text: Any, WFTextSeparator: SplitTextSeparator, WFTextCustomSeparator: Any) -> Text
 ```
 
 | Parameter | Type | Default |

@@ -114,7 +114,7 @@ Shortcuts action: `is.workflow.actions.filter.reminders`
 ## `getDetailsOfCalendarEvents`
 
 ```chute
-getDetailsOfCalendarEvents(WFContentItemPropertyName: Enum)
+getDetailsOfCalendarEvents(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -126,7 +126,7 @@ Shortcuts action: `is.workflow.actions.properties.calendarevents`
 ## `getDetailsOfEventAttendees`
 
 ```chute
-getDetailsOfEventAttendees(WFContentItemPropertyName: Enum)
+getDetailsOfEventAttendees(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |
@@ -138,7 +138,7 @@ Shortcuts action: `is.workflow.actions.properties.eventattendees`
 ## `getDetailsOfReminders`
 
 ```chute
-getDetailsOfReminders(WFContentItemPropertyName: Enum)
+getDetailsOfReminders(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

@@ -117,7 +117,7 @@ Shortcuts action: `is.workflow.actions.file.getfoldercontents`
 ## `getDetailsOfFiles`
 
 ```chute
-getDetailsOfFiles(WFContentItemPropertyName: Enum)
+getDetailsOfFiles(WFContentItemPropertyName: Enum) -> Any
 ```
 
 | Parameter | Type | Default |

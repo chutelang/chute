@@ -180,7 +180,7 @@ Shortcuts action: `is.workflow.actions.getipaddress`
 ## `getDetailsOfAppearance`
 
 ```chute
-getDetailsOfAppearance()
+getDetailsOfAppearance() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.appearance`

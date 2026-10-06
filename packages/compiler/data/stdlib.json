@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-05T23:57:22.187Z",
+  "extractedAt": "2026-09-06T00:07:28.645Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -3364,7 +3364,9 @@
       "parameters": [],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Types": [
+          "NSString"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -7426,7 +7428,10 @@
       ],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": true,
+        "Types": [
+          "WFArticleContentItem"
+        ]
       },
       "requiredResources": [],
       "iconColor": "Orange",
@@ -7956,7 +7961,10 @@
       ],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": true,
+        "Types": [
+          "WFLocationContentItem"
+        ]
       },
       "requiredResources": [],
       "iconColor": "Tint",
@@ -18928,7 +18936,12 @@
           "WFAppearanceSettingContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Device"
     },
@@ -18982,7 +18995,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -19023,7 +19039,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "iconColor": "Orange",
@@ -19072,7 +19091,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -19126,7 +19148,12 @@
           "WFContactContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "residentCompatible": true,
       "category": "Contacts"
@@ -19162,7 +19189,12 @@
           "WFEKParticipantContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Calendar"
     },
@@ -19196,7 +19228,12 @@
           "public.data"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "iconColor": "Tint",
       "iconSymbol": "doc.fill.badge.ellipsis",
@@ -19218,7 +19255,12 @@
           "WFHKSampleContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [
         "WFHealthKitResource"
       ],
@@ -19275,7 +19317,12 @@
           "WFAVAssetContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "iconColor": "Blue",
       "iconSymbol": "photo.fill",
@@ -19298,7 +19345,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -19320,7 +19370,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -19367,7 +19420,12 @@
           "WFLocationContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "iconColor": "Tint",
       "iconSymbol": "mappin",
@@ -19421,7 +19479,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "category": "Media"
@@ -19441,7 +19502,12 @@
           "WFParkedCarContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [
         {
           "WFResourceClass": "WorkflowKit.WFDeviceIdiomResource"
@@ -19467,7 +19533,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "category": "Media"
@@ -19488,7 +19557,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "category": "Media"
@@ -19529,7 +19601,12 @@
           "WFReminderContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Calendar"
     },
@@ -19548,7 +19625,12 @@
           "WFRideStatusContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Maps"
     },
@@ -19588,7 +19670,10 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
       },
       "requiredResources": [],
       "category": "Web"
@@ -19608,7 +19693,12 @@
           "WFShazamMediaContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Media"
     },
@@ -19629,7 +19719,12 @@
           "WFTrelloCardContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [
         "WFTrelloAccessResource"
       ],
@@ -19650,7 +19745,12 @@
           "WFUlyssesSheetContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Apps"
     },
@@ -19700,7 +19800,12 @@
           "WFWeatherDataContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "residentCompatible": true,
       "category": "Maps"
@@ -19740,7 +19845,12 @@
           "WFWorkflowContentItem"
         ]
       },
-      "output": null,
+      "output": {
+        "Multiple": false,
+        "Types": [
+          "WFContentItem"
+        ]
+      },
       "requiredResources": [],
       "category": "Shortcuts"
     },
@@ -25074,7 +25184,9 @@
       "parameters": [],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Types": [
+          "NSString"
+        ]
       },
       "requiredResources": [],
       "iconColor": "Yellow_Accessibility",
@@ -25130,7 +25242,9 @@
       "parameters": [],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Types": [
+          "NSString"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -25195,7 +25309,10 @@
       "parameters": [],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Multiple": true,
+        "Types": [
+          "NSString"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -25257,7 +25374,9 @@
       "parameters": [],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public"
+        "Types": [
+          "NSString"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,
@@ -25411,8 +25530,10 @@
       "parameters": [],
       "input": null,
       "output": {
-        "DisclosureLevel": "Public",
-        "Multiple": true
+        "Multiple": true,
+        "Types": [
+          "NSString"
+        ]
       },
       "requiredResources": [],
       "residentCompatible": true,

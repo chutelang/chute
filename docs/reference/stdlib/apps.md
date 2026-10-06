@@ -211,7 +211,7 @@ Shortcuts action: `is.workflow.actions.evernote.delete`
 ## `getDetailsOfTrelloItem`
 
 ```chute
-getDetailsOfTrelloItem()
+getDetailsOfTrelloItem() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.trello`
@@ -219,7 +219,7 @@ Shortcuts action: `is.workflow.actions.properties.trello`
 ## `getDetailsOfUlyssesSheet`
 
 ```chute
-getDetailsOfUlyssesSheet()
+getDetailsOfUlyssesSheet() -> Any
 ```
 
 Shortcuts action: `is.workflow.actions.properties.ulysses.sheet`
