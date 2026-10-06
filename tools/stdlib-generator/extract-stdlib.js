@@ -815,6 +815,15 @@ const OUTPUT_OVERRIDES = {
 const SKIP_IDENTIFIERS = new Set([
   // Duplicate of com.apple.musicrecognition.RecognizeMusicIntent (same action, legacy identifier)
   "is.workflow.actions.shazamMedia",
+  // Chute has // comments; this Shortcuts-level no-op is redundant
+  "is.workflow.actions.comment",
+  // Debug action — shows Content Source attribution, not useful for shortcut authors
+  "is.workflow.actions.debug.contentattribution",
+  // Internal placeholders — not real user-facing actions
+  "is.workflow.actions.sirikit.donation.handle",
+  "is.workflow.actions.useractivity.open",
+  // Appearance properties action with no params and no output
+  "is.workflow.actions.properties.appearance",
 ]);
 
 const unmappedClasses = new Set();

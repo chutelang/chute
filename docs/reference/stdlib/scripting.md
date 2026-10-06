@@ -114,20 +114,6 @@ chooseFromMenu(WFMenuPrompt: Text, WFMenuItems: List<Any>)
 
 Shortcuts action: `is.workflow.actions.choosefrommenu`
 
-## `comment`
-
-This action lets you explain how part of a shortcut works. When run, this action does nothing.
-
-```chute
-comment(WFCommentActionText: Text)
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFCommentActionText` | Text | — |
-
-Shortcuts action: `is.workflow.actions.comment`
-
 ## `continueInShortcutsApp`
 
 Switches into the Shortcuts app and continues to the next action.
@@ -849,20 +835,6 @@ setVariable(WFInput: Any, WFVariableName: Text)
 
 Shortcuts action: `is.workflow.actions.setvariable`
 
-## `showContentAttribution`
-
-Shows the Content Source of Input contents
-
-```chute
-showContentAttribution(Input: Any)
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `Input` | Any | — |
-
-Shortcuts action: `is.workflow.actions.debug.contentattribution`
-
 ## `stopAndOutput`
 
 Stops execution of the current shortcut, and outputs content. This action is useful when:
@@ -894,26 +866,6 @@ stopThisShortcut()
 ```
 
 Shortcuts action: `is.workflow.actions.exit`
-
-## `unknownIntent`
-
-```chute
-unknownIntent(ShowWhenRun: Boolean)
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `ShowWhenRun` | Boolean | true |
-
-Shortcuts action: `is.workflow.actions.sirikit.donation.handle`
-
-## `unknownUserActivity`
-
-```chute
-unknownUserActivity()
-```
-
-Shortcuts action: `is.workflow.actions.useractivity.open`
 
 ## `useModel`
 

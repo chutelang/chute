@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T00:07:28.645Z",
+  "extractedAt": "2026-09-06T00:21:15.851Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -3045,46 +3045,6 @@
       },
       "category": "Apps"
     },
-    "is.workflow.actions.comment": {
-      "identifier": "is.workflow.actions.comment",
-      "name": "comment",
-      "displayName": "Comment",
-      "actionClass": "WFCommentAction",
-      "description": {
-        "summary": "This action lets you explain how part of a shortcut works. When run, this action does nothing.",
-        "input": null,
-        "result": null,
-        "note": null
-      },
-      "keywords": [
-        "note",
-        "explain"
-      ],
-      "parameters": [
-        {
-          "key": "WFCommentActionText",
-          "label": "Comment",
-          "class": "WFTextInputParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": null,
-          "disallowedVariableTypes": [
-            "Ask",
-            "Variable"
-          ],
-          "placeholder": "Enter comment…",
-          "multiline": true
-        }
-      ],
-      "input": null,
-      "output": null,
-      "requiredResources": [],
-      "iconColor": "Clear",
-      "iconSymbol": "text.justifyleft",
-      "inputPassthrough": true,
-      "residentCompatible": true,
-      "category": "Scripting"
-    },
     "is.workflow.actions.compresspdf": {
       "identifier": "is.workflow.actions.compresspdf",
       "name": "optimizeFileSizeOfPdf",
@@ -3621,54 +3581,6 @@
       "iconColor": "Tint",
       "iconSymbol": "calendar",
       "residentCompatible": true,
-      "category": "Scripting"
-    },
-    "is.workflow.actions.debug.contentattribution": {
-      "identifier": "is.workflow.actions.debug.contentattribution",
-      "name": "showContentAttribution",
-      "displayName": "Show Content Attribution",
-      "actionClass": "WFContentAttributionSetDebuggerAction",
-      "description": {
-        "summary": "Shows the Content Source of Input contents",
-        "input": null,
-        "result": null,
-        "note": null
-      },
-      "keywords": [
-        "mdm",
-        "content source",
-        "data info"
-      ],
-      "parameters": [
-        {
-          "key": "Input",
-          "label": "Input",
-          "class": "WFVariablePickerParameter",
-          "chuteType": "Any",
-          "required": false,
-          "defaultValue": null,
-          "placeholder": "Input"
-        }
-      ],
-      "input": {
-        "Multiple": true,
-        "ParameterKey": "Input",
-        "Required": true,
-        "Types": [
-          "WFContentItem"
-        ]
-      },
-      "output": null,
-      "requiredResources": [
-        "WFUserInteractionResource"
-      ],
-      "parameterSummary": {
-        "__class": "WFActionParameterSummary",
-        "singleFormatString": "Show Content Attribution of ${Input}"
-      },
-      "iconColor": "Yellow_Accessibility",
-      "iconSymbol": "point.3.filled.connected.trianglepath.dotted",
-      "inputPassthrough": true,
       "category": "Scripting"
     },
     "is.workflow.actions.delay": {
@@ -18921,30 +18833,6 @@
       "inputPassthrough": true,
       "category": "Documents"
     },
-    "is.workflow.actions.properties.appearance": {
-      "identifier": "is.workflow.actions.properties.appearance",
-      "name": "getDetailsOfAppearance",
-      "displayName": "Get Details of Appearance",
-      "actionClass": "WFContentItemPropertiesAction",
-      "description": null,
-      "keywords": [],
-      "parameters": [],
-      "input": {
-        "Multiple": true,
-        "Required": true,
-        "Types": [
-          "WFAppearanceSettingContentItem"
-        ]
-      },
-      "output": {
-        "Multiple": false,
-        "Types": [
-          "WFContentItem"
-        ]
-      },
-      "requiredResources": [],
-      "category": "Device"
-    },
     "is.workflow.actions.properties.appstore": {
       "identifier": "is.workflow.actions.properties.appstore",
       "name": "getDetailsOfAppStoreApp",
@@ -24145,29 +24033,6 @@
       ],
       "category": "Settings"
     },
-    "is.workflow.actions.sirikit.donation.handle": {
-      "identifier": "is.workflow.actions.sirikit.donation.handle",
-      "name": "unknownIntent",
-      "displayName": "Unknown Intent",
-      "actionClass": "WFHandleDonatedIntentAction",
-      "description": null,
-      "keywords": [],
-      "parameters": [
-        {
-          "key": "ShowWhenRun",
-          "label": "Show When Run",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": true
-        }
-      ],
-      "input": null,
-      "output": null,
-      "requiredResources": [],
-      "inputPassthrough": true,
-      "category": "Scripting"
-    },
     "is.workflow.actions.skipback": {
       "identifier": "is.workflow.actions.skipback",
       "name": "skipBack",
@@ -26836,20 +26701,6 @@
       "iconSymbol": "link",
       "residentCompatible": true,
       "category": "Web"
-    },
-    "is.workflow.actions.useractivity.open": {
-      "identifier": "is.workflow.actions.useractivity.open",
-      "name": "unknownUserActivity",
-      "displayName": "Unknown User Activity",
-      "actionClass": "WFOpenUserActivityAction",
-      "description": null,
-      "keywords": [],
-      "parameters": [],
-      "input": null,
-      "output": null,
-      "requiredResources": [],
-      "inputPassthrough": true,
-      "category": "Scripting"
     },
     "is.workflow.actions.venmo.pay": {
       "identifier": "is.workflow.actions.venmo.pay",

@@ -177,14 +177,6 @@ getCurrentIpAddress(WFIPAddressSourceOption: Enum, WFIPAddressTypeOption: Enum) 
 
 Shortcuts action: `is.workflow.actions.getipaddress`
 
-## `getDetailsOfAppearance`
-
-```chute
-getDetailsOfAppearance() -> Any
-```
-
-Shortcuts action: `is.workflow.actions.properties.appearance`
-
 ## `getDeviceDetails`
 
 Gets information about the current device.
