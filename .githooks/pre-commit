@@ -20,7 +20,7 @@ restore_stash() {
 trap restore_stash EXIT
 
 echo "Typechecking..."
-pnpm run typecheck --silent
+pnpm run --silent typecheck
 echo "  ✓ typecheck"
 
 echo "Linting (auto-fix)..."

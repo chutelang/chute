@@ -700,21 +700,6 @@ overlayText(WFText: Text, WFImage: Image, WFTextPosition: Enum, WFTextX: Number,
 
 Shortcuts action: `is.workflow.actions.overlaytext`
 
-## `play/pause`
-
-Plays or pauses the currently playing media.
-
-```chute
-play/pause(WFPlayPauseBehavior: Enum, WFMediaRoute: Text)
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `WFPlayPauseBehavior` | Play/Pause \\| Play \\| Pause | `"Play/Pause"` |
-| `WFMediaRoute` | Text | `"Local"` |
-
-Shortcuts action: `is.workflow.actions.pausemusic`
-
 ## `playMusic`
 
 Plays music using the Music app.
@@ -730,6 +715,21 @@ playMusic(WFMediaItems: Media, WFPlayMusicActionShuffle: Enum, WFPlayMusicAction
 | `WFPlayMusicActionRepeat` | None \\| One \\| All | — |
 
 Shortcuts action: `is.workflow.actions.playmusic`
+
+## `playPause`
+
+Plays or pauses the currently playing media.
+
+```chute
+playPause(WFPlayPauseBehavior: Enum, WFMediaRoute: Text)
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `WFPlayPauseBehavior` | Play/Pause \\| Play \\| Pause | `"Play/Pause"` |
+| `WFMediaRoute` | Text | `"Local"` |
+
+Shortcuts action: `is.workflow.actions.pausemusic`
 
 ## `playPodcast`
 
@@ -843,12 +843,12 @@ resizeImage(WFImageResizeKey: Enum, WFImageResizeWidth: Number, WFImageResizeHei
 
 Shortcuts action: `is.workflow.actions.image.resize`
 
-## `rotateImage/video`
+## `rotateImageVideo`
 
 Turns an image or video clockwise by a particular number of degrees.
 
 ```chute
-rotateImage/video(WFImageRotateAmount: Number, WFImage: Image) -> Any
+rotateImageVideo(WFImageRotateAmount: Number, WFImage: Image) -> Any
 ```
 
 | Parameter | Type | Default |

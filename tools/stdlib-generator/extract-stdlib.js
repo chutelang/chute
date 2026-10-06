@@ -171,7 +171,8 @@ const PICKER_KEY_TYPE_MAP = {
 
 function toCamelCase(name) {
   return name
-    .split(/[\s\-_]+/)
+    .replace(/[‘’’]+/g, "")
+    .split(/[\s\-_/]+/)
     .filter((w) => w.length > 0)
     .map((word, i) => {
       if (i === 0) {

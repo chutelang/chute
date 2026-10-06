@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-05T20:22:52.859Z",
+  "extractedAt": "2026-09-05T23:25:41.860Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -10811,7 +10811,7 @@
     },
     "is.workflow.actions.getonscreencontent": {
       "identifier": "is.workflow.actions.getonscreencontent",
-      "name": "getWhat’sOnScreen",
+      "name": "getWhatsOnScreen",
       "displayName": "Get What’s On Screen",
       "actionClass": "WFGetOnScreenContentAction",
       "description": {
@@ -13691,7 +13691,7 @@
     },
     "is.workflow.actions.image.rotate": {
       "identifier": "is.workflow.actions.image.rotate",
-      "name": "rotateImage/video",
+      "name": "rotateImageVideo",
       "displayName": "Rotate Image/Video",
       "actionClass": "WFImageRotateAction",
       "description": {
@@ -17794,7 +17794,7 @@
     },
     "is.workflow.actions.pausemusic": {
       "identifier": "is.workflow.actions.pausemusic",
-      "name": "play/pause",
+      "name": "playPause",
       "displayName": "Play/Pause",
       "actionClass": "WFPlayPauseAction",
       "description": {

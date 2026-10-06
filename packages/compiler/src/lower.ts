@@ -150,9 +150,11 @@ export function lower(program: Program): CompilationResult {
           for (const p of overload.params) {
             paramKeys.set(p.label, p.label);
           }
+          const paramLabels = overload.params.map((p) => p.label);
           const nsAction: NamespaceAction = {
             runtimeIdentifier: overload.runtimeIdentifier,
             paramKeys,
+            paramLabels,
           };
           moduleActions.set(namespaceOverloadKey(name, index), nsAction);
           if (index === 0) {

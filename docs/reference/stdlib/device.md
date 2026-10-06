@@ -199,12 +199,12 @@ getNetworkDetails(WFNetworkDetailsNetwork: Text, WFWiFiDetail: Enum, WFCellularD
 
 Shortcuts action: `is.workflow.actions.getwifi`
 
-## `getWhat’sOnScreen`
+## `getWhatsOnScreen`
 
 Gets the current content on screen, if available.
 
 ```chute
-getWhat’sOnScreen() -> File
+getWhatsOnScreen() -> File
 ```
 
 Shortcuts action: `is.workflow.actions.getonscreencontent`
