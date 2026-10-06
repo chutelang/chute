@@ -36,6 +36,14 @@ copyToClipboard(WFLocalOnly: Boolean, WFExpirationDate: Text, WFInput: Any)
 
 Shortcuts action: `is.workflow.actions.setclipboard`
 
+## `createAlarm`
+
+```chute
+createAlarm()
+```
+
+Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent`
+
 ## `ejectDisk`
 
 This action ejects a mounted disk or volume.
@@ -79,6 +87,14 @@ findWindows(WFContentItemSortProperty: Text, WFContentItemSortOrder: Enum, WFCon
 | `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.windows`
+
+## `getAlarms`
+
+```chute
+getAlarms()
+```
+
+Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent`
 
 ## `getAllWallpapers`
 
@@ -288,30 +304,6 @@ moveWindow(WFPosition: Enum, WFXCoordinate: Number, WFYCoordinate: Number, WFWin
 | `Display` | Text | — |
 
 Shortcuts action: `is.workflow.actions.movewindow`
-
-## `mtcreatealarmintent`
-
-```chute
-mtcreatealarmintent()
-```
-
-Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent`
-
-## `mtgetalarmsintent`
-
-```chute
-mtgetalarmsintent()
-```
-
-Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent`
-
-## `mttogglealarmintent`
-
-```chute
-mttogglealarmintent()
-```
-
-Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent`
 
 ## `putDisplayToSleep`
 
@@ -524,6 +516,14 @@ takeScreenshot(WFTakeScreenshotScreenshotType: Enum, WFTakeScreenshotActionInter
 | `WFTakeScreenshotIgnoreContextualAssistanceLayers` | Boolean | false |
 
 Shortcuts action: `is.workflow.actions.takescreenshot`
+
+## `toggleAlarm`
+
+```chute
+toggleAlarm()
+```
+
+Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent`
 
 ## `vibrateDevice`
 

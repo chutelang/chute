@@ -666,8 +666,29 @@ function synthesizeSpecialActionTypes(raw) {
   return {};
 }
 
+const NAME_OVERRIDES = {
+  "com.apple.TVRemoteUIService.LaunchApplicationIntent": "Launch Apple TV App",
+  "com.apple.TVRemoteUIService.LaunchRemoteIntent": "Launch Apple TV Remote",
+  "com.apple.TVRemoteUIService.PauseContentIntent": "Pause Apple TV",
+  "com.apple.TVRemoteUIService.ReduceLoudSoundsIntent": "Reduce Loud Sounds",
+  "com.apple.TVRemoteUIService.SkipContentIntent": "Skip Apple TV Content",
+  "com.apple.TVRemoteUIService.SleepAppleTVIntent": "Sleep Apple TV",
+  "com.apple.TVRemoteUIService.SwitchUserAccountIntent": "Switch Apple TV User",
+  "com.apple.TVRemoteUIService.ToggleCaptionsIntent": "Toggle Captions",
+  "com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent": "Toggle Apple TV Appearance",
+  "com.apple.TVRemoteUIService.WakeAppleTVIntent": "Wake Apple TV",
+  "com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent": "Create Alarm",
+  "com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent": "Get Alarms",
+  "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent": "Toggle Alarm",
+};
+
 function mapAction(identifier, raw, unmappedClasses) {
-  const displayName = raw.Name || raw._intentTitle || identifier.split(".").pop() || identifier;
+  const displayName =
+    NAME_OVERRIDES[identifier] ||
+    raw.Name ||
+    raw._intentTitle ||
+    identifier.split(".").pop() ||
+    identifier;
 
   const keywords =
     typeof raw.ActionKeywords === "string"

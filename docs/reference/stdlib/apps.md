@@ -354,18 +354,18 @@ importToLightroom(applyPreset: Boolean, presetGroup: Enum, preset: Text, WFInput
 
 Shortcuts action: `is.workflow.actions.lightroom.import`
 
-## `launchapplicationintent`
+## `launchAppleTvApp`
 
 ```chute
-launchapplicationintent()
+launchAppleTvApp()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.LaunchApplicationIntent`
 
-## `launchremoteintent`
+## `launchAppleTvRemote`
 
 ```chute
-launchremoteintent()
+launchAppleTvRemote()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.LaunchRemoteIntent`
@@ -399,10 +399,10 @@ openInGoodreader(WFInput: File)
 
 Shortcuts action: `is.workflow.actions.goodreader.open`
 
-## `pausecontentintent`
+## `pauseAppleTv`
 
 ```chute
-pausecontentintent()
+pauseAppleTv()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.PauseContentIntent`
@@ -477,10 +477,10 @@ postToWordpress(WFAccount: Text, Blog: Text, Title: Text, Type: Text, Format: Te
 
 Shortcuts action: `is.workflow.actions.wordpress.post`
 
-## `reduceloudsoundsintent`
+## `reduceLoudSounds`
 
 ```chute
-reduceloudsoundsintent()
+reduceLoudSounds()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.ReduceLoudSoundsIntent`
@@ -553,45 +553,45 @@ sendPayment(IntentAppDefinition: Text, WFVenmoActionRecipients: Text, WFVenmoAct
 
 Shortcuts action: `is.workflow.actions.venmo.pay`
 
-## `skipcontentintent`
+## `skipAppleTvContent`
 
 ```chute
-skipcontentintent()
+skipAppleTvContent()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.SkipContentIntent`
 
-## `sleepappletvintent`
+## `sleepAppleTv`
 
 ```chute
-sleepappletvintent()
+sleepAppleTv()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.SleepAppleTVIntent`
 
-## `switchuseraccountintent`
+## `switchAppleTvUser`
 
 ```chute
-switchuseraccountintent()
+switchAppleTvUser()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.SwitchUserAccountIntent`
 
-## `togglecaptionsintent`
+## `toggleAppleTvAppearance`
 
 ```chute
-togglecaptionsintent()
-```
-
-Shortcuts action: `com.apple.TVRemoteUIService.ToggleCaptionsIntent`
-
-## `togglesystemappearanceintent`
-
-```chute
-togglesystemappearanceintent()
+toggleAppleTvAppearance()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.ToggleSystemAppearanceIntent`
+
+## `toggleCaptions`
+
+```chute
+toggleCaptions()
+```
+
+Shortcuts action: `com.apple.TVRemoteUIService.ToggleCaptionsIntent`
 
 ## `uploadToCloudapp`
 
@@ -608,10 +608,10 @@ uploadToCloudapp(WFCloudAppPrivacyType: Enum, WFInput: Any) -> URL
 
 Shortcuts action: `is.workflow.actions.cloudapp.upload`
 
-## `wakeappletvintent`
+## `wakeAppleTv`
 
 ```chute
-wakeappletvintent()
+wakeAppleTv()
 ```
 
 Shortcuts action: `com.apple.TVRemoteUIService.WakeAppleTVIntent`
