@@ -13,13 +13,13 @@ A shortcut that lets you choose a timer duration, waits, and then sends a notifi
 ## Source
 
 ```chute
+import Scripting;
+import Notification;
+
 shortcut {
   name: "Quick Timer",
   description: "Choose a duration and get notified when time is up",
 }
-
-import Scripting;
-import Notification;
 
 const label = "Timer";
 
@@ -38,7 +38,7 @@ menu "How long?" {
   }
 }
 
-Scripting.showAlert("Timer started!");
+Notification.showAlert("Timer started!");
 ```
 
 ## How it works
@@ -47,4 +47,4 @@ The `menu` presents three timer durations. Each case calls `Scripting.wait()`, w
 
 The `label` variable is defined once and reused across all three cases as the notification title. In the compiled shortcut, this becomes a magic variable that each "Show Notification" action references.
 
-`Scripting.showAlert` runs after the selected case. In the compiled shortcut, it appears after the "End Menu" action.
+`Notification.showAlert` runs after the selected case. In the compiled shortcut, it appears after the "End Menu" action.

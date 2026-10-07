@@ -7,12 +7,12 @@ This page explains how Chute language features map to Siri Shortcuts actions and
 In Shortcuts, every action's output becomes a *magic variable* that later actions can reference. In Chute, you use `const` and `let` instead.
 
 ```chute
+import Notification;
+
 shortcut { name: "Variables" }
 
-import Scripting;
-
 const greeting = "Hello";
-Scripting.showAlert(greeting);
+Notification.showAlert(greeting);
 ```
 
 `const` creates an immutable binding. The compiler translates it into a "Set Variable" action, and any reference to `greeting` becomes a "Get Variable" action that retrieves the stored value.
@@ -31,23 +31,23 @@ For more details, see [Variables and bindings](/reference/variables).
 Chute functions have typed parameters and return values. The compiler includes each function in the same shortcut file. A function call becomes a "Run Shortcut" action that targets that shortcut.
 
 ```chute
-shortcut { name: "Functions" }
+import Notification;
 
-import Scripting;
+shortcut { name: "Functions" }
 
 func double(n: Number) -> Number {
   return n * 2;
 }
 
 const result = double(5);
-Scripting.showResult("${result}");
+Notification.showResult("${result}");
 ```
 
 For more details, see [Functions](/reference/functions).
 
 ## Actions map to Shortcuts actions
 
-The `action` keyword binds a Chute function name to a Shortcuts action identifier. Standard library functions such as `Scripting.showAlert` and `Device.getClipboard` use action declarations.
+The `action` keyword binds a Chute function name to a Shortcuts action identifier. Standard library functions such as `Notification.showAlert` and `Device.getClipboard` use action declarations.
 
 Here's what the standard library's `showAlert` looks like internally:
 
@@ -75,13 +75,13 @@ Chute's control flow statements map directly to their Shortcuts equivalents:
 | `menu "prompt"` | Choose from Menu |
 
 ```chute
-shortcut { name: "ControlFlow" }
+import Notification;
 
-import Scripting;
+shortcut { name: "ControlFlow" }
 
 const items = ["apples", "bananas", "cherries"];
 for item in items {
-  Scripting.showAlert(item);
+  Notification.showAlert(item);
 }
 ```
 
@@ -113,15 +113,15 @@ For more details, see [Types](/reference/types).
 In Shortcuts, you chain actions by connecting one action's output to the next action's input. Chute's pipeline operator (`|>`) does the same thing in code.
 
 ```chute
+import Notification;
+
 shortcut { name: "Pipelines" }
 
 func double(n: Number) -> Number { return n * 2; }
 func triple(n: Number) -> Number { return n * 3; }
 
-import Scripting;
-
 const x = 5 |> double |> triple;
-Scripting.showResult("${x}");
+Notification.showResult("${x}");
 ```
 
 The value `5` flows into `double`, and the result flows into `triple`. You can also use `|>?` for optional values. If the value is `nil`, the pipeline short-circuits and the result is `nil`.

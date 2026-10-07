@@ -7,10 +7,10 @@ Functions define reusable logic with typed parameters and return values. The com
 Use `func` followed by the name, parameters, an optional return type, and a body:
 
 ```chute
-import Scripting;
+import Notification;
 
 func greet(name: Text) {
-  Scripting.showAlert("Hello, ${name}!");
+  Notification.showAlert("Hello, ${name}!");
 }
 ```
 
@@ -75,7 +75,7 @@ The compiler warns about recursive and mutually recursive functions. Siri Shortc
 ```text
 func countdown(n: Number) {
   if (n > 0) {
-    Scripting.showAlert("${n}");
+    Notification.showAlert("${n}");
     countdown(n - 1);
   }
 }

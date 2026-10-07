@@ -14,15 +14,15 @@ A shortcut that reads your clipboard, lets you choose what to do with it, and ac
 ## Source
 
 ```chute
+import Device;
+import Sharing;
+import Text;
+import Notification;
+
 shortcut {
   name: "Share Clipboard",
   description: "Read clipboard and share or transform it",
 }
-
-import Device;
-import Sharing;
-import Text;
-import Scripting;
 
 const text = Device.getClipboard();
 
@@ -33,10 +33,10 @@ menu "What do you want to do?" {
   case "Copy Uppercase" {
     const upper = Text.changeCase(text, "UPPERCASE");
     Device.copyToClipboard(upper);
-    Scripting.showAlert("Copied to clipboard!");
+    Notification.showAlert("Copied to clipboard!");
   }
   case "Show" {
-    Scripting.showAlert("Clipboard: ${text}");
+    Notification.showAlert("Clipboard: ${text}");
   }
 }
 ```

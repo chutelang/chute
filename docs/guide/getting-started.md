@@ -39,19 +39,19 @@ This creates three files:
 Open `src/main.chute` and you'll see the starter template:
 
 ```chute
+import Notification;
+
 shortcut {
   name: "Hello World",
   description: "A shortcut created with Chute",
 }
 
-import Scripting;
-
-Scripting.showAlert("Hello from Chute!");
+Notification.showAlert("Hello from Chute!");
 ```
 
-Every Chute file starts with an optional `shortcut` metadata block that sets the shortcut's name and description. After that comes the body. The body is a sequence of statements that become the shortcut's actions.
+Every Chute file starts with imports, followed by an optional `shortcut` metadata block that sets the shortcut's name and description. After that comes the body. The body is a sequence of statements that become the shortcut's actions.
 
-`Scripting.showAlert` is a built-in action from the [standard library](/reference/stdlib/scripting). In the Shortcuts app, this is the "Show Alert" action. You import a stdlib module and call its actions like functions.
+`Notification.showAlert` is a built-in action from the [standard library](/reference/stdlib/notification). In the Shortcuts app, this is the "Show Alert" action. You import a stdlib module and call its actions like functions.
 
 ## Build and run
 
@@ -74,15 +74,16 @@ The Shortcuts app prompts you to add the shortcut. Select **Add Shortcut**, then
 Let's make the shortcut more interesting. Replace the contents of `src/main.chute` with:
 
 ```chute
+import Scripting;
+import Notification;
+
 shortcut {
   name: "Greeter",
   description: "Asks for your name and greets you",
 }
 
-import Scripting;
-
 const name = Scripting.askForInput("What's your name?");
-Scripting.showAlert("Hello, ${name}!");
+Notification.showAlert("Hello, ${name}!");
 ```
 
 The example uses two language features:
@@ -103,15 +104,15 @@ The shortcut will ask for your name, then show an alert greeting you.
 Chute supports `if`/`else`, `for` loops, `repeat`, and `menu`, all of which compile to their Shortcuts equivalents. Here's a shortcut that presents a menu based on what's in your clipboard:
 
 ```chute
+import Device;
+import Sharing;
+import Text;
+import Notification;
+
 shortcut {
   name: "Clipboard Actions",
   description: "Do something with your clipboard",
 }
-
-import Device;
-import Sharing;
-import Text;
-import Scripting;
 
 const text = Device.getClipboard();
 
@@ -122,7 +123,7 @@ menu "What do you want to do?" {
   case "Make Uppercase" {
     const upper = Text.changeCase(text, "UPPERCASE");
     Device.copyToClipboard(upper);
-    Scripting.showAlert("Copied uppercase text!");
+    Notification.showAlert("Copied uppercase text!");
   }
 }
 ```

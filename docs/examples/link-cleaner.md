@@ -13,14 +13,14 @@ A shortcut that takes a URL from the clipboard, strips tracking parameters, and 
 ## Source
 
 ```chute
+import Device;
+import Text;
+import Notification;
+
 shortcut {
   name: "Link Cleaner",
   description: "Strip tracking parameters from a URL",
 }
-
-import Device;
-import Text;
-import Scripting;
 
 func cleanURL(url: Text) -> Text {
   const parts = Text.splitText(url, "?");
@@ -30,7 +30,7 @@ func cleanURL(url: Text) -> Text {
 const url = Device.getClipboard();
 const cleaned = url |> cleanURL;
 Device.copyToClipboard(cleaned);
-Scripting.showAlert("Cleaned URL copied!\n${cleaned}");
+Notification.showAlert("Cleaned URL copied!\n${cleaned}");
 ```
 
 ## How it works
