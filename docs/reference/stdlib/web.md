@@ -36,21 +36,6 @@ expandUrl(url: Text) -> URL
 
 Shortcuts action: `is.workflow.actions.url.expand`
 
-## `filterArticles`
-
-```chute
-filterArticles(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Article
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `sortBy` | Title \\| Author \\| Published Date \\| URL \\| Number of Words \\| Main Image URL \\| Excerpt \\| Body | — |
-| `order` | Latest First \\| Oldest First | — |
-| `WFContentItemLimit` | Boolean | false |
-| `WFContentItemLimitNumber` | Number | 5 |
-
-Shortcuts action: `is.workflow.actions.filter.articles`
-
 ## `findAppStoreApps`
 
 Searches the App Store, returning the apps that match the specified search terms. You can get more details about the results using the Get Details of App Store App action.
@@ -68,6 +53,21 @@ findAppStoreApps(search: Text, searchBy: Text, results: Text, region: Text, WFIt
 | `WFItemLimit` | Number | 25 |
 
 Shortcuts action: `is.workflow.actions.searchappstore`
+
+## `findArticles`
+
+```chute
+findArticles(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Article
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `sortBy` | Title \\| Author \\| Published Date \\| URL \\| Number of Words \\| Main Image URL \\| Excerpt \\| Body | — |
+| `order` | Latest First \\| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
+
+Shortcuts action: `is.workflow.actions.filter.articles`
 
 ## `findItunesStoreItems`
 

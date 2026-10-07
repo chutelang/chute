@@ -207,21 +207,6 @@ encodeMedia(media: Media, audioOnly: Boolean, format: Enum, size: Enum, speed: E
 
 Shortcuts action: `is.workflow.actions.encodemedia`
 
-## `filterImages`
-
-```chute
-filterImages(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Image
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `sortBy` | Width \\| Height \\| Date Taken \\| Camera Make \\| Camera Model \\| Is a Screenshot \\| Location \\| Duration \\| Frame Rate \\| File Size \\| File Extension \\| Name \\| Album \\| Media Type \\| Photo Type \\| Time Taken \\| Metadata Dictionary \\| Is Favorite \\| Is Hidden \\| Creation Date \\| Last Modified Date | — |
-| `order` | Latest First \\| Oldest First | — |
-| `WFContentItemLimit` | Boolean | false |
-| `WFContentItemLimitNumber` | Number | 5 |
-
-Shortcuts action: `is.workflow.actions.filter.images`
-
 ## `findGiphyGifs`
 
 Finds GIFs representing the provided text, using Giphy.
@@ -240,6 +225,21 @@ findGiphyGifs(search: Text, showGifPicker: Boolean, WFGiphyLimit: Number, select
 > Powered by Giphy (giphy.com)
 
 Shortcuts action: `is.workflow.actions.giphy`
+
+## `findImages`
+
+```chute
+findImages(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Image
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `sortBy` | Width \\| Height \\| Date Taken \\| Camera Make \\| Camera Model \\| Is a Screenshot \\| Location \\| Duration \\| Frame Rate \\| File Size \\| File Extension \\| Name \\| Album \\| Media Type \\| Photo Type \\| Time Taken \\| Metadata Dictionary \\| Is Favorite \\| Is Hidden \\| Creation Date \\| Last Modified Date | — |
+| `order` | Latest First \\| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
+
+Shortcuts action: `is.workflow.actions.filter.images`
 
 ## `findMusic`
 

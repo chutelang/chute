@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T01:06:20.472Z",
+  "extractedAt": "2026-09-06T01:08:40.128Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -690,8 +690,8 @@
     },
     "is.workflow.actions.addnewcalendar": {
       "identifier": "is.workflow.actions.addnewcalendar",
-      "name": "addNewCalendar",
-      "displayName": "Add New Calendar",
+      "name": "newCalendar",
+      "displayName": "New Calendar",
       "actionClass": "WFAddNewCalendarAction",
       "description": {
         "summary": "Creates a new calendar.",
@@ -7455,8 +7455,8 @@
     },
     "is.workflow.actions.filter.articles": {
       "identifier": "is.workflow.actions.filter.articles",
-      "name": "filterArticles",
-      "displayName": "Filter Articles",
+      "name": "findArticles",
+      "displayName": "Find Articles",
       "actionClass": "WFContentItemFilterAction",
       "description": null,
       "keywords": [],
@@ -7760,8 +7760,8 @@
     },
     "is.workflow.actions.filter.eventattendees": {
       "identifier": "is.workflow.actions.filter.eventattendees",
-      "name": "filterEventAttendees",
-      "displayName": "Filter Event Attendees",
+      "name": "findEventAttendees",
+      "displayName": "Find Event Attendees",
       "actionClass": "WFContentItemFilterAction",
       "description": null,
       "keywords": [],
@@ -7826,8 +7826,8 @@
     },
     "is.workflow.actions.filter.files": {
       "identifier": "is.workflow.actions.filter.files",
-      "name": "filterFiles",
-      "displayName": "Filter Files",
+      "name": "findFiles",
+      "displayName": "Find Files",
       "actionClass": "WFContentItemFilterAction",
       "description": null,
       "keywords": [],
@@ -7922,8 +7922,8 @@
     },
     "is.workflow.actions.filter.images": {
       "identifier": "is.workflow.actions.filter.images",
-      "name": "filterImages",
-      "displayName": "Filter Images",
+      "name": "findImages",
+      "displayName": "Find Images",
       "actionClass": "WFContentItemFilterAction",
       "description": null,
       "keywords": [],
@@ -8013,8 +8013,8 @@
     },
     "is.workflow.actions.filter.locations": {
       "identifier": "is.workflow.actions.filter.locations",
-      "name": "filterLocations",
-      "displayName": "Filter Locations",
+      "name": "findLocations",
+      "displayName": "Find Locations",
       "actionClass": "WFContentItemFilterAction",
       "description": null,
       "keywords": [],

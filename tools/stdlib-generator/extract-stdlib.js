@@ -706,6 +706,14 @@ const NAME_OVERRIDES = {
   "is.workflow.actions.dismisssiri": "Dismiss Siri",
   "is.workflow.actions.getclassaction": "Get Content of Type",
   "is.workflow.actions.gettypeaction": "Convert to File Type",
+  // Unify "filter" → "find" for consistency
+  "is.workflow.actions.filter.articles": "Find Articles",
+  "is.workflow.actions.filter.eventattendees": "Find Event Attendees",
+  "is.workflow.actions.filter.files": "Find Files",
+  "is.workflow.actions.filter.images": "Find Images",
+  "is.workflow.actions.filter.locations": "Find Locations",
+  // add+new → new for consistency
+  "is.workflow.actions.addnewcalendar": "New Calendar",
   // Documents — clearer names
   "is.workflow.actions.file": "Specify File",
   "is.workflow.actions.compresspdf": "Compress PDF",

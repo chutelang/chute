@@ -6,20 +6,6 @@ Events and reminders.
 import Calendar;
 ```
 
-## `addNewCalendar`
-
-Creates a new calendar.
-
-```chute
-addNewCalendar(calendarName: Text) -> Text
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `calendarName` | Text | — |
-
-Shortcuts action: `is.workflow.actions.addnewcalendar`
-
 ## `editCalendarEvent`
 
 ```chute
@@ -66,21 +52,6 @@ editReminder(property: Enum, value: Any) -> Reminder
 
 Shortcuts action: `is.workflow.actions.setters.reminders`
 
-## `filterEventAttendees`
-
-```chute
-filterEventAttendees(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> EventAttendee
-```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `sortBy` | Name \\| Email Address \\| Is Me \\| Role \\| Status | — |
-| `order` | Latest First \\| Oldest First | — |
-| `WFContentItemLimit` | Boolean | false |
-| `WFContentItemLimitNumber` | Number | 5 |
-
-Shortcuts action: `is.workflow.actions.filter.eventattendees`
-
 ## `findCalendarEvents`
 
 ```chute
@@ -95,6 +66,21 @@ findCalendarEvents(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFCon
 | `WFContentItemLimitNumber` | Number | 5 |
 
 Shortcuts action: `is.workflow.actions.filter.calendarevents`
+
+## `findEventAttendees`
+
+```chute
+findEventAttendees(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> EventAttendee
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `sortBy` | Name \\| Email Address \\| Is Me \\| Role \\| Status | — |
+| `order` | Latest First \\| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
+
+Shortcuts action: `is.workflow.actions.filter.eventattendees`
 
 ## `findReminders`
 
@@ -178,6 +164,20 @@ getUpcomingReminders(list: Text, WFGetUpcomingItemCount: Number) -> Reminder
 | `WFGetUpcomingItemCount` | Number | 1 |
 
 Shortcuts action: `is.workflow.actions.getupcomingreminders`
+
+## `newCalendar`
+
+Creates a new calendar.
+
+```chute
+newCalendar(calendarName: Text) -> Text
+```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `calendarName` | Text | — |
+
+Shortcuts action: `is.workflow.actions.addnewcalendar`
 
 ## `newEvent`
 

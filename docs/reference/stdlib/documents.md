@@ -86,10 +86,10 @@ extractArchive(archive: File) -> File
 
 Shortcuts action: `is.workflow.actions.unzip`
 
-## `filterFiles`
+## `findFiles`
 
 ```chute
-filterFiles(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> File
+findFiles(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> File
 ```
 
 | Parameter | Type | Default |

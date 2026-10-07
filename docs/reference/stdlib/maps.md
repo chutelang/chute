@@ -6,10 +6,10 @@ Location, directions, and weather.
 import Maps;
 ```
 
-## `filterLocations`
+## `findLocations`
 
 ```chute
-filterLocations(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Location
+findLocations(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> Location
 ```
 
 | Parameter | Type | Default |
