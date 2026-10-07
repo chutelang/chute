@@ -585,7 +585,7 @@ function synthesizeSpecialActionTypes(raw) {
 
   const properties = CONTENT_ITEM_PROPERTIES[contentItemClass] ?? [];
 
-  if (cls === "WFContentItemFilterAction") {
+  if (cls === "WFContentItemFilterAction" || cls === "WFFindHealthSamplesAction") {
     const params = [
       {
         Key: "WFContentItemSortProperty",
@@ -923,6 +923,27 @@ const OUTPUT_OVERRIDES = {
   "is.workflow.actions.text.match.getgroup": { Types: ["NSString"] },
   "is.workflow.actions.text.split": { Multiple: true, Types: ["NSString"] },
   "is.workflow.actions.correctspelling": { Types: ["NSString"] },
+  // Multi-type outputs narrowed to their most common/useful type
+  "is.workflow.actions.base64encode": { Types: ["WFStringContentItem"] },
+  "is.workflow.actions.runshellscript": { Types: ["public.plain-text"] },
+  "is.workflow.actions.rss": { Multiple: true, Types: ["WFArticle"] },
+  "is.workflow.actions.avairyeditphoto": { Types: ["WFImageContentItem"] },
+  "is.workflow.actions.image.rotate": { Types: ["WFImage"] },
+  "is.workflow.actions.getwifi": { Types: ["NSString"] },
+  "is.workflow.actions.getdevicedetails": { Types: ["NSString"] },
+};
+
+// Manual intent params for actions whose intent definitions weren't extracted
+const MANUAL_INTENT_PARAMS = {
+  "com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent": [
+    { name: "dateComponents", type: "DateComponents", displayName: "Time" },
+    { name: "label", type: "String", displayName: "Label" },
+    { name: "repeatSchedule", type: "Integer", displayName: "Repeat" },
+  ],
+  "com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent": [
+    { name: "alarm", type: "Object", displayName: "Alarm" },
+    { name: "operation", type: "Integer", displayName: "Operation" },
+  ],
 };
 
 const SKIP_IDENTIFIERS = new Set([
@@ -1000,6 +1021,10 @@ for (const identifier of Object.keys(rawActions).sort()) {
 
   if (OUTPUT_OVERRIDES[identifier]) {
     mapped.output = OUTPUT_OVERRIDES[identifier];
+  }
+
+  if (MANUAL_INTENT_PARAMS[identifier] && !mapped.intentParameters?.length) {
+    mapped.intentParameters = MANUAL_INTENT_PARAMS[identifier];
   }
 
   const hiddenKeys = HIDDEN_PARAMS[identifier];

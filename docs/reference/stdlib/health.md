@@ -19,8 +19,15 @@ Shortcuts action: `is.workflow.actions.workout.end`
 ## `findHealthSamples`
 
 ```chute
-findHealthSamples()
+findHealthSamples(sortBy: Enum, order: Enum, WFContentItemLimit: Boolean, WFContentItemLimitNumber: Number) -> HealthSample
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `sortBy` | Name \\| Type \\| Value \\| Start Date \\| End Date \\| Duration \\| Source | — |
+| `order` | Latest First \\| Oldest First | — |
+| `WFContentItemLimit` | Boolean | false |
+| `WFContentItemLimitNumber` | Number | 5 |
 
 > If you only see some but not all of your data in the results, make sure that “Allow Shortcuts to read data” is set to on in the Health app.
 

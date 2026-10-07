@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T01:49:21.115Z",
+  "extractedAt": "2026-09-06T02:15:19.852Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -333,7 +333,24 @@
           "Prompt": "For when?"
         }
       },
-      "category": "Device"
+      "category": "Device",
+      "intentParameters": [
+        {
+          "name": "dateComponents",
+          "type": "DateComponents",
+          "displayName": "Time"
+        },
+        {
+          "name": "label",
+          "type": "String",
+          "displayName": "Label"
+        },
+        {
+          "name": "repeatSchedule",
+          "type": "Integer",
+          "displayName": "Repeat"
+        }
+      ]
     },
     "com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent": {
       "identifier": "com.apple.mobiletimer-framework.MobileTimerIntents.MTGetAlarmsIntent",
@@ -361,7 +378,19 @@
       "output": null,
       "requiredResources": [],
       "intentIdentifier": "sirikit.intents.custom.com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent",
-      "category": "Device"
+      "category": "Device",
+      "intentParameters": [
+        {
+          "name": "alarm",
+          "type": "Object",
+          "displayName": "Alarm"
+        },
+        {
+          "name": "operation",
+          "type": "Integer",
+          "displayName": "Operation"
+        }
+      ]
     },
     "com.apple.musicrecognition.RecognizeMusicIntent": {
       "identifier": "com.apple.musicrecognition.RecognizeMusicIntent",
@@ -2538,12 +2567,8 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public",
-        "Multiple": true,
-        "OutputName": "Markup Result",
         "Types": [
-          "WFImageContentItem",
-          "WFPDFContentItem"
+          "WFImageContentItem"
         ]
       },
       "requiredResources": [
@@ -2630,12 +2655,8 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public",
-        "Multiple": true,
-        "OutputName": "Base64 Encoded",
         "Types": [
-          "WFStringContentItem",
-          "public.data"
+          "WFStringContentItem"
         ]
       },
       "requiredResources": [],
@@ -7909,9 +7930,64 @@
         "note": "If you only see some but not all of your data in the results, make sure that “Allow Shortcuts to read data” is set to on in the Health app."
       },
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemSortProperty",
+          "chuteKey": "sortBy",
+          "label": "Sort by",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": false,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Type",
+            "Value",
+            "Start Date",
+            "End Date",
+            "Duration",
+            "Source"
+          ]
+        },
+        {
+          "key": "WFContentItemSortOrder",
+          "chuteKey": "order",
+          "label": "Order",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": false,
+          "defaultValue": null,
+          "items": [
+            "Latest First",
+            "Oldest First"
+          ]
+        },
+        {
+          "key": "WFContentItemLimit",
+          "chuteKey": "WFContentItemLimit",
+          "label": "Limit",
+          "class": "WFSwitchParameter",
+          "chuteType": "Boolean",
+          "required": false,
+          "defaultValue": false
+        },
+        {
+          "key": "WFContentItemLimitNumber",
+          "chuteKey": "WFContentItemLimitNumber",
+          "label": "Limit",
+          "class": "WFStepperParameter",
+          "chuteType": "Number",
+          "required": false,
+          "defaultValue": 5
+        }
+      ],
       "input": null,
-      "output": null,
+      "output": {
+        "Multiple": true,
+        "Types": [
+          "WFHKSampleContentItem"
+        ]
+      },
       "requiredResources": [
         "WFHealthKitResource",
         {
@@ -9469,11 +9545,8 @@
       ],
       "input": null,
       "output": {
-        "Multiple": false,
-        "OutputName": "Device Details",
         "Types": [
-          "NSString",
-          "NSNumber"
+          "NSString"
         ]
       },
       "requiredResources": [],
@@ -12296,11 +12369,8 @@
       ],
       "input": null,
       "output": {
-        "Multiple": false,
-        "OutputName": "Network Details",
         "Types": [
-          "NSString",
-          "NSNumber"
+          "NSString"
         ]
       },
       "requiredResources": [
@@ -14021,12 +14091,8 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public",
-        "Multiple": true,
-        "OutputName": "Rotated Image/Video",
         "Types": [
-          "WFImage",
-          "AVAsset"
+          "WFImage"
         ]
       },
       "requiredResources": [],
@@ -21614,12 +21680,9 @@
         ]
       },
       "output": {
-        "DisclosureLevel": "Public",
         "Multiple": true,
-        "OutputName": "RSS Items",
         "Types": [
-          "WFArticle",
-          "NSURL"
+          "WFArticle"
         ]
       },
       "requiredResources": [
@@ -22067,10 +22130,7 @@
         ]
       },
       "output": {
-        "Multiple": false,
-        "OutputName": "Shell Script Result",
         "Types": [
-          "public.data",
           "public.plain-text"
         ]
       },

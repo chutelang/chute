@@ -213,7 +213,7 @@ Shortcuts action: `is.workflow.actions.url.getheaders`
 Downloads the latest items from an RSS feed.
 
 ```chute
-getItemsFromRssFeed(url: Text, WFRSSItemQuantity: Number) -> Any
+getItemsFromRssFeed(url: Text, WFRSSItemQuantity: Number) -> Article
 ```
 
 | Parameter | Type | Default |

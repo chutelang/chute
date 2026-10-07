@@ -39,8 +39,14 @@ Shortcuts action: `is.workflow.actions.setclipboard`
 ## `createAlarm`
 
 ```chute
-createAlarm()
+createAlarm(dateComponents: Any, label: Any, repeatSchedule: Number)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `dateComponents` | Any | — |
+| `label` | Any | — |
+| `repeatSchedule` | Number | — |
 
 Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTCreateAlarmIntent`
 
@@ -182,7 +188,7 @@ Shortcuts action: `is.workflow.actions.getipaddress`
 Gets information about the current device.
 
 ```chute
-getDeviceDetails(get: Enum) -> Any
+getDeviceDetails(get: Enum) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -196,7 +202,7 @@ Shortcuts action: `is.workflow.actions.getdevicedetails`
 Gets information about the currently connected networks.
 
 ```chute
-getNetworkDetails(network: Text, WFWiFiDetail: Enum, WFCellularDetail: Enum) -> Any
+getNetworkDetails(network: Text, WFWiFiDetail: Enum, WFCellularDetail: Enum) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -511,8 +517,13 @@ Shortcuts action: `is.workflow.actions.takescreenshot`
 ## `toggleAlarm`
 
 ```chute
-toggleAlarm()
+toggleAlarm(alarm: Any, operation: Number)
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `alarm` | Any | — |
+| `operation` | Number | — |
 
 Shortcuts action: `com.apple.mobiletimer-framework.MobileTimerIntents.MTToggleAlarmIntent`
 

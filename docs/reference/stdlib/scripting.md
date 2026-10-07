@@ -71,7 +71,7 @@ Shortcuts action: `is.workflow.actions.ask`
 Encodes or decodes text or files using Base64 encoding.
 
 ```chute
-base64Encode(mode: Enum, lineBreaks: Enum, input: Any) -> Any
+base64Encode(mode: Enum, lineBreaks: Enum, input: Any) -> Text
 ```
 
 | Parameter | Type | Default |
@@ -765,7 +765,7 @@ Shortcuts action: `is.workflow.actions.runsshscript`
 This action executes a UNIX shell script. The script will execute starting in your user’s home directory.
 
 ```chute
-runShellScript(Script: Text, shell: Text, input: File, passInput: Enum, runAsAdministrator: Boolean) -> Any
+runShellScript(Script: Text, shell: Text, input: File, passInput: Enum, runAsAdministrator: Boolean) -> Text
 ```
 
 | Parameter | Type | Default |

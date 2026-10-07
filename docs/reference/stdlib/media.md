@@ -620,7 +620,7 @@ Shortcuts action: `is.workflow.actions.makevideofromgif`
 Edits an image or PDF with Markup.
 
 ```chute
-markup(document: File) -> Any
+markup(document: File) -> Image
 ```
 
 | Parameter | Type | Default |
@@ -867,7 +867,7 @@ Shortcuts action: `is.workflow.actions.image.resize`
 Turns an image or video clockwise by a particular number of degrees.
 
 ```chute
-rotateImageVideo(degrees: Number, image: Image) -> Any
+rotateImageVideo(degrees: Number, image: Image) -> Image
 ```
 
 | Parameter | Type | Default |
