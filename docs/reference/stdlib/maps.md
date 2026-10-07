@@ -81,16 +81,24 @@ Shortcuts action: `is.workflow.actions.properties.locations`
 ## `getDetailsOfParkedCar`
 
 ```chute
-getDetailsOfParkedCar() -> Any
+getDetailsOfParkedCar(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Location \\| Notes \\| Photo | — |
 
 Shortcuts action: `is.workflow.actions.properties.parkedcar`
 
 ## `getDetailsOfRideStatus`
 
 ```chute
-getDetailsOfRideStatus() -> Any
+getDetailsOfRideStatus(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Ride Status \\| Pickup Location \\| Drop-off Location \\| Estimated Pickup Date | — |
 
 Shortcuts action: `is.workflow.actions.properties.ridestatus`
 
@@ -168,7 +176,7 @@ Shortcuts action: `is.workflow.actions.getparkedcarlocation`
 Estimates the amount of time it will take to travel to the location passed into this action.
 
 ```chute
-getTravelTime(startLocation: Text, endLocation: Text, mode: Enum) -> RideStatus
+getTravelTime(startLocation: Text, endLocation: Text, mode: Enum) -> TravelTime
 ```
 
 | Parameter | Type | Default |

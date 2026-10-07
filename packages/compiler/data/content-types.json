@@ -37,7 +37,7 @@
   "WFImageContentItem": "Image",
   "WFPhotoMediaContentItem": "Image",
   "public.image": "Image",
-  "WFPDFContentItem": "Image",
+  "WFPDFContentItem": "File",
 
   "WFContact": "Contact",
   "WFContactContentItem": "Contact",
@@ -99,7 +99,7 @@
   "WFParkedCarContentItem": "ParkedCar",
   "WFRideStatusContentItem": "RideStatus",
   "INRideStatus": "RideStatus",
-  "WFTripInfo": "RideStatus",
+  "WFTripInfo": "TravelTime",
 
   "WFDisplayContentItem": "Display",
   "WFWindowContentItem": "Window",

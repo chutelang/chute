@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T01:08:40.128Z",
+  "extractedAt": "2026-09-06T01:49:21.115Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -19680,7 +19680,26 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Type",
+            "Value",
+            "Start Date",
+            "End Date",
+            "Duration",
+            "Source"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -19770,7 +19789,23 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Genre",
+            "Store URL",
+            "Store ID"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -19795,7 +19830,33 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Artist",
+            "Price",
+            "Genre",
+            "Description",
+            "Store URL",
+            "Store ID",
+            "Artwork",
+            "Release Date",
+            "Duration",
+            "Track Count",
+            "Is Explicit",
+            "Currency Code",
+            "Streamable"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -19930,7 +19991,23 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Location",
+            "Notes",
+            "Photo"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -19960,7 +20037,29 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Feed URL",
+            "Episode GUID",
+            "Duration",
+            "Date",
+            "Has Been Played",
+            "Is Playing",
+            "Artist",
+            "Album",
+            "Store URL"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -19984,7 +20083,26 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Artist",
+            "Feed URL",
+            "Genre",
+            "Store URL",
+            "Store ID",
+            "Artwork"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -20054,7 +20172,23 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Ride Status",
+            "Pickup Location",
+            "Drop-off Location",
+            "Estimated Pickup Date"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -20123,7 +20257,27 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Artist",
+            "Is on Apple Music",
+            "Apple Music URL",
+            "Artwork",
+            "Video URL",
+            "Shazam URL",
+            "Lyrics Snippet"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -20147,7 +20301,25 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Name",
+            "Board",
+            "List",
+            "Due Date",
+            "Description",
+            "URL"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,
@@ -20175,7 +20347,24 @@
       "actionClass": "WFContentItemPropertiesAction",
       "description": null,
       "keywords": [],
-      "parameters": [],
+      "parameters": [
+        {
+          "key": "WFContentItemPropertyName",
+          "chuteKey": "get",
+          "label": "Get",
+          "class": "WFEnumerationParameter",
+          "chuteType": "Enum",
+          "required": true,
+          "defaultValue": null,
+          "items": [
+            "Title",
+            "Text",
+            "Keywords",
+            "Notes",
+            "Identifier"
+          ]
+        }
+      ],
       "input": {
         "Multiple": true,
         "Required": true,

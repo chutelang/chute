@@ -211,16 +211,24 @@ Shortcuts action: `is.workflow.actions.evernote.delete`
 ## `getDetailsOfTrelloItem`
 
 ```chute
-getDetailsOfTrelloItem() -> Any
+getDetailsOfTrelloItem(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Board \\| List \\| Due Date \\| Description \\| URL | — |
 
 Shortcuts action: `is.workflow.actions.properties.trello`
 
 ## `getDetailsOfUlyssesSheet`
 
 ```chute
-getDetailsOfUlyssesSheet() -> Any
+getDetailsOfUlyssesSheet(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Title \\| Text \\| Keywords \\| Notes \\| Identifier | — |
 
 Shortcuts action: `is.workflow.actions.properties.ulysses.sheet`
 

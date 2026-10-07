@@ -317,7 +317,7 @@ Shortcuts action: `is.workflow.actions.getmarkdownfromrichtext`
 Makes a PDF out of the input. The resulting PDF can optionally include a quarter-inch margin for better printing.
 
 ```chute
-makePdf(includeMargin: Boolean, include: Enum, page#: Number, startPage#: Number, endPage#: Number, input: Any, mergeBehavior: Enum) -> Image
+makePdf(includeMargin: Boolean, include: Enum, page#: Number, startPage#: Number, endPage#: Number, input: Any, mergeBehavior: Enum) -> File
 ```
 
 | Parameter | Type | Default |
@@ -500,7 +500,7 @@ Shortcuts action: `is.workflow.actions.file`
 Splits the input document by creating a PDF for each page.
 
 ```chute
-splitPdfIntoPages(pdf: File) -> Image
+splitPdfIntoPages(pdf: File) -> File
 ```
 
 | Parameter | Type | Default |

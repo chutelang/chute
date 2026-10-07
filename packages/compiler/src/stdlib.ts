@@ -78,6 +78,19 @@ const CHUTE_TYPE_MAP: Record<string, ChuteType> = {
   Dictionary: { kind: "dictionary" },
   "List<Any>": { kind: "list", element: { kind: "any" } },
   "List<Text>": { kind: "list", element: { kind: "text" } },
+  App: { kind: "opaque", name: "App" },
+  CalendarEvent: { kind: "opaque", name: "CalendarEvent" },
+  Contact: { kind: "opaque", name: "Contact" },
+  Date: { kind: "opaque", name: "Date" },
+  EvernoteNote: { kind: "opaque", name: "EvernoteNote" },
+  File: { kind: "opaque", name: "File" },
+  Image: { kind: "opaque", name: "Image" },
+  Location: { kind: "opaque", name: "Location" },
+  Media: { kind: "opaque", name: "Media" },
+  Reminder: { kind: "opaque", name: "Reminder" },
+  RichText: { kind: "opaque", name: "RichText" },
+  WebPage: { kind: "opaque", name: "WebPage" },
+  Window: { kind: "opaque", name: "Window" },
 };
 
 const INTENT_TYPE_MAP: Record<string, ChuteType> = {

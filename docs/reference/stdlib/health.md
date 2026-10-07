@@ -29,8 +29,12 @@ Shortcuts action: `is.workflow.actions.filter.health.quantity`
 ## `getDetailsOfHealthSample`
 
 ```chute
-getDetailsOfHealthSample() -> Any
+getDetailsOfHealthSample(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Type \\| Value \\| Start Date \\| End Date \\| Duration \\| Source | — |
 
 Shortcuts action: `is.workflow.actions.properties.health.quantity`
 

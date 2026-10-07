@@ -347,16 +347,24 @@ Shortcuts action: `is.workflow.actions.properties.images`
 ## `getDetailsOfItunesArtist`
 
 ```chute
-getDetailsOfItunesArtist() -> Any
+getDetailsOfItunesArtist(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Genre \\| Store URL \\| Store ID | — |
 
 Shortcuts action: `is.workflow.actions.properties.itunesartist`
 
 ## `getDetailsOfItunesProduct`
 
 ```chute
-getDetailsOfItunesProduct() -> Any
+getDetailsOfItunesProduct(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Artist \\| Price \\| Genre \\| Description \\| Store URL \\| Store ID \\| Artwork \\| Release Date \\| Duration \\| Track Count \\| Is Explicit \\| Currency Code \\| Streamable | — |
 
 Shortcuts action: `is.workflow.actions.properties.itunesstore`
 
@@ -375,24 +383,36 @@ Shortcuts action: `is.workflow.actions.properties.music`
 ## `getDetailsOfPodcast`
 
 ```chute
-getDetailsOfPodcast() -> Any
+getDetailsOfPodcast(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Artist \\| Feed URL \\| Genre \\| Store URL \\| Store ID \\| Artwork | — |
 
 Shortcuts action: `is.workflow.actions.properties.podcastshow`
 
 ## `getDetailsOfPodcastEpisode`
 
 ```chute
-getDetailsOfPodcastEpisode() -> Any
+getDetailsOfPodcastEpisode(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Feed URL \\| Episode GUID \\| Duration \\| Date \\| Has Been Played \\| Is Playing \\| Artist \\| Album \\| Store URL | — |
 
 Shortcuts action: `is.workflow.actions.properties.podcast`
 
 ## `getDetailsOfShazam`
 
 ```chute
-getDetailsOfShazam() -> Any
+getDetailsOfShazam(get: Enum) -> Any
 ```
+
+| Parameter | Type | Default |
+| --- | --- | --- |
+| `get` | Name \\| Artist \\| Is on Apple Music \\| Apple Music URL \\| Artwork \\| Video URL \\| Shazam URL \\| Lyrics Snippet | — |
 
 Shortcuts action: `is.workflow.actions.properties.shazam`
 
@@ -600,7 +620,7 @@ Shortcuts action: `is.workflow.actions.makevideofromgif`
 Edits an image or PDF with Markup.
 
 ```chute
-markup(document: File) -> Image
+markup(document: File) -> Any
 ```
 
 | Parameter | Type | Default |
