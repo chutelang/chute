@@ -5254,7 +5254,7 @@ exports[`compile > should compile const declaration with variable use 1`] = `
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -5525,7 +5525,7 @@ exports[`compile > should compile const destructuring 1`] = `
 			<string>00000000-0000-0000-0000-000000000010</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -5617,7 +5617,7 @@ exports[`compile > should compile enum declaration and member access 1`] = `
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -5709,7 +5709,7 @@ exports[`compile > should compile enum dot-name shorthand with type annotation 1
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -5889,7 +5889,7 @@ exports[`compile > should compile for loop 1`] = `
 			<string>00000000-0000-0000-0000-000000000006</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>item</string>
 			</dict>
 		</dict>
@@ -7267,7 +7267,7 @@ exports[`compile > should compile function declaration and call 1`] = `
 			<string>00000000-0000-0000-0000-000000000024</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -7938,7 +7938,7 @@ exports[`compile > should compile function using enums and records 1`] = `
 			<string>00000000-0000-0000-0000-000000000030</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -8674,7 +8674,7 @@ exports[`compile > should compile hello world to a valid plist 1`] = `
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>Hello from Chute!</string>
 			</dict>
 		</dict>
@@ -8786,7 +8786,7 @@ exports[`compile > should compile if/else statement 1`] = `
 			<string>00000000-0000-0000-0000-000000000005</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>big</string>
 			</dict>
 		</dict>
@@ -8810,7 +8810,7 @@ exports[`compile > should compile if/else statement 1`] = `
 			<string>00000000-0000-0000-0000-000000000007</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>small</string>
 			</dict>
 		</dict>
@@ -8880,8 +8880,10 @@ exports[`compile > should compile menu statement 1`] = `
 				<key>WFMenuPrompt</key>
 				<string>Choose one</string>
 				<key>WFMenuItems</key>
-				<string>Option A
-Option B</string>
+				<array>
+					<string>Option A</string>
+					<string>Option B</string>
+				</array>
 				<key>GroupingIdentifier</key>
 				<string>00000000-0000-0000-0000-000000000000</string>
 			</dict>
@@ -8908,7 +8910,7 @@ Option B</string>
 			<string>00000000-0000-0000-0000-000000000003</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>A</string>
 			</dict>
 		</dict>
@@ -8934,7 +8936,7 @@ Option B</string>
 			<string>00000000-0000-0000-0000-000000000005</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>B</string>
 			</dict>
 		</dict>
@@ -8999,7 +9001,7 @@ exports[`compile > should compile multiple actions 1`] = `
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>first</string>
 			</dict>
 		</dict>
@@ -10356,7 +10358,7 @@ exports[`compile > should compile record construction and field access 1`] = `
 			<string>00000000-0000-0000-0000-000000000011</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -10441,7 +10443,7 @@ exports[`compile > should compile repeat loop 1`] = `
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>again</string>
 			</dict>
 		</dict>
@@ -10528,7 +10530,7 @@ exports[`compile > should compile string interpolation 1`] = `
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -10717,7 +10719,7 @@ exports[`compile > should compile ternary expression 1`] = `
 			<string>00000000-0000-0000-0000-000000000010</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<dict>
 					<key>WFSerializationType</key>
 					<string>WFTextTokenString</string>
@@ -10804,7 +10806,7 @@ exports[`stdlib smoke tests > should compile date action 1`] = `
 			<string>00000000-0000-0000-0000-000000000002</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>Reminder</string>
 			</dict>
 		</dict>
@@ -11106,7 +11108,7 @@ exports[`stdlib smoke tests > should compile showAlert from stdlib 1`] = `
 			<string>00000000-0000-0000-0000-000000000000</string>
 			<key>WFWorkflowActionParameters</key>
 			<dict>
-				<key>WFAlertActionTitle</key>
+				<key>WFAlertActionMessage</key>
 				<string>Hello from stdlib!</string>
 			</dict>
 		</dict>

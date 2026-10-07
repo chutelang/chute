@@ -946,6 +946,11 @@ const MANUAL_INTENT_PARAMS = {
   ],
 };
 
+// Parameter key that should be first (primary) for positional args
+const FIRST_PARAM_OVERRIDES = {
+  "is.workflow.actions.alert": "WFAlertActionMessage",
+};
+
 const SKIP_IDENTIFIERS = new Set([
   // Duplicate of com.apple.musicrecognition.RecognizeMusicIntent (same action, legacy identifier)
   "is.workflow.actions.shazamMedia",
@@ -1047,6 +1052,15 @@ for (const identifier of Object.keys(rawActions).sort()) {
       mapped.intentParameters = mapped.intentParameters.filter(
         (p) => !intentHidden.includes(p.name),
       );
+    }
+  }
+
+  const firstParamKey = FIRST_PARAM_OVERRIDES[identifier];
+  if (firstParamKey) {
+    const idx = mapped.parameters.findIndex((p) => p.key === firstParamKey);
+    if (idx > 0) {
+      const [param] = mapped.parameters.splice(idx, 1);
+      mapped.parameters.unshift(param);
     }
   }
 

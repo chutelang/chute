@@ -130,6 +130,14 @@ function emitKeyValue(
   }
 
   emitKey(lines, depth, key);
+  if (value.kind === "StringArray") {
+    emitIndent(lines, depth, "<array>");
+    for (const s of value.values) {
+      emitIndent(lines, depth + 1, `<string>${escapeXml(s)}</string>`);
+    }
+    emitIndent(lines, depth, "</array>");
+    return;
+  }
   if (value.kind === "VariableRef") {
     emitVariableRef(lines, depth, value, getParameterSlot(actionIdentifier, key));
   } else if (value.kind === "ActionOutputRef") {

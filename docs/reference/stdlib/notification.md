@@ -11,13 +11,13 @@ import Notification;
 Displays an alert with a title, a message, and two buttons. If the user selects the OK button, the shortcut continues. The cancel button stops the shortcut.
 
 ```chute
-showAlert(title: Text, message: Text, showCancelButton: Boolean)
+showAlert(message: Text, title: Text, showCancelButton: Boolean)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `title` | Text | — |
 | `message` | Text | `"Do you want to continue?"` |
+| `title` | Text | — |
 | `showCancelButton` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.alert`

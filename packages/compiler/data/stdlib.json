@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T02:15:19.852Z",
+  "extractedAt": "2026-09-06T13:29:36.540Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -1969,19 +1969,6 @@
       ],
       "parameters": [
         {
-          "key": "WFAlertActionTitle",
-          "chuteKey": "title",
-          "label": "Title",
-          "class": "WFTextInputParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": null,
-          "disallowedVariableTypes": [
-            "Ask"
-          ],
-          "placeholder": "optional"
-        },
-        {
           "key": "WFAlertActionMessage",
           "chuteKey": "message",
           "label": "Message",
@@ -1994,6 +1981,19 @@
           ],
           "placeholder": "Informational message",
           "multiline": true
+        },
+        {
+          "key": "WFAlertActionTitle",
+          "chuteKey": "title",
+          "label": "Title",
+          "class": "WFTextInputParameter",
+          "chuteType": "Text",
+          "required": false,
+          "defaultValue": null,
+          "disallowedVariableTypes": [
+            "Ask"
+          ],
+          "placeholder": "optional"
         },
         {
           "key": "WFAlertActionCancelButtonShown",

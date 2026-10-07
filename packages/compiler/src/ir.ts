@@ -26,7 +26,13 @@ export type ParameterValue =
   | SelfRef
   | InterpolatedText
   | ListItems
-  | DictItems;
+  | DictItems
+  | StringArray;
+
+export interface StringArray {
+  kind: "StringArray";
+  values: string[];
+}
 
 export interface SelfRef {
   kind: "SelfRef";

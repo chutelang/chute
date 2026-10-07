@@ -1303,8 +1303,10 @@ function lowerMenuStatement(stmt: MenuStatement, actions: ActionIR[], ctx: Lower
   const startParams = new Map<string, ParameterValue>();
   startParams.set("WFControlFlowMode", 0);
   startParams.set("WFMenuPrompt", prompt);
-  const items: string[] = stmt.cases.map((c) => c.label);
-  startParams.set("WFMenuItems", items.join("\n"));
+  startParams.set("WFMenuItems", {
+    kind: "StringArray",
+    values: stmt.cases.map((c) => c.label),
+  });
   actions.push({
     identifier: "is.workflow.actions.choosefrommenu",
     uuid: nextUuid(ctx),
