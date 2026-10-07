@@ -11,12 +11,11 @@ import Contacts;
 Calls the phone number passed in as input.
 
 ```chute
-call(app: Text, contact: Text)
+call(contact: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
 | `contact` | Text | — |
 
 Shortcuts action: `com.apple.mobilephone.call`
@@ -67,12 +66,11 @@ Shortcuts action: `is.workflow.actions.email`
 Calls the contact passed in as input using FaceTime.
 
 ```chute
-facetime(app: Text, callType: Enum, contact: Text)
+facetime(callType: Enum, contact: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
 | `callType` | Video \\| Audio | `"Video"` |
 | `contact` | Text | — |
 
@@ -110,7 +108,7 @@ Shortcuts action: `is.workflow.actions.properties.contacts`
 Creates a new contact.
 
 ```chute
-newContact(firstName: Text, lastName: Text, company: Text, photo: Image, phoneNumber: Text, emailAddress: Text, notes: Text, showComposeSheet: Boolean) -> Contact
+newContact(firstName: Text, lastName: Text, company: Text, photo: Image, phoneNumber: Text, emailAddress: Text, notes: Text) -> Contact
 ```
 
 | Parameter | Type | Default |
@@ -122,7 +120,6 @@ newContact(firstName: Text, lastName: Text, company: Text, photo: Image, phoneNu
 | `phoneNumber` | Text | — |
 | `emailAddress` | Text | — |
 | `notes` | Text | — |
-| `showComposeSheet` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.addnewcontact`
 

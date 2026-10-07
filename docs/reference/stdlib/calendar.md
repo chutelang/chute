@@ -184,7 +184,7 @@ Shortcuts action: `is.workflow.actions.getupcomingreminders`
 Creates a new event and adds it to the selected calendar.
 
 ```chute
-newEvent(title: Text, location: Text, calendar: Text, startDate: Text, endDate: Text, allDay: Boolean, alert: Enum, alertTime: Text, notes: Text, showComposeSheet: Boolean) -> CalendarEvent
+newEvent(title: Text, location: Text, calendar: Text, startDate: Text, endDate: Text, allDay: Boolean, alert: Enum, alertTime: Text, notes: Text) -> CalendarEvent
 ```
 
 | Parameter | Type | Default |
@@ -198,7 +198,6 @@ newEvent(title: Text, location: Text, calendar: Text, startDate: Text, endDate: 
 | `alert` | None \\| At time of event \\| 5 minutes before \\| 15 minutes before \\| 30 minutes before \\| 1 hour before \\| 2 hours before \\| 1 day before \\| 2 days before \\| 1 week before \\| Custom | — |
 | `alertTime` | Text | — |
 | `notes` | Text | — |
-| `showComposeSheet` | Boolean | true |
 
 Shortcuts action: `is.workflow.actions.addnewevent`
 

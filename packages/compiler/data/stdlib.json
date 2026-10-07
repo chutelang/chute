@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "extractedAt": "2026-09-06T00:52:21.275Z",
+  "extractedAt": "2026-09-06T01:06:20.472Z",
   "source": "WorkflowKit/ActionKit runtime introspection via iOS simulator",
   "actions": {
     "com.apple.TVRemoteUIService.LaunchApplicationIntent": {
@@ -171,17 +171,6 @@
       ],
       "parameters": [
         {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
-          }
-        },
-        {
           "key": "WFFaceTimeType",
           "chuteKey": "callType",
           "label": "Call Type",
@@ -246,17 +235,6 @@
         "telephone"
       ],
       "parameters": [
-        {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.TelephonyUtilities.PhoneIntentHandler"
-          }
-        },
         {
           "key": "WFCallContact",
           "chuteKey": "contact",
@@ -847,15 +825,6 @@
           "description": "Optionally, notes for this contact.",
           "placeholder": "Notes",
           "multiline": true
-        },
-        {
-          "key": "ShowWhenRun",
-          "chuteKey": "showComposeSheet",
-          "label": "Show Compose Sheet",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": true
         }
       ],
       "input": null,
@@ -1021,15 +990,6 @@
           "description": "Optionally, a description for this event.",
           "placeholder": "Notes",
           "multiline": true
-        },
-        {
-          "key": "ShowWhenRun",
-          "chuteKey": "showComposeSheet",
-          "label": "Show Compose Sheet",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": true
         }
       ],
       "input": null,
@@ -3775,13 +3735,6 @@
           "enumType": null,
           "name": "photos",
           "type": "File"
-        },
-        {
-          "default": null,
-          "displayName": "Asset Identifiers",
-          "enumType": null,
-          "name": "assetIdentifiers",
-          "type": "String"
         }
       ],
       "category": "Media"
@@ -8966,13 +8919,7 @@
           "class": "WFColorPickerParameter",
           "chuteType": "Text",
           "required": false,
-          "defaultValue": {
-            "WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
-            "alphaComponent": 1,
-            "blueComponent": 0,
-            "greenComponent": 0,
-            "redComponent": 0
-          }
+          "defaultValue": "#000000"
         },
         {
           "key": "WFQRBackgroundColor",
@@ -8981,13 +8928,7 @@
           "class": "WFColorPickerParameter",
           "chuteType": "Text",
           "required": false,
-          "defaultValue": {
-            "WFColorRepresentationType": "WFColorRepresentationTypeCGColor",
-            "alphaComponent": 1,
-            "blueComponent": 1,
-            "greenComponent": 1,
-            "redComponent": 1
-          }
+          "defaultValue": "#FFFFFF"
         },
         {
           "key": "WFQRRounded",
@@ -21185,19 +21126,6 @@
       ],
       "parameters": [
         {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": null,
-          "disallowedVariableTypes": [
-            "Ask",
-            "Variable"
-          ]
-        },
-        {
           "key": "PickupLocation",
           "chuteKey": "pickupLocation",
           "label": "Pickup Location",
@@ -23320,30 +23248,6 @@
         "text"
       ],
       "parameters": [
-        {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.MobileSMS"
-          },
-          "disallowedVariableTypes": [
-            "Ask",
-            "Variable"
-          ]
-        },
-        {
-          "key": "ShowWhenRun",
-          "chuteKey": "showComposeSheet",
-          "label": "Show Compose Sheet",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": false
-        },
         {
           "key": "WFSendMessageActionRecipients",
           "chuteKey": "recipients",
@@ -26377,17 +26281,6 @@
       ],
       "parameters": [
         {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.mobiletimer-framework.MobileTimerIntents"
-          }
-        },
-        {
           "key": "WFDuration",
           "chuteKey": "duration",
           "label": "Duration",
@@ -27564,21 +27457,6 @@
       ],
       "parameters": [
         {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.PassKit.PassKitIntentsExtension"
-          },
-          "disallowedVariableTypes": [
-            "Ask",
-            "Variable"
-          ]
-        },
-        {
           "key": "WFVenmoActionRecipients",
           "chuteKey": "recipients",
           "label": "Recipients",
@@ -27657,21 +27535,6 @@
       ],
       "parameters": [
         {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.PassKit.PassKitIntentsExtension"
-          },
-          "disallowedVariableTypes": [
-            "Ask",
-            "Variable"
-          ]
-        },
-        {
           "key": "WFVenmoActionRecipients",
           "chuteKey": "recipients",
           "label": "Recipients",
@@ -27698,22 +27561,6 @@
           "chuteType": "Boolean",
           "required": false,
           "defaultValue": false
-        },
-        {
-          "key": "ShowWhenRun",
-          "chuteKey": "showWhenRun",
-          "label": "Show When Run",
-          "class": "WFSwitchParameter",
-          "chuteType": "Boolean",
-          "required": false,
-          "defaultValue": true,
-          "requiredResources": [
-            {
-              "WFParameterKey": "WFVenmoActionAppSwitch",
-              "WFParameterValue": false,
-              "WFResourceClass": "WFParameterRelationResource"
-            }
-          ]
         },
         {
           "key": "WFVenmoActionNote",
@@ -28778,19 +28625,7 @@
         "watch",
         "fitness"
       ],
-      "parameters": [
-        {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.SessionTrackerApp"
-          }
-        }
-      ],
+      "parameters": [],
       "input": null,
       "output": null,
       "requiredResources": [
@@ -28823,17 +28658,6 @@
         "fitness"
       ],
       "parameters": [
-        {
-          "key": "IntentAppDefinition",
-          "chuteKey": "app",
-          "label": "App",
-          "class": "WFIntentAppPickerParameter",
-          "chuteType": "Text",
-          "required": false,
-          "defaultValue": {
-            "BundleIdentifier": "com.apple.SessionTrackerApp"
-          }
-        },
         {
           "key": "workoutName",
           "chuteKey": "type",

@@ -466,12 +466,11 @@ Shortcuts action: `is.workflow.actions.startscreensaver`
 Starts a timer in the Clock app for the specified amount of time.
 
 ```chute
-startTimer(app: Text, duration: Number)
+startTimer(duration: Number)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
 | `duration` | Number | — |
 
 Shortcuts action: `is.workflow.actions.timer.start`

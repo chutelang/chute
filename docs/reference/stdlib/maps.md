@@ -247,12 +247,11 @@ Shortcuts action: `is.workflow.actions.searchmaps`
 Requests a ride from the specified pickup location to a specified drop off location.
 
 ```chute
-requestRide(app: Text, pickupLocation: Text, dropOffLocation: Text, rideType: Text, paymentMethod: Text, partySize: Number) -> RideStatus
+requestRide(pickupLocation: Text, dropOffLocation: Text, rideType: Text, paymentMethod: Text, partySize: Number) -> RideStatus
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | — |
 | `pickupLocation` | Text | — |
 | `dropOffLocation` | Text | — |
 | `rideType` | Text | — |

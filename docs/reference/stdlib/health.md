@@ -11,12 +11,8 @@ import Health;
 Ends the active workout on your Apple Watch.
 
 ```chute
-endWorkout(app: Text)
+endWorkout()
 ```
-
-| Parameter | Type | Default |
-| --- | --- | --- |
-| `app` | Text | [object Object] |
 
 Shortcuts action: `is.workflow.actions.workout.end`
 
@@ -82,12 +78,11 @@ Shortcuts action: `is.workflow.actions.health.workout.log`
 Starts a workout on your Apple Watch.
 
 ```chute
-startWorkout(app: Text, type: Text, openGoal: Boolean, value: Number)
+startWorkout(type: Text, openGoal: Boolean, value: Number)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
 | `type` | Text | — |
 | `openGoal` | Boolean | true |
 | `value` | Number | `"15"` |

@@ -490,16 +490,14 @@ Shortcuts action: `com.apple.TVRemoteUIService.ReduceLoudSoundsIntent`
 Requests a payment from the specified people using a payment app on your device.
 
 ```chute
-requestPayment(app: Text, recipients: Text, amount: Number, openInApp: Boolean, showWhenRun: Boolean, note: Text)
+requestPayment(recipients: Text, amount: Number, openInApp: Boolean, note: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
 | `recipients` | Text | — |
 | `amount` | Number | — |
 | `openInApp` | Boolean | false |
-| `showWhenRun` | Boolean | true |
 | `note` | Text | — |
 
 Shortcuts action: `is.workflow.actions.venmo.request`
@@ -540,12 +538,11 @@ Shortcuts action: `com.panic.iOS.Transmit.Share`
 Sends a payment to the specified people using a payment app on your device.
 
 ```chute
-sendPayment(app: Text, recipients: Text, amount: Number, openInApp: Boolean, note: Text)
+sendPayment(recipients: Text, amount: Number, openInApp: Boolean, note: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
 | `recipients` | Text | — |
 | `amount` | Number | — |
 | `openInApp` | Boolean | false |

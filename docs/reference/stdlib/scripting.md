@@ -173,8 +173,8 @@ createQrCode(text: Text, foregroundColor: Text, backgroundColor: Text, rounded: 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `text` | Text | — |
-| `foregroundColor` | Text | [object Object] |
-| `backgroundColor` | Text | [object Object] |
+| `foregroundColor` | Text | `"#000000"` |
+| `backgroundColor` | Text | `"#FFFFFF"` |
 | `rounded` | Boolean | false |
 | `errorCorrection` | Low \\| Medium \\| Quartile \\| High | `"Medium"` |
 

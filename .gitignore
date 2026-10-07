@@ -8,3 +8,4 @@ docs/.vitepress/cache
 *.so
 *.dll
 *.dylib
+docs/reference/stdlib/.nfs*

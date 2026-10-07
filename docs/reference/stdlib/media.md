@@ -171,13 +171,12 @@ Shortcuts action: `is.workflow.actions.image.crop`
 Deletes the photos passed as input from the device's photo library. This action asks for confirmation before performing the deletion.
 
 ```chute
-deletePhotos(photos: Any, assetIdentifiers: Any)
+deletePhotos(photos: Any)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
 | `photos` | Any | — |
-| `assetIdentifiers` | Any | — |
 
 Shortcuts action: `is.workflow.actions.deletephotos`
 

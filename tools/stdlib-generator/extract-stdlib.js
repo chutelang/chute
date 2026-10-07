@@ -873,6 +873,34 @@ const SKIP_IDENTIFIERS = new Set([
   "is.workflow.actions.properties.appearance",
 ]);
 
+// Parameters to strip from the user-facing API (implementation details)
+const HIDDEN_PARAMS = {
+  // IntentAppDefinition — internal app routing, users should never set these
+  "com.apple.facetime.facetime": ["IntentAppDefinition"],
+  "com.apple.mobilephone.call": ["IntentAppDefinition"],
+  "is.workflow.actions.sendmessage": ["IntentAppDefinition", "ShowWhenRun"],
+  "is.workflow.actions.timer.start": ["IntentAppDefinition"],
+  "is.workflow.actions.venmo.pay": ["IntentAppDefinition"],
+  "is.workflow.actions.venmo.request": ["IntentAppDefinition", "ShowWhenRun"],
+  "is.workflow.actions.workout.start": ["IntentAppDefinition"],
+  "is.workflow.actions.workout.end": ["IntentAppDefinition"],
+  "is.workflow.actions.ride.requestride": ["IntentAppDefinition"],
+  // ShowWhenRun — internal display flag
+  "is.workflow.actions.addnewcontact": ["ShowWhenRun"],
+  "is.workflow.actions.addnewevent": ["ShowWhenRun"],
+  // assetIdentifiers — internal implementation detail
+  "is.workflow.actions.deletephotos": ["assetIdentifiers"],
+};
+
+// Override unwieldy default values
+const DEFAULT_OVERRIDES = {
+  // QR code color defaults — replace raw color dicts with simple strings
+  "is.workflow.actions.generatebarcode": {
+    WFQRForegroundColor: "#000000",
+    WFQRBackgroundColor: "#FFFFFF",
+  },
+};
+
 const unmappedClasses = new Set();
 const actions = {};
 
@@ -906,6 +934,29 @@ for (const identifier of Object.keys(rawActions).sort()) {
 
   if (OUTPUT_OVERRIDES[identifier]) {
     mapped.output = OUTPUT_OVERRIDES[identifier];
+  }
+
+  const hiddenKeys = HIDDEN_PARAMS[identifier];
+  if (hiddenKeys) {
+    mapped.parameters = mapped.parameters.filter((p) => !hiddenKeys.includes(p.key));
+  }
+
+  const defaultOverrides = DEFAULT_OVERRIDES[identifier];
+  if (defaultOverrides) {
+    for (const p of mapped.parameters) {
+      if (p.key && p.key in defaultOverrides) {
+        p.defaultValue = defaultOverrides[p.key];
+      }
+    }
+  }
+
+  if (mapped.intentParameters) {
+    const intentHidden = HIDDEN_PARAMS[identifier];
+    if (intentHidden) {
+      mapped.intentParameters = mapped.intentParameters.filter(
+        (p) => !intentHidden.includes(p.name),
+      );
+    }
   }
 
   for (const p of mapped.parameters) {

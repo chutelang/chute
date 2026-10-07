@@ -73,13 +73,11 @@ Shortcuts action: `is.workflow.actions.sendemail`
 Sends a message. Pass images, videos, or other files as input to include attachments.
 
 ```chute
-sendMessage(app: Text, showComposeSheet: Boolean, recipients: Text, message: Text, prefix: Text)
+sendMessage(recipients: Text, message: Text, prefix: Text)
 ```
 
 | Parameter | Type | Default |
 | --- | --- | --- |
-| `app` | Text | [object Object] |
-| `showComposeSheet` | Boolean | false |
 | `recipients` | Text | — |
 | `message` | Text | — |
 | `prefix` | Text | — |
