@@ -548,5 +548,105 @@
     "name": "cmp-text-has-suffix-false",
     "source": "shortcut { name: \"Test\" } const x = \"hello world\"; const result = x hasSuffix \"hello\" ? \"yes\" : \"no\";",
     "expected": "no"
+  },
+  {
+    "name": "stdlib-combine-text",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.combineText(\"hello\", .custom, \"-\");",
+    "expected": "hello"
+  },
+  {
+    "name": "stdlib-split-text",
+    "source": "import Text;\nimport Scripting;\nshortcut { name: \"Test\" } const parts = Text.splitText(\"a,b,c\", .custom, \",\"); const result = Scripting.count(parts);",
+    "expected": "3"
+  },
+  {
+    "name": "stdlib-random-number",
+    "source": "import Math;\nshortcut { name: \"Test\" } const n = Math.randomNumber(5, 5); const result = n;",
+    "expected": "5"
+  },
+  {
+    "name": "stdlib-number-literal",
+    "source": "import Math;\nshortcut { name: \"Test\" } const result = Math.number(99);",
+    "expected": "99"
+  },
+  {
+    "name": "stdlib-round-number",
+    "source": "import Math;\nshortcut { name: \"Test\" } const result = Math.roundNumber(3.7);",
+    "expected": "4"
+  },
+  {
+    "name": "stdlib-format-number",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.formatNumber(3.14159, 2);",
+    "expected": "3.14"
+  },
+  {
+    "name": "stdlib-text-literal",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.text(\"verbatim\");",
+    "expected": "verbatim"
+  },
+  {
+    "name": "stdlib-get-item-first",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = [\"alpha\", \"beta\", \"gamma\"]; const result = Scripting.getItemFromList(items);",
+    "expected": "alpha"
+  },
+  {
+    "name": "stdlib-get-item-last",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = [\"alpha\", \"beta\", \"gamma\"]; const result = Scripting.getItemFromList(items, .lastItem);",
+    "expected": "gamma"
+  },
+  {
+    "name": "stdlib-get-dictionary-value",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const d = {\"name\": \"Alice\", \"city\": \"NYC\"}; const result = Scripting.getDictionaryValue(d, .value, \"city\");",
+    "expected": "NYC"
+  },
+  {
+    "name": "stdlib-url-component",
+    "source": "import Web;\nshortcut { name: \"Test\" } const result = Web.getComponentOfUrl(\"https://example.com/path?q=1\", .host);",
+    "expected": "example.com"
+  },
+  {
+    "name": "stdlib-url-component-path",
+    "source": "import Web;\nshortcut { name: \"Test\" } const result = Web.getComponentOfUrl(\"https://example.com/hello\", .path);",
+    "expected": "/hello"
+  },
+  {
+    "name": "stdlib-get-name",
+    "source": "import Scripting;\nimport Web;\nshortcut { name: \"Test\" } const u = Web.url(\"https://example.com\"); const result = Scripting.getName(u);",
+    "expected": "https://example.com"
+  },
+  {
+    "name": "stdlib-get-type",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getType(42);",
+    "expected": "Number"
+  },
+  {
+    "name": "stdlib-format-number-decimal",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.formatNumber(1234.5678, 1);",
+    "expected": "1,234.6"
+  },
+  {
+    "name": "stdlib-device-name",
+    "source": "import Device;\nshortcut { name: \"Test\" } const result = Device.getDeviceDetails();",
+    "expected": "iPhone"
+  },
+  {
+    "name": "stdlib-count-characters",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.count(\"hello\", .characters);",
+    "expected": "5"
+  },
+  {
+    "name": "stdlib-pipeline-trim-upper",
+    "source": "import Text;\nshortcut { name: \"Test\" } const trimmed = Text.trimWhitespace(\"  hello  \"); const result = Text.changeCase(trimmed, .uppercase);",
+    "expected": "HELLO"
+  },
+  {
+    "name": "stdlib-replace-text-regex",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.replaceText(\"abc123def456\", \"[0-9]+\", \"NUM\", true, true);",
+    "expected": "abcNUMdefNUM"
+  },
+  {
+    "name": "menu-basic",
+    "source": "shortcut { name: \"Test\" } let result = \"\"; menu \"Pick\" { case \"A\" { result = \"picked-A\"; } case \"B\" { result = \"picked-B\"; } } const out = result;",
+    "expected": "picked-A"
   }
 ]
