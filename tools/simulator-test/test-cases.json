@@ -648,5 +648,165 @@
     "name": "menu-basic",
     "source": "shortcut { name: \"Test\" } let result = \"\"; menu \"Pick\" { case \"A\" { result = \"picked-A\"; } case \"B\" { result = \"picked-B\"; } } const out = result;",
     "expected": "picked-A"
+  },
+  {
+    "name": "stdlib-get-text-from-input",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getTextFromInput(42);",
+    "expected": "42"
+  },
+  {
+    "name": "stdlib-get-urls-from-input",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getUrlsFromInput(\"Visit https://example.com today\");",
+    "expected": "https://example.com"
+  },
+  {
+    "name": "stdlib-get-email-from-input",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getEmailAddressesFromInput(\"Contact me at test@example.com\");",
+    "expected": "test@example.com"
+  },
+  {
+    "name": "stdlib-get-phone-from-input",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getPhoneNumbersFromInput(\"Call (555) 123-4567\");",
+    "expected": "(555) 123-4567"
+  },
+  {
+    "name": "stdlib-set-dictionary-value",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const d = Scripting.dictionary({\"x\": \"1\"}); const d2 = Scripting.setDictionaryValue(d, \"y\", \"2\"); const result = Scripting.getDictionaryValue(d2, .value, \"y\");",
+    "expected": "2"
+  },
+  {
+    "name": "stdlib-format-file-size-bytes",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.formatFileSize(2048, .bytes, true);",
+    "expected": "2,048 bytes"
+  },
+  {
+    "name": "stdlib-format-file-size-kb",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.formatFileSize(2048, .kb, true);",
+    "expected": "2 KB"
+  },
+  {
+    "name": "stdlib-count-sentences",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.count(\"Hello. World. Bye.\", .sentences);",
+    "expected": "3"
+  },
+  {
+    "name": "stdlib-count-lines",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.count(\"line1\\nline2\\nline3\", .lines);",
+    "expected": "3"
+  },
+  {
+    "name": "stdlib-get-item-at-index",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = [\"a\", \"b\", \"c\", \"d\"]; const result = Scripting.getItemFromList(items, .itemAtIndex, 3);",
+    "expected": "c"
+  },
+  {
+    "name": "stdlib-list-action",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = Scripting.list([\"x\", \"y\", \"z\"]); const result = Scripting.count(items);",
+    "expected": "3"
+  },
+  {
+    "name": "stdlib-nothing-action",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const n = Scripting.nothing(); const result = n ?? \"was nil\";",
+    "expected": "was nil"
+  },
+  {
+    "name": "stdlib-time-between-dates",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getTimeBetweenDates(\"January 1, 2025\", \"January 2, 2025\", .hours);",
+    "expected": "24"
+  },
+  {
+    "name": "stdlib-change-case-capitalize",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.changeCase(\"hello world\", .capitalizeEveryWord);",
+    "expected": "Hello World"
+  },
+  {
+    "name": "stdlib-get-name-of-emoji",
+    "source": "import Text;\nshortcut { name: \"Test\" } const result = Text.getNameOfEmoji(\"\ud83c\udf89\");",
+    "expected": "party popper"
+  },
+  {
+    "name": "stdlib-match-text-count",
+    "source": "import Text;\nimport Scripting;\nshortcut { name: \"Test\" } const matches = Text.matchText(\"abc123def456\", \"[0-9]+\"); const result = Scripting.count(matches);",
+    "expected": "2"
+  },
+  {
+    "name": "stdlib-text-with-interpolation",
+    "source": "import Text;\nshortcut { name: \"Test\" } const name = \"World\"; const result = Text.text(\"Hello, ${name}!\");",
+    "expected": "Hello, World!"
+  },
+  {
+    "name": "stdlib-round-up",
+    "source": "import Math;\nshortcut { name: \"Test\" } const result = Math.roundNumber(3.2, .onesPlace, .alwaysRoundUp);",
+    "expected": "4"
+  },
+  {
+    "name": "stdlib-round-down",
+    "source": "import Math;\nshortcut { name: \"Test\" } const result = Math.roundNumber(3.9, .onesPlace, .alwaysRoundDown);",
+    "expected": "3"
+  },
+  {
+    "name": "stdlib-url-component-scheme",
+    "source": "import Web;\nshortcut { name: \"Test\" } const result = Web.getComponentOfUrl(\"https://example.com/path\", .scheme);",
+    "expected": "https"
+  },
+  {
+    "name": "stdlib-url-component-port",
+    "source": "import Web;\nshortcut { name: \"Test\" } const result = Web.getComponentOfUrl(\"https://example.com:8080/path\", .port);",
+    "expected": "8080"
+  },
+  {
+    "name": "stdlib-email-address",
+    "source": "import Contacts;\nshortcut { name: \"Test\" } const result = Contacts.emailAddress(\"test@example.com\");",
+    "expected": "test@example.com"
+  },
+  {
+    "name": "stdlib-phone-number",
+    "source": "import Contacts;\nshortcut { name: \"Test\" } const result = Contacts.phoneNumber(\"+15551234567\");",
+    "expected": "+15551234567"
+  },
+  {
+    "name": "stdlib-device-model",
+    "source": "import Device;\nshortcut { name: \"Test\" } const result = Device.getDeviceDetails(.deviceModel);",
+    "expected": "iPhone"
+  },
+  {
+    "name": "stdlib-battery-charging",
+    "source": "import Device;\nshortcut { name: \"Test\" } const level = Device.getBatteryStatus(); const result = level > 0 ? \"has-battery\" : \"no-battery\";",
+    "expected": "has-battery"
+  },
+  {
+    "name": "stdlib-chain-detect-count-urls",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const text = \"Visit https://a.com and https://b.com\"; const urls = Scripting.getUrlsFromInput(text); const result = Scripting.count(urls);",
+    "expected": "2"
+  },
+  {
+    "name": "stdlib-chain-dict-set-get",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const d = Scripting.dictionary({\"a\": \"1\"}); const d2 = Scripting.setDictionaryValue(d, \"b\", \"2\"); const d3 = Scripting.setDictionaryValue(d2, \"c\", \"3\"); const result = Scripting.getDictionaryValue(d3, .value, \"c\");",
+    "expected": "3"
+  },
+  {
+    "name": "stdlib-chain-text-split-count",
+    "source": "import Text;\nimport Scripting;\nshortcut { name: \"Test\" } const csv = \"one,two,three,four,five\"; const parts = Text.splitText(csv, .custom, \",\"); const result = Scripting.count(parts);",
+    "expected": "5"
+  },
+  {
+    "name": "stdlib-chain-text-operations",
+    "source": "import Text;\nshortcut { name: \"Test\" } const raw = \"  Hello World  \"; const trimmed = Text.trimWhitespace(raw); const upper = Text.changeCase(trimmed, .uppercase); const result = Text.replaceText(upper, \"WORLD\", \"CHUTE\");",
+    "expected": "HELLO CHUTE"
+  },
+  {
+    "name": "stdlib-chain-base64-roundtrip",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const encoded = Scripting.base64Encode(\"secret\"); const decoded = Scripting.base64Encode(encoded, .decode); const result = decoded;",
+    "expected": "secret"
+  },
+  {
+    "name": "stdlib-chain-replace-multiple",
+    "source": "import Text;\nshortcut { name: \"Test\" } const step1 = Text.replaceText(\"aXbXc\", \"X\", \"-\"); const result = Text.replaceText(step1, \"-\", \"_\");",
+    "expected": "a_b_c"
+  },
+  {
+    "name": "stdlib-chain-list-filter-count",
+    "source": "import Scripting;\nshortcut { name: \"Test\" } const items = [\"apple\", \"banana\", \"avocado\", \"blueberry\"]; let count = 0; for item in items { if (item hasPrefix \"a\") { count = count + 1; } } const result = count;",
+    "expected": "2"
   }
 ]
