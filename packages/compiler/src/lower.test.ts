@@ -715,7 +715,7 @@ describe("lower", () => {
       `);
       const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
       expect(action).toBeDefined();
-      expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
+      expect(action?.parameters.get("WFAlertActionMessage")).toBe("hello");
     });
 
     it("should lower aliased namespace-qualified action call", () => {
@@ -726,7 +726,7 @@ describe("lower", () => {
       `);
       const action = result.find((a) => a.identifier === "is.workflow.actions.alert");
       expect(action).toBeDefined();
-      expect(action?.parameters.get("WFAlertActionTitle")).toBe("hello");
+      expect(action?.parameters.get("WFAlertActionMessage")).toBe("hello");
     });
 
     it("should lower namespace-qualified action in pipeline", () => {
