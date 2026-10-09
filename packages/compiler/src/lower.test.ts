@@ -235,11 +235,11 @@ describe("lower", () => {
     it("should set WFMenuItemAttributedTitle on each case item", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }
-        action alert(text: Text) = "is.workflow.actions.alert";
+        action alert(msg: Text) = "is.workflow.actions.alert";
         menu "Pick" {
-          case "X" { alert(text: "x"); }
-          case "Y" { alert(text: "y"); }
-          case "Z" { alert(text: "z"); }
+          case "X" { alert("x"); }
+          case "Y" { alert("y"); }
+          case "Z" { alert("z"); }
         }
       `);
       const caseActions = actions.filter(
