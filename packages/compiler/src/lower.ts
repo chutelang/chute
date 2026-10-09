@@ -1318,6 +1318,7 @@ function lowerMenuStatement(stmt: MenuStatement, actions: ActionIR[], ctx: Lower
     const caseParams = new Map<string, ParameterValue>();
     caseParams.set("WFControlFlowMode", 1);
     caseParams.set("WFMenuItemTitle", c.label);
+    caseParams.set("WFMenuItemAttributedTitle", c.label);
     actions.push({
       identifier: "is.workflow.actions.choosefrommenu",
       uuid: nextUuid(ctx),

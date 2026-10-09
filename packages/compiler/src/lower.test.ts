@@ -225,9 +225,34 @@ describe("lower", () => {
       expect(menus.at(0)?.parameters.get("WFControlFlowMode")).toBe(0);
       expect(menus.at(1)?.parameters.get("WFControlFlowMode")).toBe(1);
       expect(menus.at(1)?.parameters.get("WFMenuItemTitle")).toBe("A");
+      expect(menus.at(1)?.parameters.get("WFMenuItemAttributedTitle")).toBe("A");
       expect(menus.at(2)?.parameters.get("WFControlFlowMode")).toBe(1);
       expect(menus.at(2)?.parameters.get("WFMenuItemTitle")).toBe("B");
+      expect(menus.at(2)?.parameters.get("WFMenuItemAttributedTitle")).toBe("B");
       expect(menus.at(3)?.parameters.get("WFControlFlowMode")).toBe(2);
+    });
+
+    it("should set WFMenuItemAttributedTitle on each case item", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        menu "Pick" {
+          case "X" { alert(text: "x"); }
+          case "Y" { alert(text: "y"); }
+          case "Z" { alert(text: "z"); }
+        }
+      `);
+      const caseActions = actions.filter(
+        (a) =>
+          a.identifier === "is.workflow.actions.choosefrommenu" &&
+          a.parameters.get("WFControlFlowMode") === 1,
+      );
+      expect(caseActions).toHaveLength(3);
+      for (const ca of caseActions) {
+        const title = ca.parameters.get("WFMenuItemTitle");
+        expect(title).toBeDefined();
+        expect(ca.parameters.get("WFMenuItemAttributedTitle")).toBe(title);
+      }
     });
   });
 

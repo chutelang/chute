@@ -8900,6 +8900,8 @@ exports[`compile > should compile menu statement 1`] = `
           <integer>1</integer>
           <key>WFMenuItemTitle</key>
           <string>Option A</string>
+          <key>WFMenuItemAttributedTitle</key>
+          <string>Option A</string>
           <key>GroupingIdentifier</key>
           <string>00000000-0000-0000-0000-000000000000</string>
         </dict>
@@ -8925,6 +8927,8 @@ exports[`compile > should compile menu statement 1`] = `
           <key>WFControlFlowMode</key>
           <integer>1</integer>
           <key>WFMenuItemTitle</key>
+          <string>Option B</string>
+          <key>WFMenuItemAttributedTitle</key>
           <string>Option B</string>
           <key>GroupingIdentifier</key>
           <string>00000000-0000-0000-0000-000000000000</string>
