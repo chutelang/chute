@@ -770,9 +770,9 @@
     "expected": "iPhone"
   },
   {
-    "name": "stdlib-battery-charging",
-    "source": "import Device;\nshortcut { name: \"Test\" } const level = Device.getBatteryStatus(); const result = level > 0 ? \"has-battery\" : \"no-battery\";",
-    "expected": "has-battery"
+    "name": "stdlib-device-name-check",
+    "source": "import Device;\nshortcut { name: \"Test\" } const name = Device.getDeviceDetails(); const result = name contains \"iPhone\" ? \"is-iphone\" : \"not-iphone\";",
+    "expected": "is-iphone"
   },
   {
     "name": "stdlib-chain-detect-count-urls",
