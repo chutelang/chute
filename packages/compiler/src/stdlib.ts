@@ -397,6 +397,12 @@ function ensureParameterSlots(): Map<string, Map<string, InputSlot>> {
     cachedParameterSlots.set(action.identifier, slots);
   }
 
+  // Register picker slots for built-in control flow actions that are not in
+  // the stdlib JSON but still need WFTextTokenAttachment serialization.
+  const conditionalSlots = new Map<string, InputSlot>();
+  conditionalSlots.set("WFInput", "picker");
+  cachedParameterSlots.set("is.workflow.actions.conditional", conditionalSlots);
+
   return cachedParameterSlots;
 }
 

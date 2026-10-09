@@ -1471,6 +1471,18 @@ function emitComparisonBlock(
   const groupId = nextUuid(ctx);
 
   lowerExpression(cond.left, actions, ctx);
+
+  // Capture the variable name for an explicit WFInput reference.
+  // For identifiers the name is known directly; for complex expressions
+  // the lowered result must be saved to a temp variable first.
+  let leftVarName: string;
+  if (cond.left.kind === "Identifier") {
+    leftVarName = cond.left.name;
+  } else {
+    leftVarName = nextTempName(ctx);
+    actions.push(makeSetVariableAction(leftVarName, ctx));
+  }
+
   const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
   const isTextOperator =
     cond.operator === "contains" ||
@@ -1481,6 +1493,10 @@ function emitComparisonBlock(
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: condCode,
+    WFInput: {
+      kind: "VariableRef",
+      name: leftVarName,
+    },
   };
 
   if (typeof rightValue === "number") {

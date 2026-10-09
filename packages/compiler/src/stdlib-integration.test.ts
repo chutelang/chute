@@ -473,6 +473,19 @@ Notification.showAlert(result);`).main;
     });
   });
 
+  describe("explicit WFInput on conditional actions", () => {
+    it("should set WFInput on conditional action", () => {
+      const plist = compile(`import Notification;
+shortcut { name: "T" }
+const x = 10;
+if (x > 5) { Notification.showAlert("big"); }
+`).main;
+      const condIdx = plist.indexOf("is.workflow.actions.conditional");
+      const condBlock = plist.slice(condIdx, condIdx + 500);
+      expect(condBlock).toContain("WFInput");
+    });
+  });
+
   describe("hidden params should not appear in output", () => {
     it("should not emit IntentAppDefinition for sendMessage", () => {
       const plist = compile(`import Sharing;

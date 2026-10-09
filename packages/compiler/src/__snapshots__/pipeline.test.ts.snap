@@ -8255,6 +8255,18 @@ exports[`compile > should compile function with conditional return 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>0</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenAttachment</string>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>n</string>
+            </dict>
+          </dict>
           <key>WFNumberValue</key>
           <string>0</string>
           <key>WFControlFlowMode</key>
@@ -8772,6 +8784,18 @@ exports[`compile > should compile if/else statement 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>2</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenAttachment</string>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>x</string>
+            </dict>
+          </dict>
           <key>WFNumberValue</key>
           <string>3</string>
           <key>WFControlFlowMode</key>
@@ -10646,6 +10670,18 @@ exports[`compile > should compile ternary expression 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>2</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenAttachment</string>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>x</string>
+            </dict>
+          </dict>
           <key>WFNumberValue</key>
           <string>3</string>
           <key>WFControlFlowMode</key>
