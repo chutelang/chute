@@ -165,6 +165,15 @@ function buildSelfRef(ref: SelfRef): PlistValue {
   };
 }
 
+export function utf16Length(str: string): number {
+  let length = 0;
+  for (const ch of str) {
+    const cp = ch.codePointAt(0) ?? 0;
+    length += cp >= 0x10000 ? 2 : 1;
+  }
+  return length;
+}
+
 function buildInterpolatedText(text: InterpolatedText): PlistValue {
   let combined = "";
   const attachments: Record<string, PlistValue> = {};
@@ -180,7 +189,7 @@ function buildInterpolatedText(text: InterpolatedText): PlistValue {
       if (part.aggrandizements && part.aggrandizements.length > 0) {
         attachment["Aggrandizements"] = buildAggrandizements(part.aggrandizements);
       }
-      attachments[`{${combined.length}, 1}`] = attachment;
+      attachments[`{${utf16Length(combined)}, 1}`] = attachment;
       combined += OBJECT_REPLACEMENT_CHAR;
     }
   }
