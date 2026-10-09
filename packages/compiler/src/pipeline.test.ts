@@ -647,7 +647,9 @@ const y = x;`;
 shortcut { name: "Test" }
 const raw: Text = "  padded  ";
 const trimmed = Text.trimWhitespace(raw);`;
-    const block = paramBlock(compile(source).main, "WFInput");
+    const plist = compile(source).main;
+    const trimIdx = plist.indexOf("is.workflow.actions.text.trimwhitespace");
+    const block = plist.slice(trimIdx, trimIdx + 600);
     expect(block).toContain("<string>WFTextTokenString</string>");
     expect(block).toContain("attachmentsByRange");
   });
