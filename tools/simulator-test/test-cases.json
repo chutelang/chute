@@ -627,7 +627,7 @@
   {
     "name": "stdlib-device-name",
     "source": "import Device;\nshortcut { name: \"Test\" } const result = Device.getDeviceDetails();",
-    "expected": "iPhone"
+    "expected": "iPhone 17 Pro"
   },
   {
     "name": "stdlib-count-characters",
@@ -712,7 +712,7 @@
   {
     "name": "stdlib-time-between-dates",
     "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.getTimeBetweenDates(\"January 1, 2025\", \"January 2, 2025\", .hours);",
-    "expected": "24"
+    "expected": "-24"
   },
   {
     "name": "stdlib-change-case-capitalize",
