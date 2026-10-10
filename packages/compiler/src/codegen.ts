@@ -3,6 +3,7 @@ import type {
   ActionIR,
   ActionOutputRef,
   Aggrandizement,
+  ConditionInput,
   DictItems,
   InterpolatedText,
   ListItems,
@@ -89,7 +90,26 @@ function buildParamValue(value: ParameterValue, actionIdentifier: string, key: s
       return buildDictItems(value, actionIdentifier);
     case "InterpolatedText":
       return buildInterpolatedText(value);
+    case "ConditionInput":
+      return buildConditionInput(value);
   }
+}
+
+function buildConditionInput(ref: ConditionInput): PlistValue {
+  const inner: Record<string, PlistValue> = {
+    Type: "Variable",
+    VariableName: ref.variable.name,
+  };
+  if (ref.variable.aggrandizements && ref.variable.aggrandizements.length > 0) {
+    inner["Aggrandizements"] = buildAggrandizements(ref.variable.aggrandizements);
+  }
+  return {
+    Type: "Variable",
+    Variable: {
+      Value: inner,
+      WFSerializationType: "WFTextTokenAttachment",
+    },
+  };
 }
 
 function buildStringArray(value: StringArray): PlistValue {

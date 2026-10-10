@@ -27,7 +27,8 @@ export type ParameterValue =
   | InterpolatedText
   | ListItems
   | DictItems
-  | StringArray;
+  | StringArray
+  | ConditionInput;
 
 export interface StringArray {
   kind: "StringArray";
@@ -79,6 +80,11 @@ export type Aggrandizement =
   | { kind: "coercion"; itemClass: string }
   | { kind: "property"; name: string; userInfo?: number | string }
   | { kind: "dateFormat"; format: string };
+
+export interface ConditionInput {
+  kind: "ConditionInput";
+  variable: VariableRef;
+}
 
 export interface VariableRef {
   kind: "VariableRef";

@@ -474,15 +474,21 @@ Notification.showAlert(result);`).main;
   });
 
   describe("explicit WFInput on conditional actions", () => {
-    it("should set WFInput on conditional action", () => {
+    it("should emit WFInput with Variable wrapper on conditional action", () => {
       const plist = compile(`import Notification;
 shortcut { name: "T" }
 const x = 10;
 if (x > 5) { Notification.showAlert("big"); }
 `).main;
       const condIdx = plist.indexOf("is.workflow.actions.conditional");
-      const condBlock = plist.slice(condIdx, condIdx + 500);
-      expect(condBlock).toContain("WFInput");
+      const condBlock = plist.slice(condIdx, condIdx + 1200);
+      expect(condBlock).toContain("WFCondition");
+      expect(condBlock).toContain("WFNumberValue");
+      expect(condBlock).toContain("<key>WFInput</key>");
+      expect(condBlock).toContain("<key>Type</key>");
+      expect(condBlock).toContain("<string>Variable</string>");
+      expect(condBlock).toContain("<key>Variable</key>");
+      expect(condBlock).toContain("WFTextTokenAttachment");
     });
   });
 

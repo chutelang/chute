@@ -40,6 +40,7 @@ import type {
   ActionIR,
   Aggrandizement,
   CompilationResult,
+  ConditionInput,
   InterpolatedText,
   InterpolatedTextPart,
   ParameterValue,
@@ -252,7 +253,12 @@ function emitFunctionDispatchBlock(
 
   const outerGroupId = nextUuid(ctx);
   actions.push(makeGetVariableAction(rawFnTempName, ctx));
-  actions.push(makeConditionalAction(0, outerGroupId, ctx, { WFCondition: 100 }));
+  actions.push(
+    makeConditionalAction(0, outerGroupId, ctx, {
+      WFCondition: 100,
+      WFInput: makeConditionInput(rawFnTempName),
+    }),
+  );
 
   const coerceParams = new Map<string, ParameterValue>();
   coerceParams.set("WFTextActionText", {
@@ -275,6 +281,7 @@ function emitFunctionDispatchBlock(
       makeConditionalAction(0, fnGroupId, ctx, {
         WFCondition: 4,
         WFConditionalActionString: name,
+        WFInput: makeConditionInput(fnNameTempName),
       }),
     );
 
@@ -749,7 +756,13 @@ function lowerCoalesceExpression(
   const groupId = nextUuid(ctx);
 
   lowerExpression(expr.left, actions, ctx);
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
+  const coalesceTempName = captureConditionVariable(expr.left, actions, ctx);
+  actions.push(
+    makeConditionalAction(0, groupId, ctx, {
+      WFCondition: 100,
+      WFInput: makeConditionInput(coalesceTempName),
+    }),
+  );
 
   lowerExpression(expr.left, actions, ctx);
   actions.push(makeConditionalAction(1, groupId, ctx));
@@ -1179,6 +1192,26 @@ function makeConditionalAction(
   };
 }
 
+function captureConditionVariable(
+  expr: Expression,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): string {
+  if (expr.kind === "Identifier") {
+    return expr.name;
+  }
+  const tempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(tempName, ctx));
+  return tempName;
+}
+
+function makeConditionInput(name: string): ConditionInput {
+  return {
+    kind: "ConditionInput",
+    variable: { kind: "VariableRef", name },
+  };
+}
+
 function mathOperationSymbol(operator: BinaryOperator): string {
   switch (operator) {
     case "+":
@@ -1400,6 +1433,7 @@ function emitCoercionNilFallback(actions: ActionIR[], ctx: LowerContext): void {
     makeConditionalAction(0, groupId, ctx, {
       WFCondition: 0,
       WFConditionalActionString: "No",
+      WFInput: makeConditionInput(tempName),
     }),
   );
   actions.push(makeNothingAction(ctx));
@@ -1465,17 +1499,7 @@ function emitComparisonBlock(
   const groupId = nextUuid(ctx);
 
   lowerExpression(cond.left, actions, ctx);
-
-  // Capture the variable name for an explicit WFInput reference.
-  // For identifiers the name is known directly; for complex expressions
-  // the lowered result must be saved to a temp variable first.
-  let leftVarName: string;
-  if (cond.left.kind === "Identifier") {
-    leftVarName = cond.left.name;
-  } else {
-    leftVarName = nextTempName(ctx);
-    actions.push(makeSetVariableAction(leftVarName, ctx));
-  }
+  const leftVarName = captureConditionVariable(cond.left, actions, ctx);
 
   const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
   const isTextOperator =
@@ -1487,10 +1511,7 @@ function emitComparisonBlock(
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: condCode,
-    WFInput: {
-      kind: "VariableRef",
-      name: leftVarName,
-    },
+    WFInput: makeConditionInput(leftVarName),
   };
 
   if (typeof rightValue === "number") {
@@ -1531,11 +1552,13 @@ function emitRangeTestBlock(
   const groupId = nextUuid(ctx);
 
   lowerExpression(cond.subject, actions, ctx);
+  const subjectVarName = captureConditionVariable(cond.subject, actions, ctx);
   const lowValue = lowerOperandPreservingMagicVariable(cond.low, actions, ctx);
   const highValue = lowerToParamValue(cond.high, actions, ctx);
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: 999,
+    WFInput: makeConditionInput(subjectVarName),
     WFNumberValue: typeof lowValue === "number" ? String(lowValue) : lowValue,
     WFAnotherNumber: typeof highValue === "number" ? String(highValue) : highValue,
   };
@@ -1559,9 +1582,11 @@ function emitTypeTestBlock(
   const groupId = nextUuid(ctx);
 
   lowerExpression(cond.subject, actions, ctx);
+  const varName = captureConditionVariable(cond.subject, actions, ctx);
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: 100,
+    WFInput: makeConditionInput(varName),
   };
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));
@@ -1584,9 +1609,11 @@ function emitBoolRefBlock(
   const groupId = nextUuid(ctx);
 
   lowerExpression(subject, actions, ctx);
+  const varName = captureConditionVariable(subject, actions, ctx);
 
   const extra: Record<string, ParameterValue> = {
     WFCondition: 100,
+    WFInput: makeConditionInput(varName),
   };
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));
@@ -1633,7 +1660,13 @@ function emitOrConditionBlock(
 
   const groupId = nextUuid(ctx);
   actions.push(makeGetVariableAction(tempName, ctx));
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 4, WFNumberValue: "0" }));
+  actions.push(
+    makeConditionalAction(0, groupId, ctx, {
+      WFCondition: 4,
+      WFNumberValue: "0",
+      WFInput: makeConditionInput(tempName),
+    }),
+  );
   thenBranch();
   if (elseBranch) {
     actions.push(makeConditionalAction(1, groupId, ctx));
@@ -1815,8 +1848,17 @@ function lowerPipelineExpression(
     lowerPipelineStage(stage, actions, ctx);
   }
 
+  const pipelineTempName = nextTempName(ctx);
+  actions.push(makeSetVariableAction(pipelineTempName, ctx));
+  actions.push(makeGetVariableAction(pipelineTempName, ctx));
+
   const groupId = nextUuid(ctx);
-  actions.push(makeConditionalAction(0, groupId, ctx, { WFCondition: 100 }));
+  actions.push(
+    makeConditionalAction(0, groupId, ctx, {
+      WFCondition: 100,
+      WFInput: makeConditionInput(pipelineTempName),
+    }),
+  );
 
   for (const stage of expr.stages.slice(optionalIndex)) {
     lowerPipelineStage(stage, actions, ctx);

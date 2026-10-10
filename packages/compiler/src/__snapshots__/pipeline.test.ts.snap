@@ -131,6 +131,23 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -209,6 +226,23 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>double</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -377,6 +411,23 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>triple</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -560,24 +611,9 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000035</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFCondition</key>
-          <integer>100</integer>
-          <key>WFControlFlowMode</key>
-          <integer>0</integer>
-          <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000034</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000036</string>
+        <string>00000000-0000-0000-0000-000000000034</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -586,9 +622,73 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.dictionary</string>
+        <string>is.workflow.actions.getvariable</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000035</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariable</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenAttachment</string>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>__chute_tmp_5</string>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000037</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFCondition</key>
+          <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_5</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
+          <key>WFControlFlowMode</key>
+          <integer>0</integer>
+          <key>GroupingIdentifier</key>
+          <string>00000000-0000-0000-0000-000000000036</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.setvariable</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000038</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariableName</key>
+          <string>__chute_tmp_6</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.dictionary</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000039</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFItems</key>
@@ -625,7 +725,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
                           <key>Type</key>
                           <string>Variable</string>
                           <key>VariableName</key>
-                          <string>__chute_tmp_5</string>
+                          <string>__chute_tmp_6</string>
                         </dict>
                       </dict>
                     </dict>
@@ -664,18 +764,18 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000038</string>
+        <string>00000000-0000-0000-0000-000000000040</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
-          <string>__chute_tmp_6</string>
+          <string>__chute_tmp_7</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.runworkflow</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000039</string>
+        <string>00000000-0000-0000-0000-000000000041</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFWorkflow</key>
@@ -694,7 +794,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
               <key>Type</key>
               <string>Variable</string>
               <key>VariableName</key>
-              <string>__chute_tmp_6</string>
+              <string>__chute_tmp_7</string>
             </dict>
           </dict>
         </dict>
@@ -703,18 +803,18 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000040</string>
+        <string>00000000-0000-0000-0000-000000000042</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
-          <string>__chute_tmp_7</string>
+          <string>__chute_tmp_8</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.dictionary</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000041</string>
+        <string>00000000-0000-0000-0000-000000000043</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFItems</key>
@@ -751,7 +851,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
                           <key>Type</key>
                           <string>Variable</string>
                           <key>VariableName</key>
-                          <string>__chute_tmp_7</string>
+                          <string>__chute_tmp_8</string>
                         </dict>
                       </dict>
                     </dict>
@@ -790,18 +890,18 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000042</string>
+        <string>00000000-0000-0000-0000-000000000044</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
-          <string>__chute_tmp_8</string>
+          <string>__chute_tmp_9</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.runworkflow</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000043</string>
+        <string>00000000-0000-0000-0000-000000000045</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFWorkflow</key>
@@ -820,31 +920,10 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
               <key>Type</key>
               <string>Variable</string>
               <key>VariableName</key>
-              <string>__chute_tmp_8</string>
+              <string>__chute_tmp_9</string>
             </dict>
           </dict>
         </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000044</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFControlFlowMode</key>
-          <integer>1</integer>
-          <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000034</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.nothing</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000045</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict/>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
@@ -854,16 +933,37 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
+          <integer>1</integer>
+          <key>GroupingIdentifier</key>
+          <string>00000000-0000-0000-0000-000000000036</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.nothing</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000047</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict/>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000048</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFControlFlowMode</key>
           <integer>2</integer>
           <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000034</string>
+          <string>00000000-0000-0000-0000-000000000036</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000047</string>
+        <string>00000000-0000-0000-0000-000000000049</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -874,7 +974,7 @@ exports[`compile > should compile |>? followed by |> stages 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.showresult</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000048</string>
+        <string>00000000-0000-0000-0000-000000000050</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>Text</key>
@@ -1018,6 +1118,23 @@ exports[`compile > should compile a multi-parameter function 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -1096,6 +1213,23 @@ exports[`compile > should compile a multi-parameter function 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>add</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -1616,6 +1750,23 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -1694,6 +1845,23 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>double</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -1862,6 +2030,23 @@ exports[`compile > should compile a multi-stage pipeline 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>triple</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -2543,6 +2728,23 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -2621,6 +2823,23 @@ exports[`compile > should compile a pipeline with _ placeholder 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>add</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -3171,6 +3390,23 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -3249,6 +3485,23 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>add</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -3799,6 +4052,23 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -3877,6 +4147,23 @@ exports[`compile > should compile a single-stage pipeline 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>double</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -4573,6 +4860,23 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -4651,6 +4955,23 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>double</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -4834,24 +5155,9 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000024</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFCondition</key>
-          <integer>100</integer>
-          <key>WFControlFlowMode</key>
-          <integer>0</integer>
-          <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000023</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000025</string>
+        <string>00000000-0000-0000-0000-000000000023</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -4860,9 +5166,73 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.dictionary</string>
+        <string>is.workflow.actions.getvariable</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000024</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariable</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenAttachment</string>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>__chute_tmp_4</string>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000026</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFCondition</key>
+          <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_4</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
+          <key>WFControlFlowMode</key>
+          <integer>0</integer>
+          <key>GroupingIdentifier</key>
+          <string>00000000-0000-0000-0000-000000000025</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.setvariable</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000027</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariableName</key>
+          <string>__chute_tmp_5</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.dictionary</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000028</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFItems</key>
@@ -4899,7 +5269,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
                           <key>Type</key>
                           <string>Variable</string>
                           <key>VariableName</key>
-                          <string>__chute_tmp_4</string>
+                          <string>__chute_tmp_5</string>
                         </dict>
                       </dict>
                     </dict>
@@ -4938,18 +5308,18 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000027</string>
+        <string>00000000-0000-0000-0000-000000000029</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
-          <string>__chute_tmp_5</string>
+          <string>__chute_tmp_6</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.runworkflow</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000028</string>
+        <string>00000000-0000-0000-0000-000000000030</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFWorkflow</key>
@@ -4968,31 +5338,10 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
               <key>Type</key>
               <string>Variable</string>
               <key>VariableName</key>
-              <string>__chute_tmp_5</string>
+              <string>__chute_tmp_6</string>
             </dict>
           </dict>
         </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000029</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFControlFlowMode</key>
-          <integer>1</integer>
-          <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000023</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.nothing</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000030</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict/>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
@@ -5002,16 +5351,37 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
+          <integer>1</integer>
+          <key>GroupingIdentifier</key>
+          <string>00000000-0000-0000-0000-000000000025</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.nothing</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000032</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict/>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000033</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFControlFlowMode</key>
           <integer>2</integer>
           <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000023</string>
+          <string>00000000-0000-0000-0000-000000000025</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000032</string>
+        <string>00000000-0000-0000-0000-000000000034</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -5022,7 +5392,7 @@ exports[`compile > should compile an optional pipeline with |>? 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.showresult</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000033</string>
+        <string>00000000-0000-0000-0000-000000000035</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>Text</key>
@@ -6045,6 +6415,23 @@ exports[`compile > should compile function calling another function 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -6123,6 +6510,23 @@ exports[`compile > should compile function calling another function 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>double</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -6291,6 +6695,23 @@ exports[`compile > should compile function calling another function 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>quadruple</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -6931,6 +7352,23 @@ exports[`compile > should compile function declaration and call 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -7009,6 +7447,23 @@ exports[`compile > should compile function declaration and call 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>greet</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -7427,6 +7882,23 @@ exports[`compile > should compile function using enums and records 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -7505,6 +7977,23 @@ exports[`compile > should compile function using enums and records 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>makeShirt</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -8098,6 +8587,23 @@ exports[`compile > should compile function with conditional return 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -8176,6 +8682,23 @@ exports[`compile > should compile function with conditional return 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>abs</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -8257,14 +8780,19 @@ exports[`compile > should compile function with conditional return 1`] = `
           <integer>0</integer>
           <key>WFInput</key>
           <dict>
-            <key>WFSerializationType</key>
-            <string>WFTextTokenAttachment</string>
-            <key>Value</key>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
             <dict>
-              <key>Type</key>
-              <string>Variable</string>
-              <key>VariableName</key>
-              <string>n</string>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>n</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
             </dict>
           </dict>
           <key>WFNumberValue</key>
@@ -8786,14 +9314,19 @@ exports[`compile > should compile if/else statement 1`] = `
           <integer>2</integer>
           <key>WFInput</key>
           <dict>
-            <key>WFSerializationType</key>
-            <string>WFTextTokenAttachment</string>
-            <key>Value</key>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
             <dict>
-              <key>Type</key>
-              <string>Variable</string>
-              <key>VariableName</key>
-              <string>x</string>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>x</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
             </dict>
           </dict>
           <key>WFNumberValue</key>
@@ -9182,6 +9715,23 @@ exports[`compile > should compile multiple functions 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_1</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -9260,6 +9810,23 @@ exports[`compile > should compile multiple functions 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>add</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -9489,6 +10056,23 @@ exports[`compile > should compile multiple functions 1`] = `
           <integer>4</integer>
           <key>WFConditionalActionString</key>
           <string>double</string>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>__chute_tmp_2</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -10019,6 +10603,23 @@ exports[`compile > should compile nil coalescing 1`] = `
         <dict>
           <key>WFCondition</key>
           <integer>100</integer>
+          <key>WFInput</key>
+          <dict>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
+            <dict>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>x</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
+            </dict>
+          </dict>
           <key>WFControlFlowMode</key>
           <integer>0</integer>
           <key>GroupingIdentifier</key>
@@ -10672,14 +11273,19 @@ exports[`compile > should compile ternary expression 1`] = `
           <integer>2</integer>
           <key>WFInput</key>
           <dict>
-            <key>WFSerializationType</key>
-            <string>WFTextTokenAttachment</string>
-            <key>Value</key>
+            <key>Type</key>
+            <string>Variable</string>
+            <key>Variable</key>
             <dict>
-              <key>Type</key>
-              <string>Variable</string>
-              <key>VariableName</key>
-              <string>x</string>
+              <key>Value</key>
+              <dict>
+                <key>Type</key>
+                <string>Variable</string>
+                <key>VariableName</key>
+                <string>x</string>
+              </dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
             </dict>
           </dict>
           <key>WFNumberValue</key>
