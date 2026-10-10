@@ -791,12 +791,6 @@ function wrapAsTextToken(value: ParameterValue): ParameterValue {
       parts: [{ kind: "text", value: String(value) }],
     };
   }
-  if (typeof value === "boolean") {
-    return {
-      kind: "InterpolatedText",
-      parts: [{ kind: "text", value: value ? "1" : "0" }],
-    };
-  }
   return value;
 }
 

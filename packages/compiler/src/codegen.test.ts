@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { codegen, utf16Length } from "./codegen.ts";
-import type { ShortcutIR, InterpolatedText, ParameterValue } from "./ir.ts";
+import type { DictItems, ListItems, ShortcutIR, InterpolatedText, ParameterValue } from "./ir.ts";
 
 function makeIR(parameters: Map<string, ParameterValue>): ShortcutIR {
   return {
@@ -216,5 +216,57 @@ describe("attachmentsByRange positions", () => {
     const result = codegen(makeInterpolatedTextIR(text));
     expect(result).toContain("{1, 1}");
     expect(result).toContain("{3, 1}");
+  });
+});
+
+describe("boolean dict values", () => {
+  it("should serialize true dict value with WFNumberSubstitutableState", () => {
+    const dict: DictItems = {
+      kind: "DictItems",
+      entries: [
+        {
+          itemType: 4,
+          key: "enabled",
+          value: true,
+        },
+      ],
+    };
+    const params = new Map<string, ParameterValue>([["WFItems", dict]]);
+    const result = codegen(makeIR(params));
+    expect(result).toContain("WFNumberSubstitutableState");
+    expect(result).toContain("<true/>");
+  });
+
+  it("should serialize false dict value with WFNumberSubstitutableState", () => {
+    const dict: DictItems = {
+      kind: "DictItems",
+      entries: [
+        {
+          itemType: 4,
+          key: "disabled",
+          value: false,
+        },
+      ],
+    };
+    const params = new Map<string, ParameterValue>([["WFItems", dict]]);
+    const result = codegen(makeIR(params));
+    expect(result).toContain("WFNumberSubstitutableState");
+    expect(result).toContain("<false/>");
+  });
+
+  it("should serialize boolean list item with WFNumberSubstitutableState", () => {
+    const list: ListItems = {
+      kind: "ListItems",
+      items: [
+        {
+          itemType: 4,
+          value: true,
+        },
+      ],
+    };
+    const params = new Map<string, ParameterValue>([["WFItems", list]]);
+    const result = codegen(makeIR(params));
+    expect(result).toContain("WFNumberSubstitutableState");
+    expect(result).toContain("<true/>");
   });
 });

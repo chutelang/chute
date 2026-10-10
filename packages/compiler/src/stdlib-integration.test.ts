@@ -502,4 +502,26 @@ Calendar.newEvent("Test");`).main;
       expect(plist).not.toContain("ShowWhenRun");
     });
   });
+
+  describe("boolean dictionary values", () => {
+    it("should serialize true in a dictionary with WFNumberSubstitutableState", () => {
+      const plist = compile(`shortcut { name: "T" }
+const d = {"enabled": true};`).main;
+      expect(plist).toContain("WFNumberSubstitutableState");
+      expect(plist).toContain("<true/>");
+    });
+
+    it("should serialize false in a dictionary with WFNumberSubstitutableState", () => {
+      const plist = compile(`shortcut { name: "T" }
+const d = {"enabled": false};`).main;
+      expect(plist).toContain("WFNumberSubstitutableState");
+      expect(plist).toContain("<false/>");
+    });
+
+    it("should serialize boolean in a list with WFNumberSubstitutableState", () => {
+      const plist = compile(`shortcut { name: "T" }
+const items = [true, false];`).main;
+      expect(plist).toContain("WFNumberSubstitutableState");
+    });
+  });
 });

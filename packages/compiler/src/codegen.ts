@@ -247,13 +247,17 @@ function buildTokenValue(value: ParameterValue, actionIdentifier: string): Plist
       },
     };
   }
-  if (typeof value !== "boolean") {
-    if (value.kind === "VariableRef") {
-      return buildVariableRef(value, getParameterSlot(actionIdentifier, ""));
-    }
-    if (value.kind === "InterpolatedText") {
-      return buildInterpolatedText(value);
-    }
+  if (typeof value === "boolean") {
+    return {
+      WFSerializationType: "WFNumberSubstitutableState",
+      Value: value,
+    };
+  }
+  if (value.kind === "VariableRef") {
+    return buildVariableRef(value, getParameterSlot(actionIdentifier, ""));
+  }
+  if (value.kind === "InterpolatedText") {
+    return buildInterpolatedText(value);
   }
   return {
     WFSerializationType: "WFTextTokenString",
