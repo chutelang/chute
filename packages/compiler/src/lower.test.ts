@@ -168,6 +168,86 @@ describe("lower", () => {
       expect(conditionals.at(1)?.parameters.get("WFControlFlowMode")).toBe(1);
       expect(conditionals.at(2)?.parameters.get("WFControlFlowMode")).toBe(2);
     });
+
+    it("should emit WFCondition 100 for boolean reference (truthy check)", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        const flag = true;
+        if (flag) { alert(text: "yes"); }
+      `);
+      const start = actions.find(
+        (a) =>
+          a.identifier === "is.workflow.actions.conditional" &&
+          a.parameters.get("WFControlFlowMode") === 0,
+      );
+      expect(start).toBeDefined();
+      expect(start?.parameters.get("WFCondition")).toBe(100);
+    });
+
+    it("should emit WFCondition 4 for greater-than comparison", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        const x = 5;
+        if (x > 3) { alert(text: "big"); }
+      `);
+      const start = actions.find(
+        (a) =>
+          a.identifier === "is.workflow.actions.conditional" &&
+          a.parameters.get("WFControlFlowMode") === 0,
+      );
+      expect(start).toBeDefined();
+      expect(start?.parameters.get("WFCondition")).toBe(4);
+    });
+
+    it("should emit WFCondition 0 for equality comparison", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        const x = 5;
+        if (x == 3) { alert(text: "eq"); }
+      `);
+      const start = actions.find(
+        (a) =>
+          a.identifier === "is.workflow.actions.conditional" &&
+          a.parameters.get("WFControlFlowMode") === 0,
+      );
+      expect(start).toBeDefined();
+      expect(start?.parameters.get("WFCondition")).toBe(0);
+    });
+
+    it("should emit WFCondition 1 for inequality comparison", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        const x = 5;
+        if (x != 3) { alert(text: "neq"); }
+      `);
+      const start = actions.find(
+        (a) =>
+          a.identifier === "is.workflow.actions.conditional" &&
+          a.parameters.get("WFControlFlowMode") === 0,
+      );
+      expect(start).toBeDefined();
+      expect(start?.parameters.get("WFCondition")).toBe(1);
+    });
+
+    it("should emit WFCondition 5 for less-than comparison", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action alert(text: Text) = "is.workflow.actions.alert";
+        const x = 5;
+        if (x < 10) { alert(text: "small"); }
+      `);
+      const start = actions.find(
+        (a) =>
+          a.identifier === "is.workflow.actions.conditional" &&
+          a.parameters.get("WFControlFlowMode") === 0,
+      );
+      expect(start).toBeDefined();
+      expect(start?.parameters.get("WFCondition")).toBe(5);
+    });
   });
 
   describe("for statement", () => {
