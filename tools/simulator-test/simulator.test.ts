@@ -332,21 +332,20 @@ async function runShortcutTest(
   await pbcopy(udid, SENTINEL);
   await openurl(udid, `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}`);
 
-  // Dismiss permission dialogs
-  for (let i = 0; i < 4; i++) {
-    await sleep(1000);
-    await tap(290, 175); // clipboard "Allow"
-    await tap(201, 560); // output "Always Allow"
-  }
-
-  // Poll clipboard
+  // Poll clipboard, tapping permission dialogs only in the first few seconds
   const start = Date.now();
   while (Date.now() - start < POLL_TIMEOUT_MS) {
+    const elapsed = Date.now() - start;
+    if (elapsed < 5000) {
+      // Early phase: tap permission dialog buttons (clipboard Allow + output Always Allow)
+      await tap(290, 175);
+      await tap(201, 560);
+    }
+    await sleep(POLL_INTERVAL_MS);
     const content = await pbpaste(udid);
     if (content !== SENTINEL) {
       return content;
     }
-    await sleep(POLL_INTERVAL_MS);
   }
   return null;
 }
