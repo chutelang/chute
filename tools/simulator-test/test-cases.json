@@ -201,7 +201,7 @@
   },
   {
     "name": "stdlib-generate-hash",
-    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.generateHash(\"hello\");",
+    "source": "import Scripting;\nimport Text;\nshortcut { name: \"Test\" } Text.text(\"hello\");\nconst result = Scripting.generateHash();",
     "expected": "5d41402abc4b2a76b9719d911017c592"
   },
   {
@@ -350,9 +350,9 @@
     "expected": "20"
   },
   {
-    "name": "stdlib-hash-sha256",
-    "source": "import Scripting;\nshortcut { name: \"Test\" } const result = Scripting.generateHash(\"test\", \"SHA256\");",
-    "expected": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+    "name": "stdlib-hash-md5",
+    "source": "import Scripting;\nimport Text;\nshortcut { name: \"Test\" } Text.text(\"test\");\nconst result = Scripting.generateHash();",
+    "expected": "098f6bcd4621d373cade4e832627b4f6"
   },
   {
     "name": "stdlib-url-decode",

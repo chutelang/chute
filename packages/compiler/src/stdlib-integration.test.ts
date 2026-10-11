@@ -118,6 +118,15 @@ const hash = Scripting.generateHash(f);`).main;
       expect(actions(plist)).toContain("is.workflow.actions.hash");
     });
 
+    it("should compile generateHash with implicit input and no args", () => {
+      const plist = compile(`import Scripting;
+import Text;
+shortcut { name: "T" }
+Text.text("hello");
+const hash = Scripting.generateHash();`).main;
+      expect(actions(plist)).toContain("is.workflow.actions.hash");
+    });
+
     it("should compile count", () => {
       const plist = compile(`import Scripting;
 shortcut { name: "T" }
