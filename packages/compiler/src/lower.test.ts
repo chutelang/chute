@@ -125,6 +125,40 @@ describe("lower", () => {
       expect(conditionals.at(1)?.groupingIdentifier).toBe(groupId);
       expect(conditionals.at(2)?.groupingIdentifier).toBe(groupId);
     });
+
+    it("should evaluate an action-call left operand once", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        action optionalNumber() -> Number? = "com.example.optional-number";
+        const value = optionalNumber() ?? 42;
+      `);
+
+      expect(
+        actions.filter((action) => action.identifier === "com.example.optional-number"),
+      ).toHaveLength(1);
+
+      const identifiers = actions.map((action) => action.identifier);
+      expect(identifiers).toEqual([
+        "com.example.optional-number",
+        "is.workflow.actions.setvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.getvariable",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.number",
+        "is.workflow.actions.conditional",
+        "is.workflow.actions.setvariable",
+      ]);
+
+      const savedName = actions.at(1)?.parameters.get("WFVariableName");
+      expect(savedName).toBeDefined();
+      expect(actions.at(2)?.parameters.get("WFInput")).toMatchObject({
+        variable: { kind: "VariableRef", name: savedName },
+      });
+      expect(actions.at(3)?.parameters.get("WFVariable")).toMatchObject({
+        kind: "VariableRef",
+        name: savedName,
+      });
+    });
   });
 
   describe("string interpolation", () => {

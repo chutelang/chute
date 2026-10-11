@@ -764,7 +764,7 @@ function lowerCoalesceExpression(
     }),
   );
 
-  lowerExpression(expr.left, actions, ctx);
+  actions.push(makeGetVariableAction(coalesceTempName, ctx));
   actions.push(makeConditionalAction(1, groupId, ctx));
 
   lowerExpression(expr.right, actions, ctx);
