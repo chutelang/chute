@@ -1,7 +1,7 @@
 export { Lexer, LexerError } from "./lexer.ts";
 export { Parser, ParseError } from "./parser.ts";
 export { compile } from "./pipeline.ts";
-export type { CompileResult } from "./pipeline.ts";
+export type { CompileOptions, CompileResult } from "./pipeline.ts";
 export { CompileError, DiagnosticCode } from "./diagnostic.ts";
 export type { Diagnostic, Severity } from "./diagnostic.ts";
 export { renderDiagnostics } from "./render-diagnostic.ts";

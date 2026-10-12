@@ -126,6 +126,13 @@ export interface CheckOptions {
   filePath?: string;
 }
 
+export interface ResolvedFileImport {
+  declaration: ImportDeclaration;
+  path: string;
+  program: Program;
+  imports: ResolvedFileImport[];
+}
+
 interface Binding {
   type: ChuteType;
   mutable: boolean;
@@ -249,6 +256,7 @@ function checkCore(
   errors: Diagnostic[];
   warnings: CheckWarning[];
   scope: Scope;
+  imports: ResolvedFileImport[];
 } {
   const scope = new Scope(undefined);
   const context: CheckContext = {
@@ -265,10 +273,20 @@ function checkCore(
   const filePath = options?.filePath ?? "<main>";
   const importAliases = new Set<string>();
   const resolving = new Set<string>([filePath]);
+  const resolvedImports: ResolvedFileImport[] = [];
 
   for (const imp of program.imports) {
     try {
-      resolveImport(imp, scope, context, resolver, filePath, resolving, importAliases);
+      resolveImport(
+        imp,
+        scope,
+        context,
+        resolver,
+        filePath,
+        resolving,
+        importAliases,
+        resolvedImports,
+      );
     } catch (e) {
       if (e instanceof CheckError) {
         collectedErrors.push(checkErrorToDiagnostic(e));
@@ -334,6 +352,7 @@ function checkCore(
     errors: collectedErrors,
     warnings: context.warnings,
     scope,
+    imports: resolvedImports,
   };
 }
 
@@ -346,6 +365,17 @@ export function check(program: Program, options?: CheckOptions): CheckWarning[] 
   }
 
   return result.warnings;
+}
+
+export function checkForCompilation(
+  program: Program,
+  options?: CheckOptions,
+): { warnings: CheckWarning[]; imports: ResolvedFileImport[] } {
+  const result = checkCore(program, options);
+  if (result.errors.length > 0) {
+    throw new CompileError([...result.errors, ...result.warnings.map(checkWarningToDiagnostic)]);
+  }
+  return { warnings: result.warnings, imports: result.imports };
 }
 
 export function checkCollecting(program: Program, options?: CheckOptions): CheckResult {
@@ -387,6 +417,7 @@ function resolveImport(
   currentFile: string,
   resolving: Set<string>,
   importAliases: Set<string>,
+  resolvedImports: ResolvedFileImport[],
 ): void {
   if (importAliases.has(imp.alias)) {
     throw new CheckError(
@@ -414,7 +445,7 @@ function resolveImport(
     );
   }
 
-  resolveFileImport(imp, scope, context, resolver, currentFile, resolving);
+  resolveFileImport(imp, scope, context, resolver, currentFile, resolving, resolvedImports);
 }
 
 function resolveFileImport(
@@ -424,6 +455,7 @@ function resolveFileImport(
   resolver: FileResolver,
   currentFile: string,
   resolving: Set<string>,
+  resolvedImports: ResolvedFileImport[],
 ): void {
   let resolvedPath: string;
   try {
@@ -463,8 +495,18 @@ function resolveFileImport(
 
   const libScope = new Scope(undefined);
   const libAliases = new Set<string>();
+  const nestedImports: ResolvedFileImport[] = [];
   for (const imp of libAst.imports) {
-    resolveImport(imp, libScope, context, resolver, resolvedPath, resolving, libAliases);
+    resolveImport(
+      imp,
+      libScope,
+      context,
+      resolver,
+      resolvedPath,
+      resolving,
+      libAliases,
+      nestedImports,
+    );
   }
 
   for (const stmt of libAst.body) {
@@ -524,6 +566,12 @@ function resolveFileImport(
   }
 
   scope.defineNamespace(imp.alias, namespaceScope);
+  resolvedImports.push({
+    declaration: imp,
+    path: resolvedPath,
+    program: libAst,
+    imports: nestedImports,
+  });
   resolving.delete(resolvedPath);
 }
 

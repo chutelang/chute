@@ -1,6 +1,7 @@
 import type { Span } from "./token.ts";
 import { DiagnosticCode, CompileError } from "./diagnostic.ts";
 import type { Diagnostic } from "./diagnostic.ts";
+import type { ResolvedFileImport } from "./checker.ts";
 import { resolveEnumBackingValue, resolveStageCalleeName } from "./ast.ts";
 import type {
   ActionDeclaration,
@@ -72,8 +73,96 @@ interface NamespaceAction {
  * via `resolvedOverloadIndex` instead of always getting the last-registered
  * binding for that name.
  */
+function moduleNamespace(path: string): string {
+  return `__chute_module:${path}`;
+}
+
+function qualifyModuleReferences(program: Program, imports: ResolvedFileImport[]): void {
+  const aliases = new Map(
+    imports.map((resolved) => [resolved.declaration.alias, moduleNamespace(resolved.path)]),
+  );
+
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        visit(item);
+      }
+      return;
+    }
+    if (!value || typeof value !== "object") {
+      return;
+    }
+
+    const node = value as Record<string, unknown>;
+    if (node.kind === "MemberExpression") {
+      const object = node.object as { kind?: string; name?: string } | undefined;
+      if (object?.kind === "Identifier" && object.name) {
+        const qualified = aliases.get(object.name);
+        if (qualified) {
+          object.name = qualified;
+        }
+      }
+    }
+    for (const child of Object.values(node)) {
+      visit(child);
+    }
+  };
+
+  visit(program);
+}
+
+function collectFileImports(
+  imports: ResolvedFileImport[],
+  functions: Map<string, FunctionDeclaration>,
+  namespaceActions: Map<string, Map<string, NamespaceAction>>,
+  namespaceFunctions: Map<string, Map<string, NamespaceFunction>>,
+  root = true,
+): void {
+  for (const resolved of imports) {
+    qualifyModuleReferences(resolved.program, resolved.imports);
+    const namespace = root ? resolved.declaration.alias : moduleNamespace(resolved.path);
+    const runtimeNamespace = moduleNamespace(resolved.path);
+    const moduleActions = new Map<string, NamespaceAction>();
+    const moduleFunctions = new Map<string, NamespaceFunction>();
+    const actionOverloads = new Map<string, number>();
+    for (const stmt of resolved.program.body) {
+      if (!("exported" in stmt) || !stmt.exported) {
+        continue;
+      }
+      if (stmt.kind === "FunctionDeclaration") {
+        const runtimeName = runtimeNamespace + "." + stmt.name;
+        functions.set(runtimeName, stmt);
+        moduleFunctions.set(stmt.name, { runtimeName, declaration: stmt });
+      } else if (stmt.kind === "ActionDeclaration") {
+        const index = actionOverloads.get(stmt.name) ?? 0;
+        const action = {
+          runtimeIdentifier: stmt.runtimeIdentifier,
+          paramKeys: new Map(stmt.params.map((p) => [p.label, p.name])),
+          paramLabels: stmt.params.map((p) => p.label),
+        };
+        moduleActions.set(namespaceOverloadKey(stmt.name, index), action);
+        if (index === 0) {
+          moduleActions.set(stmt.name, action);
+        }
+        actionOverloads.set(stmt.name, index + 1);
+      }
+    }
+    namespaceActions.set(namespace, moduleActions);
+    namespaceFunctions.set(namespace, moduleFunctions);
+    collectFileImports(resolved.imports, functions, namespaceActions, namespaceFunctions, false);
+  }
+}
 function namespaceOverloadKey(name: string, overloadIndex: number): string {
   return `${name}__overload_${overloadIndex}`;
+}
+
+interface NamespaceFunction {
+  runtimeName: string;
+  declaration: FunctionDeclaration;
+}
+
+export interface LowerOptions {
+  imports?: ResolvedFileImport[];
 }
 
 interface LowerContext {
@@ -84,10 +173,11 @@ interface LowerContext {
   functions: Map<string, FunctionDeclaration>;
   actions: Map<string, ActionDeclaration[]>;
   namespaceActions: Map<string, Map<string, NamespaceAction>>;
+  namespaceFunctions: Map<string, Map<string, NamespaceFunction>>;
   shortcutName: string;
 }
 
-export function lower(program: Program): CompilationResult {
+export function lower(program: Program, options?: LowerOptions): CompilationResult {
   const name = extractName(program);
   const actions: ActionIR[] = [];
   const enums = new Map<string, Map<string, string>>();
@@ -116,6 +206,7 @@ export function lower(program: Program): CompilationResult {
     }
   }
 
+  const namespaceFunctions = new Map<string, Map<string, NamespaceFunction>>();
   const namespaceActions = new Map<string, Map<string, NamespaceAction>>();
   for (const imp of program.imports) {
     if (!imp.isPackage) {
@@ -167,6 +258,8 @@ export function lower(program: Program): CompilationResult {
     namespaceActions.set(imp.alias, moduleActions);
   }
 
+  collectFileImports(options?.imports ?? [], functions, namespaceActions, namespaceFunctions);
+
   const ctx: LowerContext = {
     uuidCounter: 0,
     tempCounter: 0,
@@ -175,6 +268,7 @@ export function lower(program: Program): CompilationResult {
     functions,
     actions: actionDecls,
     namespaceActions,
+    namespaceFunctions,
     shortcutName: name,
   };
 
@@ -588,6 +682,12 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     if (nsAction) {
       return lowerNamespaceActionCall(expr, nsAction, actions, ctx);
     }
+    const nsFunction = ctx.namespaceFunctions
+      .get(expr.callee.object.name)
+      ?.get(expr.callee.property);
+    if (nsFunction) {
+      return lowerFunctionCall(expr, nsFunction.declaration, actions, ctx, nsFunction.runtimeName);
+    }
   }
 
   if (expr.callee.kind !== "Identifier") {
@@ -619,6 +719,7 @@ function lowerFunctionCall(
   decl: FunctionDeclaration,
   actions: ActionIR[],
   ctx: LowerContext,
+  runtimeName = decl.name,
 ): ActionIR {
   const paramNames = decl.params.map((p) => p.name);
   const provided = new Map<string, Expression>();
@@ -637,7 +738,7 @@ function lowerFunctionCall(
   entries.push({
     itemType: 0,
     key: "__chute_fn",
-    value: decl.name,
+    value: runtimeName,
   });
   for (const param of decl.params) {
     const valueExpr = provided.get(param.name) ?? param.defaultValue;
