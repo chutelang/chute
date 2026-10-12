@@ -29,12 +29,12 @@ export function parseDocComment(raw: string, span: Span): DocComment {
 
     if (tagMatch) {
       if (currentTag) {
-        tags.push(finalizeTag(currentTag, line.offset));
+        tags.push(finalizeTag(currentTag, contentStart + line.offset));
       }
 
       const tagName = tagMatch.at(1) ?? "";
       const rest = (tagMatch.at(2) ?? "").trim();
-      const tagStartOffset = contentStart + line.offset + line.text.indexOf("@");
+      const tagStartOffset = contentStart + line.contentOffset + line.text.indexOf("@");
 
       if (tagName === "param") {
         const paramMatch = /^(\w+)\s*(.*)$/.exec(rest);
@@ -51,8 +51,8 @@ export function parseDocComment(raw: string, span: Span): DocComment {
           nameSpan:
             paramName && nameStartInLine >= 0
               ? {
-                  start: contentStart + line.offset + nameStartInLine,
-                  end: contentStart + line.offset + nameStartInLine + paramName.length,
+                  start: contentStart + line.contentOffset + nameStartInLine,
+                  end: contentStart + line.contentOffset + nameStartInLine + paramName.length,
                 }
               : undefined,
           bodyLines: paramDesc.length > 0 ? [paramDesc] : [],
@@ -91,7 +91,7 @@ export function parseDocComment(raw: string, span: Span): DocComment {
   }
 
   if (currentTag) {
-    tags.push(finalizeTag(currentTag, raw.length));
+    tags.push(finalizeTag(currentTag, contentStart + raw.length));
   }
 
   const descText = description.join("\n").trim();
@@ -122,7 +122,7 @@ function finalizeTag(pending: PendingTag, endOffset: number): DocCommentTag {
     tagName: pending.tagName,
     span: {
       start: pending.startOffset,
-      end: pending.startOffset + (endOffset - pending.startOffset),
+      end: endOffset,
     },
     name: pending.name,
     nameSpan: pending.nameSpan,
@@ -133,6 +133,7 @@ function finalizeTag(pending: PendingTag, endOffset: number): DocCommentTag {
 interface StrippedLine {
   text: string;
   offset: number;
+  contentOffset: number;
 }
 
 function stripLeadingStars(raw: string): StrippedLine[] {
@@ -144,6 +145,7 @@ function stripLeadingStars(raw: string): StrippedLine[] {
     const stripped = line.replace(/^\s*\*? ?/, "");
     result.push({
       text: stripped,
+      contentOffset: offset + line.length - stripped.length,
       offset,
     });
     offset += line.length + 1;

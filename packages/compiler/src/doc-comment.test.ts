@@ -101,10 +101,41 @@ describe("parseDocComment", () => {
 
   it("should produce spans for tags", () => {
     const raw = `* @param x A number`;
-    const result = parseDocComment(raw, { start: 3, end: 24 });
+    const span = { start: 3, end: 3 + 3 + raw.length + 2 };
+    const result = parseDocComment(raw, span);
     const tag = result.tags.at(0);
-    expect(tag?.span.start).toBeGreaterThanOrEqual(3);
-    expect(tag?.span.end).toBeLessThanOrEqual(24);
+    expect(tag?.span.start).toBeGreaterThanOrEqual(span.start);
+    expect(tag?.span.end).toBeLessThanOrEqual(span.end);
+  });
+
+  it("should produce absolute spans for multiple tags after a source prefix", () => {
+    const prefix = "const before = 1;\n";
+    const raw = `*
+ * Summary.
+ * @param value A value
+ * @example use(value)
+ `;
+    const contentStart = prefix.length + 3;
+    const result = parseDocComment(raw, {
+      start: prefix.length,
+      end: contentStart + raw.length + 2,
+    });
+
+    expect(result.tags.at(0)?.span).toEqual({
+      start: contentStart + raw.indexOf("@param"),
+      end: contentStart + raw.indexOf(" * @example"),
+    });
+    expect(result.tags.at(0)?.nameSpan).toEqual({
+      start: contentStart + raw.indexOf("value"),
+      end: contentStart + raw.indexOf("value") + "value".length,
+    });
+    expect(result.tags.at(1)?.span).toEqual({
+      start: contentStart + raw.indexOf("@example"),
+      end: contentStart + raw.length,
+    });
+    for (const tag of result.tags) {
+      expect(tag.span.end).toBeGreaterThanOrEqual(tag.span.start);
+    }
   });
 
   it("should produce a span for the param name", () => {
