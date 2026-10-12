@@ -1,4 +1,11 @@
-import { Lexer, Parser, checkCollecting, CompileError, describeType, getStdlibModuleNames } from "@chutelang/compiler";
+import {
+  Lexer,
+  Parser,
+  checkCollecting,
+  CompileError,
+  describeType,
+  getStdlibModuleNames,
+} from "@chutelang/compiler";
 import type { Program, Diagnostic, Span, ChuteType, Scope, DocComment } from "@chutelang/compiler";
 import type { SymbolInfo, IdentifierAtOffset } from "./find-node.ts";
 import { collectDefinitions, findIdentifierAtOffset } from "./find-node.ts";
@@ -74,7 +81,17 @@ function findDefinitionSpan(
     if (!def) {
       continue;
     }
-    if (def.name === ident.name) {
+    if (
+      def.name === ident.name &&
+      def.scope.start <= ident.span.start &&
+      ident.span.end <= def.scope.end &&
+      (def.kind === "function" ||
+        def.kind === "action" ||
+        def.kind === "enum" ||
+        def.kind === "record" ||
+        def.kind === "import" ||
+        def.span.end <= ident.span.start)
+    ) {
       return def.span;
     }
   }
@@ -145,7 +162,18 @@ function findDocComment(
     if (!def) {
       continue;
     }
-    if (def.name === ident.name && def.docComment) {
+    if (
+      def.name === ident.name &&
+      def.docComment &&
+      def.scope.start <= ident.span.start &&
+      ident.span.end <= def.scope.end &&
+      (def.kind === "function" ||
+        def.kind === "action" ||
+        def.kind === "enum" ||
+        def.kind === "record" ||
+        def.kind === "import" ||
+        def.span.end <= ident.span.start)
+    ) {
       return def.docComment;
     }
   }
@@ -273,7 +301,9 @@ function formatActionSignature(type: ChuteType & { kind: "action" }): string {
   return `(action) ${type.name}(\n${paramLines.join(",\n")}\n)${ret}`;
 }
 
-function formatOverloadedActionSignature(type: ChuteType & { kind: "overloadedAction" }): HoverParts {
+function formatOverloadedActionSignature(
+  type: ChuteType & { kind: "overloadedAction" },
+): HoverParts {
   const count = type.overloads.length;
   const signature = type.overloads
     .map((overload, i) => `(${i + 1}/${count}) ${formatActionSignature(overload)}`)
@@ -368,7 +398,16 @@ export function getImportCompletions(): CompletionItem[] {
 
 export interface CompletionItem {
   label: string;
-  kind: "variable" | "function" | "action" | "enum" | "record" | "keyword" | "enum-case" | "field" | "module";
+  kind:
+    | "variable"
+    | "function"
+    | "action"
+    | "enum"
+    | "record"
+    | "keyword"
+    | "enum-case"
+    | "field"
+    | "module";
   detail?: string;
 }
 

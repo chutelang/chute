@@ -118,6 +118,78 @@ describe("go-to-definition", () => {
     expect(defSpan).toBeDefined();
     expect(defSpan?.start).toBe(0);
   });
+  it("respects declaration order and sibling branch scopes", () => {
+    const source = `const x = 0;
+if (1 == 1) {
+  const x = 1;
+  const here = x;
+} else {
+  const there = x;
+}
+const before = later;
+const later = 2;`;
+    const result = analyze(source);
+    expect(resolveDefinition(result, source.indexOf("x;", source.indexOf("here")))?.start).toBe(
+      source.indexOf("const x = 1"),
+    );
+    expect(resolveDefinition(result, source.indexOf("x;", source.indexOf("there")))?.start).toBe(0);
+    expect(resolveDefinition(result, source.indexOf("later;"))).toBeUndefined();
+  });
+
+  it("resolves parameters and nested shadowing", () => {
+    const source = `func outer(value: Text) {
+  const first = value;
+  if (1 == 1) {
+    const value = "inner";
+    const second = value;
+  }
+  const third = value;
+}`;
+    const result = analyze(source);
+    const parameter = source.indexOf("value: Text");
+    const inner = source.indexOf("const value = ");
+    expect(
+      resolveDefinition(result, source.indexOf("value;", source.indexOf("first")))?.start,
+    ).toBe(parameter);
+    expect(
+      resolveDefinition(result, source.indexOf("value;", source.indexOf("second")))?.start,
+    ).toBe(inner);
+    expect(
+      resolveDefinition(result, source.indexOf("value;", source.indexOf("third")))?.start,
+    ).toBe(parameter);
+  });
+
+  it("keeps nested function bindings in their lexical scope", () => {
+    const source = `func outer(outerParam: Text) {
+  const outerLocal = outerParam;
+  func inner(innerParam: Text) {
+    const innerLocal = innerParam;
+    const fromOuter = outerLocal;
+  }
+  const afterOuter = outerParam;
+  const missingParam = innerParam;
+  const missingLocal = innerLocal;
+}`;
+    const result = analyze(source);
+    const outerLocal = source.indexOf("const outerLocal");
+    const innerParam = source.indexOf("innerParam: Text");
+    const outerParam = source.indexOf("outerParam: Text");
+    expect(
+      resolveDefinition(result, source.indexOf("outerLocal;", source.indexOf("fromOuter")))?.start,
+    ).toBe(outerLocal);
+    expect(
+      resolveDefinition(result, source.indexOf("innerParam;", source.indexOf("innerLocal")))?.start,
+    ).toBe(innerParam);
+    expect(
+      resolveDefinition(result, source.indexOf("outerParam;", source.indexOf("afterOuter")))?.start,
+    ).toBe(outerParam);
+    expect(
+      resolveDefinition(result, source.indexOf("innerParam;", source.indexOf("missingParam"))),
+    ).toBeUndefined();
+    expect(
+      resolveDefinition(result, source.indexOf("innerLocal;", source.indexOf("missingLocal"))),
+    ).toBeUndefined();
+  });
 });
 
 describe("hover", () => {
@@ -226,6 +298,23 @@ describe("doc comment hover", () => {
     const offset = source.lastIndexOf("baseUrl");
     const hover = resolveHover(result, offset);
     expect(hover).toContain("The base URL.");
+  });
+  it("uses docs from the resolved shadowed declaration", () => {
+    const source = `/** Outer docs. */
+const value = "outer";
+if (1 == 1) {
+  /** Inner docs. */
+  const value = "inner";
+  showAlert(text: value);
+}
+showAlert(text: value);`;
+    const result = analyze(source);
+    const innerHover = resolveHover(result, source.indexOf("value);"));
+    const outerHover = resolveHover(result, source.lastIndexOf("value);"));
+    expect(innerHover).toContain("Inner docs.");
+    expect(innerHover).not.toContain("Outer docs.");
+    expect(outerHover).toContain("Outer docs.");
+    expect(outerHover).not.toContain("Inner docs.");
   });
 });
 

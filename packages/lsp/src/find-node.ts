@@ -23,6 +23,7 @@ export interface SymbolInfo {
     | "field"
     | "enum-case";
   docComment?: DocComment | undefined;
+  scope: Span;
 }
 
 export function collectDefinitions(program: Program): SymbolInfo[] {
@@ -33,17 +34,18 @@ export function collectDefinitions(program: Program): SymbolInfo[] {
       name: imp.alias,
       span: imp.span,
       kind: "import",
+      scope: program.span,
     });
   }
 
   for (const stmt of program.body) {
-    collectStatementDefinitions(stmt, defs);
+    collectStatementDefinitions(stmt, defs, program.span);
   }
 
   return defs;
 }
 
-function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void {
+function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[], scope: Span): void {
   switch (stmt.kind) {
     case "ConstDeclaration":
       defs.push({
@@ -51,6 +53,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         span: stmt.span,
         kind: "variable",
         docComment: stmt.docComment,
+        scope,
       });
       break;
     case "LetDeclaration":
@@ -59,6 +62,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         span: stmt.span,
         kind: "variable",
         docComment: stmt.docComment,
+        scope,
       });
       break;
     case "ConstDestructure":
@@ -67,6 +71,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
           name,
           span: stmt.span,
           kind: "variable",
+          scope,
         });
       }
       break;
@@ -76,6 +81,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
           name,
           span: stmt.span,
           kind: "variable",
+          scope,
         });
       }
       break;
@@ -85,16 +91,18 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         span: stmt.span,
         kind: "function",
         docComment: stmt.docComment,
+        scope,
       });
       for (const param of stmt.params) {
         defs.push({
           name: param.name,
           span: param.span,
           kind: "parameter",
+          scope: stmt.span,
         });
       }
       for (const s of stmt.body) {
-        collectStatementDefinitions(s, defs);
+        collectStatementDefinitions(s, defs, stmt.span);
       }
       break;
     case "ActionDeclaration":
@@ -103,6 +111,7 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         span: stmt.span,
         kind: "action",
         docComment: stmt.docComment,
+        scope,
       });
       break;
     case "EnumDeclaration":
@@ -110,12 +119,14 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.name,
         span: stmt.span,
         kind: "enum",
+        scope,
       });
       for (const c of stmt.cases) {
         defs.push({
           name: `${stmt.name}.${c.name}`,
           span: c.span,
           kind: "enum-case",
+          scope,
         });
       }
       break;
@@ -124,26 +135,28 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.name,
         span: stmt.span,
         kind: "record",
+        scope,
       });
       for (const f of stmt.fields) {
         defs.push({
           name: `${stmt.name}.${f.name}`,
           span: f.span,
           kind: "field",
+          scope,
         });
       }
       break;
     case "IfStatement":
       for (const s of stmt.body) {
-        collectStatementDefinitions(s, defs);
+        collectStatementDefinitions(s, defs, statementListSpan(stmt.body, stmt.span));
       }
       if (stmt.elseBody) {
         if (Array.isArray(stmt.elseBody)) {
           for (const s of stmt.elseBody) {
-            collectStatementDefinitions(s, defs);
+            collectStatementDefinitions(s, defs, statementListSpan(stmt.elseBody, stmt.span));
           }
         } else {
-          collectStatementDefinitions(stmt.elseBody, defs);
+          collectStatementDefinitions(stmt.elseBody, defs, scope);
         }
       }
       break;
@@ -152,26 +165,34 @@ function collectStatementDefinitions(stmt: Statement, defs: SymbolInfo[]): void 
         name: stmt.variable,
         span: stmt.span,
         kind: "variable",
+        scope: stmt.span,
       });
       for (const s of stmt.body) {
-        collectStatementDefinitions(s, defs);
+        collectStatementDefinitions(s, defs, stmt.span);
       }
       break;
     case "RepeatStatement":
       for (const s of stmt.body) {
-        collectStatementDefinitions(s, defs);
+        collectStatementDefinitions(s, defs, stmt.span);
       }
       break;
     case "MenuStatement":
       for (const c of stmt.cases) {
         for (const s of c.body) {
-          collectStatementDefinitions(s, defs);
+          collectStatementDefinitions(s, defs, statementListSpan(c.body, c.span));
         }
       }
       break;
     default:
       break;
   }
+}
+
+function statementListSpan(statements: Statement[], fallback: Span): Span {
+  return {
+    start: statements[0]?.span.start ?? fallback.start,
+    end: statements.at(-1)?.span.end ?? fallback.end,
+  };
 }
 
 export interface IdentifierAtOffset {
