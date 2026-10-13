@@ -478,101 +478,104 @@ function resolveFileImport(
 
   resolving.add(resolvedPath);
 
-  let source: string;
   try {
-    source = resolver.read(resolvedPath);
-  } catch (e) {
-    throw new CheckError(
-      `cannot read import '${imp.path}': ${e instanceof Error ? e.message : String(e)}`,
-      imp.span,
-      DiagnosticCode.ImportError,
-    );
-  }
-  const libTokens = new Lexer(source).tokenize();
-  const libAst = new Parser(libTokens).parse();
-
-  validateLibrary(libAst, imp.span);
-
-  const libScope = new Scope(undefined);
-  const libAliases = new Set<string>();
-  const nestedImports: ResolvedFileImport[] = [];
-  for (const imp of libAst.imports) {
-    resolveImport(
-      imp,
-      libScope,
-      context,
-      resolver,
-      resolvedPath,
-      resolving,
-      libAliases,
-      nestedImports,
-    );
-  }
-
-  for (const stmt of libAst.body) {
-    if (stmt.kind === "FunctionDeclaration") {
-      registerFunctionSignature(stmt, libScope, context);
-    } else if (stmt.kind === "EnumDeclaration") {
-      checkEnumDeclaration(stmt, libScope);
-    } else if (stmt.kind === "RecordDeclaration") {
-      checkRecordDeclaration(stmt, libScope, context);
-    } else if (stmt.kind === "ActionDeclaration") {
-      checkActionDeclaration(stmt, libScope, context);
-    } else if (stmt.kind === "ConstDeclaration") {
-      checkConstDeclaration(stmt, libScope, context);
+    let source: string;
+    try {
+      source = resolver.read(resolvedPath);
+    } catch (e) {
+      throw new CheckError(
+        `cannot read import '${imp.path}': ${e instanceof Error ? e.message : String(e)}`,
+        imp.span,
+        DiagnosticCode.ImportError,
+      );
     }
-  }
+    const libTokens = new Lexer(source).tokenize();
+    const libAst = new Parser(libTokens).parse();
 
-  for (const stmt of libAst.body) {
-    if (stmt.kind === "FunctionDeclaration") {
-      checkFunctionDeclaration(stmt, libScope, context);
-    }
-  }
+    validateLibrary(libAst, imp.span);
 
-  const namespaceScope = new Scope(undefined);
-  for (const stmt of libAst.body) {
-    if (!("exported" in stmt) || !stmt.exported) {
-      continue;
+    const libScope = new Scope(undefined);
+    const libAliases = new Set<string>();
+    const nestedImports: ResolvedFileImport[] = [];
+    for (const imp of libAst.imports) {
+      resolveImport(
+        imp,
+        libScope,
+        context,
+        resolver,
+        resolvedPath,
+        resolving,
+        libAliases,
+        nestedImports,
+      );
     }
 
-    if (stmt.kind === "FunctionDeclaration") {
-      const binding = libScope.lookup(stmt.name);
-      if (binding) {
-        namespaceScope.define(stmt.name, binding.type, false);
-      }
-    } else if (stmt.kind === "ActionDeclaration") {
-      const binding = libScope.lookup(stmt.name);
-      if (binding) {
-        namespaceScope.define(stmt.name, binding.type, false);
-      }
-    } else if (stmt.kind === "EnumDeclaration") {
-      const typeDef = libScope.lookupType(stmt.name);
-      if (typeDef) {
-        namespaceScope.defineType(stmt.name, typeDef);
-        namespaceScope.define(stmt.name, typeDef, false);
-      }
-    } else if (stmt.kind === "RecordDeclaration") {
-      const typeDef = libScope.lookupType(stmt.name);
-      if (typeDef) {
-        namespaceScope.defineType(stmt.name, typeDef);
-        namespaceScope.define(stmt.name, typeDef, false);
-      }
-    } else if (stmt.kind === "ConstDeclaration") {
-      const binding = libScope.lookup(stmt.name);
-      if (binding) {
-        namespaceScope.define(stmt.name, binding.type, false);
+    for (const stmt of libAst.body) {
+      if (stmt.kind === "FunctionDeclaration") {
+        registerFunctionSignature(stmt, libScope, context);
+      } else if (stmt.kind === "EnumDeclaration") {
+        checkEnumDeclaration(stmt, libScope);
+      } else if (stmt.kind === "RecordDeclaration") {
+        checkRecordDeclaration(stmt, libScope, context);
+      } else if (stmt.kind === "ActionDeclaration") {
+        checkActionDeclaration(stmt, libScope, context);
+      } else if (stmt.kind === "ConstDeclaration") {
+        checkConstDeclaration(stmt, libScope, context);
       }
     }
-  }
 
-  scope.defineNamespace(imp.alias, namespaceScope);
-  resolvedImports.push({
-    declaration: imp,
-    path: resolvedPath,
-    program: libAst,
-    imports: nestedImports,
-  });
-  resolving.delete(resolvedPath);
+    for (const stmt of libAst.body) {
+      if (stmt.kind === "FunctionDeclaration") {
+        checkFunctionDeclaration(stmt, libScope, context);
+      }
+    }
+
+    const namespaceScope = new Scope(undefined);
+    for (const stmt of libAst.body) {
+      if (!("exported" in stmt) || !stmt.exported) {
+        continue;
+      }
+
+      if (stmt.kind === "FunctionDeclaration") {
+        const binding = libScope.lookup(stmt.name);
+        if (binding) {
+          namespaceScope.define(stmt.name, binding.type, false);
+        }
+      } else if (stmt.kind === "ActionDeclaration") {
+        const binding = libScope.lookup(stmt.name);
+        if (binding) {
+          namespaceScope.define(stmt.name, binding.type, false);
+        }
+      } else if (stmt.kind === "EnumDeclaration") {
+        const typeDef = libScope.lookupType(stmt.name);
+        if (typeDef) {
+          namespaceScope.defineType(stmt.name, typeDef);
+          namespaceScope.define(stmt.name, typeDef, false);
+        }
+      } else if (stmt.kind === "RecordDeclaration") {
+        const typeDef = libScope.lookupType(stmt.name);
+        if (typeDef) {
+          namespaceScope.defineType(stmt.name, typeDef);
+          namespaceScope.define(stmt.name, typeDef, false);
+        }
+      } else if (stmt.kind === "ConstDeclaration") {
+        const binding = libScope.lookup(stmt.name);
+        if (binding) {
+          namespaceScope.define(stmt.name, binding.type, false);
+        }
+      }
+    }
+
+    scope.defineNamespace(imp.alias, namespaceScope);
+    resolvedImports.push({
+      declaration: imp,
+      path: resolvedPath,
+      program: libAst,
+      imports: nestedImports,
+    });
+  } finally {
+    resolving.delete(resolvedPath);
+  }
 }
 
 function validateLibrary(ast: Program, importSpan: Span): void {

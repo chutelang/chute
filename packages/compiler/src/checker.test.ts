@@ -3,6 +3,7 @@ import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
 import {
   check,
+  checkCollecting,
   resolveOverload,
   scoreOverload,
   type ChuteType,
@@ -1813,6 +1814,24 @@ describe("checker", () => {
           { resolver, filePath: "main.chute" },
         ),
       ).toThrow(CompileError);
+    });
+
+    it("should clear cycle tracking after an import fails", () => {
+      const resolver = makeResolver({
+        "./bad": "let x = 42;",
+      });
+      const result = checkCollecting(
+        parse(`
+          import "./bad" as First;
+          import "./bad" as Second;
+        `),
+        { resolver, filePath: "main.chute" },
+      );
+
+      expect(result.diagnostics.map((diagnostic) => diagnostic.message)).toEqual([
+        "libraries cannot contain let declarations",
+        "libraries cannot contain let declarations",
+      ]);
     });
 
     it("should detect import cycles", () => {
