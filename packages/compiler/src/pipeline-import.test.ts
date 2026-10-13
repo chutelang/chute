@@ -82,6 +82,144 @@ describe("compile file imports", () => {
     expect(result.main).toContain("__chute_module:./inner-b.value");
   });
 
+  it("compiles exported constants with path-qualified storage", () => {
+    const result = compile(
+      'import "./a" as A; import "./b" as B; const a = A.value; const b = B.value;',
+      {
+        resolver: resolver({
+          "./a": 'export const value = "a";',
+          "./b": 'export const value = "b";',
+        }),
+        filePath: "main.chute",
+      },
+    );
+    expect(result.main).toContain("__chute_module:./a.value");
+    expect(result.main).toContain("__chute_module:./b.value");
+  });
+
+  it("initializes nested imported constants before their dependents", () => {
+    const result = compile('import "./outer" as O; const value = O.value;', {
+      resolver: resolver({
+        "./outer": 'import "./inner" as I; export const value = I.value;',
+        "./inner": 'export const value = "nested";',
+      }),
+      filePath: "main.chute",
+    });
+    expect(result.main.indexOf("__chute_module:./inner.value")).toBeLessThan(
+      result.main.indexOf("__chute_module:./outer.value"),
+    );
+  });
+
+  it("compiles exported enum cases without runtime enum state", () => {
+    const result = compile('import "./types" as T; const color = T.Color.red;', {
+      resolver: resolver({
+        "./types": 'export enum Color { red = "RED" }',
+      }),
+      filePath: "main.chute",
+    });
+    expect(result.main).toContain("RED");
+    expect(result.main).not.toContain("__chute_module:./types.Color");
+  });
+
+  it("compiles exported record construction and field access", () => {
+    const result = compile(
+      'import "./types" as T; const point = T.Point(x: 1, y: 2); const x = point.x;',
+      {
+        resolver: resolver({
+          "./types": "export record Point { x: Number, y: Number }",
+        }),
+        filePath: "main.chute",
+      },
+    );
+    expect(result.main).toContain("WFItems");
+    expect(result.main).toContain("WFDictionaryKey");
+    expect(result.main).toContain("<string>x</string>");
+    expect(result.main).not.toContain("__chute_module:./types.Point");
+  });
+
+  it("initializes private constants used by exported constants", () => {
+    const result = compile('import "./values" as V; const value = V.value;', {
+      resolver: resolver({
+        "./values": 'const privateValue = "private"; export const value = privateValue;',
+      }),
+      filePath: "main.chute",
+    });
+    expect(result.main).toContain("__chute_module:./values.privateValue");
+    expect(result.main).toContain("__chute_module:./values.value");
+  });
+
+  it("rejects private constant capture from exported functions", () => {
+    // Functions intentionally receive a restricted scope containing callables,
+    // namespaces, types, and input. Module constants cannot be captured.
+    expect(() =>
+      compile('import "./helpers" as H; const value = H.value();', {
+        resolver: resolver({
+          "./helpers":
+            'const privateValue = "private"; export func value() -> Text { return privateValue; }',
+        }),
+        filePath: "main.chute",
+      }),
+    ).toThrow(CompileError);
+  });
+
+  it("resolves private helpers in exported functions", () => {
+    const result = compile('import "./helpers" as H; const value = H.outer();', {
+      resolver: resolver({
+        "./helpers":
+          'func inner() -> Text { return "private"; } export func outer() -> Text { return inner(); }',
+      }),
+      filePath: "main.chute",
+    });
+    expect(result.main).toContain("__chute_module:./helpers.inner");
+  });
+
+  it("qualifies module references in function parameter defaults", () => {
+    const result = compile('import "./helpers" as H; const value = H.echo();', {
+      resolver: resolver({
+        "./helpers":
+          'func fallback() -> Text { return "fallback"; } export func echo(value: Text = fallback()) -> Text { return value; }',
+      }),
+      filePath: "main.chute",
+    });
+    expect(result.main).toContain("__chute_module:./helpers.fallback");
+  });
+
+  it("preserves parameter and local shadowing of module declarations", () => {
+    const result = compile('import "./helpers" as H; const value = H.echo("argument");', {
+      resolver: resolver({
+        "./helpers":
+          'const value = "module"; export func echo(value: Text) -> Text { const copy = value; return copy; }',
+      }),
+      filePath: "main.chute",
+    });
+    expect(result.main).toContain("__chute_module:./helpers.value");
+    expect(result.main).toContain("<string>value</string>");
+    expect(result.main).toContain("<string>copy</string>");
+  });
+  it("rejects parameters that shadow imported namespace aliases", () => {
+    let error: unknown;
+    try {
+      compile('import "./outer" as O; const value = O.read(O.Payload(value: "local"));', {
+        resolver: resolver({
+          "./outer":
+            'import "./inner" as I; export record Payload { value: Text } export func read(I: Payload) -> Text { return I.value; }',
+          "./inner": 'export const other = "module";',
+        }),
+        filePath: "main.chute",
+      });
+    } catch (caught) {
+      error = caught;
+    }
+    expect(error).toBeInstanceOf(CompileError);
+    expect(
+      error instanceof CompileError
+        ? error.diagnostics.some(
+            (diagnostic) => diagnostic.message === "'value' is not exported from 'I'",
+          )
+        : false,
+    ).toBe(true);
+  });
+
   it("reports missing files", () => {
     expect(() =>
       compile('import "./missing" as M;', {

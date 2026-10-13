@@ -77,15 +77,58 @@ function moduleNamespace(path: string): string {
   return `__chute_module:${path}`;
 }
 
-function qualifyModuleReferences(program: Program, imports: ResolvedFileImport[]): void {
+function qualifyModuleReferences(
+  program: Program,
+  path: string,
+  imports: ResolvedFileImport[],
+): void {
   const aliases = new Map(
     imports.map((resolved) => [resolved.declaration.alias, moduleNamespace(resolved.path)]),
   );
+  const names = new Map<string, string>();
+  for (const stmt of program.body) {
+    if (
+      stmt.kind === "ConstDeclaration" ||
+      stmt.kind === "FunctionDeclaration" ||
+      stmt.kind === "ActionDeclaration" ||
+      stmt.kind === "EnumDeclaration" ||
+      stmt.kind === "RecordDeclaration"
+    ) {
+      names.set(stmt.name, `${moduleNamespace(path)}.${stmt.name}`);
+    }
+  }
 
-  const visit = (value: unknown): void => {
+  const addDeclaration = (value: unknown, scope: Set<string>): void => {
+    if (!value || typeof value !== "object") {
+      return;
+    }
+    const stmt = value as Record<string, unknown>;
+    if (
+      (stmt.kind === "ConstDeclaration" ||
+        stmt.kind === "LetDeclaration" ||
+        stmt.kind === "FunctionDeclaration" ||
+        stmt.kind === "ActionDeclaration" ||
+        stmt.kind === "EnumDeclaration" ||
+        stmt.kind === "RecordDeclaration") &&
+      typeof stmt.name === "string"
+    ) {
+      scope.add(stmt.name);
+    } else if (
+      (stmt.kind === "ConstDestructure" || stmt.kind === "LetDestructure") &&
+      Array.isArray(stmt.names)
+    ) {
+      for (const name of stmt.names) {
+        if (typeof name === "string") {
+          scope.add(name);
+        }
+      }
+    }
+  };
+
+  const visit = (value: unknown, shadowed: Set<string>): void => {
     if (Array.isArray(value)) {
       for (const item of value) {
-        visit(item);
+        visit(item, shadowed);
       }
       return;
     }
@@ -96,64 +139,199 @@ function qualifyModuleReferences(program: Program, imports: ResolvedFileImport[]
     const node = value as Record<string, unknown>;
     if (node.kind === "MemberExpression") {
       const object = node.object as { kind?: string; name?: string } | undefined;
-      if (object?.kind === "Identifier" && object.name) {
+      if (object?.kind === "Identifier" && object.name && !shadowed.has(object.name)) {
         const qualified = aliases.get(object.name);
         if (qualified) {
           object.name = qualified;
         }
       }
     }
+    if (node.kind === "Identifier" && typeof node.name === "string" && !shadowed.has(node.name)) {
+      node.name = names.get(node.name) ?? node.name;
+      return;
+    }
+    if (node.kind === "FunctionDeclaration") {
+      for (const param of node.params as Array<{ defaultValue?: unknown }>) {
+        visit(param.defaultValue, shadowed);
+      }
+      const bodyScope = new Set(shadowed);
+      for (const param of node.params as Array<{ name: string }>) {
+        bodyScope.add(param.name);
+      }
+      visitStatementList(node.body as unknown[], bodyScope);
+      return;
+    }
+    if (node.kind === "ActionDeclaration") {
+      for (const param of node.params as Array<{ defaultValue?: unknown }>) {
+        visit(param.defaultValue, shadowed);
+      }
+      return;
+    }
+    if (node.kind === "IfStatement") {
+      visit(node.condition, shadowed);
+      visitStatementList(node.body as unknown[], new Set(shadowed));
+      if (Array.isArray(node.elseBody)) {
+        visitStatementList(node.elseBody, new Set(shadowed));
+      } else {
+        visit(node.elseBody, new Set(shadowed));
+      }
+      return;
+    }
+    if (node.kind === "ForStatement") {
+      visit(node.iterable, shadowed);
+      const bodyScope = new Set(shadowed);
+      if (typeof node.variable === "string") {
+        bodyScope.add(node.variable);
+      }
+      visitStatementList(node.body as unknown[], bodyScope);
+      return;
+    }
+    if (node.kind === "RepeatStatement") {
+      visit(node.count, shadowed);
+      visitStatementList(node.body as unknown[], new Set(shadowed));
+      return;
+    }
+    if (node.kind === "MenuStatement") {
+      visit(node.prompt, shadowed);
+      for (const menuCase of node.cases as Array<{ body: unknown[] }>) {
+        const caseScope = new Set(shadowed);
+        if (typeof node.variable === "string") {
+          caseScope.add(node.variable);
+        }
+        visitStatementList(menuCase.body, caseScope);
+      }
+      return;
+    }
     for (const child of Object.values(node)) {
-      visit(child);
+      visit(child, shadowed);
     }
   };
 
-  visit(program);
+  const visitStatementList = (statements: unknown[], shadowed: Set<string>): void => {
+    for (const stmt of statements) {
+      visit(stmt, shadowed);
+      addDeclaration(stmt, shadowed);
+    }
+  };
+
+  // Top-level declarations are module bindings, not lexical shadows.
+  for (const stmt of program.body) {
+    visit(stmt, new Set());
+  }
 }
 
 function collectFileImports(
   imports: ResolvedFileImport[],
   functions: Map<string, FunctionDeclaration>,
+  actions: Map<string, ActionDeclaration[]>,
+  enums: Map<string, Map<string, string>>,
+  records: Set<string>,
   namespaceActions: Map<string, Map<string, NamespaceAction>>,
   namespaceFunctions: Map<string, Map<string, NamespaceFunction>>,
+  namespaceConstants: Map<string, Map<string, string>>,
+  namespaceEnums: Map<string, Map<string, Map<string, string>>>,
+  namespaceRecords: Map<string, Set<string>>,
+  importedConstants: ImportedConstant[],
+  collectedModules: Set<string>,
   root = true,
 ): void {
   for (const resolved of imports) {
-    qualifyModuleReferences(resolved.program, resolved.imports);
+    qualifyModuleReferences(resolved.program, resolved.path, resolved.imports);
     const namespace = root ? resolved.declaration.alias : moduleNamespace(resolved.path);
     const runtimeNamespace = moduleNamespace(resolved.path);
+    collectFileImports(
+      resolved.imports,
+      functions,
+      actions,
+      enums,
+      records,
+      namespaceActions,
+      namespaceFunctions,
+      namespaceConstants,
+      namespaceEnums,
+      namespaceRecords,
+      importedConstants,
+      collectedModules,
+      false,
+    );
     const moduleActions = new Map<string, NamespaceAction>();
     const moduleFunctions = new Map<string, NamespaceFunction>();
+    const moduleConstants = new Map<string, string>();
+    const moduleEnums = new Map<string, Map<string, string>>();
+    const moduleRecords = new Set<string>();
     const actionOverloads = new Map<string, number>();
     for (const stmt of resolved.program.body) {
-      if (!("exported" in stmt) || !stmt.exported) {
+      if (!("name" in stmt) || typeof stmt.name !== "string") {
         continue;
       }
+      const runtimeName = `${runtimeNamespace}.${stmt.name}`;
+      const exported = "exported" in stmt && stmt.exported;
       if (stmt.kind === "FunctionDeclaration") {
-        const runtimeName = runtimeNamespace + "." + stmt.name;
         functions.set(runtimeName, stmt);
-        moduleFunctions.set(stmt.name, { runtimeName, declaration: stmt });
-      } else if (stmt.kind === "ActionDeclaration") {
-        const index = actionOverloads.get(stmt.name) ?? 0;
-        const action = {
-          runtimeIdentifier: stmt.runtimeIdentifier,
-          paramKeys: new Map(stmt.params.map((p) => [p.label, p.name])),
-          paramLabels: stmt.params.map((p) => p.label),
-        };
-        moduleActions.set(namespaceOverloadKey(stmt.name, index), action);
-        if (index === 0) {
-          moduleActions.set(stmt.name, action);
+        if (exported) {
+          moduleFunctions.set(stmt.name, { runtimeName, declaration: stmt });
         }
-        actionOverloads.set(stmt.name, index + 1);
+      } else if (stmt.kind === "ActionDeclaration") {
+        const existing = actions.get(runtimeName);
+        if (existing) {
+          existing.push(stmt);
+        } else {
+          actions.set(runtimeName, [stmt]);
+        }
+        if (exported) {
+          const index = actionOverloads.get(stmt.name) ?? 0;
+          const action = {
+            runtimeIdentifier: stmt.runtimeIdentifier,
+            paramKeys: new Map(stmt.params.map((p) => [p.label, p.name])),
+            paramLabels: stmt.params.map((p) => p.label),
+          };
+          moduleActions.set(namespaceOverloadKey(stmt.name, index), action);
+          if (index === 0) {
+            moduleActions.set(stmt.name, action);
+          }
+          actionOverloads.set(stmt.name, index + 1);
+        }
+      } else if (stmt.kind === "ConstDeclaration") {
+        if (!collectedModules.has(resolved.path)) {
+          importedConstants.push({ runtimeName, declaration: stmt });
+        }
+        if (exported) {
+          moduleConstants.set(stmt.name, runtimeName);
+        }
+      } else if (stmt.kind === "EnumDeclaration") {
+        const cases = new Map<string, string>();
+        for (const enumCase of stmt.cases) {
+          cases.set(
+            enumCase.name,
+            resolveEnumBackingValue(enumCase.name, enumCase.value, stmt.defaultValue),
+          );
+        }
+        enums.set(runtimeName, cases);
+        if (exported) {
+          moduleEnums.set(stmt.name, cases);
+        }
+      } else if (stmt.kind === "RecordDeclaration") {
+        records.add(runtimeName);
+        if (exported) {
+          moduleRecords.add(stmt.name);
+        }
       }
     }
+    collectedModules.add(resolved.path);
     namespaceActions.set(namespace, moduleActions);
     namespaceFunctions.set(namespace, moduleFunctions);
-    collectFileImports(resolved.imports, functions, namespaceActions, namespaceFunctions, false);
+    namespaceConstants.set(namespace, moduleConstants);
+    namespaceEnums.set(namespace, moduleEnums);
+    namespaceRecords.set(namespace, moduleRecords);
   }
 }
 function namespaceOverloadKey(name: string, overloadIndex: number): string {
   return `${name}__overload_${overloadIndex}`;
+}
+
+interface ImportedConstant {
+  runtimeName: string;
+  declaration: ConstDeclaration;
 }
 
 interface NamespaceFunction {
@@ -174,6 +352,9 @@ interface LowerContext {
   actions: Map<string, ActionDeclaration[]>;
   namespaceActions: Map<string, Map<string, NamespaceAction>>;
   namespaceFunctions: Map<string, Map<string, NamespaceFunction>>;
+  namespaceConstants: Map<string, Map<string, string>>;
+  namespaceEnums: Map<string, Map<string, Map<string, string>>>;
+  namespaceRecords: Map<string, Set<string>>;
   shortcutName: string;
 }
 
@@ -208,6 +389,10 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
 
   const namespaceFunctions = new Map<string, Map<string, NamespaceFunction>>();
   const namespaceActions = new Map<string, Map<string, NamespaceAction>>();
+  const namespaceConstants = new Map<string, Map<string, string>>();
+  const namespaceEnums = new Map<string, Map<string, Map<string, string>>>();
+  const namespaceRecords = new Map<string, Set<string>>();
+  const importedConstants: ImportedConstant[] = [];
   for (const imp of program.imports) {
     if (!imp.isPackage) {
       continue;
@@ -258,7 +443,20 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
     namespaceActions.set(imp.alias, moduleActions);
   }
 
-  collectFileImports(options?.imports ?? [], functions, namespaceActions, namespaceFunctions);
+  collectFileImports(
+    options?.imports ?? [],
+    functions,
+    actionDecls,
+    enums,
+    records,
+    namespaceActions,
+    namespaceFunctions,
+    namespaceConstants,
+    namespaceEnums,
+    namespaceRecords,
+    importedConstants,
+    new Set(),
+  );
 
   const ctx: LowerContext = {
     uuidCounter: 0,
@@ -269,8 +467,16 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
     actions: actionDecls,
     namespaceActions,
     namespaceFunctions,
+    namespaceConstants,
+    namespaceEnums,
+    namespaceRecords,
     shortcutName: name,
   };
+
+  for (const imported of importedConstants) {
+    lowerExpression(imported.declaration.initializer, actions, ctx);
+    actions.push(makeSetVariableAction(imported.runtimeName, ctx));
+  }
 
   if (functions.size > 0) {
     try {
@@ -533,6 +739,14 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
         lowerRecordConstruction(expr, actions, ctx);
         return;
       }
+      if (
+        expr.callee.kind === "MemberExpression" &&
+        expr.callee.object.kind === "Identifier" &&
+        ctx.namespaceRecords.get(expr.callee.object.name)?.has(expr.callee.property)
+      ) {
+        lowerRecordConstruction(expr, actions, ctx);
+        return;
+      }
       actions.push(lowerCall(expr, actions, ctx));
       return;
     case "StringLiteral":
@@ -569,6 +783,23 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
       lowerDictionaryLiteral(expr, actions, ctx);
       return;
     case "MemberExpression":
+      if (expr.object.kind === "Identifier") {
+        const importedConstant = ctx.namespaceConstants.get(expr.object.name)?.get(expr.property);
+        if (importedConstant) {
+          actions.push(makeGetVariableAction(importedConstant, ctx));
+          return;
+        }
+      }
+      if (expr.object.kind === "MemberExpression" && expr.object.object.kind === "Identifier") {
+        const importedEnum = ctx.namespaceEnums
+          .get(expr.object.object.name)
+          ?.get(expr.object.property);
+        const backingValue = importedEnum?.get(expr.property);
+        if (backingValue !== undefined) {
+          actions.push(makeTextAction(backingValue, ctx));
+          return;
+        }
+      }
       if (expr.object.kind === "Identifier" && ctx.enums.has(expr.object.name)) {
         lowerEnumMemberAccess(expr.object.name, expr.property, expr.span, actions, ctx);
         return;
