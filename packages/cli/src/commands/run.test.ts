@@ -113,6 +113,28 @@ describe("chute run", () => {
     expect(fake.exitCode).toBe(1);
   });
 
+  it("should render diagnostics without signing or opening invalid source", () => {
+    const filePath = path.join(TEST_DIR, "bad.chute");
+    fs.writeFileSync(
+      filePath,
+      `shortcut { name: "Bad" }
+const x = foo;
+`,
+    );
+
+    const fake = createFakeIO({ signingAvailable: true });
+    run(filePath, fake.io);
+
+    expect(fake.exitCode).toBe(1);
+    const stderr = fake.stderrLines.join("");
+    expect(stderr).toContain("CHT");
+    expect(stderr).toContain("error");
+    expect(stderr).toContain("emitted");
+    expect(stderr).not.toContain("at ");
+    expect(fake.spawnCalls).toEqual([]);
+    expect(fs.existsSync(path.join(TEST_DIR, "bad.shortcut"))).toBe(false);
+  });
+
   it("should error with warning when signing is unavailable", () => {
     const filePath = path.join(TEST_DIR, "test.chute");
     fs.writeFileSync(filePath, SAMPLE_SOURCE);

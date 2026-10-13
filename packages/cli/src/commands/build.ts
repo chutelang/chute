@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import { compile, CompileError, renderDiagnostics } from "@chutelang/compiler";
+import { compileSource } from "../compile.ts";
 import { type IO, realIO } from "../io.ts";
 import { isSigningAvailable, signShortcut } from "../sign.ts";
 
@@ -68,21 +68,9 @@ function buildFile(file: string, sign: boolean, io: IO): void {
   }
 
   const source = io.readFile(resolved);
-  let result;
-  try {
-    result = compile(source);
-  } catch (e) {
-    if (e instanceof CompileError) {
-      io.stderr(
-        renderDiagnostics(source, e.diagnostics, {
-          color: io.stderrSupportsColor,
-          filePath: file,
-        }),
-      );
-      io.setExitCode(1);
-      return;
-    }
-    throw e;
+  const result = compileSource(source, file, io);
+  if (result === undefined) {
+    return;
   }
 
   const outDir = path.dirname(resolved);

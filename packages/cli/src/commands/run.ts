@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import { compile } from "@chutelang/compiler";
+import { compileSource } from "../compile.ts";
 import { type IO, realIO } from "../io.ts";
 import { isSigningAvailable, signShortcut } from "../sign.ts";
 
@@ -13,7 +13,10 @@ export function run(file: string, io: IO = realIO): void {
   }
 
   const source = io.readFile(resolved);
-  const compileResult = compile(source);
+  const compileResult = compileSource(source, file, io);
+  if (compileResult === undefined) {
+    return;
+  }
 
   const outDir = path.dirname(resolved);
   const baseName = path.basename(resolved, ".chute");
