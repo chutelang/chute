@@ -9,6 +9,11 @@ function parse(source: string): Program {
   return new Parser(tokens).parse();
 }
 
+function parseCollecting(source: string): ReturnType<Parser["parseCollecting"]> {
+  const tokens = new Lexer(source).tokenize();
+  return new Parser(tokens).parseCollecting();
+}
+
 describe("Parser", () => {
   describe("empty program", () => {
     it("should parse an empty source", () => {
@@ -173,6 +178,27 @@ describe("Parser", () => {
 
     it("should error on unexpected token in metadata", () => {
       expect(() => parse("shortcut { 42 }")).toThrow(CompileError);
+    });
+
+    it("should collect errors and retain statements parsed during recovery", () => {
+      const result = parseCollecting("const = 1; const valid = 2; let = 3;");
+
+      expect(result.diagnostics).toHaveLength(2);
+      expect(result.program.body).toHaveLength(1);
+      expect(result.program.body.at(0)).toMatchObject({
+        kind: "ConstDeclaration",
+        name: "valid",
+      });
+    });
+
+    it("should throw all errors found during recovery", () => {
+      try {
+        parse("const = 1; const valid = 2; let = 3;");
+        expect.unreachable("expected CompileError to be thrown");
+      } catch (error) {
+        expect(error).toBeInstanceOf(CompileError);
+        expect((error as CompileError).diagnostics).toHaveLength(2);
+      }
     });
   });
 

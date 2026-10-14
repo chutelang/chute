@@ -98,71 +98,18 @@ export class Parser {
   }
 
   parse(): Program {
-    const start = this.peek().span.start;
-    const imports: ImportDeclaration[] = [];
-
-    while (this.check(TokenKind.Import)) {
-      try {
-        imports.push(this.parseImport());
-      } catch (e) {
-        if (e instanceof ParseError) {
-          this.recordError(e);
-          this.synchronize();
-        } else {
-          throw e;
-        }
-      }
+    const result = this.parseProgram();
+    if (result.diagnostics.length > 0) {
+      throw new CompileError(result.diagnostics);
     }
-
-    let metadata: ShortcutMetadata | undefined;
-
-    if (this.check(TokenKind.Shortcut)) {
-      try {
-        metadata = this.parseShortcutMetadata();
-      } catch (e) {
-        if (e instanceof ParseError) {
-          this.recordError(e);
-          this.synchronize();
-        } else {
-          throw e;
-        }
-      }
-    }
-
-    const body: Statement[] = [];
-    while (!this.check(TokenKind.Eof)) {
-      try {
-        if (this.check(TokenKind.Import)) {
-          const tok = this.peek();
-          this.recordError(new ParseError("imports must appear at the top of the file", tok.span));
-          this.synchronize();
-        } else {
-          body.push(this.parseStatement());
-        }
-      } catch (e) {
-        if (e instanceof ParseError) {
-          this.recordError(e);
-          this.synchronize();
-        } else {
-          throw e;
-        }
-      }
-    }
-
-    if (this.diagnostics.length > 0) {
-      throw new CompileError(this.diagnostics);
-    }
-
-    return {
-      kind: "Program",
-      span: { start, end: this.peek().span.end },
-      imports,
-      metadata,
-      body,
-    };
+    return result.program;
   }
 
   parseCollecting(): { program: Program; diagnostics: Diagnostic[] } {
+    return this.parseProgram();
+  }
+
+  private parseProgram(): { program: Program; diagnostics: Diagnostic[] } {
     const start = this.peek().span.start;
     const imports: ImportDeclaration[] = [];
 
