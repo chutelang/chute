@@ -255,50 +255,52 @@ function formatParamType(type: ChuteType): string {
 }
 
 function formatFunctionSignature(type: ChuteType & { kind: "function" }): string {
-  const paramLines = type.params.map((p) => {
-    const optional = p.hasDefault ? "?" : "";
-    return `  ${p.name}${optional}: ${formatParamType(p.type)}`;
-  });
-  const ret = type.returnType ? `: ${describeType(type.returnType)}` : "";
-
-  if (paramLines.length === 0) {
-    return `(function) ${type.name}()${ret}`;
-  }
-  if (paramLines.length === 1) {
-    const p = type.params[0];
-    if (p) {
-      const optional = p.hasDefault ? "?" : "";
-      const inline = `${p.name}${optional}: ${formatParamType(p.type)}`;
-      if (inline.length < 60) {
-        return `(function) ${type.name}(${inline})${ret}`;
-      }
-    }
-  }
-  return `(function) ${type.name}(\n${paramLines.join(",\n")}\n)${ret}`;
+  return formatCallableSignature(
+    "function",
+    type.name,
+    type.params.map((param) => ({ ...param, label: param.name })),
+    type.returnType,
+    1,
+  );
 }
 
 function formatActionSignature(type: ChuteType & { kind: "action" }): string {
-  const paramLines = type.params.map((p) => {
-    const optional = p.hasDefault ? "?" : "";
-    return `  ${p.label}${optional}: ${formatParamType(p.type)}`;
-  });
-  const ret = type.returnType ? `: ${describeType(type.returnType)}` : "";
+  return formatCallableSignature("action", type.name, type.params, type.returnType, 2);
+}
 
-  if (paramLines.length === 0) {
-    return `(action) ${type.name}()${ret}`;
+interface SignatureParam {
+  label: string;
+  type: ChuteType;
+  hasDefault: boolean;
+}
+
+function formatCallableSignature(
+  kind: "function" | "action",
+  name: string,
+  params: SignatureParam[],
+  returnType: ChuteType | undefined,
+  maxInlineParams: number,
+): string {
+  const marker = `(${kind})`;
+  const returnSignature = returnType ? `: ${describeType(returnType)}` : "";
+  const formatParam = (param: SignatureParam): string => {
+    const optional = param.hasDefault ? "?" : "";
+    return `${param.label}${optional}: ${formatParamType(param.type)}`;
+  };
+
+  if (params.length === 0) {
+    return `${marker} ${name}()${returnSignature}`;
   }
-  if (paramLines.length <= 2) {
-    const inline = type.params
-      .map((p) => {
-        const optional = p.hasDefault ? "?" : "";
-        return `${p.label}${optional}: ${formatParamType(p.type)}`;
-      })
-      .join(", ");
+
+  if (params.length <= maxInlineParams) {
+    const inline = params.map(formatParam).join(", ");
     if (inline.length < 60) {
-      return `(action) ${type.name}(${inline})${ret}`;
+      return `${marker} ${name}(${inline})${returnSignature}`;
     }
   }
-  return `(action) ${type.name}(\n${paramLines.join(",\n")}\n)${ret}`;
+
+  const paramLines = params.map((param) => `  ${formatParam(param)}`);
+  return `${marker} ${name}(\n${paramLines.join(",\n")}\n)${returnSignature}`;
 }
 
 function formatOverloadedActionSignature(

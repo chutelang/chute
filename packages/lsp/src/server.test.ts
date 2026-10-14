@@ -262,10 +262,11 @@ describe("hover", () => {
     const result = analyze(source);
     const offset = source.lastIndexOf("edit");
     const hover = resolveHover(result, offset);
-    expect(hover).toContain("(1/2)");
-    expect(hover).toContain("(2/2)");
-    expect(hover).toContain("action edit(p: Prop, v: Text) -> Text");
-    expect(hover).toContain("action edit(p: Prop, v: Number) -> Number");
+    expect(hover).toBe(`\`\`\`chute
+(1/2) (action) edit(p: .title, v: Text): Text
+
+(2/2) (action) edit(p: .duration, v: Number): Number
+\`\`\``);
   });
 });
 
