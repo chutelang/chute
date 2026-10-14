@@ -53,7 +53,7 @@ jobs:
 
       - name: Publish packages
         run: |
-          for dir in packages/compiler packages/formatter packages/linter packages/lsp packages/cli; do
+          for dir in packages/compiler packages/formatter packages/lsp packages/cli; do
             name=$(node -p "require('./$dir/package.json').name")
 
             provenance=""
