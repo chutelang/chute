@@ -152,7 +152,7 @@ describe("lower", () => {
       const savedName = actions.at(1)?.parameters.get("WFVariableName");
       expect(savedName).toBeDefined();
       expect(actions.at(2)?.parameters.get("WFInput")).toMatchObject({
-        variable: { kind: "VariableRef", name: savedName },
+        reference: { kind: "VariableRef", name: savedName },
       });
       expect(actions.at(3)?.parameters.get("WFVariable")).toMatchObject({
         kind: "VariableRef",
@@ -249,6 +249,38 @@ describe("lower", () => {
       );
       expect(start).toBeDefined();
       expect(start?.parameters.get("WFCondition")).toBe(4);
+    });
+
+    it("should bind an enum comparison inside a piped function to its Text output", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        enum Op { add = "add", sub = "sub" }
+        func apply(val: Number, op: Op) -> Number {
+          let r = val;
+          if (op == Op.add) { r = val + 10; }
+          else { r = val - 10; }
+          return r;
+        }
+        const result = 25 |> apply(_, Op.sub);
+      `);
+
+      const conditionalIndex = actions.findIndex(
+        (action) =>
+          action.identifier === "is.workflow.actions.conditional" &&
+          action.parameters.get("WFConditionalActionString") === "add",
+      );
+      const textAction = actions.at(conditionalIndex - 1);
+
+      expect(actions.at(conditionalIndex - 2)?.identifier).toBe("is.workflow.actions.setvariable");
+      expect(textAction?.identifier).toBe("is.workflow.actions.gettext");
+      expect(actions.at(conditionalIndex)?.parameters.get("WFInput")).toEqual({
+        kind: "ConditionInput",
+        reference: {
+          kind: "ActionOutputRef",
+          outputName: "Text",
+          outputUUID: textAction?.uuid,
+        },
+      });
     });
 
     it("should emit WFCondition 5 for inequality comparison", () => {

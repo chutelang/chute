@@ -1494,7 +1494,7 @@ function captureConditionVariable(
 function makeConditionInput(name: string): ConditionInput {
   return {
     kind: "ConditionInput",
-    variable: { kind: "VariableRef", name },
+    reference: { kind: "VariableRef", name },
   };
 }
 
@@ -1812,11 +1812,20 @@ function emitComparisonBlock(
       kind: "InterpolatedText",
       parts: [{ kind: "variable", name: rawName }],
     });
-    actions.push({
+    const textAction: ActionIR = {
       identifier: "is.workflow.actions.gettext",
       uuid: nextUuid(ctx),
       parameters: coerceParams,
-    });
+    };
+    actions.push(textAction);
+    extra["WFInput"] = {
+      kind: "ConditionInput",
+      reference: {
+        kind: "ActionOutputRef",
+        outputName: "Text",
+        outputUUID: textAction.uuid,
+      },
+    };
   }
 
   actions.push(makeConditionalAction(0, groupId, ctx, extra));

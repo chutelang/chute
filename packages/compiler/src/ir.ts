@@ -83,7 +83,7 @@ export type Aggrandizement =
 
 export interface ConditionInput {
   kind: "ConditionInput";
-  variable: VariableRef;
+  reference: VariableRef | ActionOutputRef;
 }
 
 export interface VariableRef {

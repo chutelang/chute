@@ -96,20 +96,23 @@ function buildParamValue(value: ParameterValue, actionIdentifier: string, key: s
 }
 
 function buildConditionInput(ref: ConditionInput): PlistValue {
-  const inner: Record<string, PlistValue> = {
-    Type: "Variable",
-    VariableName: ref.variable.name,
-  };
-  if (ref.variable.aggrandizements && ref.variable.aggrandizements.length > 0) {
-    inner["Aggrandizements"] = buildAggrandizements(ref.variable.aggrandizements);
-  }
-  return {
-    Type: "Variable",
-    Variable: {
+  let variable: PlistValue;
+  if (ref.reference.kind === "ActionOutputRef") {
+    variable = buildActionOutputRef(ref.reference);
+  } else {
+    const inner: Record<string, PlistValue> = {
+      Type: "Variable",
+      VariableName: ref.reference.name,
+    };
+    if (ref.reference.aggrandizements && ref.reference.aggrandizements.length > 0) {
+      inner["Aggrandizements"] = buildAggrandizements(ref.reference.aggrandizements);
+    }
+    variable = {
       Value: inner,
       WFSerializationType: "WFTextTokenAttachment",
-    },
-  };
+    };
+  }
+  return { Type: "Variable", Variable: variable };
 }
 
 function buildStringArray(value: StringArray): PlistValue {
