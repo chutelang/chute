@@ -70,7 +70,7 @@ interface NamespaceAction {
 /**
  * Key a namespace action's overload is stored under in the module's action
  * map, so a call site can look up the exact overload the checker resolved
- * via `resolvedOverloadIndex` instead of always getting the last-registered
+ * via `resolvedCall?.overloadIndex` instead of always getting the last-registered
  * binding for that name.
  */
 function moduleNamespace(path: string): string {
@@ -376,7 +376,7 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
       functions.set(stmt.name, stmt);
     } else if (stmt.kind === "ActionDeclaration") {
       // Multiple declarations with the same name are overloads (validated by
-      // the checker); keep them in declaration order so `resolvedOverloadIndex`
+      // the checker); keep them in declaration order so `resolvedCall?.overloadIndex`
       // set by the checker can index directly into this array.
       const existing = actionDecls.get(stmt.name);
       if (existing) {
@@ -418,7 +418,7 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
         });
       } else if (binding.type.kind === "overloadedAction") {
         // Store each overload under an indexed key so a call site with a
-        // `resolvedOverloadIndex` can look up its exact overload; also store
+        // `resolvedCall?.overloadIndex` can look up its exact overload; also store
         // the first overload under the plain name as a fallback for callers
         // that never went through overload resolution (e.g. none exist yet
         // today, but this keeps behavior sane if one is looked up directly).
@@ -864,26 +864,19 @@ function lowerNamespaceActionCall(
   ctx: LowerContext,
 ): ActionIR {
   const parameters = new Map<string, ParameterValue>();
-  for (let i = 0; i < expr.args.length; i++) {
-    const arg = expr.args[i];
+  for (const binding of expr.resolvedCall?.bindings ?? []) {
+    if (binding.source !== "argument" || binding.argumentIndex === undefined) {
+      continue;
+    }
+    const arg = expr.args.at(binding.argumentIndex);
     if (!arg) {
       continue;
     }
-    const label = resolveArgLabelFromParams(arg, i, nsAction.paramLabels);
-    if (!label) {
-      continue;
-    }
-    if (label === nsAction.inputLabel) {
+    if (binding.label === nsAction.inputLabel) {
       lowerExpression(arg.value, parentActions, ctx);
       continue;
     }
-
-    const plistKey = nsAction.paramKeys.get(label);
-    if (!plistKey) {
-      continue;
-    }
-
-    const slot = getParameterSlot(nsAction.runtimeIdentifier, plistKey);
+    const slot = getParameterSlot(nsAction.runtimeIdentifier, binding.runtimeKey);
     if (
       slot === "picker" &&
       (arg.value.kind === "StringLiteral" || arg.value.kind === "NumberLiteral")
@@ -891,24 +884,21 @@ function lowerNamespaceActionCall(
       lowerExpression(arg.value, parentActions, ctx);
       const tempName = nextTempName(ctx);
       parentActions.push(makeSetVariableAction(tempName, ctx));
-      parameters.set(plistKey, { kind: "VariableRef", name: tempName });
+      parameters.set(binding.runtimeKey, { kind: "VariableRef", name: tempName });
     } else {
-      parameters.set(plistKey, lowerToParamValue(arg.value, parentActions, ctx));
+      parameters.set(binding.runtimeKey, lowerToParamValue(arg.value, parentActions, ctx));
     }
   }
-  return {
-    identifier: nsAction.runtimeIdentifier,
-    uuid: nextUuid(ctx),
-    parameters,
-  };
+  return { identifier: nsAction.runtimeIdentifier, uuid: nextUuid(ctx), parameters };
 }
-
 function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext): ActionIR {
   if (expr.callee.kind === "MemberExpression" && expr.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(expr.callee.object.name);
     const nsAction =
-      expr.resolvedOverloadIndex !== undefined
-        ? nsActions?.get(namespaceOverloadKey(expr.callee.property, expr.resolvedOverloadIndex))
+      expr.resolvedCall?.overloadIndex !== undefined
+        ? nsActions?.get(
+            namespaceOverloadKey(expr.callee.property, expr.resolvedCall?.overloadIndex),
+          )
         : nsActions?.get(expr.callee.property);
     if (nsAction) {
       return lowerNamespaceActionCall(expr, nsAction, actions, ctx);
@@ -932,7 +922,7 @@ function lowerCall(expr: CallExpression, actions: ActionIR[], ctx: LowerContext)
     return lowerFunctionCall(expr, funcDecl, actions, ctx);
   }
 
-  const actionDecl = ctx.actions.get(actionName)?.at(expr.resolvedOverloadIndex ?? 0);
+  const actionDecl = ctx.actions.get(actionName)?.at(expr.resolvedCall?.overloadIndex ?? 0);
 
   if (actionDecl) {
     return lowerDeclaredActionCall(expr, actionDecl, actions, ctx);
@@ -952,37 +942,23 @@ function lowerFunctionCall(
   ctx: LowerContext,
   runtimeName = decl.name,
 ): ActionIR {
-  const paramNames = decl.params.map((p) => p.name);
-  const provided = new Map<string, Expression>();
-  for (let i = 0; i < expr.args.length; i++) {
-    const arg = expr.args[i];
-    if (!arg) {
-      continue;
-    }
-    const label = resolveArgLabelFromParams(arg, i, paramNames);
-    if (label) {
-      provided.set(label, arg.value);
-    }
-  }
-
-  const entries: import("./ir.ts").DictEntry[] = [];
-  entries.push({
-    itemType: 0,
-    key: "__chute_fn",
-    value: runtimeName,
-  });
-  for (const param of decl.params) {
-    const valueExpr = provided.get(param.name) ?? param.defaultValue;
+  const entries: import("./ir.ts").DictEntry[] = [
+    { itemType: 0, key: "__chute_fn", value: runtimeName },
+  ];
+  for (const binding of expr.resolvedCall?.bindings ?? []) {
+    const valueExpr =
+      binding.source === "argument" && binding.argumentIndex !== undefined
+        ? expr.args.at(binding.argumentIndex)?.value
+        : decl.params.at(binding.parameterIndex)?.defaultValue;
     if (!valueExpr) {
       continue;
     }
     entries.push({
       itemType: dictItemType(valueExpr),
-      key: param.name,
+      key: binding.runtimeKey,
       value: wrapAsTextToken(lowerToParamValue(valueExpr, actions, ctx)),
     });
   }
-
   const dictParams = new Map<string, ParameterValue>();
   dictParams.set("WFItems", { kind: "DictItems", entries });
   actions.push({
@@ -990,21 +966,17 @@ function lowerFunctionCall(
     uuid: nextUuid(ctx),
     parameters: dictParams,
   });
-
   const dictTempName = nextTempName(ctx);
   actions.push(makeSetVariableAction(dictTempName, ctx));
-
   const runParams = new Map<string, ParameterValue>();
   runParams.set("WFWorkflow", { kind: "SelfRef", name: ctx.shortcutName });
   runParams.set("WFInput", { kind: "VariableRef", name: dictTempName });
-
   return {
     identifier: "is.workflow.actions.runworkflow",
     uuid: nextUuid(ctx),
     parameters: runParams,
   };
 }
-
 function lowerDeclaredActionCall(
   expr: CallExpression,
   decl: ActionDeclaration,
@@ -1012,35 +984,17 @@ function lowerDeclaredActionCall(
   ctx: LowerContext,
 ): ActionIR {
   const parameters = new Map<string, ParameterValue>();
-
-  const paramLabels = decl.params.map((p) => p.label);
-  const provided = new Map<string, Expression>();
-  for (let i = 0; i < expr.args.length; i++) {
-    const arg = expr.args[i];
-    if (!arg) {
-      continue;
-    }
-    const label = resolveArgLabelFromParams(arg, i, paramLabels);
-    if (label) {
-      provided.set(label, arg.value);
+  for (const binding of expr.resolvedCall?.bindings ?? []) {
+    const valueExpr =
+      binding.source === "argument" && binding.argumentIndex !== undefined
+        ? expr.args.at(binding.argumentIndex)?.value
+        : decl.params.at(binding.parameterIndex)?.defaultValue;
+    if (valueExpr) {
+      parameters.set(binding.runtimeKey, lowerToParamValue(valueExpr, parentActions, ctx));
     }
   }
-
-  for (const param of decl.params) {
-    const valueExpr = provided.get(param.label) ?? param.defaultValue;
-    if (!valueExpr) {
-      continue;
-    }
-    parameters.set(param.name, lowerToParamValue(valueExpr, parentActions, ctx));
-  }
-
-  return {
-    identifier: decl.runtimeIdentifier,
-    uuid: nextUuid(ctx),
-    parameters,
-  };
+  return { identifier: decl.runtimeIdentifier, uuid: nextUuid(ctx), parameters };
 }
-
 function lowerBinaryExpression(
   expr: BinaryExpression,
   actions: ActionIR[],
@@ -2300,8 +2254,10 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
   if (stage.callee.kind === "MemberExpression" && stage.callee.object.kind === "Identifier") {
     const nsActions = ctx.namespaceActions.get(stage.callee.object.name);
     const nsAction =
-      stage.resolvedOverloadIndex !== undefined
-        ? nsActions?.get(namespaceOverloadKey(stage.callee.property, stage.resolvedOverloadIndex))
+      stage.resolvedCall?.overloadIndex !== undefined
+        ? nsActions?.get(
+            namespaceOverloadKey(stage.callee.property, stage.resolvedCall?.overloadIndex),
+          )
         : nsActions?.get(stage.callee.property);
     if (nsAction) {
       lowerPipelineNamespaceActionStage(stage, nsAction, actions, ctx);
@@ -2318,7 +2274,7 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
   }
 
   const actionDecl = calleeName
-    ? ctx.actions.get(calleeName)?.at(stage.resolvedOverloadIndex ?? 0)
+    ? ctx.actions.get(calleeName)?.at(stage.resolvedCall?.overloadIndex ?? 0)
     : undefined;
   if (actionDecl) {
     lowerPipelineDeclaredActionStage(stage, actionDecl, actions, ctx);

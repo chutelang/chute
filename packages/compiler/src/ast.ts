@@ -202,13 +202,28 @@ export type Expression =
   | DotNameExpression
   | HashIndexExpression
   | PlaceholderExpression;
+export type ResolvedCallBindingSource = "argument" | "default" | "pipelineInput";
+
+export interface ResolvedCallBinding {
+  parameterIndex: number;
+  argumentIndex?: number;
+  label: string;
+  runtimeKey: string;
+  source: ResolvedCallBindingSource;
+}
+
+export interface ResolvedCallPlan {
+  kind: "function" | "action";
+  overloadIndex?: number;
+  bindings: ResolvedCallBinding[];
+}
 
 export interface CallExpression {
   kind: "CallExpression";
   span: Span;
   callee: Expression;
   args: Argument[];
-  resolvedOverloadIndex?: number;
+  resolvedCall?: ResolvedCallPlan;
 }
 
 export type ResolvedProperty =
@@ -366,7 +381,7 @@ export interface PipelineStage {
   operator: PipelineOperator;
   callee: Expression;
   args: Argument[];
-  resolvedOverloadIndex?: number;
+  resolvedCall?: ResolvedCallPlan;
 }
 
 export interface PipelineExpression {

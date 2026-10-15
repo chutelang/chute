@@ -765,6 +765,19 @@ describe("lower", () => {
       expect(action?.parameters.has("text")).toBe(false);
     });
 
+    it("should map provided and default values to declared runtime keys", () => {
+      const result = lowerSource(`
+        shortcut { name: "Test" }
+        action notify(message WFMessage: Text, title WFTitle: Text = "Default") = "com.example.notify";
+        notify("body");
+      `);
+      const action = result.find((a) => a.identifier === "com.example.notify");
+      expect(action?.parameters.get("WFMessage")).toBe("body");
+      expect(action?.parameters.get("WFTitle")).toBe("Default");
+      expect(action?.parameters.has("message")).toBe(false);
+      expect(action?.parameters.has("title")).toBe(false);
+    });
+
     it("should use param name in pipeline declared action stage", () => {
       const result = lowerSource(`
         shortcut { name: "Test" }

@@ -1253,6 +1253,11 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
       }
       if (binding?.type.kind === "overloadedAction") {
         const resolved = resolveCallOverload(expr, binding.type, scope, context);
+        expr.resolvedCall = {
+          kind: "action",
+          overloadIndex: binding.type.overloads.indexOf(resolved),
+          bindings: [],
+        };
         return checkActionCall(expr, resolved, scope, context);
       }
       const typeDef = ns.lookupType(expr.callee.property);
@@ -1282,6 +1287,11 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
     }
     if (binding?.type.kind === "overloadedAction") {
       const resolved = resolveCallOverload(expr, binding.type, scope, context);
+      expr.resolvedCall = {
+        kind: "action",
+        overloadIndex: binding.type.overloads.indexOf(resolved),
+        bindings: [],
+      };
       return checkActionCall(expr, resolved, scope, context);
     }
   }
@@ -1301,7 +1311,7 @@ function checkFunctionCall(
   scope: Scope,
   context: CheckContext,
 ): ChuteType {
-  const provided = new Map<string, Expression>();
+  const provided = new Map<string, { expression: Expression; argumentIndex: number }>();
 
   for (let i = 0; i < expr.args.length; i++) {
     const arg = expr.args[i];
@@ -1325,7 +1335,7 @@ function checkFunctionCall(
       );
     }
 
-    provided.set(param.name, arg.value);
+    provided.set(param.name, { expression: arg.value, argumentIndex: i });
 
     const argType = inferTypeWithHint(arg.value, scope, param.type, context);
     if (!isAssignable(argType, param.type)) {
@@ -1353,6 +1363,20 @@ function checkFunctionCall(
       span: expr.span,
     });
   }
+
+  expr.resolvedCall = {
+    kind: "function",
+    bindings: funcType.params.map((param, parameterIndex) => {
+      const argument = provided.get(param.name);
+      return {
+        parameterIndex,
+        ...(argument ? { argumentIndex: argument.argumentIndex } : {}),
+        label: param.name,
+        runtimeKey: param.name,
+        source: argument ? "argument" : "default",
+      };
+    }),
+  };
 
   return funcType.returnType ?? { kind: "any" };
 }
@@ -2188,7 +2212,11 @@ function inferStageType(
   }
   if (binding?.type.kind === "overloadedAction") {
     const resolved = resolveStageOverload(stage, inputType, binding.type, scope, context);
-    stage.resolvedOverloadIndex = binding.type.overloads.indexOf(resolved);
+    stage.resolvedCall = {
+      kind: "action",
+      overloadIndex: binding.type.overloads.indexOf(resolved),
+      bindings: [],
+    };
     return inferPipelineActionCall(stage, resolved, scope, context);
   }
 
@@ -2357,7 +2385,12 @@ export function checkActionDeclaration(
     }
   }
 
-  const params: Array<{ label: string; type: ChuteType; hasDefault: boolean }> = [];
+  const params: Array<{
+    label: string;
+    runtimeKey?: string;
+    type: ChuteType;
+    hasDefault: boolean;
+  }> = [];
   const paramLabels = new Set<string>();
 
   for (const p of decl.params) {
@@ -2384,6 +2417,7 @@ export function checkActionDeclaration(
 
     params.push({
       label: p.label,
+      runtimeKey: p.name,
       type: paramType,
       hasDefault: p.defaultValue !== undefined,
     });
@@ -2516,7 +2550,6 @@ function resolveCallOverload(
 ): ChuteType & { kind: "action" } {
   const argTypes = inferOverloadArgTypesForArgs(expr.args, overloaded, scope, context);
   const resolved = resolveOverload(overloaded, argTypes, expr.span);
-  expr.resolvedOverloadIndex = overloaded.overloads.indexOf(resolved);
   return resolved;
 }
 
@@ -2572,7 +2605,7 @@ function checkActionCall(
   scope: Scope,
   context: CheckContext,
 ): ChuteType {
-  const provided = new Map<string, Expression>();
+  const provided = new Map<string, { expression: Expression; argumentIndex: number }>();
 
   for (let i = 0; i < expr.args.length; i++) {
     const arg = expr.args[i];
@@ -2596,7 +2629,7 @@ function checkActionCall(
       );
     }
 
-    provided.set(param.label, arg.value);
+    provided.set(param.label, { expression: arg.value, argumentIndex: i });
 
     const argType = inferTypeWithHint(arg.value, scope, param.type, context);
     if (!isAssignable(argType, param.type)) {
@@ -2616,6 +2649,22 @@ function checkActionCall(
       );
     }
   }
+
+  const overloadIndex = expr.resolvedCall?.overloadIndex;
+  expr.resolvedCall = {
+    kind: "action",
+    ...(overloadIndex !== undefined ? { overloadIndex } : {}),
+    bindings: actionType.params.map((param, parameterIndex) => {
+      const argument = provided.get(param.label);
+      return {
+        parameterIndex,
+        ...(argument ? { argumentIndex: argument.argumentIndex } : {}),
+        label: param.label,
+        runtimeKey: param.runtimeKey ?? param.label,
+        source: argument ? "argument" : "default",
+      };
+    }),
+  };
 
   return actionType.returnType ?? { kind: "any" };
 }

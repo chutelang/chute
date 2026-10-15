@@ -1565,7 +1565,7 @@ describe("checker", () => {
         ).not.toThrow();
       });
 
-      it("should annotate resolvedOverloadIndex on the matched call", () => {
+      it("should annotate the resolved call plan with the matched overload", () => {
         const program = parse(`
           action doThing(x: Text) = "com.example";
           action doThing(x: Number) = "com.example";
@@ -1576,10 +1576,10 @@ describe("checker", () => {
         const calls = program.body.filter(
           (stmt) =>
             stmt.kind === "ExpressionStatement" && stmt.expression.kind === "CallExpression",
-        ) as Array<{ expression: { resolvedOverloadIndex?: number } }>;
+        ) as Array<{ expression: { resolvedCall?: { overloadIndex?: number } } }>;
         expect(calls).toHaveLength(2);
-        expect(calls[0]?.expression.resolvedOverloadIndex).toBe(0);
-        expect(calls[1]?.expression.resolvedOverloadIndex).toBe(1);
+        expect(calls[0]?.expression.resolvedCall?.overloadIndex).toBe(0);
+        expect(calls[1]?.expression.resolvedCall?.overloadIndex).toBe(1);
       });
 
       it("should reject an overloaded call with no matching overload", () => {
