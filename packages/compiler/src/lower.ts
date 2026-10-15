@@ -1802,6 +1802,14 @@ function emitComparisonBlock(
 
   if (typeof rightValue === "number") {
     extra["WFNumberValue"] = String(rightValue);
+    extra["WFInput"] = {
+      kind: "ConditionInput",
+      reference: {
+        kind: "VariableRef",
+        name: leftVarName,
+        aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
+      },
+    };
   } else {
     extra["WFConditionalActionString"] = rightValue;
 

@@ -8790,6 +8790,15 @@ exports[`compile > should compile function with conditional return 1`] = `
                 <string>Variable</string>
                 <key>VariableName</key>
                 <string>n</string>
+                <key>Aggrandizements</key>
+                <array>
+                  <dict>
+                    <key>Type</key>
+                    <string>WFCoercionVariableAggrandizement</string>
+                    <key>CoercionItemClass</key>
+                    <string>WFNumberContentItem</string>
+                  </dict>
+                </array>
               </dict>
               <key>WFSerializationType</key>
               <string>WFTextTokenAttachment</string>
@@ -9324,6 +9333,15 @@ exports[`compile > should compile if/else statement 1`] = `
                 <string>Variable</string>
                 <key>VariableName</key>
                 <string>x</string>
+                <key>Aggrandizements</key>
+                <array>
+                  <dict>
+                    <key>Type</key>
+                    <string>WFCoercionVariableAggrandizement</string>
+                    <key>CoercionItemClass</key>
+                    <string>WFNumberContentItem</string>
+                  </dict>
+                </array>
               </dict>
               <key>WFSerializationType</key>
               <string>WFTextTokenAttachment</string>
@@ -11283,6 +11301,15 @@ exports[`compile > should compile ternary expression 1`] = `
                 <string>Variable</string>
                 <key>VariableName</key>
                 <string>x</string>
+                <key>Aggrandizements</key>
+                <array>
+                  <dict>
+                    <key>Type</key>
+                    <string>WFCoercionVariableAggrandizement</string>
+                    <key>CoercionItemClass</key>
+                    <string>WFNumberContentItem</string>
+                  </dict>
+                </array>
               </dict>
               <key>WFSerializationType</key>
               <string>WFTextTokenAttachment</string>

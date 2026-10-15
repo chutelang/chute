@@ -341,6 +341,34 @@ describe("lower", () => {
       expect(nextAction?.identifier).toBe("is.workflow.actions.setvariable");
       expect(nextAction?.parameters.get("WFVariableName")).toBe("item");
     });
+
+    it("should treat a numeric loop variable as a number in a conditional", () => {
+      const actions = lowerSource(`
+        shortcut { name: "Test" }
+        const nums = [1, 2, 3, 4, 5];
+        let total = 0;
+        for n in nums {
+          if (n > 2) { total = total + n; }
+        }
+        const result = total;
+      `);
+      const conditional = actions.find(
+        (action) =>
+          action.identifier === "is.workflow.actions.conditional" &&
+          action.parameters.get("WFControlFlowMode") === 0,
+      );
+
+      expect(conditional?.parameters.get("WFCondition")).toBe(2);
+      expect(conditional?.parameters.get("WFNumberValue")).toBe("2");
+      expect(conditional?.parameters.get("WFInput")).toEqual({
+        kind: "ConditionInput",
+        reference: {
+          kind: "VariableRef",
+          name: "n",
+          aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
+        },
+      });
+    });
   });
 
   describe("repeat statement", () => {
