@@ -1784,8 +1784,15 @@ function emitComparisonBlock(
 ): void {
   const groupId = nextUuid(ctx);
 
-  lowerExpression(cond.left, actions, ctx);
-  const leftVarName = captureConditionVariable(cond.left, actions, ctx);
+  const useDirectNumericIdentifier =
+    cond.left.kind === "Identifier" && cond.right.kind === "NumberLiteral";
+  let leftVarName: string;
+  if (useDirectNumericIdentifier && cond.left.kind === "Identifier") {
+    leftVarName = cond.left.name;
+  } else {
+    lowerExpression(cond.left, actions, ctx);
+    leftVarName = captureConditionVariable(cond.left, actions, ctx);
+  }
 
   const rightValue = lowerOperandPreservingMagicVariable(cond.right, actions, ctx);
   const isTextOperator =
@@ -1802,34 +1809,12 @@ function emitComparisonBlock(
 
   if (typeof rightValue === "number") {
     extra["WFNumberValue"] = String(rightValue);
-
-    const rawName = nextTempName(ctx);
-    actions.push(makeSetVariableAction(rawName, ctx));
-    const coerceParams = new Map<string, ParameterValue>();
-    coerceParams.set("WFTextActionText", {
-      kind: "InterpolatedText",
-      parts: [
-        {
-          kind: "variable",
-          name: rawName,
-          aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
-        },
-      ],
-    });
-    const outputUuid = nextUuid(ctx);
-    coerceParams.set("UUID", outputUuid);
-    const textAction: ActionIR = {
-      identifier: "is.workflow.actions.gettext",
-      uuid: nextUuid(ctx),
-      parameters: coerceParams,
-    };
-    actions.push(textAction);
     extra["WFInput"] = {
       kind: "ConditionInput",
       reference: {
-        kind: "ActionOutputRef",
-        outputName: "Text",
-        outputUUID: outputUuid,
+        kind: "VariableRef",
+        name: leftVarName,
+        aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
       },
     };
   } else {

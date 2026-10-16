@@ -358,31 +358,19 @@ describe("lower", () => {
           action.parameters.get("WFControlFlowMode") === 0,
       );
 
-      const conditionalIndex = actions.indexOf(conditional!);
-      const textAction = actions.at(conditionalIndex - 1);
-
       expect(conditional?.parameters.get("WFCondition")).toBe(2);
       expect(conditional?.parameters.get("WFNumberValue")).toBe("2");
-      expect(actions.at(conditionalIndex - 2)?.identifier).toBe("is.workflow.actions.setvariable");
-      expect(textAction?.identifier).toBe("is.workflow.actions.gettext");
-      expect(textAction?.parameters.get("WFTextActionText")).toEqual({
-        kind: "InterpolatedText",
-        parts: [
-          {
-            kind: "variable",
-            name: "__chute_tmp_0",
-            aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
-          },
-        ],
-      });
       expect(conditional?.parameters.get("WFInput")).toEqual({
         kind: "ConditionInput",
         reference: {
-          kind: "ActionOutputRef",
-          outputName: "Text",
-          outputUUID: textAction?.parameters.get("UUID") as string,
+          kind: "VariableRef",
+          name: "n",
+          aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
         },
       });
+      expect(actions.some((action) => action.identifier === "is.workflow.actions.gettext")).toBe(
+        false,
+      );
     });
   });
 

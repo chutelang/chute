@@ -107,42 +107,27 @@ for item in items {
     expect(compile(source).main).toMatchSnapshot();
   });
 
-  it("should bind a numeric loop condition to its coercion action output", () => {
+  it("should bind a numeric ternary condition directly to its variable", () => {
     const source = `shortcut { name: "Test" }
-const nums = [1, 2, 3, 4, 5];
-let total = 0;
-for n in nums {
-  if (n > 2) { total = total + n; }
-}
-const result = total;`;
+const x = 10;
+const result = x > 5 ? "big" : "small";`;
 
     const plist = compile(source).main;
     const conditionalIndex = plist.indexOf("<string>is.workflow.actions.conditional</string>");
     const beforeConditional = plist.slice(0, conditionalIndex);
-    const textActionIndex = beforeConditional.lastIndexOf(
-      "<string>is.workflow.actions.gettext</string>",
-    );
-    const textAction = beforeConditional.slice(textActionIndex);
-    const uuids = [...textAction.matchAll(/<key>UUID<\/key>\s*<string>([^<]+)<\/string>/g)].map(
-      (match) => match[1],
-    );
-    const [actionUuid, outputUuid] = uuids;
     const conditional = plist.slice(conditionalIndex);
     const conditionInput = conditional.slice(
       conditional.indexOf("<key>WFInput</key>"),
       conditional.indexOf("<key>WFControlFlowMode</key>"),
     );
 
-    expect(actionUuid).toBeDefined();
-    expect(outputUuid).toBeDefined();
-    expect(outputUuid).not.toBe(actionUuid);
-    expect(textAction).toContain("<string>WFNumberContentItem</string>");
-    expect(conditionInput).toContain("<string>ActionOutput</string>");
-    expect(conditionInput).toContain("<key>OutputName</key>");
-    expect(conditionInput).toContain("<string>Text</string>");
-    expect(conditionInput).toContain("<key>OutputUUID</key>");
-    expect(conditionInput).toContain("<string>" + outputUuid + "</string>");
-    expect(conditionInput).not.toContain("<key>VariableName</key>");
+    expect(beforeConditional).not.toContain("<string>is.workflow.actions.gettext</string>");
+    expect(conditionInput).toContain("<string>Variable</string>");
+    expect(conditionInput).toContain("<key>VariableName</key>");
+    expect(conditionInput).toContain("<string>x</string>");
+    expect(conditionInput).toContain("<key>Aggrandizements</key>");
+    expect(conditionInput).toContain("<string>WFNumberContentItem</string>");
+    expect(conditionInput).not.toContain("<string>ActionOutput</string>");
   });
 
   it("should compile repeat loop", () => {
