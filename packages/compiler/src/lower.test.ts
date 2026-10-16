@@ -278,7 +278,7 @@ describe("lower", () => {
         reference: {
           kind: "ActionOutputRef",
           outputName: "Text",
-          outputUUID: textAction?.uuid,
+          outputUUID: textAction?.parameters.get("UUID") as string,
         },
       });
     });
@@ -380,7 +380,7 @@ describe("lower", () => {
         reference: {
           kind: "ActionOutputRef",
           outputName: "Text",
-          outputUUID: textAction?.uuid,
+          outputUUID: textAction?.parameters.get("UUID") as string,
         },
       });
     });

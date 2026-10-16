@@ -123,20 +123,25 @@ const result = total;`;
       "<string>is.workflow.actions.gettext</string>",
     );
     const textAction = beforeConditional.slice(textActionIndex);
-    const textUuid = textAction.match(/<key>UUID<\/key>\s*<string>([^<]+)<\/string>/)?.[1];
+    const uuids = [...textAction.matchAll(/<key>UUID<\/key>\s*<string>([^<]+)<\/string>/g)].map(
+      (match) => match[1],
+    );
+    const [actionUuid, outputUuid] = uuids;
     const conditional = plist.slice(conditionalIndex);
     const conditionInput = conditional.slice(
       conditional.indexOf("<key>WFInput</key>"),
       conditional.indexOf("<key>WFControlFlowMode</key>"),
     );
 
-    expect(textUuid).toBeDefined();
+    expect(actionUuid).toBeDefined();
+    expect(outputUuid).toBeDefined();
+    expect(outputUuid).not.toBe(actionUuid);
     expect(textAction).toContain("<string>WFNumberContentItem</string>");
     expect(conditionInput).toContain("<string>ActionOutput</string>");
     expect(conditionInput).toContain("<key>OutputName</key>");
     expect(conditionInput).toContain("<string>Text</string>");
     expect(conditionInput).toContain("<key>OutputUUID</key>");
-    expect(conditionInput).toContain("<string>" + textUuid + "</string>");
+    expect(conditionInput).toContain("<string>" + outputUuid + "</string>");
     expect(conditionInput).not.toContain("<key>VariableName</key>");
   });
 

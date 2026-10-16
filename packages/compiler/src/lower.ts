@@ -1816,6 +1816,8 @@ function emitComparisonBlock(
         },
       ],
     });
+    const outputUuid = nextUuid(ctx);
+    coerceParams.set("UUID", outputUuid);
     const textAction: ActionIR = {
       identifier: "is.workflow.actions.gettext",
       uuid: nextUuid(ctx),
@@ -1827,7 +1829,7 @@ function emitComparisonBlock(
       reference: {
         kind: "ActionOutputRef",
         outputName: "Text",
-        outputUUID: textAction.uuid,
+        outputUUID: outputUuid,
       },
     };
   } else {
@@ -1840,6 +1842,8 @@ function emitComparisonBlock(
       kind: "InterpolatedText",
       parts: [{ kind: "variable", name: rawName }],
     });
+    const outputUuid = nextUuid(ctx);
+    coerceParams.set("UUID", outputUuid);
     const textAction: ActionIR = {
       identifier: "is.workflow.actions.gettext",
       uuid: nextUuid(ctx),
@@ -1851,7 +1855,7 @@ function emitComparisonBlock(
       reference: {
         kind: "ActionOutputRef",
         outputName: "Text",
-        outputUUID: textAction.uuid,
+        outputUUID: outputUuid,
       },
     };
   }
