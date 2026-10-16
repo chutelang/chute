@@ -8771,9 +8771,58 @@ exports[`compile > should compile function with conditional return 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
+        <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000017</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariableName</key>
+          <string>__chute_tmp_3</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.gettext</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000018</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFTextActionText</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenString</string>
+            <key>Value</key>
+            <dict>
+              <key>string</key>
+              <string>￼</string>
+              <key>attachmentsByRange</key>
+              <dict>
+                <key>{0, 1}</key>
+                <dict>
+                  <key>Type</key>
+                  <string>Variable</string>
+                  <key>VariableName</key>
+                  <string>__chute_tmp_3</string>
+                  <key>Aggrandizements</key>
+                  <array>
+                    <dict>
+                      <key>Type</key>
+                      <string>WFCoercionVariableAggrandizement</string>
+                      <key>CoercionItemClass</key>
+                      <string>WFNumberContentItem</string>
+                    </dict>
+                  </array>
+                </dict>
+              </dict>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000019</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFCondition</key>
@@ -8784,24 +8833,17 @@ exports[`compile > should compile function with conditional return 1`] = `
             <string>Variable</string>
             <key>Variable</key>
             <dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
               <key>Value</key>
               <dict>
                 <key>Type</key>
-                <string>Variable</string>
-                <key>VariableName</key>
-                <string>n</string>
-                <key>Aggrandizements</key>
-                <array>
-                  <dict>
-                    <key>Type</key>
-                    <string>WFCoercionVariableAggrandizement</string>
-                    <key>CoercionItemClass</key>
-                    <string>WFNumberContentItem</string>
-                  </dict>
-                </array>
+                <string>ActionOutput</string>
+                <key>OutputName</key>
+                <string>Text</string>
+                <key>OutputUUID</key>
+                <string>00000000-0000-0000-0000-000000000018</string>
               </dict>
-              <key>WFSerializationType</key>
-              <string>WFTextTokenAttachment</string>
             </dict>
           </dict>
           <key>WFNumberValue</key>
@@ -8816,7 +8858,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.getvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000018</string>
+        <string>00000000-0000-0000-0000-000000000020</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariable</key>
@@ -8837,7 +8879,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.math</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000019</string>
+        <string>00000000-0000-0000-0000-000000000021</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFMathOperation</key>
@@ -8850,81 +8892,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000020</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFVariableName</key>
-          <string>__chute_tmp_3</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.output</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000021</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFOutput</key>
-          <dict>
-            <key>WFSerializationType</key>
-            <string>WFTextTokenString</string>
-            <key>Value</key>
-            <dict>
-              <key>string</key>
-              <string>￼</string>
-              <key>attachmentsByRange</key>
-              <dict>
-                <key>{0, 1}</key>
-                <dict>
-                  <key>Type</key>
-                  <string>Variable</string>
-                  <key>VariableName</key>
-                  <string>__chute_tmp_3</string>
-                </dict>
-              </dict>
-            </dict>
-          </dict>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
-        <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000022</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFControlFlowMode</key>
-          <integer>2</integer>
-          <key>GroupingIdentifier</key>
-          <string>00000000-0000-0000-0000-000000000015</string>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.getvariable</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000023</string>
-        <key>WFWorkflowActionParameters</key>
-        <dict>
-          <key>WFVariable</key>
-          <dict>
-            <key>WFSerializationType</key>
-            <string>WFTextTokenAttachment</string>
-            <key>Value</key>
-            <dict>
-              <key>Type</key>
-              <string>Variable</string>
-              <key>VariableName</key>
-              <string>n</string>
-            </dict>
-          </dict>
-        </dict>
-      </dict>
-      <dict>
-        <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.setvariable</string>
-        <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000024</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -8935,7 +8903,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.output</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000025</string>
+        <string>00000000-0000-0000-0000-000000000023</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFOutput</key>
@@ -8964,7 +8932,81 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000024</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFControlFlowMode</key>
+          <integer>2</integer>
+          <key>GroupingIdentifier</key>
+          <string>00000000-0000-0000-0000-000000000015</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.getvariable</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000025</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariable</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenAttachment</string>
+            <key>Value</key>
+            <dict>
+              <key>Type</key>
+              <string>Variable</string>
+              <key>VariableName</key>
+              <string>n</string>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.setvariable</string>
+        <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000026</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariableName</key>
+          <string>__chute_tmp_5</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.output</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000027</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFOutput</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenString</string>
+            <key>Value</key>
+            <dict>
+              <key>string</key>
+              <string>￼</string>
+              <key>attachmentsByRange</key>
+              <dict>
+                <key>{0, 1}</key>
+                <dict>
+                  <key>Type</key>
+                  <string>Variable</string>
+                  <key>VariableName</key>
+                  <string>__chute_tmp_5</string>
+                </dict>
+              </dict>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000028</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
@@ -8977,7 +9019,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000027</string>
+        <string>00000000-0000-0000-0000-000000000029</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
@@ -8990,7 +9032,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.number</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000028</string>
+        <string>00000000-0000-0000-0000-000000000030</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFNumberActionNumber</key>
@@ -9001,7 +9043,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.math</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000029</string>
+        <string>00000000-0000-0000-0000-000000000031</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFMathOperation</key>
@@ -9014,18 +9056,18 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000030</string>
+        <string>00000000-0000-0000-0000-000000000032</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
-          <string>__chute_tmp_5</string>
+          <string>__chute_tmp_6</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.dictionary</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000031</string>
+        <string>00000000-0000-0000-0000-000000000033</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFItems</key>
@@ -9086,7 +9128,7 @@ exports[`compile > should compile function with conditional return 1`] = `
                           <key>Type</key>
                           <string>Variable</string>
                           <key>VariableName</key>
-                          <string>__chute_tmp_5</string>
+                          <string>__chute_tmp_6</string>
                         </dict>
                       </dict>
                     </dict>
@@ -9101,18 +9143,18 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000032</string>
+        <string>00000000-0000-0000-0000-000000000034</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
-          <string>__chute_tmp_6</string>
+          <string>__chute_tmp_7</string>
         </dict>
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.runworkflow</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000033</string>
+        <string>00000000-0000-0000-0000-000000000035</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFWorkflow</key>
@@ -9131,7 +9173,7 @@ exports[`compile > should compile function with conditional return 1`] = `
               <key>Type</key>
               <string>Variable</string>
               <key>VariableName</key>
-              <string>__chute_tmp_6</string>
+              <string>__chute_tmp_7</string>
             </dict>
           </dict>
         </dict>
@@ -9140,7 +9182,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000034</string>
+        <string>00000000-0000-0000-0000-000000000036</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -9151,7 +9193,7 @@ exports[`compile > should compile function with conditional return 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.showresult</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000035</string>
+        <string>00000000-0000-0000-0000-000000000037</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>Text</key>
@@ -9314,9 +9356,58 @@ exports[`compile > should compile if/else statement 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
+        <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000004</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariableName</key>
+          <string>__chute_tmp_0</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.gettext</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000005</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFTextActionText</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenString</string>
+            <key>Value</key>
+            <dict>
+              <key>string</key>
+              <string>￼</string>
+              <key>attachmentsByRange</key>
+              <dict>
+                <key>{0, 1}</key>
+                <dict>
+                  <key>Type</key>
+                  <string>Variable</string>
+                  <key>VariableName</key>
+                  <string>__chute_tmp_0</string>
+                  <key>Aggrandizements</key>
+                  <array>
+                    <dict>
+                      <key>Type</key>
+                      <string>WFCoercionVariableAggrandizement</string>
+                      <key>CoercionItemClass</key>
+                      <string>WFNumberContentItem</string>
+                    </dict>
+                  </array>
+                </dict>
+              </dict>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000006</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFCondition</key>
@@ -9327,24 +9418,17 @@ exports[`compile > should compile if/else statement 1`] = `
             <string>Variable</string>
             <key>Variable</key>
             <dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
               <key>Value</key>
               <dict>
                 <key>Type</key>
-                <string>Variable</string>
-                <key>VariableName</key>
-                <string>x</string>
-                <key>Aggrandizements</key>
-                <array>
-                  <dict>
-                    <key>Type</key>
-                    <string>WFCoercionVariableAggrandizement</string>
-                    <key>CoercionItemClass</key>
-                    <string>WFNumberContentItem</string>
-                  </dict>
-                </array>
+                <string>ActionOutput</string>
+                <key>OutputName</key>
+                <string>Text</string>
+                <key>OutputUUID</key>
+                <string>00000000-0000-0000-0000-000000000005</string>
               </dict>
-              <key>WFSerializationType</key>
-              <string>WFTextTokenAttachment</string>
             </dict>
           </dict>
           <key>WFNumberValue</key>
@@ -9359,7 +9443,7 @@ exports[`compile > should compile if/else statement 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.alert</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000005</string>
+        <string>00000000-0000-0000-0000-000000000007</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFAlertActionMessage</key>
@@ -9370,7 +9454,7 @@ exports[`compile > should compile if/else statement 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000006</string>
+        <string>00000000-0000-0000-0000-000000000008</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
@@ -9383,7 +9467,7 @@ exports[`compile > should compile if/else statement 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.alert</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000007</string>
+        <string>00000000-0000-0000-0000-000000000009</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFAlertActionMessage</key>
@@ -9394,7 +9478,7 @@ exports[`compile > should compile if/else statement 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000008</string>
+        <string>00000000-0000-0000-0000-000000000010</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
@@ -11282,9 +11366,58 @@ exports[`compile > should compile ternary expression 1`] = `
       </dict>
       <dict>
         <key>WFWorkflowActionIdentifier</key>
-        <string>is.workflow.actions.conditional</string>
+        <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
         <string>00000000-0000-0000-0000-000000000004</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFVariableName</key>
+          <string>__chute_tmp_0</string>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.gettext</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000005</string>
+        <key>WFWorkflowActionParameters</key>
+        <dict>
+          <key>WFTextActionText</key>
+          <dict>
+            <key>WFSerializationType</key>
+            <string>WFTextTokenString</string>
+            <key>Value</key>
+            <dict>
+              <key>string</key>
+              <string>￼</string>
+              <key>attachmentsByRange</key>
+              <dict>
+                <key>{0, 1}</key>
+                <dict>
+                  <key>Type</key>
+                  <string>Variable</string>
+                  <key>VariableName</key>
+                  <string>__chute_tmp_0</string>
+                  <key>Aggrandizements</key>
+                  <array>
+                    <dict>
+                      <key>Type</key>
+                      <string>WFCoercionVariableAggrandizement</string>
+                      <key>CoercionItemClass</key>
+                      <string>WFNumberContentItem</string>
+                    </dict>
+                  </array>
+                </dict>
+              </dict>
+            </dict>
+          </dict>
+        </dict>
+      </dict>
+      <dict>
+        <key>WFWorkflowActionIdentifier</key>
+        <string>is.workflow.actions.conditional</string>
+        <key>UUID</key>
+        <string>00000000-0000-0000-0000-000000000006</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFCondition</key>
@@ -11295,24 +11428,17 @@ exports[`compile > should compile ternary expression 1`] = `
             <string>Variable</string>
             <key>Variable</key>
             <dict>
+              <key>WFSerializationType</key>
+              <string>WFTextTokenAttachment</string>
               <key>Value</key>
               <dict>
                 <key>Type</key>
-                <string>Variable</string>
-                <key>VariableName</key>
-                <string>x</string>
-                <key>Aggrandizements</key>
-                <array>
-                  <dict>
-                    <key>Type</key>
-                    <string>WFCoercionVariableAggrandizement</string>
-                    <key>CoercionItemClass</key>
-                    <string>WFNumberContentItem</string>
-                  </dict>
-                </array>
+                <string>ActionOutput</string>
+                <key>OutputName</key>
+                <string>Text</string>
+                <key>OutputUUID</key>
+                <string>00000000-0000-0000-0000-000000000005</string>
               </dict>
-              <key>WFSerializationType</key>
-              <string>WFTextTokenAttachment</string>
             </dict>
           </dict>
           <key>WFNumberValue</key>
@@ -11327,7 +11453,7 @@ exports[`compile > should compile ternary expression 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.gettext</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000005</string>
+        <string>00000000-0000-0000-0000-000000000007</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFTextActionText</key>
@@ -11338,7 +11464,7 @@ exports[`compile > should compile ternary expression 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000006</string>
+        <string>00000000-0000-0000-0000-000000000008</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
@@ -11351,7 +11477,7 @@ exports[`compile > should compile ternary expression 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.gettext</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000007</string>
+        <string>00000000-0000-0000-0000-000000000009</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFTextActionText</key>
@@ -11362,7 +11488,7 @@ exports[`compile > should compile ternary expression 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.conditional</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000008</string>
+        <string>00000000-0000-0000-0000-000000000010</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFControlFlowMode</key>
@@ -11375,7 +11501,7 @@ exports[`compile > should compile ternary expression 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.setvariable</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000009</string>
+        <string>00000000-0000-0000-0000-000000000011</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFVariableName</key>
@@ -11386,7 +11512,7 @@ exports[`compile > should compile ternary expression 1`] = `
         <key>WFWorkflowActionIdentifier</key>
         <string>is.workflow.actions.alert</string>
         <key>UUID</key>
-        <string>00000000-0000-0000-0000-000000000010</string>
+        <string>00000000-0000-0000-0000-000000000012</string>
         <key>WFWorkflowActionParameters</key>
         <dict>
           <key>WFAlertActionMessage</key>

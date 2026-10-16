@@ -1802,12 +1802,32 @@ function emitComparisonBlock(
 
   if (typeof rightValue === "number") {
     extra["WFNumberValue"] = String(rightValue);
+
+    const rawName = nextTempName(ctx);
+    actions.push(makeSetVariableAction(rawName, ctx));
+    const coerceParams = new Map<string, ParameterValue>();
+    coerceParams.set("WFTextActionText", {
+      kind: "InterpolatedText",
+      parts: [
+        {
+          kind: "variable",
+          name: rawName,
+          aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
+        },
+      ],
+    });
+    const textAction: ActionIR = {
+      identifier: "is.workflow.actions.gettext",
+      uuid: nextUuid(ctx),
+      parameters: coerceParams,
+    };
+    actions.push(textAction);
     extra["WFInput"] = {
       kind: "ConditionInput",
       reference: {
-        kind: "VariableRef",
-        name: leftVarName,
-        aggrandizements: [{ kind: "coercion", itemClass: "WFNumberContentItem" }],
+        kind: "ActionOutputRef",
+        outputName: "Text",
+        outputUUID: textAction.uuid,
       },
     };
   } else {

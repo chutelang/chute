@@ -107,6 +107,39 @@ for item in items {
     expect(compile(source).main).toMatchSnapshot();
   });
 
+  it("should bind a numeric loop condition to its coercion action output", () => {
+    const source = `shortcut { name: "Test" }
+const nums = [1, 2, 3, 4, 5];
+let total = 0;
+for n in nums {
+  if (n > 2) { total = total + n; }
+}
+const result = total;`;
+
+    const plist = compile(source).main;
+    const conditionalIndex = plist.indexOf("<string>is.workflow.actions.conditional</string>");
+    const beforeConditional = plist.slice(0, conditionalIndex);
+    const textActionIndex = beforeConditional.lastIndexOf(
+      "<string>is.workflow.actions.gettext</string>",
+    );
+    const textAction = beforeConditional.slice(textActionIndex);
+    const textUuid = textAction.match(/<key>UUID<\/key>\s*<string>([^<]+)<\/string>/)?.[1];
+    const conditional = plist.slice(conditionalIndex);
+    const conditionInput = conditional.slice(
+      conditional.indexOf("<key>WFInput</key>"),
+      conditional.indexOf("<key>WFControlFlowMode</key>"),
+    );
+
+    expect(textUuid).toBeDefined();
+    expect(textAction).toContain("<string>WFNumberContentItem</string>");
+    expect(conditionInput).toContain("<string>ActionOutput</string>");
+    expect(conditionInput).toContain("<key>OutputName</key>");
+    expect(conditionInput).toContain("<string>Text</string>");
+    expect(conditionInput).toContain("<key>OutputUUID</key>");
+    expect(conditionInput).toContain("<string>" + textUuid + "</string>");
+    expect(conditionInput).not.toContain("<key>VariableName</key>");
+  });
+
   it("should compile repeat loop", () => {
     const source = `import Notification;
 shortcut {
