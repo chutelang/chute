@@ -2236,7 +2236,10 @@ function inferPipelineFunctionCall(
   context: CheckContext,
 ): ChuteType {
   const hasPlaceholder = stage.args.some((a) => a.value.kind === "PlaceholderExpression");
-  const provided = new Map<string, Expression>();
+  const provided = new Map<
+    string,
+    { expression: Expression; argumentIndex?: number; source: "argument" | "pipelineInput" }
+  >();
 
   if (hasPlaceholder) {
     for (let i = 0; i < stage.args.length; i++) {
@@ -2260,7 +2263,11 @@ function inferPipelineFunctionCall(
             arg.span,
           );
         }
-        provided.set(param.name, arg.value);
+        provided.set(param.name, {
+          expression: arg.value,
+          argumentIndex: i,
+          source: "pipelineInput",
+        });
       } else {
         const argType = inferTypeWithHint(arg.value, scope, param.type, context);
         if (!isAssignable(argType, param.type)) {
@@ -2269,7 +2276,7 @@ function inferPipelineFunctionCall(
             arg.span,
           );
         }
-        provided.set(param.name, arg.value);
+        provided.set(param.name, { expression: arg.value, argumentIndex: i, source: "argument" });
       }
     }
   } else {
@@ -2281,7 +2288,7 @@ function inferPipelineFunctionCall(
           stage.span,
         );
       }
-      provided.set(firstParam.name, stage.callee);
+      provided.set(firstParam.name, { expression: stage.callee, source: "pipelineInput" });
     }
 
     for (let i = 0; i < stage.args.length; i++) {
@@ -2304,7 +2311,7 @@ function inferPipelineFunctionCall(
           arg.span,
         );
       }
-      provided.set(param.name, arg.value);
+      provided.set(param.name, { expression: arg.value, argumentIndex: i, source: "argument" });
     }
   }
 
@@ -2326,6 +2333,20 @@ function inferPipelineFunctionCall(
     });
   }
 
+  stage.resolvedCall = {
+    kind: "function",
+    bindings: funcType.params.map((param, parameterIndex) => {
+      const value = provided.get(param.name);
+      return {
+        parameterIndex,
+        ...(value?.argumentIndex !== undefined ? { argumentIndex: value.argumentIndex } : {}),
+        label: param.name,
+        runtimeKey: param.name,
+        source: value?.source ?? "default",
+      };
+    }),
+  };
+
   return funcType.returnType ?? { kind: "any" };
 }
 
@@ -2335,17 +2356,25 @@ function inferPipelineActionCall(
   scope: Scope,
   context: CheckContext,
 ): ChuteType {
+  const provided = new Map<
+    number,
+    { argumentIndex: number; source: "argument" | "pipelineInput" }
+  >();
   for (let i = 0; i < stage.args.length; i++) {
     const arg = stage.args[i];
     if (!arg) {
       continue;
     }
     if (arg.value.kind === "PlaceholderExpression") {
+      if (actionType.params.at(i)) {
+        provided.set(i, { argumentIndex: i, source: "pipelineInput" });
+      }
       continue;
     }
 
     const param = actionType.params.at(i);
     if (param) {
+      provided.set(i, { argumentIndex: i, source: "argument" });
       const argType = inferTypeWithHint(arg.value, scope, param.type, context);
       if (!isAssignable(argType, param.type)) {
         throw new CheckError(
@@ -2357,6 +2386,22 @@ function inferPipelineActionCall(
       inferType(arg.value, scope, context);
     }
   }
+
+  const overloadIndex = stage.resolvedCall?.overloadIndex;
+  stage.resolvedCall = {
+    kind: "action",
+    ...(overloadIndex !== undefined ? { overloadIndex } : {}),
+    bindings: actionType.params.map((param, parameterIndex) => {
+      const argument = provided.get(parameterIndex);
+      return {
+        parameterIndex,
+        ...(argument ? { argumentIndex: argument.argumentIndex } : {}),
+        label: param.label,
+        runtimeKey: param.runtimeKey ?? param.label,
+        source: argument?.source ?? "default",
+      };
+    }),
+  };
 
   return actionType.returnType ?? { kind: "any" };
 }

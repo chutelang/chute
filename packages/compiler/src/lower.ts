@@ -62,8 +62,6 @@ export class LowerError extends Error {
 
 interface NamespaceAction {
   runtimeIdentifier: string;
-  paramKeys: Map<string, string>;
-  paramLabels: string[];
   inputLabel?: string;
 }
 
@@ -282,8 +280,6 @@ function collectFileImports(
           const index = actionOverloads.get(stmt.name) ?? 0;
           const action = {
             runtimeIdentifier: stmt.runtimeIdentifier,
-            paramKeys: new Map(stmt.params.map((p) => [p.label, p.name])),
-            paramLabels: stmt.params.map((p) => p.label),
           };
           moduleActions.set(namespaceOverloadKey(stmt.name, index), action);
           if (index === 0) {
@@ -404,16 +400,8 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
     const moduleActions = new Map<string, NamespaceAction>();
     for (const [name, binding] of moduleScope.allBindings()) {
       if (binding.type.kind === "action") {
-        const paramKeys = new Map<string, string>();
-        const paramLabels: string[] = [];
-        for (const p of binding.type.params) {
-          paramKeys.set(p.label, p.runtimeKey ?? p.label);
-          paramLabels.push(p.label);
-        }
         moduleActions.set(name, {
           runtimeIdentifier: binding.type.runtimeIdentifier,
-          paramKeys,
-          paramLabels,
           ...(binding.type.inputLabel !== undefined ? { inputLabel: binding.type.inputLabel } : {}),
         });
       } else if (binding.type.kind === "overloadedAction") {
@@ -423,15 +411,8 @@ export function lower(program: Program, options?: LowerOptions): CompilationResu
         // that never went through overload resolution (e.g. none exist yet
         // today, but this keeps behavior sane if one is looked up directly).
         binding.type.overloads.forEach((overload, index) => {
-          const paramKeys = new Map<string, string>();
-          for (const p of overload.params) {
-            paramKeys.set(p.label, p.runtimeKey ?? p.label);
-          }
-          const paramLabels = overload.params.map((p) => p.label);
           const nsAction: NamespaceAction = {
             runtimeIdentifier: overload.runtimeIdentifier,
-            paramKeys,
-            paramLabels,
           };
           moduleActions.set(namespaceOverloadKey(name, index), nsAction);
           if (index === 0) {
@@ -665,10 +646,10 @@ function lowerStatement(stmt: Statement, actions: ActionIR[], ctx: LowerContext)
       lowerMenuStatement(stmt, actions, ctx);
       return;
     case "ConstDestructure":
-      lowerConstDestructure(stmt, actions, ctx);
+      lowerDestructure(stmt, actions, ctx);
       return;
     case "LetDestructure":
-      lowerLetDestructure(stmt, actions, ctx);
+      lowerDestructure(stmt, actions, ctx);
       return;
     case "EnumDeclaration":
       return;
@@ -846,17 +827,6 @@ function lowerExpression(expr: Expression, actions: ActionIR[], ctx: LowerContex
   }
 }
 
-function resolveArgLabelFromParams(
-  arg: import("./ast.ts").Argument,
-  index: number,
-  labels: ReadonlyArray<string>,
-): string | undefined {
-  if (arg.label) {
-    return arg.label;
-  }
-  return labels[index];
-}
-
 function lowerNamespaceActionCall(
   expr: CallExpression,
   nsAction: NamespaceAction,
@@ -958,7 +928,7 @@ function lowerFunctionCall(
       continue;
     }
     entries.push({
-      itemType: dictItemType(valueExpr),
+      itemType: collectionItemType(valueExpr),
       key: binding.runtimeKey,
       value: wrapAsTextToken(lowerToParamValue(valueExpr, actions, ctx)),
     });
@@ -1061,7 +1031,7 @@ function lowerCoalesceExpression(
   actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
-function listItemType(expr: Expression): number {
+function collectionItemType(expr: Expression): number {
   if (expr.kind === "NumberLiteral") {
     return 3;
   }
@@ -1077,7 +1047,7 @@ function lowerListItems(
   ctx: LowerContext,
 ): import("./ir.ts").ListItems {
   const items: import("./ir.ts").ListItem[] = expr.elements.map((el) => ({
-    itemType: listItemType(el),
+    itemType: collectionItemType(el),
     value: lowerToParamValue(el, actions, ctx),
   }));
 
@@ -1105,23 +1075,13 @@ function wrapAsTextToken(value: ParameterValue): ParameterValue {
   return value;
 }
 
-function dictItemType(expr: Expression): number {
-  if (expr.kind === "NumberLiteral") {
-    return 3;
-  }
-  if (expr.kind === "BooleanLiteral") {
-    return 4;
-  }
-  return 0; // Text
-}
-
 function lowerDictionaryLiteral(
   expr: DictionaryLiteral,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
   const entries: import("./ir.ts").DictEntry[] = expr.entries.map((entry) => ({
-    itemType: dictItemType(entry.value),
+    itemType: collectionItemType(entry.value),
     key: lowerToParamValue(entry.key, actions, ctx),
     value: wrapAsTextToken(lowerToParamValue(entry.value, actions, ctx)),
   }));
@@ -2076,31 +2036,11 @@ function comparisonConditionCode(
   }
 }
 
-function lowerConstDestructure(
-  stmt: ConstDestructure,
+function lowerDestructure(
+  stmt: ConstDestructure | LetDestructure,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
-  lowerExpression(stmt.initializer, actions, ctx);
-  const sourceName = nextTempName(ctx);
-  actions.push(makeSetVariableAction(sourceName, ctx));
-
-  for (const name of stmt.names) {
-    actions.push(makeGetVariableAction(sourceName, ctx));
-
-    const parameters = new Map<string, ParameterValue>();
-    parameters.set("WFDictionaryKey", name);
-    actions.push({
-      identifier: "is.workflow.actions.getvalueforkey",
-      uuid: nextUuid(ctx),
-      parameters,
-    });
-
-    actions.push(makeSetVariableAction(name, ctx));
-  }
-}
-
-function lowerLetDestructure(stmt: LetDestructure, actions: ActionIR[], ctx: LowerContext): void {
   lowerExpression(stmt.initializer, actions, ctx);
   const sourceName = nextTempName(ctx);
   actions.push(makeSetVariableAction(sourceName, ctx));
@@ -2167,7 +2107,7 @@ function lowerRecordConstruction(
     }
 
     entries.push({
-      itemType: dictItemType(arg.value),
+      itemType: collectionItemType(arg.value),
       key: arg.label,
       value: wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx)),
     });
@@ -2329,7 +2269,7 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
           )
         : nsActions?.get(stage.callee.property);
     if (nsAction) {
-      lowerPipelineNamespaceActionStage(stage, nsAction, actions, ctx);
+      lowerPipelineActionStage(stage, nsAction.runtimeIdentifier, undefined, actions, ctx);
       return;
     }
   }
@@ -2346,7 +2286,7 @@ function lowerPipelineStage(stage: PipelineStage, actions: ActionIR[], ctx: Lowe
     ? ctx.actions.get(calleeName)?.at(stage.resolvedCall?.overloadIndex ?? 0)
     : undefined;
   if (actionDecl) {
-    lowerPipelineDeclaredActionStage(stage, actionDecl, actions, ctx);
+    lowerPipelineActionStage(stage, actionDecl.runtimeIdentifier, actionDecl, actions, ctx);
     return;
   }
 
@@ -2366,76 +2306,28 @@ function lowerPipelineFunctionStage(
   const pipedTempName = nextTempName(ctx);
   actions.push(makeSetVariableAction(pipedTempName, ctx));
 
-  const hasPlaceholder = stage.args.some((a) => a.value.kind === "PlaceholderExpression");
-  const provided = new Map<string, Expression>();
   const entries: import("./ir.ts").DictEntry[] = [];
-
-  const paramNames = decl.params.map((p) => p.name);
-
-  if (hasPlaceholder) {
-    for (let i = 0; i < stage.args.length; i++) {
-      const arg = stage.args[i];
-      if (!arg) {
-        continue;
-      }
-      if (arg.value.kind === "PlaceholderExpression") {
-        const targetName = arg.label ?? decl.params.at(0)?.name;
-        if (targetName) {
-          provided.set(targetName, arg.value);
-          entries.push({
-            itemType: 0,
-            key: targetName,
-            value: { kind: "VariableRef", name: pipedTempName },
-          });
-        }
-      } else {
-        const label = resolveArgLabelFromParams(arg, i, paramNames);
-        if (label) {
-          provided.set(label, arg.value);
-          entries.push({
-            itemType: dictItemType(arg.value),
-            key: label,
-            value: wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx)),
-          });
-        }
-      }
-    }
-  } else {
-    const firstParam = decl.params.at(0);
-    if (firstParam) {
-      provided.set(firstParam.name, stage.callee);
+  for (const binding of stage.resolvedCall?.bindings ?? []) {
+    if (binding.source === "pipelineInput") {
       entries.push({
         itemType: 0,
-        key: firstParam.name,
+        key: binding.runtimeKey,
         value: { kind: "VariableRef", name: pipedTempName },
       });
+      continue;
     }
-
-    for (let i = 0; i < stage.args.length; i++) {
-      const arg = stage.args[i];
-      if (!arg) {
-        continue;
-      }
-      const label = resolveArgLabelFromParams(arg, i, paramNames);
-      if (label) {
-        provided.set(label, arg.value);
-        entries.push({
-          itemType: dictItemType(arg.value),
-          key: label,
-          value: wrapAsTextToken(lowerToParamValue(arg.value, actions, ctx)),
-        });
-      }
+    const valueExpr =
+      binding.source === "argument" && binding.argumentIndex !== undefined
+        ? stage.args.at(binding.argumentIndex)?.value
+        : decl.params.at(binding.parameterIndex)?.defaultValue;
+    if (!valueExpr) {
+      continue;
     }
-  }
-
-  for (const param of decl.params) {
-    if (!provided.has(param.name) && param.defaultValue) {
-      entries.push({
-        itemType: dictItemType(param.defaultValue),
-        key: param.name,
-        value: wrapAsTextToken(lowerToParamValue(param.defaultValue, actions, ctx)),
-      });
-    }
+    entries.push({
+      itemType: collectionItemType(valueExpr),
+      key: binding.runtimeKey,
+      value: wrapAsTextToken(lowerToParamValue(valueExpr, actions, ctx)),
+    });
   }
 
   entries.push({
@@ -2465,74 +2357,30 @@ function lowerPipelineFunctionStage(
   });
 }
 
-function lowerPipelineNamespaceActionStage(
+function lowerPipelineActionStage(
   stage: PipelineStage,
-  nsAction: NamespaceAction,
+  runtimeIdentifier: string,
+  declaration: ActionDeclaration | undefined,
   actions: ActionIR[],
   ctx: LowerContext,
 ): void {
   const parameters = new Map<string, ParameterValue>();
-
-  for (let i = 0; i < stage.args.length; i++) {
-    const arg = stage.args[i];
-    if (!arg) {
+  for (const binding of stage.resolvedCall?.bindings ?? []) {
+    if (binding.source === "pipelineInput") {
       continue;
     }
-    if (arg.value.kind === "PlaceholderExpression") {
-      continue;
-    }
-    const label = resolveArgLabelFromParams(arg, i, nsAction.paramLabels);
-    if (!label) {
-      continue;
-    }
-    const plistKey = nsAction.paramKeys.get(label);
-    if (!plistKey) {
-      continue;
-    }
-    parameters.set(plistKey, lowerToParamValue(arg.value, actions, ctx));
-  }
-
-  actions.push({
-    identifier: nsAction.runtimeIdentifier,
-    uuid: nextUuid(ctx),
-    parameters,
-  });
-}
-
-function lowerPipelineDeclaredActionStage(
-  stage: PipelineStage,
-  decl: import("./ast.ts").ActionDeclaration,
-  actions: ActionIR[],
-  ctx: LowerContext,
-): void {
-  const parameters = new Map<string, ParameterValue>();
-
-  const paramLabels = decl.params.map((p) => p.label);
-  const provided = new Map<string, Expression>();
-  for (let i = 0; i < stage.args.length; i++) {
-    const arg = stage.args[i];
-    if (!arg) {
-      continue;
-    }
-    if (arg.value.kind === "PlaceholderExpression") {
-      continue;
-    }
-    const label = resolveArgLabelFromParams(arg, i, paramLabels);
-    if (label) {
-      provided.set(label, arg.value);
-    }
-  }
-
-  for (const param of decl.params) {
-    const valueExpr = provided.get(param.label) ?? param.defaultValue;
+    const valueExpr =
+      binding.source === "argument" && binding.argumentIndex !== undefined
+        ? stage.args.at(binding.argumentIndex)?.value
+        : declaration?.params.at(binding.parameterIndex)?.defaultValue;
     if (!valueExpr) {
       continue;
     }
-    parameters.set(param.name, lowerToParamValue(valueExpr, actions, ctx));
+    parameters.set(binding.runtimeKey, lowerToParamValue(valueExpr, actions, ctx));
   }
 
   actions.push({
-    identifier: decl.runtimeIdentifier,
+    identifier: runtimeIdentifier,
     uuid: nextUuid(ctx),
     parameters,
   });

@@ -2335,3 +2335,81 @@ describe("checker", () => {
     });
   });
 });
+describe("pipeline call plans", () => {
+  it("records how a function pipeline stage binds input, arguments, and defaults", () => {
+    const program = parse(`
+        func combine(a: Number, b: Number, c: Number = 3) -> Number { return a + b + c; }
+        const result = 1 |> combine(_, 2);
+      `);
+
+    check(program);
+
+    const declaration = program.body.at(1);
+    expect(declaration?.kind).toBe("ConstDeclaration");
+    if (declaration?.kind !== "ConstDeclaration") {
+      throw new Error("Expected const declaration");
+    }
+    expect(declaration.initializer.kind).toBe("PipelineExpression");
+    if (declaration.initializer.kind !== "PipelineExpression") {
+      throw new Error("Expected pipeline expression");
+    }
+    expect(declaration.initializer.stages.at(0)?.resolvedCall).toEqual({
+      kind: "function",
+      bindings: [
+        {
+          parameterIndex: 0,
+          argumentIndex: 0,
+          label: "a",
+          runtimeKey: "a",
+          source: "pipelineInput",
+        },
+        {
+          parameterIndex: 1,
+          argumentIndex: 1,
+          label: "b",
+          runtimeKey: "b",
+          source: "argument",
+        },
+        { parameterIndex: 2, label: "c", runtimeKey: "c", source: "default" },
+      ],
+    });
+  });
+
+  it("records how an action pipeline stage binds input, arguments, and defaults", () => {
+    const program = parse(`
+        action transform(value: Text, mode: Text = "upper") -> Text = "com.example.transform";
+        const result = "hello" |> transform(_, "lower");
+      `);
+
+    check(program);
+
+    const declaration = program.body.at(1);
+    expect(declaration?.kind).toBe("ConstDeclaration");
+    if (declaration?.kind !== "ConstDeclaration") {
+      throw new Error("Expected const declaration");
+    }
+    expect(declaration.initializer.kind).toBe("PipelineExpression");
+    if (declaration.initializer.kind !== "PipelineExpression") {
+      throw new Error("Expected pipeline expression");
+    }
+    expect(declaration.initializer.stages.at(0)?.resolvedCall).toEqual({
+      kind: "action",
+      bindings: [
+        {
+          parameterIndex: 0,
+          argumentIndex: 0,
+          label: "value",
+          runtimeKey: "value",
+          source: "pipelineInput",
+        },
+        {
+          parameterIndex: 1,
+          argumentIndex: 1,
+          label: "mode",
+          runtimeKey: "mode",
+          source: "argument",
+        },
+      ],
+    });
+  });
+});

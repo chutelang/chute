@@ -3791,7 +3791,7 @@ exports[`compile > should compile a pipeline with explicit arguments 1`] = `
                     <key>Value</key>
                     <dict>
                       <key>string</key>
-                      <string>a</string>
+                      <string>b</string>
                     </dict>
                   </dict>
                   <key>WFValue</key>
