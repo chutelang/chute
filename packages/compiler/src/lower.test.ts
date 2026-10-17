@@ -933,6 +933,28 @@ describe("lower", () => {
       expect(action?.parameters.get("WFAlertActionMessage")).toBe("hello");
     });
 
+    it("should inline a list literal into a namespace action parameter", () => {
+      const actions = lowerSource(`
+        import Scripting;
+        shortcut { name: "Test" }
+        const items = Scripting.list(["x", "y", "z"]);
+      `);
+
+      expect(actions.map((action) => action.identifier)).toEqual([
+        "is.workflow.actions.list",
+        "is.workflow.actions.setvariable",
+      ]);
+      expect(actions.at(0)?.parameters.get("WFItems")).toEqual({
+        kind: "ListItems",
+        items: [
+          { itemType: 0, value: "x" },
+          { itemType: 0, value: "y" },
+          { itemType: 0, value: "z" },
+        ],
+      });
+      expect(actions.at(1)?.parameters.get("WFVariableName")).toBe("items");
+    });
+
     it("should lower aliased namespace-qualified action call", () => {
       const result = lowerSource(`
         import Notification as N;

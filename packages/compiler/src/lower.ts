@@ -877,6 +877,10 @@ function lowerNamespaceActionCall(
       continue;
     }
     const slot = getParameterSlot(nsAction.runtimeIdentifier, binding.runtimeKey);
+    if (arg.value.kind === "ListLiteral") {
+      parameters.set(binding.runtimeKey, lowerListItems(arg.value, parentActions, ctx));
+      continue;
+    }
     if (
       slot === "picker" &&
       (arg.value.kind === "StringLiteral" || arg.value.kind === "NumberLiteral")
@@ -1067,14 +1071,22 @@ function listItemType(expr: Expression): number {
   return 0; // Text
 }
 
-function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerContext): void {
+function lowerListItems(
+  expr: ListLiteral,
+  actions: ActionIR[],
+  ctx: LowerContext,
+): import("./ir.ts").ListItems {
   const items: import("./ir.ts").ListItem[] = expr.elements.map((el) => ({
     itemType: listItemType(el),
     value: lowerToParamValue(el, actions, ctx),
   }));
 
+  return { kind: "ListItems", items };
+}
+
+function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerContext): void {
   const parameters = new Map<string, ParameterValue>();
-  parameters.set("WFItems", { kind: "ListItems", items });
+  parameters.set("WFItems", lowerListItems(expr, actions, ctx));
 
   actions.push({
     identifier: "is.workflow.actions.list",

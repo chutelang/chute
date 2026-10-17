@@ -424,6 +424,22 @@ Notification.showResult("done");`;
     expect(result.main).toMatchSnapshot();
   });
 
+  it("should compile a stdlib list literal as one list action", () => {
+    const source = `import Scripting;
+shortcut { name: "Test" }
+const items = Scripting.list(["x", "y", "z"]);`;
+
+    const plist = compile(source).main;
+    expect(plist.match(/<string>is\.workflow\.actions\.list<\/string>/g)).toHaveLength(1);
+    expect(plist).toContain("<string>x</string>");
+    expect(plist).toContain("<string>y</string>");
+    expect(plist).toContain("<string>z</string>");
+    expect(plist).toContain("<string>items</string>");
+    expect(plist).not.toContain("__chute_tmp_");
+    expect(plist).not.toContain("<string>One</string>");
+    expect(plist).not.toContain("<string>Two</string>");
+  });
+
   it("should compile action declaration and call", () => {
     const source = `shortcut {
   name: "Actions",
