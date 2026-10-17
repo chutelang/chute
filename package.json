@@ -11,9 +11,12 @@
     "format:check": "oxfmt --check packages/",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:simulator": "vitest run --config tools/simulator-test/vitest.config.ts",
+    "test:simulator": "pnpm test:shortcuts",
     "stdlib": "node tools/stdlib-generator/extract-stdlib.js && node tools/stdlib-generator/generate-docs.js",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "test:simulator:guest": "pnpm test:shortcuts:guest",
+    "test:shortcuts": "bash tools/simulator-test/run-in-tart.sh",
+    "test:shortcuts:guest": "vitest run --config tools/simulator-test/vitest.config.ts"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

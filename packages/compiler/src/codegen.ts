@@ -15,7 +15,7 @@ import type {
   WorkflowRef,
 } from "./ir.ts";
 import type { InputSlot } from "./coercion.ts";
-import { getParameterSlot } from "./stdlib.ts";
+import { getContactFieldEntryType, getParameterSlot } from "./stdlib.ts";
 
 const OBJECT_REPLACEMENT_CHAR = "￼";
 
@@ -62,6 +62,24 @@ function buildAction(action: ActionIR): PlistValue {
 
 function buildParamValue(value: ParameterValue, actionIdentifier: string, key: string): PlistValue {
   if (typeof value === "string") {
+    const contactFieldEntryType = getContactFieldEntryType(actionIdentifier, key);
+    if (contactFieldEntryType !== undefined) {
+      const serializedEntryKey =
+        contactFieldEntryType === 1
+          ? "link.contentkit.phonenumber"
+          : "link.contentkit.emailaddress";
+      return {
+        Value: {
+          WFContactFieldValues: [
+            {
+              EntryType: contactFieldEntryType,
+              SerializedEntry: { [serializedEntryKey]: value },
+            },
+          ],
+        },
+        WFSerializationType: "WFContactFieldValue",
+      };
+    }
     return value;
   }
   if (typeof value === "number") {

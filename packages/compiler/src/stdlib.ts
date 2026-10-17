@@ -410,3 +410,23 @@ function ensureParameterSlots(): Map<string, Map<string, InputSlot>> {
 export function getParameterSlot(actionIdentifier: string, parameterKey: string): InputSlot {
   return ensureParameterSlots().get(actionIdentifier)?.get(parameterKey) ?? "field";
 }
+
+/**
+ * The serialized entry discriminator used by WorkflowKit's contact field
+ * value representation. Phone numbers are type 1 and email addresses type 2.
+ */
+export function getContactFieldEntryType(
+  actionIdentifier: string,
+  parameterKey: string,
+): 1 | 2 | undefined {
+  const parameter = stdlibJson.actions[actionIdentifier]?.parameters.find(
+    (candidate) => candidate.key === parameterKey,
+  );
+  if (parameter?.class === "WFPhoneNumberFieldParameter") {
+    return 1;
+  }
+  if (parameter?.class === "WFEmailAddressFieldParameter") {
+    return 2;
+  }
+  return undefined;
+}

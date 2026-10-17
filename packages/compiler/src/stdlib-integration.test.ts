@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { parse as parsePlist } from "plist";
 import { compile } from "./pipeline.ts";
 
 function actions(plist: string): string[] {
@@ -32,7 +33,50 @@ function paramValue(plist: string, actionId: string, key: string): string | unde
   return undefined;
 }
 
+function structuredParamValue(plist: string, actionIndex: number, key: string): unknown {
+  const workflow = parsePlist(plist) as {
+    WFWorkflowActions: Array<{ WFWorkflowActionParameters: Record<string, unknown> }>;
+  };
+  return workflow.WFWorkflowActions[actionIndex]?.WFWorkflowActionParameters[key];
+}
+
 describe("stdlib integration", () => {
+  describe("Contacts module", () => {
+    it("should serialize an email address as a contact field value", () => {
+      const plist = compile(`import Contacts;
+shortcut { name: "T" }
+const result = Contacts.emailAddress("test@example.com");`).main;
+      expect(structuredParamValue(plist, 0, "WFEmailAddress")).toEqual({
+        Value: {
+          WFContactFieldValues: [
+            {
+              EntryType: 2,
+              SerializedEntry: { "link.contentkit.emailaddress": "test@example.com" },
+            },
+          ],
+        },
+        WFSerializationType: "WFContactFieldValue",
+      });
+    });
+
+    it("should serialize a phone number as a contact field value", () => {
+      const plist = compile(`import Contacts;
+shortcut { name: "T" }
+const result = Contacts.phoneNumber("+15551234567");`).main;
+      expect(structuredParamValue(plist, 0, "WFPhoneNumber")).toEqual({
+        Value: {
+          WFContactFieldValues: [
+            {
+              EntryType: 1,
+              SerializedEntry: { "link.contentkit.phonenumber": "+15551234567" },
+            },
+          ],
+        },
+        WFSerializationType: "WFContactFieldValue",
+      });
+    });
+  });
+
   describe("Notification module", () => {
     it("should compile showAlert with message as first positional arg", () => {
       const plist = compile(`import Notification;

@@ -978,6 +978,39 @@ describe("lower", () => {
   });
 
   describe("coercion expressions", () => {
+    it("checks both platform failure spellings against a Text action output", () => {
+      const actions = lowerSource(
+        'shortcut { name: "Test" } const value = "notanumber" as Number;',
+      );
+      const checks = actions.filter(
+        (action) =>
+          action.identifier === "is.workflow.actions.conditional" &&
+          action.parameters.has("WFConditionalActionString"),
+      );
+      expect(checks.map((action) => action.parameters.get("WFConditionalActionString"))).toEqual([
+        "No",
+        "false",
+      ]);
+      for (const check of checks) {
+        expect(check.parameters.get("WFCondition")).toBe(4);
+        const input = check.parameters.get("WFInput");
+        expect(input).toMatchObject({
+          kind: "ConditionInput",
+          reference: { kind: "ActionOutputRef", outputName: "Text" },
+        });
+        if (
+          typeof input !== "object" ||
+          input.kind !== "ConditionInput" ||
+          input.reference.kind !== "ActionOutputRef"
+        ) {
+          throw new Error("Expected Text output reference");
+        }
+        const outputUUID = input.reference.outputUUID;
+        const textAction = actions.find((action) => action.parameters.get("UUID") === outputUUID);
+        expect(textAction?.identifier).toBe("is.workflow.actions.gettext");
+      }
+    });
+
     it("should lower text as Number to getvariable with coercion aggrandizement", () => {
       const actions = lowerSource(`
         shortcut { name: "Test" }

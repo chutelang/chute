@@ -1725,18 +1725,49 @@ function emitCoercionNilFallback(actions: ActionIR[], ctx: LowerContext): void {
   const tempName = nextTempName(ctx);
   actions.push(makeSetVariableAction(tempName, ctx));
 
-  actions.push(makeGetVariableAction(tempName, ctx));
+  // Failed conversions render as "No" on iOS and "false" on macOS.
+  // Compare text explicitly so Shortcuts cannot interpret a numeric zero as false.
+  const textUuid = nextUuid(ctx);
+  const textInput: ConditionInput = {
+    kind: "ConditionInput",
+    reference: { kind: "ActionOutputRef", outputName: "Text", outputUUID: textUuid },
+  };
+  actions.push({
+    identifier: "is.workflow.actions.gettext",
+    uuid: nextUuid(ctx),
+    parameters: new Map<string, ParameterValue>([
+      ["UUID", textUuid],
+      [
+        "WFTextActionText",
+        {
+          kind: "InterpolatedText",
+          parts: [{ kind: "variable", name: tempName }],
+        },
+      ],
+    ]),
+  });
   const groupId = nextUuid(ctx);
   actions.push(
     makeConditionalAction(0, groupId, ctx, {
-      WFCondition: 0,
+      WFCondition: 4,
       WFConditionalActionString: "No",
-      WFInput: makeConditionInput(tempName),
+      WFInput: textInput,
     }),
   );
   actions.push(makeNothingAction(ctx));
   actions.push(makeConditionalAction(1, groupId, ctx));
+  const macGroupId = nextUuid(ctx);
+  actions.push(
+    makeConditionalAction(0, macGroupId, ctx, {
+      WFCondition: 4,
+      WFConditionalActionString: "false",
+      WFInput: textInput,
+    }),
+  );
+  actions.push(makeNothingAction(ctx));
+  actions.push(makeConditionalAction(1, macGroupId, ctx));
   actions.push(makeGetVariableAction(tempName, ctx));
+  actions.push(makeConditionalAction(2, macGroupId, ctx));
   actions.push(makeConditionalAction(2, groupId, ctx));
 }
 
