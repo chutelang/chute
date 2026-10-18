@@ -41,6 +41,8 @@ import type {
   Program,
   RecordDeclaration,
   RepeatStatement,
+  ResolvedCallBindingSource,
+  ResolvedCallPlan,
   ReturnStatement,
   Statement,
   SubscriptExpression,
@@ -1305,6 +1307,38 @@ function inferCallExpression(expr: CallExpression, scope: Scope, context: CheckC
   return { kind: "any" };
 }
 
+interface CallPlanParameter {
+  label: string;
+  runtimeKey: string;
+}
+
+interface BoundCallArgument {
+  argumentIndex?: number;
+  source: ResolvedCallBindingSource;
+}
+
+function buildCallPlan(
+  kind: ResolvedCallPlan["kind"],
+  params: CallPlanParameter[],
+  getArgument: (parameterIndex: number) => BoundCallArgument | undefined,
+  overloadIndex?: number,
+): ResolvedCallPlan {
+  return {
+    kind,
+    ...(overloadIndex !== undefined ? { overloadIndex } : {}),
+    bindings: params.map((param, parameterIndex) => {
+      const argument = getArgument(parameterIndex);
+      return {
+        parameterIndex,
+        ...(argument?.argumentIndex !== undefined ? { argumentIndex: argument.argumentIndex } : {}),
+        label: param.label,
+        runtimeKey: param.runtimeKey,
+        source: argument?.source ?? "default",
+      };
+    }),
+  };
+}
+
 function checkFunctionCall(
   expr: CallExpression,
   funcType: ChuteType & { kind: "function" },
@@ -1364,19 +1398,18 @@ function checkFunctionCall(
     });
   }
 
-  expr.resolvedCall = {
-    kind: "function",
-    bindings: funcType.params.map((param, parameterIndex) => {
+  expr.resolvedCall = buildCallPlan(
+    "function",
+    funcType.params.map((param) => ({ label: param.name, runtimeKey: param.name })),
+    (parameterIndex) => {
+      const param = funcType.params[parameterIndex];
+      if (!param) {
+        return undefined;
+      }
       const argument = provided.get(param.name);
-      return {
-        parameterIndex,
-        ...(argument ? { argumentIndex: argument.argumentIndex } : {}),
-        label: param.name,
-        runtimeKey: param.name,
-        source: argument ? "argument" : "default",
-      };
-    }),
-  };
+      return argument ? { argumentIndex: argument.argumentIndex, source: "argument" } : undefined;
+    },
+  );
 
   return funcType.returnType ?? { kind: "any" };
 }
@@ -2333,19 +2366,14 @@ function inferPipelineFunctionCall(
     });
   }
 
-  stage.resolvedCall = {
-    kind: "function",
-    bindings: funcType.params.map((param, parameterIndex) => {
-      const value = provided.get(param.name);
-      return {
-        parameterIndex,
-        ...(value?.argumentIndex !== undefined ? { argumentIndex: value.argumentIndex } : {}),
-        label: param.name,
-        runtimeKey: param.name,
-        source: value?.source ?? "default",
-      };
-    }),
-  };
+  stage.resolvedCall = buildCallPlan(
+    "function",
+    funcType.params.map((param) => ({ label: param.name, runtimeKey: param.name })),
+    (parameterIndex) => {
+      const param = funcType.params[parameterIndex];
+      return param ? provided.get(param.name) : undefined;
+    },
+  );
 
   return funcType.returnType ?? { kind: "any" };
 }
@@ -2388,20 +2416,15 @@ function inferPipelineActionCall(
   }
 
   const overloadIndex = stage.resolvedCall?.overloadIndex;
-  stage.resolvedCall = {
-    kind: "action",
-    ...(overloadIndex !== undefined ? { overloadIndex } : {}),
-    bindings: actionType.params.map((param, parameterIndex) => {
-      const argument = provided.get(parameterIndex);
-      return {
-        parameterIndex,
-        ...(argument ? { argumentIndex: argument.argumentIndex } : {}),
-        label: param.label,
-        runtimeKey: param.runtimeKey ?? param.label,
-        source: argument?.source ?? "default",
-      };
-    }),
-  };
+  stage.resolvedCall = buildCallPlan(
+    "action",
+    actionType.params.map((param) => ({
+      label: param.label,
+      runtimeKey: param.runtimeKey ?? param.label,
+    })),
+    (parameterIndex) => provided.get(parameterIndex),
+    overloadIndex,
+  );
 
   return actionType.returnType ?? { kind: "any" };
 }
@@ -2696,20 +2719,22 @@ function checkActionCall(
   }
 
   const overloadIndex = expr.resolvedCall?.overloadIndex;
-  expr.resolvedCall = {
-    kind: "action",
-    ...(overloadIndex !== undefined ? { overloadIndex } : {}),
-    bindings: actionType.params.map((param, parameterIndex) => {
+  expr.resolvedCall = buildCallPlan(
+    "action",
+    actionType.params.map((param) => ({
+      label: param.label,
+      runtimeKey: param.runtimeKey ?? param.label,
+    })),
+    (parameterIndex) => {
+      const param = actionType.params[parameterIndex];
+      if (!param) {
+        return undefined;
+      }
       const argument = provided.get(param.label);
-      return {
-        parameterIndex,
-        ...(argument ? { argumentIndex: argument.argumentIndex } : {}),
-        label: param.label,
-        runtimeKey: param.runtimeKey ?? param.label,
-        source: argument ? "argument" : "default",
-      };
-    }),
-  };
+      return argument ? { argumentIndex: argument.argumentIndex, source: "argument" } : undefined;
+    },
+    overloadIndex,
+  );
 
   return actionType.returnType ?? { kind: "any" };
 }
