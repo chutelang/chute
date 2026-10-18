@@ -1,4 +1,4 @@
-import { TokenKind } from "./token.ts";
+import { isKeyword, keywordText, TokenKind, tokenKindName } from "./token.ts";
 import type { Token, Span } from "./token.ts";
 import { DiagnosticCode, CompileError } from "./diagnostic.ts";
 import type { Diagnostic } from "./diagnostic.ts";
@@ -2006,92 +2006,4 @@ function tokenValue(tok: Token): string {
     throw new Error(`token ${tokenKindName(tok.kind)} has no value`);
   }
   return tok.value;
-}
-
-function isKeyword(kind: TokenKind): boolean {
-  return kind >= TokenKind.Action && kind <= TokenKind.True;
-}
-
-const KEYWORD_TEXTS: ReadonlyMap<TokenKind, string> = new Map([
-  [TokenKind.Action, "action"],
-  [TokenKind.As, "as"],
-  [TokenKind.Case, "case"],
-  [TokenKind.Const, "const"],
-  [TokenKind.Contains, "contains"],
-  [TokenKind.Else, "else"],
-  [TokenKind.Enum, "enum"],
-  [TokenKind.Export, "export"],
-  [TokenKind.False, "false"],
-  [TokenKind.For, "for"],
-  [TokenKind.Func, "func"],
-  [TokenKind.HasPrefix, "hasPrefix"],
-  [TokenKind.HasSuffix, "hasSuffix"],
-  [TokenKind.If, "if"],
-  [TokenKind.Import, "import"],
-  [TokenKind.In, "in"],
-  [TokenKind.Input, "input"],
-  [TokenKind.Is, "is"],
-  [TokenKind.Let, "let"],
-  [TokenKind.Menu, "menu"],
-  [TokenKind.Nil, "nil"],
-  [TokenKind.Record, "record"],
-  [TokenKind.Repeat, "repeat"],
-  [TokenKind.Return, "return"],
-  [TokenKind.Shortcut, "shortcut"],
-  [TokenKind.True, "true"],
-]);
-
-function keywordText(kind: TokenKind): string {
-  return KEYWORD_TEXTS.get(kind) ?? (TokenKind[kind] ?? "unknown").toLowerCase();
-}
-
-function tokenKindName(kind: TokenKind): string {
-  const names: Record<number, string> = {
-    [TokenKind.Number]: "number",
-    [TokenKind.Quantity]: "quantity",
-    [TokenKind.String]: "string",
-    [TokenKind.StringStart]: "string",
-    [TokenKind.StringMiddle]: "string",
-    [TokenKind.StringEnd]: "string",
-    [TokenKind.RawString]: "raw string",
-    [TokenKind.Identifier]: "identifier",
-    [TokenKind.HashIndex]: "#index",
-    [TokenKind.Underscore]: "_",
-    [TokenKind.LeftParen]: "'('",
-    [TokenKind.RightParen]: "')'",
-    [TokenKind.LeftBrace]: "'{'",
-    [TokenKind.RightBrace]: "'}'",
-    [TokenKind.LeftBracket]: "'['",
-    [TokenKind.RightBracket]: "']'",
-    [TokenKind.Semicolon]: "';'",
-    [TokenKind.Colon]: "':'",
-    [TokenKind.Comma]: "','",
-    [TokenKind.Dot]: "'.'",
-    [TokenKind.At]: "'@'",
-    [TokenKind.Plus]: "'+'",
-    [TokenKind.Minus]: "'-'",
-    [TokenKind.Star]: "'*'",
-    [TokenKind.Slash]: "'/'",
-    [TokenKind.Percent]: "'%'",
-    [TokenKind.Equal]: "'='",
-    [TokenKind.EqualEqual]: "'=='",
-    [TokenKind.BangEqual]: "'!='",
-    [TokenKind.Less]: "'<'",
-    [TokenKind.LessEqual]: "'<='",
-    [TokenKind.Greater]: "'>'",
-    [TokenKind.GreaterEqual]: "'>='",
-    [TokenKind.Question]: "'?'",
-    [TokenKind.QuestionQuestion]: "'??'",
-    [TokenKind.QuestionDot]: "'?.'",
-    [TokenKind.Pipe]: "'|>'",
-    [TokenKind.PipeQuestion]: "'|>?'",
-    [TokenKind.Arrow]: "'->'",
-    [TokenKind.DotDotDot]: "'...'",
-    [TokenKind.BangContains]: "'!contains'",
-    [TokenKind.AmpAmp]: "'&&'",
-    [TokenKind.PipePipe]: "'||'",
-    [TokenKind.Bang]: "'!'",
-    [TokenKind.Eof]: "end of file",
-  };
-  return names[kind] ?? `keyword '${(TokenKind[kind] ?? "unknown").toLowerCase()}'`;
 }
