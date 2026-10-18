@@ -522,7 +522,7 @@ function resolveFileImport(
       } else if (stmt.kind === "ActionDeclaration") {
         checkActionDeclaration(stmt, libScope, context);
       } else if (stmt.kind === "ConstDeclaration") {
-        checkConstDeclaration(stmt, libScope, context);
+        checkBindingDeclaration(stmt, libScope, context);
       }
     }
 
@@ -622,10 +622,10 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
       checkExpressionStatement(stmt.expression, scope, context);
       return;
     case "ConstDeclaration":
-      checkConstDeclaration(stmt, scope, context);
+      checkBindingDeclaration(stmt, scope, context);
       return;
     case "LetDeclaration":
-      checkLetDeclaration(stmt, scope, context);
+      checkBindingDeclaration(stmt, scope, context);
       return;
     case "Assignment":
       checkAssignment(stmt, scope, context);
@@ -643,10 +643,10 @@ function checkStatement(stmt: Statement, scope: Scope, context: CheckContext): v
       checkMenuStatement(stmt, scope, context);
       return;
     case "ConstDestructure":
-      checkConstDestructure(stmt, scope, context);
+      checkBindingDestructure(stmt, scope, context);
       return;
     case "LetDestructure":
-      checkLetDestructure(stmt, scope, context);
+      checkBindingDestructure(stmt, scope, context);
       return;
     case "EnumDeclaration":
       checkEnumDeclaration(stmt, scope);
@@ -689,7 +689,11 @@ function checkExpressionStatement(expr: Expression, scope: Scope, context: Check
   }
 }
 
-function checkConstDeclaration(decl: ConstDeclaration, scope: Scope, context: CheckContext): void {
+function checkBindingDeclaration(
+  decl: ConstDeclaration | LetDeclaration,
+  scope: Scope,
+  context: CheckContext,
+): void {
   if (scope.hasOwn(decl.name)) {
     throw new CheckError(
       `variable '${decl.name}' is already declared in this scope`,
@@ -699,21 +703,7 @@ function checkConstDeclaration(decl: ConstDeclaration, scope: Scope, context: Ch
   }
 
   const bindingType = checkDeclarationInitializer(decl, scope, context);
-  scope.define(decl.name, bindingType, false);
-  checkDocComment(decl.docComment, undefined, context.warnings);
-}
-
-function checkLetDeclaration(decl: LetDeclaration, scope: Scope, context: CheckContext): void {
-  if (scope.hasOwn(decl.name)) {
-    throw new CheckError(
-      `variable '${decl.name}' is already declared in this scope`,
-      decl.span,
-      DiagnosticCode.DuplicateDeclaration,
-    );
-  }
-
-  const bindingType = checkDeclarationInitializer(decl, scope, context);
-  scope.define(decl.name, bindingType, true);
+  scope.define(decl.name, bindingType, decl.kind === "LetDeclaration");
   checkDocComment(decl.docComment, undefined, context.warnings);
 }
 
@@ -1828,12 +1818,18 @@ function inferTernaryExpression(
   return { kind: "any" };
 }
 
-function checkConstDestructure(stmt: ConstDestructure, scope: Scope, context: CheckContext): void {
+function checkBindingDestructure(
+  stmt: ConstDestructure | LetDestructure,
+  scope: Scope,
+  context: CheckContext,
+): void {
   const initializerType = inferType(stmt.initializer, scope, context);
+  const mutable = stmt.kind === "LetDestructure";
+  const bindingName = mutable ? "let" : "const";
 
   if (initializerType.kind !== "record" && initializerType.kind !== "any") {
     throw new CheckError(
-      `const destructuring requires a record, got ${describeType(initializerType)}`,
+      `${bindingName} destructuring requires a record, got ${describeType(initializerType)}`,
       stmt.span,
     );
   }
@@ -1856,44 +1852,9 @@ function checkConstDestructure(stmt: ConstDestructure, scope: Scope, context: Ch
           DiagnosticCode.UnknownMember,
         );
       }
-      scope.define(name, fieldType, false);
+      scope.define(name, fieldType, mutable);
     } else {
-      scope.define(name, { kind: "any" }, false);
-    }
-  }
-}
-
-function checkLetDestructure(stmt: LetDestructure, scope: Scope, context: CheckContext): void {
-  const initializerType = inferType(stmt.initializer, scope, context);
-
-  if (initializerType.kind !== "record" && initializerType.kind !== "any") {
-    throw new CheckError(
-      `let destructuring requires a record, got ${describeType(initializerType)}`,
-      stmt.span,
-    );
-  }
-
-  for (const name of stmt.names) {
-    if (scope.hasOwn(name)) {
-      throw new CheckError(
-        `variable '${name}' is already declared in this scope`,
-        stmt.span,
-        DiagnosticCode.DuplicateDeclaration,
-      );
-    }
-
-    if (initializerType.kind === "record") {
-      const fieldType = initializerType.fields.get(name);
-      if (!fieldType) {
-        throw new CheckError(
-          `record '${initializerType.name}' has no field '${name}'`,
-          stmt.span,
-          DiagnosticCode.UnknownMember,
-        );
-      }
-      scope.define(name, fieldType, true);
-    } else {
-      scope.define(name, { kind: "any" }, true);
+      scope.define(name, { kind: "any" }, mutable);
     }
   }
 }

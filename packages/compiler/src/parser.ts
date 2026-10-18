@@ -409,10 +409,10 @@ export class Parser {
       return this.parseReturnStatement();
     }
     if (this.check(TokenKind.Const)) {
-      return this.parseConstOrDestructure();
+      return this.parseBinding(TokenKind.Const);
     }
     if (this.check(TokenKind.Let)) {
-      return this.parseLetOrDestructure();
+      return this.parseBinding(TokenKind.Let);
     }
     if (this.check(TokenKind.If)) {
       return this.parseIfStatement();
@@ -467,12 +467,12 @@ export class Parser {
       return decl;
     }
     if (this.check(TokenKind.Const)) {
-      const decl = this.parseConstOrDestructure(true);
+      const decl = this.parseBinding(TokenKind.Const, true);
       decl.span.start = start;
       return decl;
     }
     if (this.check(TokenKind.Let)) {
-      const decl = this.parseLetOrDestructure(true);
+      const decl = this.parseBinding(TokenKind.Let, true);
       decl.span.start = start;
       return decl;
     }
@@ -852,72 +852,50 @@ export class Parser {
     };
   }
 
-  private parseConstOrDestructure(exported = false): ConstDeclaration | ConstDestructure {
-    const lookahead = this.tokens.at(this.pos + 1);
-    if (lookahead?.kind === TokenKind.LeftBrace) {
-      return this.parseConstDestructure();
-    }
-    return this.parseConstDeclaration(exported);
-  }
+  private parseBinding(
+    keyword: TokenKind.Const | TokenKind.Let,
+    exported = false,
+  ): ConstDeclaration | ConstDestructure | LetDeclaration | LetDestructure {
+    const docComment = this.takeDocComment();
+    const start = this.expect(keyword).span.start;
 
-  private parseLetOrDestructure(exported = false): LetDeclaration | LetDestructure {
-    const lookahead = this.tokens.at(this.pos + 1);
-    if (lookahead?.kind === TokenKind.LeftBrace) {
-      return this.parseLetDestructure();
-    }
-    return this.parseLetDeclaration(exported);
-  }
-
-  private parseConstDestructure(): ConstDestructure {
-    this.takeDocComment();
-    const start = this.expect(TokenKind.Const).span.start;
-    this.expect(TokenKind.LeftBrace);
-
-    const names: string[] = [];
-    names.push(tokenValue(this.expect(TokenKind.Identifier)));
-    while (this.check(TokenKind.Comma)) {
+    if (this.check(TokenKind.LeftBrace)) {
       this.advance();
-      if (this.check(TokenKind.RightBrace)) {
-        break;
-      }
+      const names: string[] = [];
       names.push(tokenValue(this.expect(TokenKind.Identifier)));
+      while (this.check(TokenKind.Comma)) {
+        this.advance();
+        if (this.check(TokenKind.RightBrace)) {
+          break;
+        }
+        names.push(tokenValue(this.expect(TokenKind.Identifier)));
+      }
+      this.expect(TokenKind.RightBrace);
+      this.expect(TokenKind.Equal);
+      const initializer = this.parseExpression();
+      const end = this.expect(TokenKind.Semicolon).span.end;
+      return {
+        kind: keyword === TokenKind.Const ? "ConstDestructure" : "LetDestructure",
+        span: { start, end },
+        names,
+        initializer,
+      };
     }
-    this.expect(TokenKind.RightBrace);
 
+    const name = this.expect(TokenKind.Identifier);
+    const typeAnnotation = this.check(TokenKind.Colon)
+      ? this.parseTypeAnnotationWithColon()
+      : undefined;
     this.expect(TokenKind.Equal);
     const initializer = this.parseExpression();
     const end = this.expect(TokenKind.Semicolon).span.end;
     return {
-      kind: "ConstDestructure",
+      kind: keyword === TokenKind.Const ? "ConstDeclaration" : "LetDeclaration",
       span: { start, end },
-      names,
-      initializer,
-    };
-  }
-
-  private parseLetDestructure(): LetDestructure {
-    this.takeDocComment();
-    const start = this.expect(TokenKind.Let).span.start;
-    this.expect(TokenKind.LeftBrace);
-
-    const names: string[] = [];
-    names.push(tokenValue(this.expect(TokenKind.Identifier)));
-    while (this.check(TokenKind.Comma)) {
-      this.advance();
-      if (this.check(TokenKind.RightBrace)) {
-        break;
-      }
-      names.push(tokenValue(this.expect(TokenKind.Identifier)));
-    }
-    this.expect(TokenKind.RightBrace);
-
-    this.expect(TokenKind.Equal);
-    const initializer = this.parseExpression();
-    const end = this.expect(TokenKind.Semicolon).span.end;
-    return {
-      kind: "LetDestructure",
-      span: { start, end },
-      names,
+      exported,
+      docComment,
+      name: tokenValue(name),
+      typeAnnotation,
       initializer,
     };
   }
@@ -931,48 +909,6 @@ export class Parser {
       span: { start: target.span.start, end },
       place: exprToPlace(target),
       value,
-    };
-  }
-
-  private parseConstDeclaration(exported = false): ConstDeclaration {
-    const docComment = this.takeDocComment();
-    const start = this.expect(TokenKind.Const).span.start;
-    const name = this.expect(TokenKind.Identifier);
-    const typeAnnotation = this.check(TokenKind.Colon)
-      ? this.parseTypeAnnotationWithColon()
-      : undefined;
-    this.expect(TokenKind.Equal);
-    const initializer = this.parseExpression();
-    const end = this.expect(TokenKind.Semicolon).span.end;
-    return {
-      kind: "ConstDeclaration",
-      span: { start, end },
-      exported,
-      docComment,
-      name: tokenValue(name),
-      typeAnnotation,
-      initializer,
-    };
-  }
-
-  private parseLetDeclaration(exported = false): LetDeclaration {
-    const docComment = this.takeDocComment();
-    const start = this.expect(TokenKind.Let).span.start;
-    const name = this.expect(TokenKind.Identifier);
-    const typeAnnotation = this.check(TokenKind.Colon)
-      ? this.parseTypeAnnotationWithColon()
-      : undefined;
-    this.expect(TokenKind.Equal);
-    const initializer = this.parseExpression();
-    const end = this.expect(TokenKind.Semicolon).span.end;
-    return {
-      kind: "LetDeclaration",
-      span: { start, end },
-      exported,
-      docComment,
-      name: tokenValue(name),
-      typeAnnotation,
-      initializer,
     };
   }
 
