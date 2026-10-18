@@ -4,6 +4,7 @@ import type {
   ActionOutputRef,
   Aggrandizement,
   ConditionInput,
+  CollectionValue,
   DictItems,
   InterpolatedText,
   ListItems,
@@ -271,7 +272,7 @@ function buildAggrandizements(aggrandizements: Aggrandizement[]): PlistValue {
   });
 }
 
-function buildTokenValue(value: ParameterValue, actionIdentifier: string): PlistValue {
+function buildTokenValue(value: CollectionValue, actionIdentifier: string): PlistValue {
   if (typeof value === "string") {
     return {
       WFSerializationType: "WFTextTokenString",
@@ -300,12 +301,8 @@ function buildTokenValue(value: ParameterValue, actionIdentifier: string): Plist
   if (value.kind === "InterpolatedText") {
     return buildInterpolatedText(value);
   }
-  return {
-    WFSerializationType: "WFTextTokenString",
-    Value: {
-      string: String(value),
-    },
-  };
+  const unsupported: never = value;
+  throw new Error("unsupported collection token value: " + unsupported);
 }
 
 function buildListItems(list: ListItems, actionIdentifier: string): PlistValue {

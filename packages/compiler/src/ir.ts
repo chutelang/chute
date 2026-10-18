@@ -55,6 +55,8 @@ export interface WorkflowRef {
   name: string;
 }
 
+export type CollectionValue = string | number | boolean | VariableRef | InterpolatedText;
+
 export interface ListItems {
   kind: "ListItems";
   items: ListItem[];
@@ -62,7 +64,7 @@ export interface ListItems {
 
 export interface ListItem {
   itemType: number; // 0=Text, 3=Number, 4=Boolean
-  value: ParameterValue;
+  value: CollectionValue;
 }
 
 export interface DictItems {
@@ -72,8 +74,8 @@ export interface DictItems {
 
 export interface DictEntry {
   itemType: number;
-  key: ParameterValue;
-  value: ParameterValue;
+  key: CollectionValue;
+  value: CollectionValue;
 }
 
 export type Aggrandizement =

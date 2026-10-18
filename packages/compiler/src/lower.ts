@@ -41,6 +41,7 @@ import type {
   ActionIR,
   Aggrandizement,
   CompilationResult,
+  CollectionValue,
   ConditionInput,
   InterpolatedText,
   InterpolatedTextPart,
@@ -1065,7 +1066,7 @@ function lowerListLiteral(expr: ListLiteral, actions: ActionIR[], ctx: LowerCont
   });
 }
 
-function wrapAsTextToken(value: ParameterValue): ParameterValue {
+function wrapAsTextToken(value: CollectionValue): CollectionValue {
   if (typeof value === "number") {
     return {
       kind: "InterpolatedText",
@@ -1257,7 +1258,7 @@ function lowerToParamValue(
   expr: Expression,
   actions: ActionIR[],
   ctx: LowerContext,
-): ParameterValue {
+): CollectionValue {
   switch (expr.kind) {
     case "StringLiteral":
       return expr.value;

@@ -269,4 +269,19 @@ describe("boolean dict values", () => {
     expect(result).toContain("WFNumberSubstitutableState");
     expect(result).toContain("<true/>");
   });
+
+  it("rejects unsupported collection token values", () => {
+    const list: ListItems = {
+      kind: "ListItems",
+      items: [
+        {
+          itemType: 0,
+          value: { kind: "ActionOutputRef", outputName: "Result", outputUUID: "uuid" } as never,
+        },
+      ],
+    };
+    const params = new Map<string, ParameterValue>([["WFItems", list]]);
+
+    expect(() => codegen(makeIR(params))).toThrow("unsupported collection token value");
+  });
 });
