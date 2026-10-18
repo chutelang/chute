@@ -262,13 +262,7 @@ export class Parser {
     const start = this.expect(TokenKind.Shortcut).span.start;
     this.expect(TokenKind.LeftBrace);
 
-    const fields: MetadataField[] = [];
-    while (!this.check(TokenKind.RightBrace)) {
-      fields.push(this.parseMetadataField());
-      if (!this.check(TokenKind.RightBrace)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const fields = this.parseDelimited(TokenKind.RightBrace, () => this.parseMetadataField());
 
     const end = this.expect(TokenKind.RightBrace).span.end;
     return { kind: "ShortcutMetadata", span: { start, end }, fields };
@@ -347,14 +341,7 @@ export class Parser {
 
   private parseMetadataList(): MetadataValue {
     const start = this.expect(TokenKind.LeftBracket).span.start;
-    const elements: MetadataValue[] = [];
-
-    while (!this.check(TokenKind.RightBracket)) {
-      elements.push(this.parseMetadataValue());
-      if (!this.check(TokenKind.RightBracket)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const elements = this.parseDelimited(TokenKind.RightBracket, () => this.parseMetadataValue());
 
     const end = this.expect(TokenKind.RightBracket).span.end;
     return { kind: "MetadataList", span: { start, end }, elements };
@@ -369,13 +356,7 @@ export class Parser {
 
     if (this.check(TokenKind.LeftParen)) {
       this.advance();
-      args = [];
-      while (!this.check(TokenKind.RightParen)) {
-        args.push(this.parseMetadataValue());
-        if (!this.check(TokenKind.RightParen)) {
-          this.expect(TokenKind.Comma);
-        }
-      }
+      args = this.parseDelimited(TokenKind.RightParen, () => this.parseMetadataValue());
       end = this.expect(TokenKind.RightParen).span.end;
     }
 
@@ -552,14 +533,7 @@ export class Parser {
     const name = tokenValue(this.expect(TokenKind.Identifier));
 
     this.expect(TokenKind.LeftBrace);
-    const fields: RecordFieldNode[] = [];
-
-    while (!this.check(TokenKind.RightBrace)) {
-      fields.push(this.parseRecordField());
-      if (!this.check(TokenKind.RightBrace)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const fields = this.parseDelimited(TokenKind.RightBrace, () => this.parseRecordField());
 
     const end = this.expect(TokenKind.RightBrace).span.end;
     return {
@@ -588,13 +562,7 @@ export class Parser {
     const name = tokenValue(this.expect(TokenKind.Identifier));
     this.expect(TokenKind.LeftParen);
 
-    const params: FunctionParameter[] = [];
-    while (!this.check(TokenKind.RightParen)) {
-      params.push(this.parseFunctionParameter());
-      if (!this.check(TokenKind.RightParen)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const params = this.parseDelimited(TokenKind.RightParen, () => this.parseFunctionParameter());
     this.expect(TokenKind.RightParen);
 
     let returnType: TypeAnnotation | undefined;
@@ -642,13 +610,7 @@ export class Parser {
     const name = tokenValue(this.expect(TokenKind.Identifier));
     this.expect(TokenKind.LeftParen);
 
-    const params: ActionParameter[] = [];
-    while (!this.check(TokenKind.RightParen)) {
-      params.push(this.parseActionParameter());
-      if (!this.check(TokenKind.RightParen)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const params = this.parseDelimited(TokenKind.RightParen, () => this.parseActionParameter());
     this.expect(TokenKind.RightParen);
 
     let returnType: TypeAnnotation | undefined;
@@ -731,13 +693,7 @@ export class Parser {
 
     if (this.check(TokenKind.LeftParen)) {
       this.advance();
-      args = [];
-      while (!this.check(TokenKind.RightParen)) {
-        args.push(this.parseAttributeArgument());
-        if (!this.check(TokenKind.RightParen)) {
-          this.expect(TokenKind.Comma);
-        }
-      }
+      args = this.parseDelimited(TokenKind.RightParen, () => this.parseAttributeArgument());
       end = this.expect(TokenKind.RightParen).span.end;
     }
 
@@ -1384,12 +1340,7 @@ export class Parser {
 
     if (this.check(TokenKind.LeftParen)) {
       this.advance();
-      while (!this.check(TokenKind.RightParen)) {
-        args.push(this.parseArgument());
-        if (!this.check(TokenKind.RightParen)) {
-          this.expect(TokenKind.Comma);
-        }
-      }
+      args = this.parseDelimited(TokenKind.RightParen, () => this.parseArgument());
       end = this.expect(TokenKind.RightParen).span.end;
     }
 
@@ -1609,14 +1560,7 @@ export class Parser {
 
   private parseCallArguments(callee: Expression): CallExpression {
     this.advance();
-    const args: Argument[] = [];
-
-    while (!this.check(TokenKind.RightParen)) {
-      args.push(this.parseArgument());
-      if (!this.check(TokenKind.RightParen)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const args = this.parseDelimited(TokenKind.RightParen, () => this.parseArgument());
 
     const end = this.expect(TokenKind.RightParen).span.end;
     return {
@@ -1815,14 +1759,7 @@ export class Parser {
 
   private parseListLiteral(): ListLiteral {
     const start = this.expect(TokenKind.LeftBracket).span.start;
-    const elements: Expression[] = [];
-
-    while (!this.check(TokenKind.RightBracket)) {
-      elements.push(this.parseExpression());
-      if (!this.check(TokenKind.RightBracket)) {
-        this.expect(TokenKind.Comma);
-      }
-    }
+    const elements = this.parseDelimited(TokenKind.RightBracket, () => this.parseExpression());
 
     const end = this.expect(TokenKind.RightBracket).span.end;
     return {
@@ -1898,6 +1835,17 @@ export class Parser {
     const tok = this.peek();
     this.pos++;
     return tok;
+  }
+
+  private parseDelimited<T>(end: TokenKind, parseItem: () => T): T[] {
+    const items: T[] = [];
+    while (!this.check(end)) {
+      items.push(parseItem());
+      if (!this.check(end)) {
+        this.expect(TokenKind.Comma);
+      }
+    }
+    return items;
   }
 
   private expect(kind: TokenKind): Token {
