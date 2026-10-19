@@ -293,35 +293,6 @@ function formatOverloadedActionSignature(
   return { signature };
 }
 
-const KEYWORDS = [
-  "action",
-  "as",
-  "case",
-  "const",
-  "contains",
-  "else",
-  "enum",
-  "export",
-  "false",
-  "for",
-  "func",
-  "hasPrefix",
-  "hasSuffix",
-  "if",
-  "import",
-  "in",
-  "input",
-  "is",
-  "let",
-  "menu",
-  "nil",
-  "record",
-  "repeat",
-  "return",
-  "shortcut",
-  "true",
-];
-
 export function getEnumCaseCompletions(
   result: AnalysisResult,
   calleeName: string,
