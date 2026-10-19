@@ -65,15 +65,22 @@ export function resolveDefinition(result: AnalysisResult, offset: number): Span 
     return undefined;
   }
 
-  return findDefinitionSpan(ident, result.definitions);
+  return ident.context === "definition"
+    ? ident.span
+    : findDefinition(ident, result.definitions)?.span;
 }
 
-function findDefinitionSpan(
+function findDefinition(
   ident: IdentifierAtOffset,
   definitions: SymbolInfo[],
-): Span | undefined {
+): SymbolInfo | undefined {
   if (ident.context === "definition") {
-    return ident.span;
+    return definitions.find(
+      (def) =>
+        def.name === ident.name &&
+        def.span.start === ident.span.start &&
+        def.span.end === ident.span.end,
+    );
   }
 
   for (let i = definitions.length - 1; i >= 0; i--) {
@@ -92,7 +99,7 @@ function findDefinitionSpan(
         def.kind === "import" ||
         def.span.end <= ident.span.start)
     ) {
-      return def.span;
+      return def;
     }
   }
   return undefined;
@@ -145,39 +152,12 @@ export function resolveHover(result: AnalysisResult, offset: number): string | u
     markdown += "\n\n" + hover.description;
   }
 
-  const docComment = findDocComment(ident, result.definitions);
+  const docComment = findDefinition(ident, result.definitions)?.docComment;
   if (docComment) {
     markdown += formatDocCommentMarkdown(docComment);
   }
 
   return markdown;
-}
-
-function findDocComment(
-  ident: IdentifierAtOffset,
-  definitions: SymbolInfo[],
-): DocComment | undefined {
-  for (let i = definitions.length - 1; i >= 0; i--) {
-    const def = definitions[i];
-    if (!def) {
-      continue;
-    }
-    if (
-      def.name === ident.name &&
-      def.docComment &&
-      def.scope.start <= ident.span.start &&
-      ident.span.end <= def.scope.end &&
-      (def.kind === "function" ||
-        def.kind === "action" ||
-        def.kind === "enum" ||
-        def.kind === "record" ||
-        def.kind === "import" ||
-        def.span.end <= ident.span.start)
-    ) {
-      return def.docComment;
-    }
-  }
-  return undefined;
 }
 
 function formatDocCommentMarkdown(doc: DocComment): string {
